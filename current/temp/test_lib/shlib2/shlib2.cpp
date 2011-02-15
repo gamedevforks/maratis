@@ -2,7 +2,9 @@
 
 #include <string>
 
-std::string dynWhoAmI2( void )
+#include "shlib2.h"
+
+PUBLIC std::string dynWhoAmI2( void )
 {
 	return "I'm the dynamic library 2";
 }

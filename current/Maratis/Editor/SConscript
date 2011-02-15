@@ -1,6 +1,7 @@
+# coding: utf-8
 # Maratis/Editor framework build Sconscript
-# $LastChangedDate: 2011-02-12 01:17:05 +0100 (sam., 12 févr. 2011) $
-# $LastChangedBy: dbacchet $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import os, sys, fnmatch

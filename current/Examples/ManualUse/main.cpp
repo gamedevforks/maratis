@@ -191,7 +191,7 @@ int main(int argc, char **argv)
 	engine->setGame(game);
 
 	// set renderer (standard)
-	MRenderer * renderer = engine->getRendererManager()->getRendererByName("StandardRenderer")->getNewRenderer();
+	MRenderer * renderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
 	engine->setRenderer(renderer);
 
 	// begin game

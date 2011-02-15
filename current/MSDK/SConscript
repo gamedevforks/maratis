@@ -1,7 +1,8 @@
+# coding: utf-8
 # MSDK build Sconscript
 #
-# $LastChangedDate: 2008-05-12 12:03:21 +0200 (Mon, 12 May 2008) $
-# $LastChangedBy: dbacc $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import os,sys

@@ -9,6 +9,7 @@ sys.path.append(os.path.join(basepath,'var','scons'))
 
 #from version_tag import *
 import compileroptions
+import platformcustom
     
 ###############################################
 #                ENVIRONMENT                  #
@@ -35,6 +36,8 @@ opts.Save(fname,env)
 if (os.path.getsize(fname) == 0):
     os.remove(fname)
 
+# customize the environment, with options not included in the standard scons tools
+platformcustom.customizeEnvironment(env)
 
 ###############################################
 #                   BUILD                     #
@@ -67,6 +70,12 @@ SConscript( 'MSDK/SConscript',
 # build maratis3d
 SConscript( 'Maratis/SConscript',
             variant_dir = os.path.join(builddir,'Maratis'),
+            duplicate=False,
+            exports='env' )
+
+# build examples
+SConscript( 'Examples/SConscript',
+            variant_dir = os.path.join(builddir,'Examples'),
             duplicate=False,
             exports='env' )
 

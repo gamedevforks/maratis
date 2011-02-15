@@ -1,6 +1,7 @@
+# coding: utf-8
 # Maratis/Common framework build Sconscript
-# $LastChangedDate: 2011-02-12 01:11:34 +0100 (sam., 12 févr. 2011) $
-# $LastChangedBy: dbacchet $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import os, sys, fnmatch
@@ -23,6 +24,9 @@ thirdparty.devil.addDevilToEnv(env_local)
 thirdparty.libsndfile.addLibSndFileToEnv(env_local)
 thirdparty.freetype.addFreetypeToEnv(env_local)
 thirdparty.lua.addLuaToEnv(env_local)
+# those are usually only needed in windows, not osx
+thirdparty.openal.addOpenALToEnv(env_local)
+thirdparty.glee.addGleeToEnv(env_local)
 
 # get list of files 
 files = pyutils.getFilesRecursive(Dir('.').srcnode().abspath,'*.c*')

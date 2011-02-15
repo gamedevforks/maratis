@@ -1,6 +1,7 @@
+# coding: utf-8
 # Maratis framework build Sconscript
-# $LastChangedDate:  $
-# $LastChangedBy: dbacc $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import os, sys, fnmatch
@@ -27,5 +28,7 @@ env_local.AppendUnique(LIBS = ['shlib1',
 files = Glob('*.c*')
 
 # build application
+env_local.AppendUnique(RPATH = ['@loader_path/../shlib1',
+                                '@loader_path/../shlib2'])
 test_exe  = env_local.Program('test_libcall',files,PDB='test_libcall.pdb')
 

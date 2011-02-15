@@ -1,6 +1,7 @@
+# coding: utf-8
 # MSDK/MEngine framework build Sconscript
-# $LastChangedDate:  $
-# $LastChangedBy: dbacc $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import os, sys, fnmatch
@@ -24,7 +25,7 @@ env_local.AppendUnique(LIBS = ['MCore'] )
 files = Glob('./Sources/*.c*')
 
 # build library
-mengine_lib  = env_local.SharedLibrary('MEngine',files,RPATH='@rpath')
+mengine_lib  = env_local.SharedLibrary('MEngine',files,RPATH='@rpath/libMEngine.dylib')
 
 Return('mengine_lib')
 

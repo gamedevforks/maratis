@@ -1,10 +1,11 @@
+# coding: utf-8
 # define the OpenAL library include/obj/link flags for the various platforms
 # 2011-02-06, Davide Bacchet (davide.bacchet@gmail.com)
-# $LastChangedDate: 2011-02-12 01:43:50 +0100 (sam., 12 févr. 2011) $
-# $LastChangedBy: dbacchet $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
-import sys
+import sys, os
 
 def getOpenALParameters():
     """get platform dependent parameters"""
@@ -24,7 +25,7 @@ def getOpenALParameters():
     # platform specific
     if sys.platform=='win32':
         # OpenAL settings for win32
-        params['includePath'].append('openal/include/AL')
+        params['includePath'].append('openal/include')
         params['libPath'].append('openal/win32')
         params['libs'].append('OpenAL32')
         pass

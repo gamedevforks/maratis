@@ -1,6 +1,6 @@
 # Maratis framework build Sconscript
-# $LastChangedDate:  $
-# $LastChangedBy: dbacc $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import os, sys, fnmatch

@@ -1,7 +1,8 @@
+# coding: utf-8
 # define the dirent library include flags for the various platforms
 # 2011-02-06, Davide Bacchet (davide.bacchet@gmail.com)
-# $LastChangedDate: 2011-02-12 01:43:50 +0100 (sam., 12 févr. 2011) $
-# $LastChangedBy: dbacchet $
+# $LastChangedDate$
+# $LastChangedBy$
 
 
 import sys, os
