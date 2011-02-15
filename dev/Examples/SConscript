@@ -1,0 +1,15 @@
+# coding: utf-8
+# examples sconscript
+#
+# $LastChangedDate$
+# $LastChangedBy$
+
+
+import os,sys
+
+Import('env')
+
+
+# build maratis sample app
+SConscript( 'ManualUse/SConscript', exports='env' )
+

@@ -1,0 +1,24 @@
+# coding: utf-8
+# maratis build Sconscript
+#
+# $LastChangedDate$
+# $LastChangedBy$
+
+
+import os,sys
+
+Import('env')
+
+
+# build common
+SConscript( 'Common/SConscript',
+            exports='env' )
+
+# build Editor
+SConscript( 'Editor/SConscript',
+            exports='env' )
+
+# build Player
+SConscript( 'Player/SConscript',
+            exports='env' )
+
