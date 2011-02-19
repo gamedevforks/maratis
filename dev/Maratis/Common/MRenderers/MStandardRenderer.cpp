@@ -1626,7 +1626,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					
 					float z = (center - light->getTransformedPosition()).getSquaredLength();
 					entityLightsList[lightsNumber] = l;
-					entityLightsZList[l] = 1.0f/z;
+					entityLightsZList[l] = (1.0f/z)*light->getRadius()*light->getIntensity();
 					lightsNumber++;
 				}
 				
