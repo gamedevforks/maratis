@@ -215,7 +215,7 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 				if(subMeshsNumber == 1)
 				{
 					MSubMesh * subMesh = &subMeshs[0];
-					physics->createConvexHullShape(shapeId, subMesh->getVertices(), subMesh->getVerticesSize());
+					physics->createConvexHullShape(shapeId, subMesh->getVertices(), subMesh->getVerticesSize(), entity->getScale());
 				}
 				else
 				{
@@ -225,7 +225,7 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 					{
 						unsigned int subShapeId;
 						MSubMesh * subMesh = &subMeshs[s];
-						physics->createConvexHullShape(&subShapeId, subMesh->getVertices(), subMesh->getVerticesSize());
+						physics->createConvexHullShape(&subShapeId, subMesh->getVertices(), subMesh->getVerticesSize(), entity->getScale());
 						physics->addChildShape(*shapeId, subShapeId, MVector3(), MQuaternion());
 					}
 				}
@@ -251,7 +251,8 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 					MSubMesh * subMesh = &subMeshs[0];
 					physics->createTriangleMeshShape(shapeId,
 						subMesh->getVertices(), subMesh->getVerticesSize(),
-						subMesh->getIndices(), subMesh->getIndicesSize(), subMesh->getIndicesType()
+						subMesh->getIndices(), subMesh->getIndicesSize(), subMesh->getIndicesType(),
+						entity->getScale()
 						);
 				}
 				else
@@ -264,7 +265,8 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 						MSubMesh * subMesh = &subMeshs[s];
 						physics->createTriangleMeshShape(&subShapeId,
 							subMesh->getVertices(), subMesh->getVerticesSize(),
-							subMesh->getIndices(), subMesh->getIndicesSize(), subMesh->getIndicesType()
+							subMesh->getIndices(), subMesh->getIndicesSize(), subMesh->getIndicesType(),
+							entity->getScale()
 						);
 						physics->addChildShape(*shapeId, subShapeId, MVector3(), MQuaternion());
 					}

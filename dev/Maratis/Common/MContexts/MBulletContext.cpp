@@ -491,14 +491,15 @@ void MBulletContext::createCylinderShape(unsigned int * shapeId, float radius, f
 	m_collisionShapes.push_back(shape);
 }
 
-void MBulletContext::createConvexHullShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber)
+void MBulletContext::createConvexHullShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const MVector3 scale)
 {
 	*shapeId = m_collisionShapes.size();
-	btCollisionShape * shape = new btConvexHullShape((btScalar*)vertices, verticesNumber, sizeof(MVector3));
+	btConvexHullShape * shape = new btConvexHullShape((btScalar*)vertices, verticesNumber, sizeof(MVector3));
+	shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 	m_collisionShapes.push_back(shape);
 }
 
-void MBulletContext::createTriangleMeshShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const void * indices, unsigned int indicesNumber, M_TYPES indicesType)
+void MBulletContext::createTriangleMeshShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const void * indices, unsigned int indicesNumber, M_TYPES indicesType, const MVector3 scale)
 {
 	*shapeId = m_collisionShapes.size();
 
@@ -522,7 +523,8 @@ void MBulletContext::createTriangleMeshShape(unsigned int * shapeId, const MVect
 	btTriangleIndexVertexArray * triMesh = new btTriangleIndexVertexArray();
 	triMesh->addIndexedMesh(iMesh, iType);
 
-	btCollisionShape * shape = new btBvhTriangleMeshShape(triMesh, true);
+	btBvhTriangleMeshShape * shape = new btBvhTriangleMeshShape(triMesh, true);
+	shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 	m_collisionShapes.push_back(shape);
 }
 

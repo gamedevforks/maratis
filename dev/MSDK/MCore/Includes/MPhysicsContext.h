@@ -92,8 +92,8 @@ public:
 	virtual void createCapsuleShape(unsigned int * shapeId, float radius, float height) = 0;
 	virtual void createCylinderShape(unsigned int * shapeId, float radius, float height) = 0;
 
-	virtual void createConvexHullShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber) = 0;
-	virtual void createTriangleMeshShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const void * indices, unsigned int indicesNumber, M_TYPES indicesType) = 0;
+	virtual void createConvexHullShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const MVector3 scale = MVector3(1)) = 0;
+	virtual void createTriangleMeshShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const void * indices, unsigned int indicesNumber, M_TYPES indicesType, const MVector3 scale = MVector3(1)) = 0;
 
 	// delete shape
 	virtual void deleteShape(unsigned int * shapeId) = 0;

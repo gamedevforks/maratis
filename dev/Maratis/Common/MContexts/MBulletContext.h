@@ -113,8 +113,8 @@ public:
 	void createCapsuleShape(unsigned int * shapeId, float radius, float height);
 	void createCylinderShape(unsigned int * shapeId, float radius, float height);
 
-	void createConvexHullShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber);
-	void createTriangleMeshShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const void * indices, unsigned int indicesNumber, M_TYPES indicesType);
+	void createConvexHullShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const MVector3 scale = MVector3(1));
+	void createTriangleMeshShape(unsigned int * shapeId, const MVector3 * vertices, unsigned int verticesNumber, const void * indices, unsigned int indicesNumber, M_TYPES indicesType, const MVector3 scale = MVector3(1));
 
 	// delete shape
 	void deleteShape(unsigned int * shapeId);
