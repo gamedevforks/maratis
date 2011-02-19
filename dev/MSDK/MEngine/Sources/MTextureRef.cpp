@@ -33,7 +33,8 @@
 
 MTextureRef::MTextureRef(unsigned int textureId, const char * filename, bool mipmap):
 	m_textureId(textureId),
-	m_mipmap(mipmap){
+	m_mipmap(mipmap),
+	m_components(0){
 	m_filename.set(filename);
 }
 
@@ -68,6 +69,8 @@ void MTextureRef::update(void)
 		if(m_textureId == 0)
 			render->createTexture(&m_textureId);
 
+		m_components = image.getComponents();
+		
 		// send texture image
 		render->bindTexture(m_textureId);
 		render->sendTextureImage(&image, isMipmapEnabled(), 1, 0);

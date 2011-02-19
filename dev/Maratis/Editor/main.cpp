@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 				}
 
 				// draw
-				if(steps > 0)
+				//if(steps > 0)
 				{
 					draw();
 					f++;

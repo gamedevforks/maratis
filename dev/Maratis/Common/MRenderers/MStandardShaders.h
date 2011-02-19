@@ -112,8 +112,8 @@ string functionsShader = string(
 		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2( 0.001, 0.001)*shadBlur);"
 		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2(-0.001, -0.001)*shadBlur);"
 		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2( 0.001, -0.001)*shadBlur);"
-		"shadow /= 5.0;"
-		 */
+		"shadow /= 5.0;"*/
+		
 		 
 		"float blur = (shadBlur*0.01);"
 		"vec4 rand = texture2D(RandTexture, (shadowCoordinateWdivide.xy)*(500.0/(shadBlur+1.0)))*2.0 - 1.0;"
@@ -223,6 +223,7 @@ string functionsShader = string(
 
 // lights
 string lightShader = string(
+						
 "if(LightActive[0])"
 "{"
 	"computeLight("
@@ -396,7 +397,7 @@ vertHeader +
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
-	"gl_Position = ProjectionMatrix * position;"
+	"gl_Position = ProjModelViewMatrix * vec4(Vertex, 1.0);"
 "}");
 
 string fragShader1 = string(
@@ -434,7 +435,7 @@ vertHeader +
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
-	"gl_Position = ProjectionMatrix * position;"
+	"gl_Position = ProjModelViewMatrix * vec4(Vertex, 1.0);"
 	"texCoord[0].xy = (TextureMatrix[0] * vec4(TexCoord0, 1.0, 1.0)).xy;"
 "}");
 
@@ -453,8 +454,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	"if(AlphaTest)"
-		"if(texture0.w < 0.5) discard;"
+	//"if(AlphaTest)"
+	//	"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -479,7 +480,7 @@ vertHeader +
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
-	"gl_Position = ProjectionMatrix * position;"
+	"gl_Position = ProjModelViewMatrix * vec4(Vertex, 1.0);"
 	"texCoord[0].xy = (TextureMatrix[0] * vec4(TexCoord0, 1.0, 1.0)).xy;"
 	"texCoord[0].zw = (TextureMatrix[1] * vec4(TexCoord1, 1.0, 1.0)).xy;"
 "}");
@@ -500,8 +501,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	"if(AlphaTest)"
-		"if(texture0.w < 0.5) discard;"
+	//"if(AlphaTest)"
+	//	"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -527,7 +528,7 @@ vertHeader +
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
-	"gl_Position = ProjectionMatrix * position;"
+	"gl_Position = ProjModelViewMatrix * vec4(Vertex, 1.0);"
 	"texCoord[0].xy = (TextureMatrix[0] * vec4(TexCoord0, 1.0, 1.0)).xy;"
 	"texCoord[0].zw = (TextureMatrix[1] * vec4(TexCoord1, 1.0, 1.0)).xy;"
 	"texCoord[1].xy = (TextureMatrix[2] * vec4(TexCoord2, 1.0, 1.0)).xy;"
@@ -557,8 +558,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	"if(AlphaTest)"
-		"if(texture0.w < 0.5) discard;"
+	//"if(AlphaTest)"
+	//	"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -585,7 +586,7 @@ vertHeader +
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
-	"gl_Position = ProjectionMatrix * position;"
+	"gl_Position = ProjModelViewMatrix * vec4(Vertex, 1.0);"
 	"texCoord[0].xy = (TextureMatrix[0] * vec4(TexCoord0, 1.0, 1.0)).xy;"
 	"texCoord[0].zw = (TextureMatrix[1] * vec4(TexCoord1, 1.0, 1.0)).xy;"
 	"texCoord[1].zw = (TextureMatrix[3] * vec4(TexCoord3, 1.0, 1.0)).xy;"
@@ -608,8 +609,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	"if(AlphaTest)"
-		"if(texture0.w < 0.5) discard;"
+	//"if(AlphaTest)"
+	//	"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -636,7 +637,7 @@ vertHeader +
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
-	"gl_Position = ProjectionMatrix * position;"
+	"gl_Position = ProjModelViewMatrix * vec4(Vertex, 1.0);"
 	"texCoord[0].xy = (TextureMatrix[0] * vec4(TexCoord0, 1.0, 1.0)).xy;"
 	"texCoord[0].zw = (TextureMatrix[1] * vec4(TexCoord1, 1.0, 1.0)).xy;"
 	"texCoord[1].xy = (TextureMatrix[2] * vec4(TexCoord2, 1.0, 1.0)).xy;"
@@ -668,8 +669,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	"if(AlphaTest)"
-		"if(texture0.w < 0.5) discard;"
+	//"if(AlphaTest)"
+	//	"if(texture0.w < 0.5) discard;"
 		
 	+ lightShader +
 

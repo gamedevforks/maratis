@@ -1445,18 +1445,69 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 
 		if(isEdgeToBoxCollision(localOrigin, localDest, *box->getMin(), *box->getMax()))
 		{
-			if(getNearestRaytracedPosition(
-				localOrigin, localDest,
-				subMesh->getIndices(),
-				subMesh->getIndicesType(),
-				vertices,
-				subMesh->getIndicesSize(), &I))
+			unsigned int d;
+			unsigned int dSize = subMesh->getDisplaysNumber();
+			for(d=0; d<dSize; d++)
 			{
-				dist = (I - localOrigin).getSquaredLength();
-				if(dist < nearDist)
+				MDisplay * display = subMesh->getDisplay(d);
+				
+				// indices
+				void * indices = subMesh->getIndices();
+				switch(subMesh->getIndicesType())
 				{
-					nearDist = dist;
-					raytraced = true;
+					case M_USHORT:
+					{
+						unsigned short * idx = (unsigned short *)indices;
+						indices = (void *)(idx + display->getBegin());
+						break;
+					}
+					case M_UINT:
+					{
+						unsigned int * idx = (unsigned int *)indices;
+						indices = (void *)(idx + display->getBegin());
+						break;
+					}
+				}
+				
+				// BACK or FRONT and BACK, scan ray
+				if((display->getCullMode() == M_CULL_BACK) || (display->getCullMode() == M_CULL_NONE))
+				{
+					
+					if(getNearestRaytracedPosition(
+												   localOrigin, localDest,
+												   indices,
+												   subMesh->getIndicesType(),
+												   vertices,
+												   display->getSize(),
+												   &I))
+					{
+						dist = (I - localOrigin).getSquaredLength();
+						if(dist < nearDist)
+						{
+							nearDist = dist;
+							raytraced = true;
+						}
+					}
+				}
+				
+				// FRONT or FRONT and BACK, scan invert ray
+				if((display->getCullMode() == M_CULL_FRONT) || (display->getCullMode() == M_CULL_NONE))
+				{
+					if(getNearestRaytracedPosition(
+												   localDest, localOrigin,
+												   indices,
+												   subMesh->getIndicesType(),
+												   vertices,
+												   display->getSize(),
+												   &I))
+					{
+						dist = (I - localOrigin).getSquaredLength();
+						if(dist < nearDist)
+						{
+							nearDist = dist;
+							raytraced = true;
+						}
+					}
 				}
 			}
 		}

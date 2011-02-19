@@ -133,7 +133,6 @@ void gameWinEvents(MWinEvent * windowEvents)
 		{
 			unsigned int key = windowEvents->data[0];
 			const char * name = getKeyName(key);
-			printf("key %d %s\n", key, name);
 			if(name)
 				input->downKey(name);
 		}

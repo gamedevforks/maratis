@@ -89,6 +89,7 @@ private:
 	
 	// FX
 	unsigned int m_FXId;
+	unsigned int m_ZFXId;
 
 	// blend mode
 	M_BLENDING_MODES m_blendMode;
@@ -115,6 +116,8 @@ public:
 	// FX
 	inline void setFXId(unsigned int FXId){ m_FXId = FXId; }
 	inline unsigned int getFXId(void){ return m_FXId; }
+	inline void setZFXId(unsigned int ZFXId){ m_ZFXId = ZFXId; }
+	inline unsigned int getZFXId(void){ return m_ZFXId; }
 
 	// blend mode
 	inline void setBlendMode(M_BLENDING_MODES blendMode){ m_blendMode = blendMode; }

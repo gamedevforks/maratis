@@ -207,8 +207,28 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 			MMesh * mesh = entity->getMesh();
 			if(mesh)
 			{
-				MSubMesh * subMesh = &mesh->getSubMeshs()[0];
-				physics->createConvexHullShape(shapeId, subMesh->getVertices(), subMesh->getVerticesSize());
+				MSubMesh * subMeshs = mesh->getSubMeshs();
+				unsigned int subMeshsNumber = mesh->getSubMeshsNumber();
+				if(subMeshsNumber == 0)
+					return false;
+
+				if(subMeshsNumber == 1)
+				{
+					MSubMesh * subMesh = &subMeshs[0];
+					physics->createConvexHullShape(shapeId, subMesh->getVertices(), subMesh->getVerticesSize());
+				}
+				else
+				{
+					physics->createMultiShape(shapeId);
+					unsigned int s;
+					for(s=0; s<subMeshsNumber; s++)
+					{
+						unsigned int subShapeId;
+						MSubMesh * subMesh = &subMeshs[s];
+						physics->createConvexHullShape(&subShapeId, subMesh->getVertices(), subMesh->getVerticesSize());
+						physics->addChildShape(*shapeId, subShapeId, MVector3(), MQuaternion());
+					}
+				}
 			}
 			else{
 				return false;

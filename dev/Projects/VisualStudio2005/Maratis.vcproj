@@ -98,6 +98,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;..\..\..\..\3rdparty\openal\win32\OpenAL32.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\openal\win32\wrap_oal.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\libsndfile\win32\libsndfile-1.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\DevIL.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\ILU.dll&quot; &quot;build&quot;&#x0D;&#x0A;mkdir &quot;build\font&quot;&#x0D;&#x0A;mkdir &quot;build\gui&quot;&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\font&quot; &quot;build\font&quot; /E&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\gui&quot; &quot;build\gui&quot; /E"
 			/>
 		</Configuration>
 		<Configuration
@@ -180,6 +181,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;..\..\..\..\3rdparty\openal\win32\OpenAL32.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\openal\win32\wrap_oal.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\libsndfile\win32\libsndfile-1.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\DevIL.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\ILU.dll&quot; &quot;build&quot;&#x0D;&#x0A;mkdir &quot;build\font&quot;&#x0D;&#x0A;mkdir &quot;build\gui&quot;&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\font&quot; &quot;build\font&quot; /E&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\gui&quot; &quot;build\gui&quot; /E"
 			/>
 		</Configuration>
 	</Configurations>

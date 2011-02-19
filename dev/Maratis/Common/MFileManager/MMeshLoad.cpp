@@ -970,6 +970,39 @@ bool xmlMeshLoad(const char * filename, void * data)
 					}
 				}
 			}
+			
+			// ZFX (optional optim)
+			{
+				// ZVertexShader
+				const char * vertShadFile = NULL;
+				TiXmlElement * vertexShaderNode = materialNode->FirstChildElement("ZVertexShader");
+				if(vertexShaderNode){
+					vertShadFile = vertexShaderNode->Attribute("file");
+				}
+				
+				// ZFragmentShader
+				const char * fragShadFile = NULL;
+				TiXmlElement * fragmentShaderNode = materialNode->FirstChildElement("ZFragmentShader");
+				if(fragmentShaderNode){
+					fragShadFile = fragmentShaderNode->Attribute("file");
+				}
+				
+				// create ZFX
+				if(vertShadFile && fragShadFile)
+				{
+					getGlobalFilename(vertShadPath, meshRep, vertShadFile);
+					getGlobalFilename(fragShadPath, meshRep, fragShadFile);
+					
+					MShaderRef * vertShad = level->loadShader(vertShadPath, M_SHADER_VERTEX);
+					MShaderRef * pixShad = level->loadShader(fragShadPath, M_SHADER_PIXEL);
+					if(vertShad && pixShad)
+					{
+						unsigned int ZFXId = 0;
+						level->createFX(vertShad, pixShad, &ZFXId);
+						material->setZFXId(ZFXId);
+					}
+				}
+			}
 		}
 	}
 

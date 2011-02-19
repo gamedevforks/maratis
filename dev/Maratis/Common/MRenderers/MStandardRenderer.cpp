@@ -298,13 +298,28 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			// optimize only for standard shader (for custom shader we don't know how geometry and alpha test is done)
 			if(fxId == 0)
 			{
-				if(material->getTexturesPassNumber() == 0)
-					fxId = m_FXs[0]; // basic FX
-				else{
-					fxId = m_FXs[7]; // basic FX with texture (for alpha test)
-					texturesPassNumber = 1;
+				fxId = m_FXs[0]; // basic FX
+				texturesPassNumber = 0;
+				
+				// alpha test
+				if(material->getTexturesPassNumber() > 0)
+				{
+					MTexture * texture = material->getTexturePass(0)->getTexture();
+					if(texture)
+					{
+						if(texture->getTextureRef()->getComponents() > 3)
+						{
+							fxId = m_FXs[7]; // basic FX with texture
+							texturesPassNumber = 1;
+						}
+					}
 				}
+				
 				basicFX = true;
+			}
+			else if(material->getZFXId() != 0)
+			{
+				fxId = material->getZFXId();
 			}
 		}
 		
@@ -359,7 +374,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			
 			// Alpha test
 			AlphaTest = (blendMode != M_BLENDING_ALPHA);
-			
+				
 			// Matrix
 			render->getModelViewMatrix(&ModelViewMatrix);
 			ProjModelViewMatrix = (*cameraProjMatrix) * ModelViewMatrix;
@@ -601,7 +616,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		render->setFogColor(currentFogColor);
 	}
 }
-
+/*
 void MStandardRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
@@ -661,7 +676,7 @@ void MStandardRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * disp
 	
 	// restore FX
 	render->bindFX(0);
-}
+}*/
 
 void MStandardRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 {
@@ -743,6 +758,7 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 	}
 	
 	render->setColorMask(0, 0, 0, 0);
+	m_forceNoFX = true;
 	
 	unsigned int i;
 	unsigned int displayNumber = subMesh->getDisplaysNumber();
@@ -752,12 +768,18 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 		if((! display->isVisible()) || (! display->getMaterial()))
 			continue;
 		
-		if(display->getMaterial()->getBlendMode() == M_BLENDING_ALPHA)
-			drawDisplayTriangles(subMesh, display, vertices);
+		MMaterial * material = display->getMaterial();
+		if(material)
+		{
+			if(material->getBlendMode() != M_BLENDING_NONE)
+				drawDisplay(subMesh, display, vertices, normals, tangents, colors);
+		}
 	}
 	
+	m_forceNoFX = false;
 	render->setColorMask(1, 1, 1, 1);
 	render->setDepthMask(0);
+	render->setDepthMode(M_DEPTH_EQUAL);
 	
 	for(i=0; i<displayNumber; i++)
 	{
@@ -774,6 +796,7 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 	}
 	
 	render->setDepthMask(1);
+	render->setDepthMode(M_DEPTH_LEQUAL);
 }
 
 float MStandardRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & pos)
@@ -1107,6 +1130,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	
 	
 	// init
+	render->setAlphaTest(0);
 	render->disableVertexArray();
 	render->disableTexCoordArray();
 	render->disableNormalArray();
@@ -1341,8 +1365,6 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		}
 	}
 	
-	m_forceNoFX = false;
-	
 	// restore camera after shadow pass
 	if(restoreCamera)
 	{
@@ -1380,6 +1402,90 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	// entities
 	unsigned int i;
 	unsigned int eSize = scene->getEntitiesNumber();
+	
+	
+	// Z pre-pass
+	render->setColorMask(0, 0, 0, 0);
+	
+	for(i=0; i<eSize; i++)
+	{
+		// get entity
+		MOEntity * entity = scene->getEntityByIndex(i);
+		MMesh * mesh = entity->getMesh();
+		
+		if(! entity->isActive())
+			continue;
+		
+		if(! entity->isVisible())
+			continue;
+	
+		if(mesh)
+		{
+			// animate armature
+			if(mesh->getArmature() && mesh->getArmatureAnim())
+				animateArmature(
+					mesh->getArmature(),
+					mesh->getArmatureAnim(),
+					entity->getCurrentFrame()
+				);
+			
+			// animate textures
+			if(mesh->getTexturesAnim())
+				animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
+			
+			// animate materials
+			if(mesh->getMaterialsAnim())
+				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
+			
+			unsigned int s;
+			unsigned int sSize = mesh->getSubMeshsNumber();
+			for(s=0; s<sSize; s++)
+			{
+				MSubMesh * subMesh = &mesh->getSubMeshs()[s];
+				MBox3d * box = subMesh->getBoundingBox();
+				
+				// check if submesh visible
+				if(sSize > 1)
+				{
+					MVector3 * min = box->getMin();
+					MVector3 * max = box->getMax();
+					
+					MVector3 points[8] = {
+						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
+						entity->getTransformedVector(MVector3(min->x, max->y, min->z)),
+						entity->getTransformedVector(MVector3(max->x, max->y, min->z)),
+						entity->getTransformedVector(MVector3(max->x, min->y, min->z)),
+						entity->getTransformedVector(MVector3(min->x, min->y, max->z)),
+						entity->getTransformedVector(MVector3(min->x, max->y, max->z)),
+						entity->getTransformedVector(MVector3(max->x, max->y, max->z)),
+						entity->getTransformedVector(MVector3(max->x, min->y, max->z))
+					};
+					
+					if(! frustum->isVolumePointsVisible(points, 8))
+						continue;
+				}
+				
+				render->pushMatrix();
+				render->multMatrix(entity->getMatrix());
+				
+				// draw opaques
+				drawOpaques(subMesh, mesh->getArmature());
+				
+				render->popMatrix();
+			}
+			
+			mesh->updateBoundingBox();
+			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
+		}
+	}
+		
+	
+	// opaque pass
+	m_forceNoFX = false;
+	render->setColorMask(1, 1, 1, 1);
+	render->setDepthMask(0);
+	render->setDepthMode(M_DEPTH_EQUAL);
+	
 	for(i=0; i<eSize; i++)
 	{
 		// get entity
@@ -1621,6 +1727,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		}
 	}
 	
+	render->setDepthMask(1);
+	render->setDepthMode(M_DEPTH_LEQUAL);
 	
 	// texts
 	unsigned int tSize = scene->getTextsNumber();
