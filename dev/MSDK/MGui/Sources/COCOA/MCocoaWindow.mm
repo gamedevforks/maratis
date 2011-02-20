@@ -678,7 +678,8 @@ bool MWindow::isMouseOverWindow(void)
 
 unsigned long MWindow::getSystemTick(void)
 {
-	return (unsigned long)([NSDate timeIntervalSinceReferenceDate] * 1000.0);
+	static NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+    return (unsigned long)(([NSDate timeIntervalSinceReferenceDate] - startTime ) * 1000.0);
 }
 
 bool MWindow::onEvents(void)
