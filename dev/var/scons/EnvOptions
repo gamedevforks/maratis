@@ -29,6 +29,11 @@ opts.Add( PathVariable( 'build_area',
                         os.path.join(basepath,'build'),
                         PathVariable.PathIsDirCreate ) )
 
+opts.Add( PathVariable( 'prod_area',
+                        'path to the prod area',
+                        os.path.join(basepath,'prod'),
+                        PathVariable.PathIsDirCreate ) )
+
 opts.Add( EnumVariable( 'MSVC_VERSION',
                       'current visual compiler',
                       '9.0Exp',

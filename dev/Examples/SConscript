@@ -11,5 +11,5 @@ Import('env')
 
 
 # build maratis sample app
-SConscript( 'ManualUse/SConscript', exports='env' )
+program = SConscript( 'ManualUse/SConscript', exports='env' )
 

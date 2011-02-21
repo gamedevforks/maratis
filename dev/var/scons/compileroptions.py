@@ -21,7 +21,7 @@ class CompilationFlags:
             self.CppReleaseDefines = 'NDEBUG'
         elif (sys.platform=='darwin'):
             # compilation flags for c++
-            self.CppCommonFlags  = '-arch i386 -isysroot /Developer/SDKs/MacOSX10.6.sdk'
+            self.CppCommonFlags  = '-arch i386 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.6.sdk'
             self.CppDebugFlags   = '-g'
             self.CppReleaseFlags = ''
             # preprocessor definitions

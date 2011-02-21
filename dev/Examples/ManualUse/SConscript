@@ -53,5 +53,14 @@ files = pyutils.getFilesRecursive(Dir('.').srcnode().abspath,'*.c*')
 env_local.AppendUnique(RPATH = ['@loader_path/.',
                                 '@loader_path/.'])
 manualuse_exe  = env_local.Program('ManualUse',files,PDB='ManualUse.pdb')
-Return('manualuse_exe')
 
+# program = manualuse_exe
+# if sys.platform == 'darwin':
+#     env['VERSION_NAME'] = '0.0.1'
+#     env['VERSION_NUM'] = '0.0.1'
+#     bundle = env.MakeBundle ( 'ManualUse.app', 
+#                               program,
+#                               typecode = 'APPL')
+#                               # icon_file='pig_small.icns')
+
+Return('manualuse_exe')

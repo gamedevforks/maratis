@@ -18,8 +18,13 @@ import platformcustom
 # get additional build parameters from configuration file
 opts = SConscript('#var/scons/EnvOptions')
 
+tools = ['default']
+if sys.platform == 'darwin':
+    import macbundle
+    tools.append (macbundle.TOOL_BUNDLE)
+
 # create the main environment
-env = Environment( options = opts)
+env = Environment( options = opts, tools = tools )
 
 env.Append(BASEPATH=basepath)
 env.Append(ENV = {'BASEPATH' : str(Dir('#').abspath)})
@@ -49,8 +54,12 @@ flags = compileroptions.CompilationFlags(env)
 print "Build in", env['build_mode'], "mode"
 builddir = os.path.join(env['build_area'], sys.platform, env['build_mode'])
 env['builddir'] = builddir
-env.AppendUnique( CCFLAGS = flags.getCppFlags())
-env.AppendUnique( CPPDEFINES = flags.getCppDefines())
+env.Append( CCFLAGS = flags.getCppFlags())
+env.Append( CPPDEFINES = flags.getCppDefines())
+
+# product dir
+proddir = os.path.join(env['prod_area'], sys.platform, env['build_mode'])
+env['proddir'] = proddir
 
 # build 3rdparty libraries
 thirdpartydir = os.path.abspath(os.path.join('..','..','3rdparty'))
