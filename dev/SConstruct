@@ -62,7 +62,7 @@ proddir = os.path.join(env['prod_area'], sys.platform, env['build_mode'])
 env['proddir'] = proddir
 
 # build 3rdparty libraries
-thirdpartydir = os.path.abspath(os.path.join('..','..','3rdparty'))
+thirdpartydir = os.path.abspath(env['thirdparty_area'])
 print 'Using 3rdparty libraries in folder:',thirdpartydir
 env['thirdpartydir'] = thirdpartydir
 SConscript( os.path.join(thirdpartydir,'SConscript'),

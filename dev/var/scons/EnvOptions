@@ -24,6 +24,10 @@ opts.Add( EnumVariable( 'build_mode',
                         'release',
                         ['debug','release']) )
                                             
+opts.Add( PathVariable( 'thirdparty_area',
+                        'path to the 3rdparty area',
+                        os.path.join('..','..','3rdparty') ) )
+
 opts.Add( PathVariable( 'build_area',
                         'path to the scons building area',
                         os.path.join(basepath,'build'),
