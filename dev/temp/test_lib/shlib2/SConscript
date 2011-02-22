@@ -12,5 +12,6 @@ env_local.AppendUnique(CPPDEFINES = ['EXPORT_DLL'])
 files = Glob('./*.c*')
 
 # build library
-env_local.AppendUnique(RPATH = '@rpath/libshlib2.dylib')
 shlib2_lib  = env_local.SharedLibrary('shlib2',files)
+
+Return('shlib2_lib')

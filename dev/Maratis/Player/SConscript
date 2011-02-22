@@ -51,6 +51,7 @@ if sys.platform=='win32':
 files = pyutils.getFilesRecursive(Dir('.').srcnode().abspath,'*.c*')
 
 # build application
+env_local.AppendUnique(RPATH = ['@loader_path/.'])
 maratisplayer_exe  = env_local.Program('MaratisPlayer',files,PDB='MaratisPlayer.pdb')
 Return('maratisplayer_exe')
 

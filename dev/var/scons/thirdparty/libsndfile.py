@@ -14,6 +14,7 @@ def getLibSndFileParameters():
     params['defines']     = []
     params['objs']        = []
     params['libs']        = []
+    params['installLibs'] = []
     params['includePath'] = []
     params['libPath']     = []
     
@@ -26,11 +27,13 @@ def getLibSndFileParameters():
         # settings for win32
         params['libPath'].append('libsndfile/win32')
         params['libs'].append('libsndfile-1')
+        params['installLibs'].append('libsndfile-1.dll')
         pass
     elif sys.platform=='darwin':
         # settings for osx
         params['libPath'].append('libsndfile/osx')
-        params['libs'].append('sndfile')
+        params['libs'].append('SndFile')
+        params['installLibs'].append('libSndFile.dylib')
         pass
     elif sys.platform=='linux2':
         # settings for linux
@@ -60,6 +63,18 @@ def addLibSndFileToEnv(env):
     env.AppendUnique(LIBPATH = vlibpath)
     env.AppendUnique(LIBS = params['libs'])
     pass
+
+
+def getLibSndFileLibs(env):
+    """ get LibSndFile libraries with full path"""
+    # retrieve params
+    params = getLibSndFileParameters()
+    # get full path of install libs: only the first libpath is used!!
+    vlibpath = []
+    for lib in params['installLibs']:
+        libpath = os.path.join(env['thirdpartydir'],params['libPath'][0],lib)
+        vlibpath.append(libpath)
+    return vlibpath
 
 
 if __name__ == '__main__':

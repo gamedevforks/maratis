@@ -54,26 +54,6 @@ def TOOL_BUNDLE(env):
 
         def createDefaultPlist():
             """create a default Info.plist file"""
-            data = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-                <key>CFBundleExecutable</key>
-                <string>%BUNDLE_EXECUTABLE%</string>
-                <key>CFBundleIconFile</key>
-                <string>%ICONFILE%</string>
-                <key>CFBundleInfoDictionaryVersion</key>
-                <string>1.0</string>
-                <key>CFBundlePackageType</key>
-                <string>%TYPE%</string>
-                <key>CFBundleSignature</key>
-                <string>%BUNDLE_KEY%</string>
-                <key>CFBundleVersion</key>
-                <string>1.0</string>
-            </dict>
-            </plist>
-            """
             f = open('Info.plist', 'w')
             f.write('<?xml version="1.0" encoding="UTF-8"?>      ')
             f.write('<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">')
@@ -144,8 +124,8 @@ def TOOL_BUNDLE(env):
             else:
                 env.SideEffect (bundledir, app)
             if subst_dict is None:
-                subst_dict={'%SHORTVERSION%': '$VERSION_NUM',
-                            '%LONGVERSION%': '$VERSION_NAME',
+                subst_dict={'%SHORTVERSION%': '0.0.1',#'$VERSION_NUM',
+                            '%LONGVERSION%': '0.0.1',#'$VERSION_NAME',
                             '%YEAR%': '$COMPILE_YEAR',
                             '%BUNDLE_EXECUTABLE%': appbase,
                             '%ICONFILE%': os.path.basename(icon_file),
@@ -159,18 +139,15 @@ def TOOL_BUNDLE(env):
                 info_plist = createDefaultPlist()
             f=env.SubstInFile(bundledir+'/Contents/Info.plist', info_plist,
                             SUBST_DICT=subst_dict)
-            env.Depends(f, SCons.Node.Python.Value(key+creator+typecode+env['VERSION_NUM']+env['VERSION_NAME']))
+            #env.Depends(f, SCons.Node.Python.Value(key+creator+typecode+env['VERSION_NUM']+env['VERSION_NAME']))
             inst_all.append (f)
             inst_all.append (env.File (bundledir+'/Contents/PkgInfo'))
             env.WriteVal(target=bundledir+'/Contents/PkgInfo',
                          source=SCons.Node.Python.Value(typecode+creator))
-            resources.append(icon_file)
+            if icon_file!='':
+	            resources.append(icon_file)
             for r in resources:
-                if SCons.Util.is_List(r):
-                    inst_all.append (env.InstallAs(join(bundledir+'/Contents/Resources', r[1]),
-                                  r[0]))
-                else:
-                    inst_all.append (env.Install(bundledir+'/Contents/Resources', r))
+                inst_all.append (env.Install(bundledir+'/Contents/Resources', r))
             return inst_all
 
         # This is not a regular Builder; it's a wrapper function.

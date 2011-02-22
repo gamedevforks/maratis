@@ -52,15 +52,25 @@ files = pyutils.getFilesRecursive(Dir('.').srcnode().abspath,'*.c*')
 # build application
 env_local.AppendUnique(RPATH = ['@loader_path/.',
                                 '@loader_path/.'])
-manualuse_exe  = env_local.Program('ManualUse',files,PDB='ManualUse.pdb')
+manualuse = env_local.Program('ManualUse',files,PDB='ManualUse.pdb')
 
-# program = manualuse_exe
-# if sys.platform == 'darwin':
-#     env['VERSION_NAME'] = '0.0.1'
-#     env['VERSION_NUM'] = '0.0.1'
-#     bundle = env.MakeBundle ( 'ManualUse.app', 
-#                               program,
-#                               typecode = 'APPL')
-#                               # icon_file='pig_small.icns')
 
-Return('manualuse_exe')
+# ####### #
+# Install #
+# ####### #
+
+# install to prod dir
+finaldir = os.path.join(env['proddir'],'Examples','ManualUse')
+env_local.Install(finaldir, manualuse)
+env_local.Install(finaldir, '#Examples/Data/meshs')
+
+# Mac specific: app bundle creation and installation
+if sys.platform == 'darwin':
+    manualuse = env.MakeBundle ( 'ManualUse.app', 
+                                 manualuse,
+                                 typecode = 'APPL',
+                                 resources = ['#Examples/Data/meshs'])
+    env_local.InstallBundle(finaldir, manualuse)
+
+
+Return('manualuse')

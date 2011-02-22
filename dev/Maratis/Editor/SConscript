@@ -50,6 +50,7 @@ if sys.platform=='win32':
 files = pyutils.getFilesRecursive(Dir('.').srcnode().abspath,'*.c*')
 
 # build application
+env_local.AppendUnique(RPATH = ['@loader_path/.'])
 maratiseditor_exe  = env_local.Program('MaratisEditor',files,PDB='MaratisEditor.pdb')
 Return('maratiseditor_exe')
 
