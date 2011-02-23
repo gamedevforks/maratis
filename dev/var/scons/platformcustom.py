@@ -21,9 +21,20 @@ def customizeAppleLinker(env):
     # for shared libraries assume that the install name is always @rpath/libname.dylib
     env['SHLINKCOM']   = '$SHLINK -o $TARGET -install_name @rpath/${TARGET.file} $SHLINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS'
 
+def customizeMSVCLinker(env):
+    env['WINDOWSEXPSUFFIX'] = '.exp'
+
+def embedMSVCManifest(env):
+    env['WINDOWS_INSERT_MANIFEST']=1
+    env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+    env['SHLINKCOM'] = [env['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
+    env.AppendUnique(LINKFLAGS = '/MANIFEST')
 
 def customizeEnvironment(env):
     """customize the build evironment"""
     if sys.platform=='darwin':
         customizeAppleLinker(env)
+    elif sys.platform=='win32':
+        customizeMSVCLinker(env)
+        embedMSVCManifest(env)
 

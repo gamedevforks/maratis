@@ -121,8 +121,8 @@ int main(int argc, char **argv)
 {
 	setlocale(LC_NUMERIC, "C");
 
-	unsigned int width = 1024;
-	unsigned int height = 768;
+	unsigned int width = 800;
+	unsigned int height = 400;
 	bool fullscreen = false;
 
 	// get engine
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
 	engine->setGame(game);
 
 	// set renderer (standard)
-	MRenderer * renderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
+	MRenderer * renderer = engine->getRendererManager()->getRendererByName("StandardRenderer")->getNewRenderer();
 	engine->setRenderer(renderer);
 
 	// begin game

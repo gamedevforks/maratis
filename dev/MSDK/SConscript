@@ -23,6 +23,11 @@ mengine_lib = SConscript( 'MEngine/SConscript', exports='env' )
 
 
 
+
+# ####### #
+# install #
+# ####### #
+
 # install to prod dir
 files = [mcore_lib, mengine_lib]
 import thirdparty

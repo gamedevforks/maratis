@@ -29,5 +29,7 @@ files = Glob('./Sources/*.c*')
 
 # build library
 mcore_lib  = env_local.SharedLibrary('MCore',files,RPATH='@rpath/libMCore.dylib')
-Return('mcore_lib')
 
+
+
+Return('mcore_lib')

@@ -43,6 +43,11 @@ opts.Add( EnumVariable( 'MSVC_VERSION',
                       '9.0Exp',
                       ['8.0','9.0Exp']) )
                       
+opts.Add( EnumVariable( 'TARGET_ARCH',
+                      'target arch',
+                      'i386',
+                      ['i386','x86_64']) )
+                      
 Help('\n\nAdd the option configfile=file to supply a recorded set of options\n')                      
                                        
 Return('opts')
