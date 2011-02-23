@@ -52,30 +52,6 @@ def TOOL_BUNDLE(env):
                    chmod(node.path, 0777)
             return nodes
 
-        def createDefaultPlist():
-            """create a default Info.plist file"""
-            f = open('Info.plist', 'w')
-            f.write('<?xml version="1.0" encoding="UTF-8"?>      ')
-            f.write('<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">')
-            f.write('<plist version="1.0">')
-            f.write('<dict>                                      ')
-            f.write('    <key>CFBundleExecutable</key>           ')
-            f.write('    <string>%BUNDLE_EXECUTABLE%</string>    ')
-            f.write('    <key>CFBundleIconFile</key>             ')
-            f.write('    <string>%ICONFILE%</string>             ')
-            f.write('    <key>CFBundleInfoDictionaryVersion</key>')
-            f.write('    <string>1.0</string>                    ')
-            f.write('    <key>CFBundlePackageType</key>          ')
-            f.write('    <string>%TYPE%</string>                 ')
-            f.write('    <key>CFBundleSignature</key>            ')
-            f.write('    <string>%BUNDLE_KEY%</string>           ')
-            f.write('    <key>CFBundleVersion</key>              ')
-            f.write('    <string>1.0</string>                    ')
-            f.write('</dict>                                     ')
-            f.write('</plist>                                    ')
-            f.close()
-            return 'Info.plist'
-
         def InstallBundle (env, target_dir, bundle):
             """Move a Mac OS-X bundle to its final destination"""
 
@@ -94,8 +70,8 @@ def TOOL_BUNDLE(env):
         # Common type codes are BNDL for generic bundle and APPL for application.
         def MakeBundle(env, bundledir, app,
                        typecode='BNDL', 
-					   key = 'com.dbs.macbundle', 
-                       info_plist = '',
+                       key = 'com.dbs.macbundle', 
+                       info_plist = '#var/Info.plist_default',
                        creator='dbs',
                        icon_file='',
                        subst_dict=None,
@@ -135,17 +111,14 @@ def TOOL_BUNDLE(env):
             inst_all = []
             inst = env.Install(bundledir+'/Contents/MacOS', app)
             inst_all.append (inst)
-            if info_plist=='':
-                info_plist = createDefaultPlist()
-            f=env.SubstInFile(bundledir+'/Contents/Info.plist', info_plist,
-                            SUBST_DICT=subst_dict)
+            f=env.SubstInFile(bundledir+'/Contents/Info.plist', info_plist, SUBST_DICT=subst_dict)
             #env.Depends(f, SCons.Node.Python.Value(key+creator+typecode+env['VERSION_NUM']+env['VERSION_NAME']))
             inst_all.append (f)
             inst_all.append (env.File (bundledir+'/Contents/PkgInfo'))
             env.WriteVal(target=bundledir+'/Contents/PkgInfo',
                          source=SCons.Node.Python.Value(typecode+creator))
             if icon_file!='':
-	            resources.append(icon_file)
+                resources.append(icon_file)
             for r in resources:
                 inst_all.append (env.Install(bundledir+'/Contents/Resources', r))
             return inst_all
@@ -188,6 +161,7 @@ def TOOL_SUBST(env):
         return 0 # success
 
     def subst_in_file(target, source, env):
+        print source, 'is now thought in folder', os.getcwd()
         if not env.has_key('SUBST_DICT'):
             raise SCons.Errors.UserError, "SubstInFile requires SUBST_DICT to be set."
         d = dict(env['SUBST_DICT']) # copy it
