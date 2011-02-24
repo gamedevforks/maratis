@@ -61,10 +61,48 @@ void MyGame::onBegin(void)
 		camera->setPosition(MVector3(0.0f, -80.0f, 20.0f));
 		camera->setEulerRotation(MVector3(90.0f, 0.0f, 0.0f));
 
-		// add entity
+		// add robot entity
 		getGlobalFilename(filename, workingDir, "meshs/robot.mesh");
 		MMeshRef * meshRef = level->loadMesh(filename);
 		scene->addNewEntity(meshRef);
+
+		// add cubes with physics
+		{
+			// create entities
+			getGlobalFilename(filename, workingDir, "meshs/box.mesh");
+			meshRef = level->loadMesh(filename);
+			MOEntity * box1 = scene->addNewEntity(meshRef);
+			MOEntity * box2 = scene->addNewEntity(meshRef);
+			MOEntity * box3 = scene->addNewEntity(meshRef);
+
+			// set coords
+			box1->setPosition(MVector3(70, 65, 0));
+			box1->setScale(MVector3(4, 4, 0.2f));
+
+			box2->setPosition(MVector3(70, 65, 40));
+			box2->setEulerRotation(MVector3(0, -35, 0));
+
+			box3->setPosition(MVector3(75, 65, 70));
+
+			// enable physics, MPhysicsProperties create a static box shape by default
+			MPhysicsProperties * phyProps = box1->createPhysicsProperties();
+
+			phyProps = box2->createPhysicsProperties();
+			phyProps->setMass(1);
+
+			phyProps = box3->createPhysicsProperties();
+			phyProps->setMass(1);
+		}
+
+		// add text
+		getGlobalFilename(filename, workingDir, "fonts/Gentium102/GenR102.TTF");
+		MFontRef * fontRef = level->loadFont(filename);
+		MOText * text = scene->addNewText(fontRef);
+		text->setPosition(MVector3(0, 0, 40));
+		text->setEulerRotation(MVector3(-90, 0, 0));
+		text->setText("Hello");
+		text->setSize(8);
+		text->setAlign(M_ALIGN_CENTER);
 
 		// add light
 		MOLight * light = scene->addNewLight();
