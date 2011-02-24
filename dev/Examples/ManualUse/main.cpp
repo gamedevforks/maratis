@@ -167,7 +167,7 @@ int main(int argc, char **argv)
 	engine->getImageLoader()->addLoader(M_loadImage); // image loader
 	engine->getSoundLoader()->addLoader(M_loadSound); // sound loader
 	// engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader : uncomment if wanted
-	engine->getFontLoader()->addLoader(M_loadFont); // font loader : uncomment if wanted
+	engine->getFontLoader()->addLoader(M_loadFont); // font loader
 	// engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader : uncomment if wanted
 
 	// add some default "Maratis" behaviors : uncomment if wanted or add custom
