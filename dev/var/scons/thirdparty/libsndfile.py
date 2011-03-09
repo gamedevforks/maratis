@@ -37,7 +37,9 @@ def getLibSndFileParameters():
         pass
     elif sys.platform=='linux2':
         # settings for linux
-        raise Exception('linux platform not supported yet')
+        params['libPath'].append('libsndfile/linux')
+        params['libs'].append('sndfile')
+        params['installLibs'].append('libsndfile.so.1.0.23')
         pass
     else:
         raise Exception('Unknown platform')

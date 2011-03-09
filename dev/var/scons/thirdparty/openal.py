@@ -35,7 +35,9 @@ def getOpenALParameters():
         pass
     elif sys.platform=='linux2':
         # OpenAL settings for linux
-        raise Exception('linux platform not supported yet')
+        params['includePath'].append('openal/include')
+        params['libPath'].append('openal/linux')
+        params['libs'].append('openal')
         pass
     
     return params

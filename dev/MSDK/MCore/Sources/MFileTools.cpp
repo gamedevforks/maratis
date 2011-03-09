@@ -36,7 +36,7 @@
 	#include <direct.h>
 	#define mkdir _mkdir
 	#define rmdir _rmdir
-#elif __APPLE__
+#else //#elif __APPLE__
 	#include <sys/stat.h>
 	#define mkdir(file) mkdir(file, 0777)
 #endif
