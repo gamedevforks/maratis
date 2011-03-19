@@ -285,6 +285,8 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 void MScene::preparePhysics(void)
 {	
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	if(! physics)
+		return;
 
 	// TODO compute world limit according to objects
 	physics->init(MVector3(-10000), MVector3(10000));
@@ -648,6 +650,8 @@ MOText * MScene::getTextByName(const char * name)
 void MScene::updatePhysics(void)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	if(! physics)
+		return;
 
 	unsigned int i;
 	unsigned int size = getEntitiesNumber();

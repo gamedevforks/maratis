@@ -105,8 +105,7 @@ void MFixedRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
 		
 		// data
 		MVector3 * vertices = subMesh->getVertices();
-		MVector3 * normals = subMesh->getNormals();
-		
+
 		if(! vertices)
 			continue;
 		
@@ -140,8 +139,6 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 		// data
 		M_TYPES indicesType = subMesh->getIndicesType();
 		void * indices = subMesh->getIndices();
-		unsigned int texCoordsSize = subMesh->getTexCoordsSize();
-		unsigned int verticesSize = subMesh->getVerticesSize();
 		MVector2 * texCoords = subMesh->getTexCoords();
 
 		// begin / size
@@ -835,9 +832,9 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					
 					MOLight * light = entityLight->light;
 					
-					float z = (center - light->getTransformedPosition()).getSquaredLength();
+					float z = (center - light->getTransformedPosition()).getLength();
 					entityLightsList[lightsNumber] = l;
-					entityLightsZList[l] = (1.0f/z)*light->getRadius()*light->getIntensity();
+					entityLightsZList[l] = (1.0f/z)*light->getRadius();
 					lightsNumber++;
 				}
 				

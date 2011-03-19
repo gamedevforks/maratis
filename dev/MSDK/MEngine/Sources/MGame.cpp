@@ -36,7 +36,8 @@ void MGame::update(void)
 	MEngine * engine = MEngine::getInstance();
 
 	// run script
-	engine->getScriptContext()->callFunction("onSceneUpdate");
+	if(engine->getScriptContext())
+		engine->getScriptContext()->callFunction("onSceneUpdate");
 
 	// get level
 	MLevel * level = MEngine::getInstance()->getLevel();
@@ -144,7 +145,8 @@ void MGame::onBeginScene(void)
 	scene->preparePhysics();
 
 	// run script
-	engine->getScriptContext()->runScript(scene->getScriptFilename());
+	if(engine->getScriptContext())
+		engine->getScriptContext()->runScript(scene->getScriptFilename());
 }
 
 void MGame::onEndScene(void)

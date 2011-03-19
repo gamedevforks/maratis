@@ -1281,18 +1281,6 @@ bool xmlMeshLoad(const char * filename, void * data)
 			TiXmlElement * indexNode = indicesNode->FirstChildElement("index");
 			switch(indicesType)
 			{
-			case M_UBYTE:
-				{
-					unsigned char * indices = (unsigned char *)subMesh->getIndices();
-					for(indexNode; indexNode; indexNode=indexNode->NextSiblingElement("index"))
-					{
-						unsigned int id;
-						indexNode->QueryUIntAttribute("value", &id);
-						*indices = (unsigned char)id;
-						indices++;
-					}
-				}
-				break;
 			case M_USHORT:
 				{
 					unsigned short * indices = (unsigned short *)subMesh->getIndices();
@@ -1403,6 +1391,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 		// generate tangents if needed
 		if(! subMesh->getTangents())
 			generateTangents(subMesh);
+		
+
 		
 		subMeshs++;
 	}

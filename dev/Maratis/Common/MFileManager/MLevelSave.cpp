@@ -562,10 +562,6 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 	if(! file)
 		return false;
 
-	MDataManager * meshManager = level->getMeshManager();
-	MDataManager * soundManager = level->getSoundManager();
-	MDataManager * fontManager = level->getFontManager();
-
 	char rep[256];
 	char localFile[256];
 

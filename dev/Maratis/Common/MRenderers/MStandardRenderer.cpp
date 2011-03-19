@@ -1543,6 +1543,9 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				if(! light->isVisible())
 					continue;
 				
+				if(light->getRadius() <= 0.0f)
+					continue;
+				
 				// light box
 				MVector3 lightPos = light->getTransformedPosition();
 				MVector3 localPos = entity->getInversePosition(lightPos);
@@ -1550,9 +1553,9 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				float localRadius = light->getRadius() * minScale;
 				
 				MBox3d lightBox(
-								MVector3(localPos - localRadius),
-								MVector3(localPos + localRadius)
-								);
+					MVector3(localPos - localRadius),
+					MVector3(localPos + localRadius)
+				);
 				
 				if(! entityBox->isInCollisionWith(&lightBox))
 					continue;
@@ -1622,11 +1625,39 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					if(! box->isInCollisionWith(&entityLight->lightBox))
 						continue;
 					
-					MOLight * light = entityLight->light;
-					
-					float z = (center - light->getTransformedPosition()).getSquaredLength();
 					entityLightsList[lightsNumber] = l;
-					entityLightsZList[l] = (1.0f/z)*light->getRadius()*light->getIntensity();
+					
+					MOLight * light = entityLight->light;
+					float z = (center - light->getTransformedPosition()).getLength();
+					entityLightsZList[l] = (1.0f/z)*light->getRadius();
+					
+					/*
+					// box intersection volume
+					{
+						MVector3 * MINA = entityLight->lightBox.getMin();
+						MVector3 * MAXA = entityLight->lightBox.getMax();
+						MVector3 * MINB = box->getMin();
+						MVector3 * MAXB = box->getMax();
+						float VX, VY, VZ;
+						
+						if(MAXA->x > MINB->x)
+							VX = MAXA->x - MINB->x;
+						else
+							VX = MAXB->x - MINA->x;
+
+						if(MAXA->y > MINB->y)
+							VY = MAXA->y - MINB->y;
+						else
+							VY = MAXB->y - MINA->y;
+						
+						if(MAXA->z > MINB->z)
+							VZ = MAXA->z - MINB->z;
+						else
+							VZ = MAXB->z - MINA->z;
+						
+						entityLightsZList[l] = (VX*VY*VZ);
+					}*/
+					
 					lightsNumber++;
 				}
 				

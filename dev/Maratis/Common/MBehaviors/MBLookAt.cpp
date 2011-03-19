@@ -92,7 +92,6 @@ MVariable MBLookAt::getVariable(unsigned int id)
 void MBLookAt::update(void)
 {
 	MEngine * engine = MEngine::getInstance();
-	MGame * game = engine->getGame();
 	MLevel * level = engine->getLevel();
 	MScene * scene = level->getCurrentScene();
 

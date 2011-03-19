@@ -58,7 +58,7 @@ void MBulletContext::init(const MVector3 & worldMin, const MVector3 & worldMax)
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
 
-	int	maxProxies = 1024;
+	//int	maxProxies = 1024;
 	btVector3 worldAabbMin(worldMin.x, worldMin.y, worldMin.z);
 	btVector3 worldAabbMax(worldMax.x, worldMax.y, worldMax.z);
 	//m_overlappingPairCache = new btAxisSweep3(worldAabbMin, worldAabbMax, maxProxies);

@@ -946,8 +946,7 @@ int changeScene(lua_State * L)
 {
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-	MScriptContext * scriptContext = engine->getScriptContext();
-	
+
 	if(! isFunctionOk(L, "changeScene", 1))
 		return 0;
 

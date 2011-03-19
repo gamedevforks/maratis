@@ -33,7 +33,6 @@
 
 #include <MEngine.h>
 #include <lua.hpp>
-#include <map>
 
 
 class MScript : public MScriptContext

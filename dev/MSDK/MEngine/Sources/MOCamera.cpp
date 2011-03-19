@@ -98,11 +98,13 @@ MVector3 MOCamera::getUnProjectedPoint(const MVector3 & point) const
 void MOCamera::updateListener(void)
 {
 	MSoundContext * soundContext = MEngine::getInstance()->getSoundContext();
-
-	MVector3 position = getTransformedPosition();
-	MVector3 direction = getRotatedVector(MVector3(0, 0, -1));
-	MVector3 up = getRotatedVector(MVector3(0, 1, 0));
-	soundContext->updateListenerPosition(position, direction, up);
+	if(soundContext)
+	{
+		MVector3 position = getTransformedPosition();
+		MVector3 direction = getRotatedVector(MVector3(0, 0, -1));
+		MVector3 up = getRotatedVector(MVector3(0, 1, 0));
+		soundContext->updateListenerPosition(position, direction, up);
+	}
 }
 
 void MOCamera::enable(void)
