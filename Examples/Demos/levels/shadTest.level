@@ -1,0 +1,108 @@
+<Maratis version="3.0">
+
+<Level>
+
+	<properties currentScene="0" />
+
+	<Scene name="Scene-1">
+
+		<script file="../scripts/ShadTest.lua" />
+		<properties 
+			data="Static"
+			gravity="0.000000 0.000000 -0.981000" />
+
+		<Light name="Light0">
+			<active value="true" />
+			<transform 
+				position="11.914976 -0.001241 44.064888"
+				rotation="0.007995 51.749081 -13.442937"
+				scale="1.000000 1.000000 1.000000" />
+			<properties 
+				radius="1000.000000"
+				color="1.000000 1.000000 1.000000"
+				intensity="1.000000"
+				spotAngle="40.000000"
+				spotExponent="0.050000"
+				shadow="true"
+				shadowBias="8.000000"
+				shadowBlur="0.500000"
+				shadowQuality="512" />
+			<Behavior name="Follow">
+				<properties 
+					target="Pivot"
+					delay="10.000000"
+					offset="20.000000 0.000000 0.000000"
+					local="true" />
+			</Behavior>
+		</Light>
+		<Light name="Light1">
+			<active value="true" />
+			<transform 
+				position="60.263702 6.007790 36.734329"
+				rotation="0.000000 -4.031148 0.000000"
+				scale="1.000000 1.000000 1.000000" />
+			<properties 
+				radius="400.000000"
+				color="1.000000 0.400000 0.200000"
+				intensity="1.000000"
+				spotAngle="60.000000"
+				spotExponent="0.050000"
+				shadow="true"
+				shadowBias="0.500000"
+				shadowBlur="0.500000"
+				shadowQuality="512" />
+		</Light>
+		<Camera name="Camera">
+			<active value="true" />
+			<transform 
+				position="68.906006 -40.811195 64.901154"
+				rotation="47.347397 0.000001 -0.000000"
+				scale="1.000000 1.000000 1.000000" />
+			<properties 
+				clearColor="0.100000 0.100000 0.100000"
+				ortho="false"
+				fov="70.000000"
+				clippingNear="10.000000"
+				clippingFar="100.000000"
+				fog="false"
+				fogDistance="100.000000" />
+		</Camera>
+		<Entity name="TPot" file="../meshs/CartoonTPot01.mesh">
+			<BoundingBox min="-26.876709 -17.917807 0.000000" max="30.757299 17.917807 28.220547" />
+			<anim id="0" />
+			<active value="true" />
+			<transform 
+				position="59.265625 0.000000 8.677681"
+				rotation="0.000000 -0.000000 0.000000"
+				scale="0.325030 0.325030 0.325030" />
+			<properties 
+				invisible="false" />
+		</Entity>
+		<Entity name="Entity1" file="../meshs/templeLightMap.mesh">
+			<BoundingBox min="-82.634369 -25.795452 0.994312" max="80.871918 25.453894 42.512367" />
+			<anim id="0" />
+			<active value="true" />
+			<transform 
+				position="24.410633 0.000000 8.816467"
+				rotation="0.000000 -0.000000 0.000000"
+				scale="1.000000 1.000000 1.000000" />
+			<properties 
+				invisible="false" />
+		</Entity>
+		<Entity name="Pivot" file="../meshs/box.mesh">
+			<BoundingBox min="-5.000000 -5.000000 -5.000000" max="5.000000 5.000000 5.000000" />
+			<anim id="0" />
+			<active value="true" />
+			<transform 
+				position="4.273460 -0.001241 44.064873"
+				rotation="0.000000 -0.000000 0.000000"
+				scale="0.382076 0.382076 0.382076" />
+			<properties 
+				invisible="true" />
+		</Entity>
+
+	</Scene>
+
+</Level>
+
+</Maratis>
