@@ -47,9 +47,10 @@ public:
 	// screen
 	void getScreenSize(unsigned int * width, unsigned int * height)
 	{
-		// TODO : get real screen size from
-		if(width) (*width) = 320;
-		if(height) (*height) = 480;
+        // Get real screen size
+        CGRect screenBounds = [[UIScreen mainScreen] bounds];
+		if (width) (*width) = CGRectGetWidth(screenBounds);
+		if (height) (*height) = CGRectGetHeight(screenBounds);
 	}
 	
 	// cursor
@@ -113,130 +114,161 @@ void loadProject(const char * filename)
     return [CAEAGLLayer class];
 }
 
+// The GL view is initialized by hand, so we need to init the rendering engine
+- (id) initWithFrame:(CGRect)frame
+{
+    if ((self = [super initWithFrame:frame]))
+	{
+        if (![self initRenderingContext])
+        {
+            [self release];
+            return nil;
+        }
+    }
+    
+    return self;
+}
+
 //The GL view is stored in the nib file. When it's unarchived it's sent -initWithCoder:
 - (id) initWithCoder:(NSCoder*)coder
 {    
     if ((self = [super initWithCoder:coder]))
 	{
-        // Get the layer
-        CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
-        
-        eaglLayer.opaque = TRUE;
-        eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-	
-
-		// set ressource path as current directory
-		NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
-		chdir([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
-		
-		/*
-		renderer = [[ES2Renderer alloc] init];
-		
-		if (!renderer)
-		{
-			renderer = [[ES1Renderer alloc] init];
-			
-			if (!renderer)
-			{
-				[self release];
-				return nil;
-			}
-		}*/
-		
-		
-		// ES1
-		renderer = [[ES1Renderer alloc] init];
-		
-		if (!renderer)
-		{
-			[self release];
-			return nil;
-		}
-        
-		
-		// Maratis
-		{
-			// get engine
-			MEngine * engine = MEngine::getInstance();
-
-			// create virtual contexts
-			soundContext = new MALContext();
-			render = new MES1Context();
-			physics = new MBulletContext();
-			script = new MScript();
-			input = new MInput();
-			msystem = new MiOSContext();
-			
-			// create default Level and Game
-			level = new MLevel();
-			game = new MGame();			
-			
-			// init MEngine
-			engine->setSoundContext(soundContext); // sound context
-			engine->setRenderingContext(render); // rendering context
-			engine->setPhysicsContext(physics); // physics context
-			engine->setScriptContext(script); // script context
-			engine->setInputContext(input); // input context
-			engine->setSystemContext(msystem); // system context
-			
-			engine->getImageLoader()->addLoader(M_loadImage); // image loader
-			//engine->getSoundLoader()->addLoader(M_loadSound); // sound loader
-			engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader
-			//engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader
-			
-			// add some default "Maratis" behaviors : uncomment if wanted or add custom
-			engine->getBehaviorManager()->addBehavior(MBLookAt::getStaticName(), M_OBJECT3D_CAMERA, MBLookAt::getNew);
-			engine->getBehaviorManager()->addBehavior(MBFollow::getStaticName(), M_OBJECT3D, MBFollow::getNew);
-			
-			// add renderers
-			//engine->getRendererManager()->addRenderer(MStandardRenderer::getStaticName(), MStandardRenderer::getNew);
-			engine->getRendererManager()->addRenderer(MFixedRenderer::getStaticName(), MFixedRenderer::getNew);
-			
-			// mesh loader
-			engine->getMeshLoader()->addLoader(xmlMeshLoad);
-			engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
-			engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
-			engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
-			
-			// set level
-			engine->setLevel(level);
-			
-			// set game
-			engine->setGame(game);
-			
-			// set renderer
-			mrenderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
-			engine->setRenderer(mrenderer);
-			
-			char filename[256];
-			getGlobalFilename(filename, msystem->getWorkingDirectory(), "Demos.mproj");
-			loadProject(filename);
-	
-			// begin game
-			game->begin();
-		}
-		
-		
-		
-		
-		
-		
-		animating = FALSE;
-		displayLinkSupported = FALSE;
-		animationFrameInterval = 1;
-		displayLink = nil;
-		animationTimer = nil;
-		
-		// A system version of 3.1 or greater is required to use CADisplayLink. The NSTimer
-		// class is used as fallback when it isn't available.
-		NSString *reqSysVer = @"3.1";
-		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
-		if ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending)
-			displayLinkSupported = TRUE;
+        if (![self initRenderingContext])
+        {
+            [self release];
+            return nil;
+        }
     }
 	
     return self;
+}
+
+// Generic metho to init the rendering context for the view
+// This is called from initWithFrame and initWithCoder
+- (BOOL) initRenderingContext
+{
+    // Get the layer
+    CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
+    
+    UIScreen* mainScreen = [UIScreen mainScreen];
+    if ([mainScreen respondsToSelector:@selector(scale)])
+    {
+        eaglLayer.contentsScale = mainScreen.scale;
+        NSLog(@"Using scale factor %f for device", mainScreen.scale);
+    }
+    
+    eaglLayer.opaque = TRUE;
+    eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
+	
+    
+    // set ressource path as current directory
+    NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
+    chdir([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    /*
+     renderer = [[ES2Renderer alloc] init];
+     
+     if (!renderer)
+     {
+     renderer = [[ES1Renderer alloc] init];
+     
+     if (!renderer)
+     {
+     [self release];
+     return nil;
+     }
+     }*/
+    
+    
+    // ES1
+    renderer = [[ES1Renderer alloc] init];
+    
+    if (!renderer)
+    {
+        return NO;
+    }
+    
+    
+    // Maratis
+    {
+        // get engine
+        MEngine * engine = MEngine::getInstance();
+        
+        // create virtual contexts
+        soundContext = new MALContext();
+        render = new MES1Context();
+        physics = new MBulletContext();
+        script = new MScript();
+        input = new MInput();
+        msystem = new MiOSContext();
+        
+        // create default Level and Game
+        level = new MLevel();
+        game = new MGame();			
+        
+        // init MEngine
+        engine->setSoundContext(soundContext); // sound context
+        engine->setRenderingContext(render); // rendering context
+        engine->setPhysicsContext(physics); // physics context
+        engine->setScriptContext(script); // script context
+        engine->setInputContext(input); // input context
+        engine->setSystemContext(msystem); // system context
+        
+        engine->getImageLoader()->addLoader(M_loadImage); // image loader
+                                                          //engine->getSoundLoader()->addLoader(M_loadSound); // sound loader
+        engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader
+                                                           //engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader
+        
+        // add some default "Maratis" behaviors : uncomment if wanted or add custom
+        engine->getBehaviorManager()->addBehavior(MBLookAt::getStaticName(), M_OBJECT3D_CAMERA, MBLookAt::getNew);
+        engine->getBehaviorManager()->addBehavior(MBFollow::getStaticName(), M_OBJECT3D, MBFollow::getNew);
+        
+        // add renderers
+        //engine->getRendererManager()->addRenderer(MStandardRenderer::getStaticName(), MStandardRenderer::getNew);
+        engine->getRendererManager()->addRenderer(MFixedRenderer::getStaticName(), MFixedRenderer::getNew);
+        
+        // mesh loader
+        engine->getMeshLoader()->addLoader(xmlMeshLoad);
+        engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
+        engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
+        engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
+        
+        // set level
+        engine->setLevel(level);
+        
+        // set game
+        engine->setGame(game);
+        
+        // set renderer
+        mrenderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
+        engine->setRenderer(mrenderer);
+        
+        char filename[256];
+        getGlobalFilename(filename, msystem->getWorkingDirectory(), "Demos.mproj");
+        loadProject(filename);
+        
+        // begin game
+        game->begin();
+    }
+    
+    animating = FALSE;
+    displayLinkSupported = FALSE;
+    animationFrameInterval = 1;
+    displayLink = nil;
+    animationTimer = nil;
+    
+    // A system version of 3.1 or greater is required to use CADisplayLink. The NSTimer
+    // class is used as fallback when it isn't available.
+    NSString *reqSysVer = @"3.1";
+    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+    if ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending)
+    {
+        displayLinkSupported = TRUE;
+    }
+    
+    return YES;
 }
 
 - (void) drawView:(id)sender
@@ -290,8 +322,10 @@ void loadProject(const char * filename)
 			[displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 		}
 		else
+        {
 			animationTimer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)((1.0 / 60.0) * animationFrameInterval) target:self selector:@selector(drawView:) userInfo:nil repeats:TRUE];
-		
+		}
+        
 		animating = TRUE;
 	}
 }

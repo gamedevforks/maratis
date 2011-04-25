@@ -9,14 +9,18 @@
 #import <UIKit/UIKit.h>
 
 @class EAGLView;
+@class exampleViewController;
 
-@interface exampleAppDelegate : NSObject <UIApplicationDelegate> {
+@interface exampleAppDelegate : NSObject <UIApplicationDelegate>
+{
     UIWindow *window;
     EAGLView *glView;
+    exampleViewController *viewController;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet EAGLView *glView;
+@property (nonatomic, retain) UIWindow *window;
+@property (nonatomic, retain) EAGLView *glView;
+@property (nonatomic, retain) exampleViewController *viewController;
 
 @end
 

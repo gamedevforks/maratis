@@ -34,6 +34,8 @@
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
 
+- (BOOL) initRenderingContext;
+
 - (void) startAnimation;
 - (void) stopAnimation;
 - (void) drawView:(id)sender;
