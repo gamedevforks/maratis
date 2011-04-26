@@ -882,6 +882,24 @@ int getAxis(lua_State * L)
 	return 0;
 }
 
+int getProperty(lua_State * L)
+{
+	MInputContext * input = MEngine::getInstance()->getInputContext();
+
+	if(! isFunctionOk(L, "getProperty", 1))
+		return 0;
+
+	const char * name = lua_tostring(L, 1);
+	if(name)
+	{
+		int prop = input->getProperty(name);
+		lua_pushinteger(L, prop);
+		return 1;
+	}
+
+	return 0;
+}
+
 int playSound(lua_State * L)
 {
 	if(! isFunctionOk(L, "playSound", 1))
@@ -1792,6 +1810,7 @@ void MScript::init(void)
 	lua_register(m_state, "onKeyDown",	  onKeyDown);
 	lua_register(m_state, "onKeyUp",	  onKeyUp);
 	lua_register(m_state, "getAxis",	  getAxis);
+	lua_register(m_state, "getProperty",  getProperty);
 
 	// sound
 	lua_register(m_state, "playSound",	  playSound);

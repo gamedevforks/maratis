@@ -46,20 +46,24 @@ private :
 
 	map<string, int> m_keys;
 	map<string, float> m_axis;
- 
+	map<string, int> m_props;
+
 public:
 
 	void createKey(const char * name);
 	void createAxis(const char * name);
+	void createProperty(const char * name);
 
 	void downKey(const char * name);
 	void upKey(const char * name);
 	void setAxis(const char * name, float axis);
+	void setProperty(const char * name, int prop);
 
 	bool isKeyPressed(const char * name);
 	bool onKeyDown(const char * name);
 	bool onKeyUp(const char * name);
 	float getAxis(const char * name);
+	int getProperty(const char * name);
 
 	void flush(void);
 };

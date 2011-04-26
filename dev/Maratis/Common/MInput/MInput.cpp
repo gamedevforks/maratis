@@ -138,6 +138,12 @@ void MInput::createAxis(const char * name)
 		m_axis[name] = 0;
 }
 
+void MInput::createProperty(const char * name)
+{
+	if(name)
+		m_props[name] = 0;
+}
+
 void MInput::downKey(const char * name)
 {
 	map<string, int>::iterator iter = m_keys.find(name);
@@ -157,6 +163,13 @@ void MInput::setAxis(const char * name, float axis)
 	map<string, float>::iterator iter = m_axis.find(name);
 	if(iter != m_axis.end())
 		iter->second = axis;
+}
+
+void MInput::setProperty(const char * name, int prop)
+{
+	map<string, int>::iterator iter = m_props.find(name);
+	if(iter != m_props.end())
+		iter->second = prop;
 }
 
 bool MInput::isKeyPressed(const char * name)
@@ -190,6 +203,15 @@ float MInput::getAxis(const char * name)
 {
 	map<string, float>::iterator iter = m_axis.find(name);
 	if(iter != m_axis.end())
+		return iter->second;
+
+	return 0;
+}
+
+int MInput::getProperty(const char * name)
+{
+	map<string, int>::iterator iter = m_props.find(name);
+	if(iter != m_props.end())
 		return iter->second;
 
 	return 0;

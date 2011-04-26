@@ -3302,8 +3302,8 @@ void MaratisUI::okDeleteBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvent
 			MObject3d * object = UI->getEditedObject();
 			object->deleteBehavior(UI->getEditedBehavior() - 1);
 			UI->setEditedBehavior(0);
-			//UI->editObject(object);
-			UI->setNeedToUpdateEdit(true);
+			
+			UI->editObject(object);
 		}
 		break;
 	}

@@ -39,16 +39,19 @@ public:
 
 	virtual void createKey(const char * name) = 0;
 	virtual void createAxis(const char * name) = 0;
+	virtual void createProperty(const char * name) = 0;
 
 	virtual void downKey(const char * name) = 0;
 	virtual void upKey(const char * name) = 0;
 	virtual void setAxis(const char * name, float axis) = 0;
+	virtual void setProperty(const char * name, int prop) = 0;
 
 	virtual bool isKeyPressed(const char * name) = 0;
 	virtual bool onKeyDown(const char * name) = 0;
 	virtual bool onKeyUp(const char * name) = 0;
 	virtual float getAxis(const char * name) = 0;
-
+	virtual int getProperty(const char * name) = 0;
+	
 	virtual void flush(void) = 0;
 };
 

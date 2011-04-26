@@ -57,6 +57,7 @@ MGuiMenu::~MGuiMenu(void)
 void MGuiMenu::setMenuId(unsigned int id)
 {
 	m_menuId = id;
+	autoScaleFromText();
 }
 
 void MGuiMenu::sendVariable(void)
@@ -69,8 +70,14 @@ void MGuiMenu::sendVariable(void)
 			{
 				int * value = (int *)getVariablePointer();
 				*value = (int)getMenuId();
+				break;
 			}
-			break;
+		case M_VAR_UINT:
+			{
+				unsigned int * value = (unsigned int *)getVariablePointer();
+				*value = getMenuId();
+				break;
+			}
 		}
 	}
 
@@ -93,7 +100,13 @@ void MGuiMenu::updateFromVariable(void)
 		{
 			int * value = (int *)getVariablePointer();
 			setMenuId(*value);
-			autoScaleFromText();
+			break;
+		}
+	case M_VAR_UINT:
+		{
+			unsigned int * value = (unsigned int *)getVariablePointer();
+			setMenuId(*value);
+			break;
 		}
 	}
 }
