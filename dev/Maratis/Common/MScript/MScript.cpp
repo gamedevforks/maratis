@@ -152,7 +152,7 @@ int rotate(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 axis;
 		if(getVector3(L, 2, &axis))
@@ -190,7 +190,7 @@ int translate(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 axis;
 		if(getVector3(L, 2, &axis))
@@ -226,7 +226,7 @@ int getPosition(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		pushFloatArray(L, object->getPosition(), 3);
 		return 1;
@@ -243,7 +243,7 @@ int getRotation(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		pushFloatArray(L, object->getEulerRotation(), 3);
 		return 1;
@@ -260,7 +260,7 @@ int getScale(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		pushFloatArray(L, object->getScale(), 3);
 		return 1;
@@ -277,7 +277,7 @@ int setPosition(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 position;
 		if(getVector3(L, 2, &position))
@@ -297,7 +297,7 @@ int setRotation(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 rotation;
 		if(getVector3(L, 2, &rotation))
@@ -317,7 +317,7 @@ int setScale(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 scale;
 		if(getVector3(L, 2, &scale))
@@ -337,7 +337,7 @@ int isVisible(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		int vis = object->isVisible();
 		lua_pushboolean(L, vis);
@@ -355,7 +355,7 @@ int activate(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		object->setActive(true);
 		return 0;
@@ -372,7 +372,7 @@ int deactivate(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		object->setActive(false);
 		return 0;
@@ -389,7 +389,7 @@ int changeAnimation(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -412,7 +412,7 @@ int isAnimationOver(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -434,7 +434,7 @@ int getCurrentAnimation(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -512,7 +512,7 @@ int addCentralForce(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -550,7 +550,7 @@ int clearForces(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -576,7 +576,7 @@ int addTorque(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -616,7 +616,7 @@ int getLinearDamping(lua_State * L)
 
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -643,7 +643,7 @@ int setLinearDamping(lua_State * L)
 
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -673,7 +673,7 @@ int getAngularDamping(lua_State * L)
 
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -700,7 +700,7 @@ int setAngularDamping(lua_State * L)
 
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -730,7 +730,7 @@ int getNumCollisions(lua_State * L)
 	
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -756,7 +756,7 @@ int isCollisionTest(lua_State * L)
 
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_ENTITY)
 		{
@@ -900,6 +900,45 @@ int getProperty(lua_State * L)
 	return 0;
 }
 
+int getTouchPosition(lua_State * L)
+{
+    MInputContext * input = MEngine::getInstance()->getInputContext();
+    
+    if (!isFunctionOk(L, "getTouchPosition", 1))
+        return 0;
+    
+    unsigned int touchID = (unsigned int)lua_tointeger(L, 1);
+    pushFloatArray(L, input->getTouchPosition(touchID), 2);
+    
+    return 1;
+}
+
+int getLastTouchPosition(lua_State * L)
+{
+    MInputContext * input = MEngine::getInstance()->getInputContext();
+    
+    if (!isFunctionOk(L, "getLastTouchPosition", 1))
+        return 0;
+    
+    unsigned int touchID = (unsigned int)lua_tointeger(L, 1);
+    pushFloatArray(L, input->getLastTouchPosition(touchID), 2);
+    
+    return 1;
+}
+
+int getTouchPhase(lua_State * L)
+{
+    MInputContext * input = MEngine::getInstance()->getInputContext();
+    
+    if (!isFunctionOk(L, "getTouchPhase", 1))
+        return 0;
+    
+    unsigned int touchID = (unsigned int)lua_tointeger(L, 1);
+    lua_pushinteger(L, input->getTouchPhase(touchID));
+    
+    return 1;
+}
+
 int playSound(lua_State * L)
 {
 	if(! isFunctionOk(L, "playSound", 1))
@@ -908,7 +947,7 @@ int playSound(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_SOUND)
 		{
@@ -928,7 +967,7 @@ int pauseSound(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_SOUND)
 		{
@@ -948,7 +987,7 @@ int stopSound(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_SOUND)
 		{
@@ -996,7 +1035,7 @@ int getLightColor(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_LIGHT)
 		{
@@ -1017,7 +1056,7 @@ int getLightRadius(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_LIGHT)
 		{
@@ -1038,7 +1077,7 @@ int getLightIntensity(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_LIGHT)
 		{
@@ -1059,7 +1098,7 @@ int setLightColor(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 color;
 		if(object->getType() == M_OBJECT3D_LIGHT && getVector3(L, 2, &color))
@@ -1081,7 +1120,7 @@ int setLightRadius(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_LIGHT)
 		{
@@ -1104,7 +1143,7 @@ int setLightIntensity(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_LIGHT)
 		{
@@ -1127,7 +1166,7 @@ int getSoundGain(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_SOUND)
 		{
@@ -1148,7 +1187,7 @@ int setSoundGain(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_SOUND)
 		{
@@ -1170,7 +1209,7 @@ int setCameraClearColor(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		MVector3 color;
 		if(object->getType() == M_OBJECT3D_CAMERA && getVector3(L, 2, &color))
@@ -1192,7 +1231,7 @@ int getCameraClearColor(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1213,7 +1252,7 @@ int setCameraNear(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1235,7 +1274,7 @@ int getCameraNear(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1256,7 +1295,7 @@ int setCameraFar(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1278,7 +1317,7 @@ int getCameraFar(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1299,7 +1338,7 @@ int setCameraFov(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1321,7 +1360,7 @@ int getCameraFov(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1342,7 +1381,7 @@ int setCameraFogDistance(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1364,7 +1403,7 @@ int getCameraFogDistance(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1385,7 +1424,7 @@ int enableCameraOrtho(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1407,7 +1446,7 @@ int isCameraOrtho(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1428,7 +1467,7 @@ int enableCameraFog(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1450,7 +1489,7 @@ int isCameraFogEnabled(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
@@ -1471,7 +1510,7 @@ int getBehaviorVariable(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		unsigned int bId = (unsigned int)lua_tointeger(L, 2);
 		const char * varName = lua_tostring(L, 3);
@@ -1540,7 +1579,7 @@ int setBehaviorVariable(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		unsigned int bId = (unsigned int)lua_tointeger(L, 2);
 		const char * varName = lua_tostring(L, 3);
@@ -1637,7 +1676,7 @@ int getText(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_TEXT)
 		{
@@ -1660,7 +1699,7 @@ int setText(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		const char * text = lua_tostring(L, 2);
 		if((text) && (object->getType() == M_OBJECT3D_TEXT))
@@ -1682,7 +1721,7 @@ int getTextColor(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_TEXT)
 		{
@@ -1705,7 +1744,7 @@ int setTextColor(lua_State * L)
 	MObject3d * object;
 	unsigned int id = (unsigned int)lua_tointeger(L, 1);
 
-	if(object = getObject3d(id))
+	if((object = getObject3d(id)))
 	{
 		if(object->getType() == M_OBJECT3D_TEXT)
 		{
@@ -1811,6 +1850,11 @@ void MScript::init(void)
 	lua_register(m_state, "onKeyUp",	  onKeyUp);
 	lua_register(m_state, "getAxis",	  getAxis);
 	lua_register(m_state, "getProperty",  getProperty);
+    
+    // mobile-input
+    lua_register(m_state, "getTouchPosition", getTouchPosition);
+    lua_register(m_state, "getLastTouchPosition", getLastTouchPosition);
+    lua_register(m_state, "getTouchPhase", getTouchPhase);
 
 	// sound
 	lua_register(m_state, "playSound",	  playSound);

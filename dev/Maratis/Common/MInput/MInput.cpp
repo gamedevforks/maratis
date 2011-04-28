@@ -30,15 +30,24 @@
 
 #include "MInput.h"
 
+#include "MVector2.h"
+
 
 MInput::MInput(void)
 {
 	// ASCII keys
 	char name[2] = {0, 0};
-	for(int i=65; i<=90; i++){
+	for(int i=65; i<=90; i++)
+    {
 		name[0] = i;
 		createKey(name);
 	}
+    
+    // Create touch data
+    for (int i = 0; i < 5; i++)
+    {
+        m_touches[i] = TouchData();
+    }
 
 	// keyboard keys
 	createKey("BACKSPACE");
@@ -217,6 +226,109 @@ int MInput::getProperty(const char * name)
 	return 0;
 }
 
+// Multi-Touch Support
+
+// Touch events
+void MInput::beginTouch(int touchID, MVector2 touchPoint)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        data->touchPoint = touchPoint;
+        data->lastTouchPoint = touchPoint;
+        data->phase = ETouchPhaseBegin;
+    }
+}
+
+void MInput::updateTouch(int touchID, MVector2 touchPoint)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        data->lastTouchPoint = data->touchPoint;
+        data->touchPoint = touchPoint;
+        data->phase = ETouchPhaseUpdate;
+    }
+}
+
+void MInput::endTouch(int touchID, MVector2 touchPoint)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        data->lastTouchPoint = data->touchPoint;
+        data->touchPoint = touchPoint;
+        data->phase = ETouchPhaseEnd;
+    }
+}
+
+void MInput::cancelTouch(int touchID, MVector2 touchPoint)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        data->lastTouchPoint = data->touchPoint;
+        data->touchPoint = touchPoint;
+        data->phase = ETouchPhaseCancelled;
+    }
+}
+
+// Get Touch data
+MVector2 MInput::getTouchPosition(int touchID)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        
+        if (data->phase != ETouchPhaseNone)
+        {
+            return data->touchPoint;
+        }
+    }
+    
+    return MVector2(0.0f);
+}
+
+MVector2 MInput::getLastTouchPosition(int touchID)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        if (data->phase != ETouchPhaseNone)
+        {
+            return data->lastTouchPoint;
+        }
+    }
+    
+    return MVector2(0.0f);
+}
+
+MInputContext::ETouchPhase MInput::getTouchPhase(int touchID)
+{
+    map<int, TouchData>::iterator iter = m_touches.find(touchID);
+    
+    if (iter != m_touches.end())
+    {
+        TouchData* data = &(iter->second);
+        
+        return data->phase;
+    }
+    
+    return ETouchPhaseNone;
+}
+
 void MInput::flush(void)
 {
 	// keys
@@ -231,4 +343,16 @@ void MInput::flush(void)
 	  else if(mit->second == 3)
 		  mit->second = 0;
 	}
+    
+    // touches
+    map<int, TouchData>::iterator
+        t_it(m_touches.begin()),
+        t_end(m_touches.end());
+    
+    for (; t_it != t_end; t_it++)
+    {
+        TouchData* data = &(t_it->second);
+        data->phase = ETouchPhaseNone;
+        data->touchPoint = MVector2(0.0f);
+    }
 }

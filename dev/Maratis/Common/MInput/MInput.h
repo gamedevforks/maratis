@@ -34,6 +34,7 @@
 #include <map>
 #include <MEngine.h>
 
+class MVector2;
 
 class MInput : public MInputContext
 {
@@ -44,9 +45,24 @@ public :
 
 private :
 
+    struct TouchData
+    {
+        ETouchPhase phase;
+        MVector2 touchPoint;
+        MVector2 lastTouchPoint;
+        
+        TouchData()
+        {
+            phase = ETouchPhaseNone;
+            touchPoint.loadIdentity();
+            lastTouchPoint.loadIdentity();
+        }
+    };
+    
 	map<string, int> m_keys;
 	map<string, float> m_axis;
 	map<string, int> m_props;
+    map<int, TouchData> m_touches;
 
 public:
 
@@ -64,6 +80,18 @@ public:
 	bool onKeyUp(const char * name);
 	float getAxis(const char * name);
 	int getProperty(const char * name);
+    
+    // Multi-Touch Support
+    // Touch events
+    void beginTouch(int touchID, MVector2 touchPoint);
+    void updateTouch(int touchID, MVector2 touchPoint);
+    void endTouch(int touchID, MVector2 touchPoint);
+    void cancelTouch(int touchID, MVector2 touchPoint);
+    
+    // Get Touch data
+    MVector2 getTouchPosition(int touchID);
+    MVector2 getLastTouchPosition(int touchID);
+    ETouchPhase getTouchPhase(int touchID);
 
 	void flush(void);
 };
