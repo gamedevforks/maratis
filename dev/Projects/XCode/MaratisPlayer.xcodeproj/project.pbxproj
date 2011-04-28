@@ -10,8 +10,6 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		E918E5C71305AEF10080ED5C /* font in Resources */ = {isa = PBXBuildFile; fileRef = E918E5801305AEF00080ED5C /* font */; };
 		E918E5C81305AEF10080ED5C /* gui in Resources */ = {isa = PBXBuildFile; fileRef = E918E5831305AEF00080ED5C /* gui */; };
-		E918E6681305B1180080ED5C /* libIL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E6661305B1180080ED5C /* libIL.a */; };
-		E918E6691305B1180080ED5C /* libILU.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E6671305B1180080ED5C /* libILU.a */; };
 		E918E66B1305B1270080ED5C /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E66A1305B1270080ED5C /* libsndfile.a */; };
 		E918E66D1305B1400080ED5C /* MEngine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E66C1305B1400080ED5C /* MEngine.dylib */; };
 		E918E66F1305B1480080ED5C /* MCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E66E1305B1480080ED5C /* MCore.dylib */; };
@@ -210,8 +208,12 @@
 		E93DC15B130814B0003BACA2 /* MaratisPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E93DC157130814B0003BACA2 /* MaratisPlayer.cpp */; };
 		E93DC15E130814B0003BACA2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E93DC15A130814B0003BACA2 /* main.cpp */; };
 		E9496DF0128EC67000639F42 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9496DEF128EC67000639F42 /* OpenAL.framework */; };
+		E99346DA1369E96A00FC1471 /* libil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E99346D91369E96A00FC1471 /* libil.a */; };
+		E99346DC1369E97700FC1471 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E99346DB1369E97700FC1471 /* libfreetype.a */; };
+		E99346DE1369E98500FC1471 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E99346DD1369E98500FC1471 /* libjpeg.a */; };
+		E99346E01369E98F00FC1471 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E99346DF1369E98F00FC1471 /* libpng.a */; };
+		E99346E21369E9A300FC1471 /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E99346E11369E9A300FC1471 /* libzlib.a */; };
 		E9EA9709127D8CB800CEA357 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9EA9708127D8CB800CEA357 /* OpenGL.framework */; };
-		E9F1C604128EA62500D3C65B /* libfreetype.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F1C603128EA62500D3C65B /* libfreetype.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -235,8 +237,6 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		E918E5801305AEF00080ED5C /* font */ = {isa = PBXFileReference; lastKnownFileType = folder; name = font; path = ../../Data/Editor/font; sourceTree = SOURCE_ROOT; };
 		E918E5831305AEF00080ED5C /* gui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = gui; path = ../../Data/Editor/gui; sourceTree = SOURCE_ROOT; };
-		E918E6661305B1180080ED5C /* libIL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIL.a; path = ../../../../3rdparty/devil/osx/libIL.a; sourceTree = SOURCE_ROOT; };
-		E918E6671305B1180080ED5C /* libILU.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libILU.a; path = ../../../../3rdparty/devil/osx/libILU.a; sourceTree = SOURCE_ROOT; };
 		E918E66A1305B1270080ED5C /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../../../3rdparty/libsndfile/osx/libsndfile.a; sourceTree = SOURCE_ROOT; };
 		E918E66C1305B1400080ED5C /* MEngine.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MEngine.dylib; path = build/Release/MEngine.dylib; sourceTree = SOURCE_ROOT; };
 		E918E66E1305B1480080ED5C /* MCore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MCore.dylib; path = build/Release/MCore.dylib; sourceTree = SOURCE_ROOT; };
@@ -698,8 +698,12 @@
 		E93DC15A130814B0003BACA2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../Maratis/Player/main.cpp; sourceTree = SOURCE_ROOT; };
 		E9496D58128EC2BD00639F42 /* MaratisPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaratisPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9496DEF128EC67000639F42 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		E99346D91369E96A00FC1471 /* libil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libil.a; path = ../../../../3rdparty/devil/osx/libil.a; sourceTree = SOURCE_ROOT; };
+		E99346DB1369E97700FC1471 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../3rdparty/freetype/osx/libfreetype.a; sourceTree = SOURCE_ROOT; };
+		E99346DD1369E98500FC1471 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../../../3rdparty/libjpeg/osx/libjpeg.a; sourceTree = SOURCE_ROOT; };
+		E99346DF1369E98F00FC1471 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../../../../3rdparty/libpng/osx/libpng.a; sourceTree = SOURCE_ROOT; };
+		E99346E11369E9A300FC1471 /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = ../../../../3rdparty/zlib/osx/libzlib.a; sourceTree = SOURCE_ROOT; };
 		E9EA9708127D8CB800CEA357 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		E9F1C603128EA62500D3C65B /* libfreetype.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreetype.dylib; path = /usr/X11/lib/libfreetype.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -709,13 +713,15 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				E9EA9709127D8CB800CEA357 /* OpenGL.framework in Frameworks */,
-				E9F1C604128EA62500D3C65B /* libfreetype.dylib in Frameworks */,
 				E9496DF0128EC67000639F42 /* OpenAL.framework in Frameworks */,
-				E918E6681305B1180080ED5C /* libIL.a in Frameworks */,
-				E918E6691305B1180080ED5C /* libILU.a in Frameworks */,
 				E918E66B1305B1270080ED5C /* libsndfile.a in Frameworks */,
 				E918E66D1305B1400080ED5C /* MEngine.dylib in Frameworks */,
 				E918E66F1305B1480080ED5C /* MCore.dylib in Frameworks */,
+				E99346DA1369E96A00FC1471 /* libil.a in Frameworks */,
+				E99346DC1369E97700FC1471 /* libfreetype.a in Frameworks */,
+				E99346DE1369E98500FC1471 /* libjpeg.a in Frameworks */,
+				E99346E01369E98F00FC1471 /* libpng.a in Frameworks */,
+				E99346E21369E9A300FC1471 /* libzlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,10 +741,12 @@
 			children = (
 				E918E66E1305B1480080ED5C /* MCore.dylib */,
 				E918E66C1305B1400080ED5C /* MEngine.dylib */,
-				E918E6661305B1180080ED5C /* libIL.a */,
-				E918E6671305B1180080ED5C /* libILU.a */,
+				E99346D91369E96A00FC1471 /* libil.a */,
+				E99346DD1369E98500FC1471 /* libjpeg.a */,
+				E99346DB1369E97700FC1471 /* libfreetype.a */,
+				E99346DF1369E98F00FC1471 /* libpng.a */,
+				E99346E11369E9A300FC1471 /* libzlib.a */,
 				E918E66A1305B1270080ED5C /* libsndfile.a */,
-				E9F1C603128EA62500D3C65B /* libfreetype.dylib */,
 				E9EA9708127D8CB800CEA357 /* OpenGL.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
@@ -1845,22 +1853,26 @@
 					../../MSDK/MEngine/Includes,
 					../../MSDK/MGui/Includes,
 					../../Maratis/Common,
+					../../../../3rdparty/libpng,
+					../../../../3rdparty/libjpeg,
 					../../../../3rdparty/tinyxml,
 					../../../../3rdparty/bullet,
 					../../../../3rdparty/lua,
 					../../../../3rdparty/devil,
 					../../../../3rdparty/libsndfile/include,
-					/usr/X11/include,
-					/usr/X11/include/freetype2,
+					../../../../3rdparty/freetype/include,
+					../../../../3rdparty/zlib,
 				);
 				INSTALL_PATH = "(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					build/Release,
+					../../../../3rdparty/libjpeg/osx,
+					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
 					../../../../3rdparty/libsndfile/osx,
-					/usr/lib,
-					/usr/X11/lib,
+					../../../../3rdparty/freetype/osx,
+					../../../../3rdparty/zlib/osx,
 				);
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "";
@@ -1873,6 +1885,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -1882,22 +1895,26 @@
 					../../MSDK/MEngine/Includes,
 					../../MSDK/MGui/Includes,
 					../../Maratis/Common,
+					../../../../3rdparty/libpng,
+					../../../../3rdparty/libjpeg,
 					../../../../3rdparty/tinyxml,
 					../../../../3rdparty/bullet,
 					../../../../3rdparty/lua,
 					../../../../3rdparty/devil,
 					../../../../3rdparty/libsndfile/include,
-					/usr/X11/include,
-					/usr/X11/include/freetype2,
+					../../../../3rdparty/freetype/include,
+					../../../../3rdparty/zlib,
 				);
 				INSTALL_PATH = "(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					build/Release,
+					../../../../3rdparty/libjpeg/osx,
+					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
 					../../../../3rdparty/libsndfile/osx,
-					/usr/lib,
-					/usr/X11/lib,
+					../../../../3rdparty/freetype/osx,
+					../../../../3rdparty/zlib/osx,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -1923,22 +1940,26 @@
 					../../MSDK/MEngine/Includes,
 					../../MSDK/MGui/Includes,
 					../../Maratis/Common,
+					../../../../3rdparty/libpng,
+					../../../../3rdparty/libjpeg,
 					../../../../3rdparty/tinyxml,
 					../../../../3rdparty/bullet,
 					../../../../3rdparty/lua,
 					../../../../3rdparty/devil,
 					../../../../3rdparty/libsndfile/include,
-					/usr/X11/include,
-					/usr/X11/include/freetype2,
+					../../../../3rdparty/freetype/include,
+					../../../../3rdparty/zlib,
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
 					build/Release,
+					../../../../3rdparty/libjpeg/osx,
+					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
 					../../../../3rdparty/libsndfile/osx,
-					/usr/lib,
-					/usr/X11/lib,
+					../../../../3rdparty/freetype/osx,
+					../../../../3rdparty/zlib/osx,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
@@ -1950,7 +1971,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1960,22 +1981,26 @@
 					../../MSDK/MEngine/Includes,
 					../../MSDK/MGui/Includes,
 					../../Maratis/Common,
+					../../../../3rdparty/libpng,
+					../../../../3rdparty/libjpeg,
 					../../../../3rdparty/tinyxml,
 					../../../../3rdparty/bullet,
 					../../../../3rdparty/lua,
 					../../../../3rdparty/devil,
 					../../../../3rdparty/libsndfile/include,
-					/usr/X11/include,
-					/usr/X11/include/freetype2,
+					../../../../3rdparty/freetype/include,
+					../../../../3rdparty/zlib,
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
 					build/Release,
+					../../../../3rdparty/libjpeg/osx,
+					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
 					../../../../3rdparty/libsndfile/osx,
-					/usr/lib,
-					/usr/X11/lib,
+					../../../../3rdparty/freetype/osx,
+					../../../../3rdparty/zlib/osx,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
