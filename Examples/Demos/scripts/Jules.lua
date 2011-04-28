@@ -24,9 +24,9 @@ function onSceneUpdate()
 		rotate(Player, {0, 0, 1}, -5)
 	end
 	
-	-- jump (commented as an exemple)
-	--[[
-	if isKeyPressed("SPACE") then
+	-- jump (commented as an example)
+    --[[
+	if isKeyPressed("SPACE") or getTouchPhase(0) == 2 then
 		if coll > 1 then
 			addCentralForce(Player, {0, 0, 30})
 		end

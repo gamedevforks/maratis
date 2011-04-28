@@ -14,7 +14,7 @@
 // Create an ES 1.1 context
 - (id) init
 {
-	if (self = [super init])
+	if ((self = [super init]))
 	{
 		context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
         

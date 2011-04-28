@@ -148,6 +148,9 @@ void loadProject(const char * filename)
 // This is called from initWithFrame and initWithCoder
 - (BOOL) initRenderingContext
 {
+    // Enable multitouch on this view
+    self.multipleTouchEnabled = YES;
+    
     // Get the layer
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
     
@@ -206,7 +209,7 @@ void loadProject(const char * filename)
         
         // create default Level and Game
         level = new MLevel();
-        game = new MGame();			
+        game = new MGame();
         
         // init MEngine
         engine->setSoundContext(soundContext); // sound context
@@ -245,6 +248,9 @@ void loadProject(const char * filename)
         mrenderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
         engine->setRenderer(mrenderer);
         
+        // configure accelerometer support
+        [self configureMobileInput];
+        
         char filename[256];
         getGlobalFilename(filename, msystem->getWorkingDirectory(), "Demos.mproj");
         loadProject(filename);
@@ -269,6 +275,27 @@ void loadProject(const char * filename)
     }
     
     return YES;
+}
+
+- (void) configureMobileInput
+{
+    // Create space for the touches dictionary
+    for (int i = 0; i < 5; i++)
+    {
+        touchPointAvailable[i] = true;
+    }
+    
+    touchPoints = CFDictionaryCreateMutable(kCFAllocatorDefault, 10, NULL, NULL);
+    
+    // Create three axis to handle the accelerometer data
+    input->createAxis("ACCEL_X");
+    input->createAxis("ACCEL_Y");
+    input->createAxis("ACCEL_Z");
+    
+    // Setup the accelerometer object
+    UIAccelerometer* accelerometer = [UIAccelerometer sharedAccelerometer];
+    accelerometer.updateInterval = 1/50.0;
+    accelerometer.delegate = self;
 }
 
 - (void) drawView:(id)sender
@@ -349,6 +376,119 @@ void loadProject(const char * filename)
 	}
 }
 
+- (void) accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
+{
+    // To provide some standard support on non-mobile devices
+    input->setAxis("MOUSE_X", acceleration.x);
+    input->setAxis("MOUSE_Y", acceleration.y);
+    
+    // Send data to accelerometer-specific axis
+    input->setAxis("ACCEL_X", acceleration.x);
+    input->setAxis("ACCEL_Y", acceleration.y);
+    input->setAxis("ACCEL_Z", acceleration.z);
+}
+
+- (int) getAvailableTouchID
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (touchPointAvailable[i])
+        {
+            touchPointAvailable[i] = false;
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+- (void) setTouchIDAvailable:(int)touchID
+{
+    touchPointAvailable[touchID] = true;
+}
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    // Traverse all touches and create a new touch for each one
+    for (UITouch* touch in [touches allObjects])
+    {
+        // Create a new TouchData object
+        int* touchID = (int *)malloc(sizeof(int));
+        *touchID = [self getAvailableTouchID];
+        CFDictionarySetValue(touchPoints, touch, touchID);
+        
+        // Get the touch location
+        CGPoint location = [touch locationInView:self];
+        
+        // Send the data to input
+        input->beginTouch(*touchID, MVector2(location.x, location.y));
+        
+        NSLog(@"Began Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+    }
+}
+
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    // Traverse all touches and update each one
+    for (UITouch* touch in [touches allObjects])
+    {
+        CGPoint location = [touch locationInView:self];
+        int* touchID = (int *)CFDictionaryGetValue(touchPoints, touch);
+        
+        if (touchID != NULL)
+        {
+            // Send an updated touch to input
+            input->updateTouch(*touchID, MVector2(location.x, location.y));
+        
+            NSLog(@"Updated Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+        }
+    }
+}
+
+- (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    // Traverse all touches and end them
+    for (UITouch* touch in [touches allObjects])
+    {
+        CGPoint location = [touch locationInView:self];
+        int* touchID = (int *)CFDictionaryGetValue(touchPoints, touch);
+        
+        if (touchID != NULL)
+        {
+            // Send the end touch to input
+            input->endTouch(*touchID, MVector2(location.x, location.y));
+        
+            NSLog(@"Ended Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+        
+            // After updating input, set the touch index as available and release the memory
+            [self setTouchIDAvailable:*touchID];
+            CFDictionaryRemoveValue(touchPoints, touch);
+        }
+    }
+}
+
+- (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    // Traverse all touches and cancell them
+    for (UITouch* touch in [touches allObjects])
+    {
+        CGPoint location = [touch locationInView:self];
+        int* touchID = (int *)CFDictionaryGetValue(touchPoints, touch);
+        
+        if (touchID != NULL)
+        {
+            // Send the end touch to input
+            input->cancelTouch(*touchID, MVector2(location.x, location.y));
+            
+            NSLog(@"Cancelled Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+            
+            // After updating input, set the touch index as available and release the memory
+            [self setTouchIDAvailable:*touchID];
+            CFDictionaryRemoveValue(touchPoints, touch);
+        }
+    }
+}
+
 - (void) dealloc
 {
 	// Maratis
@@ -366,6 +506,9 @@ void loadProject(const char * filename)
 		SAFE_DELETE(input);
 		SAFE_DELETE(msystem);
 	}
+    
+    // Release the touches dictionary
+    CFRelease(touchPoints);
 	
     [renderer release];
 	
