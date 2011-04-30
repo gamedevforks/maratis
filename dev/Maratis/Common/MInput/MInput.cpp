@@ -238,7 +238,7 @@ void MInput::beginTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->touchPoint = touchPoint;
         data->lastTouchPoint = touchPoint;
-        data->phase = ETouchPhaseBegin;
+        data->phase = MTouchPhaseBegin;
     }
 }
 
@@ -251,7 +251,7 @@ void MInput::updateTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
         data->touchPoint = touchPoint;
-        data->phase = ETouchPhaseUpdate;
+        data->phase = MTouchPhaseUpdate;
     }
 }
 
@@ -264,7 +264,7 @@ void MInput::endTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
         data->touchPoint = touchPoint;
-        data->phase = ETouchPhaseEnd;
+        data->phase = MTouchPhaseEnd;
     }
 }
 
@@ -277,7 +277,7 @@ void MInput::cancelTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
         data->touchPoint = touchPoint;
-        data->phase = ETouchPhaseCancelled;
+        data->phase = MTouchPhaseCancelled;
     }
 }
 
@@ -290,7 +290,7 @@ MVector2 MInput::getTouchPosition(int touchID)
     {
         TouchData* data = &(iter->second);
         
-        if (data->phase != ETouchPhaseNone)
+        if (data->phase != MTouchPhaseNone)
         {
             return data->touchPoint;
         }
@@ -306,7 +306,7 @@ MVector2 MInput::getLastTouchPosition(int touchID)
     if (iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
-        if (data->phase != ETouchPhaseNone)
+        if (data->phase != MTouchPhaseNone)
         {
             return data->lastTouchPoint;
         }
@@ -315,7 +315,7 @@ MVector2 MInput::getLastTouchPosition(int touchID)
     return MVector2(0.0f);
 }
 
-MInputContext::ETouchPhase MInput::getTouchPhase(int touchID)
+MInputContext::MTouchPhase MInput::getTouchPhase(int touchID)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
@@ -326,7 +326,7 @@ MInputContext::ETouchPhase MInput::getTouchPhase(int touchID)
         return data->phase;
     }
     
-    return ETouchPhaseNone;
+    return MTouchPhaseNone;
 }
 
 void MInput::flush(void)
@@ -352,7 +352,7 @@ void MInput::flush(void)
     for (; t_it != t_end; t_it++)
     {
         TouchData* data = &(t_it->second);
-        data->phase = ETouchPhaseNone;
+        data->phase = MTouchPhaseNone;
         data->touchPoint = MVector2(0.0f);
     }
 }

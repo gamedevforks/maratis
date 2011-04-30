@@ -47,13 +47,13 @@ private :
 
     struct TouchData
     {
-        ETouchPhase phase;
+        MTouchPhase phase;
         MVector2 touchPoint;
         MVector2 lastTouchPoint;
         
         TouchData()
         {
-            phase = ETouchPhaseNone;
+            phase = MTouchPhaseNone;
             touchPoint.loadIdentity();
             lastTouchPoint.loadIdentity();
         }
@@ -91,7 +91,7 @@ public:
     // Get Touch data
     MVector2 getTouchPosition(int touchID);
     MVector2 getLastTouchPosition(int touchID);
-    ETouchPhase getTouchPhase(int touchID);
+    MTouchPhase getTouchPhase(int touchID);
 
 	void flush(void);
 };

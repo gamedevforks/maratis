@@ -57,13 +57,13 @@ public:
     // Support multi-touch
     
     // Defines the phase a touch is in
-    enum ETouchPhase
+    enum MTouchPhase
     {
-        ETouchPhaseBegin = 0,
-        ETouchPhaseUpdate,
-        ETouchPhaseEnd,
-        ETouchPhaseCancelled,
-        ETouchPhaseNone
+        MTouchPhaseBegin = 0,
+        MTouchPhaseUpdate,
+        MTouchPhaseEnd,
+        MTouchPhaseCancelled,
+        MTouchPhaseNone
     };
     
     // Touch events
@@ -75,7 +75,7 @@ public:
     // Get Touch data
     virtual MVector2 getTouchPosition(int touchID) = 0;
     virtual MVector2 getLastTouchPosition(int touchID) = 0;
-    virtual ETouchPhase getTouchPhase(int touchID) = 0;
+    virtual MTouchPhase getTouchPhase(int touchID) = 0;
     
 	virtual void flush(void) = 0;
 };
