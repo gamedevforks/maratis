@@ -421,9 +421,9 @@ void loadProject(const char * filename)
         CGPoint location = [touch locationInView:self];
         
         // Send the data to input
-        input->beginTouch(*touchID, MVector2(location.x, location.y));
+        input->beginTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
         
-        NSLog(@"Began Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+        NSLog(@"Began Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
     }
 }
 
@@ -438,9 +438,9 @@ void loadProject(const char * filename)
         if (touchID != NULL)
         {
             // Send an updated touch to input
-            input->updateTouch(*touchID, MVector2(location.x, location.y));
+            input->updateTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
         
-            NSLog(@"Updated Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+            NSLog(@"Updated Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
         }
     }
 }
@@ -456,9 +456,9 @@ void loadProject(const char * filename)
         if (touchID != NULL)
         {
             // Send the end touch to input
-            input->endTouch(*touchID, MVector2(location.x, location.y));
+            input->endTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
         
-            NSLog(@"Ended Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+            NSLog(@"Ended Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
         
             // After updating input, set the touch index as available and release the memory
             [self setTouchIDAvailable:*touchID];
@@ -478,9 +478,9 @@ void loadProject(const char * filename)
         if (touchID != NULL)
         {
             // Send the end touch to input
-            input->cancelTouch(*touchID, MVector2(location.x, location.y));
+            input->cancelTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
             
-            NSLog(@"Cancelled Touch %d at position %2.f, %2.f.", *touchID, location.x, location.y);
+            NSLog(@"Cancelled Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
             
             // After updating input, set the touch index as available and release the memory
             [self setTouchIDAvailable:*touchID];
