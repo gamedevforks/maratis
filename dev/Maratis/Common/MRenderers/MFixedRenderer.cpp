@@ -167,10 +167,23 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			render->setCullMode(cullMode);
 		}
 		
+		// texture passes
+		unsigned int texturesPassNumber = MIN(8, material->getTexturesPassNumber());
+		
 		// set blending mode
 		render->setBlendingMode(blendMode);
-		if(blendMode != M_BLENDING_ALPHA)
-			render->setAlphaTest(0.5f);
+		
+		// alpha test
+		if(blendMode != M_BLENDING_ALPHA && texturesPassNumber > 0)
+		{
+			MTexturePass * texturePass = material->getTexturePass(0);
+			MTexture * texture = texturePass->getTexture();
+			if(texture)
+			{
+				if(texture->getTextureRef()->getComponents() > 3)
+					render->setAlphaTest(0.5f);
+			}
+		}
 		
 		// set fog color depending on blending
 		switch(blendMode)
@@ -183,9 +196,6 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				render->setFogColor(MVector3(1, 1, 1));
 				break;
 		}
-		
-		// texture passes
-		unsigned int texturesPassNumber = MIN(8, material->getTexturesPassNumber());
 		
 		// fixed pipeline
 		{
