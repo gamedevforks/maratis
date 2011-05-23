@@ -1161,6 +1161,13 @@ void MaratisUI::editObject(MObject3d * object)
 						addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->z, &position);
 						position += MVector2(0, ySpace);
 						break;
+					case M_VARIABLE_VEC4:
+						addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->x, &position);
+						addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->y, &position);
+						addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->z, &position);
+						addValue(m_editWin, "w", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->w, &position);
+						position += MVector2(0, ySpace);
+						break;
 					}
 				}
 
@@ -3582,7 +3589,7 @@ void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 		}
 		break;
 	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+		if(window->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
 		{
 			MEngine * engine = MEngine::getInstance();
 			MLevel * level = engine->getLevel();

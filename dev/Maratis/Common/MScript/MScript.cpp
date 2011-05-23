@@ -115,6 +115,34 @@ bool getVector3(lua_State * L, int index, MVector3 * vector)
 	return false;
 }
 
+bool getVector4(lua_State * L, int index, MVector4 * vector)
+{
+	if(lua_istable(L, index) && (lua_objlen(L, index) >= 4))
+	{
+		lua_pushnil(L);
+		
+		lua_next(L, index);
+		vector->x = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		
+		lua_next(L, index);
+		vector->y = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		
+		lua_next(L, index);
+		vector->z = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		
+		lua_next(L, index);
+		vector->w = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		
+		return true;
+	}
+	
+	return false;
+}
+
 int getObject(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
@@ -1561,6 +1589,11 @@ int getBehaviorVariable(lua_State * L)
 								pushFloatArray(L, *(MVector3 *)variable.getPointer(), 3);
 								return 1;
 							}
+						case M_VARIABLE_VEC4:
+							{
+								pushFloatArray(L, *(MVector4 *)variable.getPointer(), 4);
+								return 1;
+							}
 						}
 					}
 				}
@@ -1637,6 +1670,13 @@ int setBehaviorVariable(lua_State * L)
 								MVector3 vec;
 								if(getVector3(L, 2, &vec))
 									*(MVector3 *)variable.getPointer() = vec;
+								return 0;
+							}
+						case M_VARIABLE_VEC4:
+							{
+								MVector4 vec;
+								if(getVector4(L, 2, &vec))
+									*(MVector4 *)variable.getPointer() = vec;
 								return 0;
 							}
 						}

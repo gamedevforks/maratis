@@ -161,7 +161,8 @@ GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
 		return GL_COLOR_ATTACHMENT0_EXT + ((int)type - 1);
 }
 
-MGLContext::MGLContext(void)
+MGLContext::MGLContext(void):
+m_currentFrameBuffer(0)
 {
 	// version
 	const char * version = (const char *)glGetString(GL_VERSION);
@@ -474,6 +475,10 @@ void MGLContext::deleteFrameBuffer(unsigned int * frameBufferId){
 }
 void MGLContext::bindFrameBuffer(unsigned int frameBufferId){
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frameBufferId);
+	m_currentFrameBuffer = frameBufferId;
+}
+void MGLContext::getCurrentFrameBuffer(unsigned int * frameBufferId){
+	(*frameBufferId) = m_currentFrameBuffer;
 }
 void MGLContext::attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId){
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, returnAttachType(attachment), GL_TEXTURE_2D, textureId, 0);

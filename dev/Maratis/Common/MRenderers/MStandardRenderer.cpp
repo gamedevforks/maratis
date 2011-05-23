@@ -1129,6 +1129,10 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 	
 	
+	// current render buffer
+	unsigned int currentFrameBuffer = 0;
+	render->getCurrentFrameBuffer(&currentFrameBuffer);
+	
 	// init
 	render->setAlphaTest(0);
 	render->disableVertexArray();
@@ -1167,7 +1171,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		render->createFrameBuffer(&m_fboId);
 		render->bindFrameBuffer(m_fboId);
 		render->setDrawingBuffers(NULL, 0);
-		render->bindFrameBuffer(0);
+		render->bindFrameBuffer(currentFrameBuffer);
 	}
 	
 	render->disableLighting();
@@ -1359,7 +1363,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			}
 			
 			render->setColorMask(1, 1, 1, 1);
-			render->bindFrameBuffer(0);
+			render->bindFrameBuffer(currentFrameBuffer);
 			render->bindTexture(0);
 			restoreCamera = true;
 		}

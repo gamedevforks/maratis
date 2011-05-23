@@ -421,6 +421,9 @@ void readBehaviorProperties(TiXmlElement * node, MBehavior * behavior)
 		case M_VARIABLE_VEC3:
 			readFloatValues(node, name, *((MVector3*)variable.getPointer()), 3);
 			break;
+		case M_VARIABLE_VEC4:
+			readFloatValues(node, name, *((MVector4*)variable.getPointer()), 4);
+			break;
 		}
 	}
 }

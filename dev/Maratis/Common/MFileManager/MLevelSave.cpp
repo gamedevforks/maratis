@@ -532,6 +532,9 @@ void writeBehavior(FILE * file, MBehavior * behavior)
 		case M_VARIABLE_VEC3:
 			writeFloatValues(file, name, *((MVector3*)variable.getPointer()), 3);
 			break;
+		case M_VARIABLE_VEC4:
+			writeFloatValues(file, name, *((MVector4*)variable.getPointer()), 4);
+			break;
 		}
 
 		if((i+1) < size)

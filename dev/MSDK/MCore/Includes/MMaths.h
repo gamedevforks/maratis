@@ -103,6 +103,13 @@ M_CORE_EXPORT bool isEdgeTriangleIntersection(const MVector3 & origin, const MVe
 
 M_CORE_EXPORT MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b, const MVector3 & c);
 
+// color convertions
+float HueToRGB(float v1, float v2, float vH);
+MVector3 RGBToHSV(MVector3 rgbColor);
+MVector3 HSVToRGB(MVector3 HSVColor);
+MVector3 RGBToHSL(MVector3 rgbColor);
+MVector3 HSLToRGB(MVector3 hslColor);
+
 
 // include classes
 #include "MVector2.h"

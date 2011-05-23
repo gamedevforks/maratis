@@ -351,16 +351,16 @@ void MGuiWindow::onEvent(MWinEvent * windowEvent)
 				resizeScroll();
 				setScrolled(true);
 			}
-
-			if(m_pointerEvent) // send mouse button down gui event
-			{
-				MGuiEvent guiEvent;
-
-				guiEvent.type = MGUI_EVENT_MOUSE_BUTTON_DOWN;
-				guiEvent.data[0] = windowEvent->data[0];
-
-				m_pointerEvent(this, &guiEvent);
-			}
+		}
+			
+		if(m_pointerEvent) // send mouse button down gui event
+		{
+			MGuiEvent guiEvent;
+				
+			guiEvent.type = MGUI_EVENT_MOUSE_BUTTON_DOWN;
+			guiEvent.data[0] = windowEvent->data[0];
+				
+			m_pointerEvent(this, &guiEvent);
 		}
 
 		break;

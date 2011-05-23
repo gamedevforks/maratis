@@ -206,6 +206,7 @@ public:
 	virtual void createFrameBuffer(unsigned int * frameBufferId) = 0;
 	virtual void deleteFrameBuffer(unsigned int * frameBufferId) = 0;
 	virtual void bindFrameBuffer(unsigned int frameBufferId) = 0;
+	virtual void getCurrentFrameBuffer(unsigned int * frameBufferId) = 0;
 	virtual void attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId) = 0;
 	virtual void setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size) = 0;
 	

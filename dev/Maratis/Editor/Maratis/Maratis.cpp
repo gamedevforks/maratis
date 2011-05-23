@@ -413,7 +413,7 @@ void Maratis::start(void)
 		engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader
 
 		// add behaviors
-		engine->getBehaviorManager()->addBehavior(MBLookAt::getStaticName(), M_OBJECT3D_CAMERA, MBLookAt::getNew);
+		engine->getBehaviorManager()->addBehavior(MBLookAt::getStaticName(), M_OBJECT3D, MBLookAt::getNew);
 		engine->getBehaviorManager()->addBehavior(MBFollow::getStaticName(), M_OBJECT3D, MBFollow::getNew);
 
 		// add renderers

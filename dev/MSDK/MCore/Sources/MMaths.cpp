@@ -378,3 +378,198 @@ MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b, const MVector
 
 	return vec0.crossProduct(vec1).getNormalized();
 }
+
+MVector3 RGBToHSV(MVector3 rgbColor)
+{
+	float r = rgbColor.x;
+	float g = rgbColor.y;
+	float b = rgbColor.z;
+	
+	float h = 0;
+	float s = 0;
+	float v = 0;
+	float min, max, delta;
+	
+	min = r;
+	if(g < min) min = g;
+	if(b < min) min = b;
+	
+	max = r;
+	if(g > max) max = g;
+	if(b > max) max = b;
+	
+	v = max;
+	
+	delta = max - min;
+	
+	if(delta == 0)
+		return MVector3(h, s, v);
+	
+	if(max != 0)
+		s = delta/max;
+	else
+		return MVector3(h, s, v);
+	
+	if(r == max)
+		h = (g - b) / delta;
+	else if(g == max)
+		h = 2 + (b - r) / delta;
+	else
+		h = 4 + (r - g) / delta;
+	
+	h *= 60;
+	if(h < 0)
+		h += 360;
+	
+	return MVector3(h, s, v);
+}
+
+MVector3 HSVToRGB(MVector3 HSVColor)
+{
+	int i;
+	float r, g, b;
+	float f, p, q, t;
+	
+	float h = HSVColor.x;
+	float s = HSVColor.y;
+	float v = HSVColor.z;
+	
+	if(s == 0)
+	{
+		r = g = b = v;
+		return MVector3(r, g, b);
+	}
+	
+	h /= 60;
+	i = floor(h);
+	f = h - i;
+	p = v * (1 - s);
+	q = v * (1 - s * f);
+	t = v * (1 - s * (1 - f));
+	
+	switch(i)
+	{
+		case 0:
+			r = v;
+			g = t;
+			b = p;
+			break;
+		case 1:
+			r = q;
+			g = v;
+			b = p;
+			break;
+		case 2:
+			r = p;
+			g = v;
+			b = t;
+			break;
+		case 3:
+			r = p;
+			g = q;
+			b = v;
+			break;
+		case 4:
+			r = t;
+			g = p;
+			b = v;
+			break;
+		default:
+			r = v;
+			g = p;
+			b = q;
+			break;
+	}
+	
+	return MVector3(r, g, b);
+}
+
+MVector3 RGBToHSL(MVector3 rgbColor)
+{
+	float varMin = rgbColor.x;
+	if(rgbColor.y < varMin)
+		varMin = rgbColor.y;
+	if(rgbColor.z < varMin)
+		varMin = rgbColor.z;
+	
+	float varMax = rgbColor.x;
+	if(rgbColor.y > varMax)
+		varMax = rgbColor.y;
+	if(rgbColor.z > varMax)
+		varMax = rgbColor.z;
+	
+	float delMax = varMax - varMin;
+	float L = (varMax + varMin) / 2;
+	float H = 0, S = 0;
+	
+	if(delMax == 0)
+		return MVector3(H, S, L);
+	
+	if(L < 0.5f)
+		S = delMax / (varMax + varMin);
+	else
+		S = delMax / (2 - varMax - varMin);
+	
+	float delR = (((varMax - rgbColor.x) / 6.0f) + (delMax / 2.0f) ) / delMax;
+	float delG = (((varMax - rgbColor.y) / 6.0f) + (delMax / 2.0f) ) / delMax;
+	float delB = (((varMax - rgbColor.z) / 6.0f) + (delMax / 2.0f) ) / delMax;
+	
+	if(rgbColor.x == varMax)
+		H = delB - delG;
+	else if(rgbColor.y == varMax)
+		H = (1.0f / 3.0f) + delR - delB;
+	else if(rgbColor.z == varMax)
+		H = (2.0f / 3.0f) + delG - delR;
+	
+	if(H < 0)
+		H += 1;
+	if(H > 1)
+		H -= 1;
+	
+	return MVector3(H, S, L);
+}
+
+float HueToRGB(float v1, float v2, float vH)
+{
+	if(vH < 0)
+		vH += 1;
+	
+	if(vH > 1)
+		vH -= 1;
+	
+	if((6 * vH) < 1)
+		return (v1 + (v2 - v1) * 6 * vH);
+	
+	if((2 * vH) < 1)
+		return v2;
+	
+	if((3 * vH) < 2)
+		return (v1 + (v2 - v1) * ((2.0f / 3.0f) - vH) * 6);
+	
+	return v1;
+}
+
+MVector3 HSLToRGB(MVector3 hslColor)
+{
+	float H = hslColor.x;
+	float S = hslColor.y;
+	float L = hslColor.z;
+	
+	if(S == 0)
+		return MVector3(L, L, L);
+	
+	float var1, var2;
+	
+	if(L < 0.5f)
+		var2 = L * (1 + S);
+	else
+		var2 = (L + S) - (S * L);
+	
+	var1 = 2 * L - var2;
+	
+	float R = HueToRGB(var1, var2, H + (1.0f / 3.0f));
+	float G = HueToRGB(var1, var2, H);
+	float B = HueToRGB(var1, var2, H - (1.0f / 3.0f));
+	
+	return MVector3(R, G, B);
+}
