@@ -292,6 +292,13 @@ public:
 	virtual void disableCullFace(void) = 0;
 	virtual void setCullMode(M_CULL_MODES mode) = 0;
 
+	// occlusion
+	virtual void createQuery(unsigned int * queryId){}
+	virtual void deleteQuery(unsigned int * queryId){}
+	virtual void beginQuery(unsigned int queryId){}
+	virtual void endQuery(void){}
+	virtual void getQueryResult(unsigned int queryId, unsigned int * result){}
+	
 	// matrix
 	virtual void loadIdentity(void) = 0;
 	virtual void setMatrixMode(M_MATRIX_MODES mode) = 0;

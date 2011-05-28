@@ -183,6 +183,13 @@ public:
 	void disableCullFace(void);
 	void setCullMode(M_CULL_MODES mode);
 
+	// occlusion
+	void createQuery(unsigned int * queryId);
+	void deleteQuery(unsigned int * queryId);
+	void beginQuery(unsigned int queryId);
+	void endQuery(void);
+	void getQueryResult(unsigned int queryId, unsigned int * result);
+	
 	// matrix
 	void loadIdentity(void);
 	void setMatrixMode(M_MATRIX_MODES mode);

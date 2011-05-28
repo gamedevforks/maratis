@@ -787,6 +787,23 @@ void MGLContext::setCullMode(M_CULL_MODES mode)
 	}
 }
 
+// occlusion
+void MGLContext::createQuery(unsigned int * queryId){
+	glGenQueriesARB(1, queryId);
+}
+void MGLContext::deleteQuery(unsigned int * queryId){
+	glDeleteQueriesARB(1, queryId);
+}
+void MGLContext::beginQuery(unsigned int queryId){
+	glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queryId);
+}
+void MGLContext::endQuery(void){
+	glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+}
+void MGLContext::getQueryResult(unsigned int queryId, unsigned int * result){
+	glGetQueryObjectuivARB(queryId, GL_QUERY_RESULT_ARB, result);
+}
+
 // matrix
 void MGLContext::loadIdentity(void){
 	glLoadIdentity();

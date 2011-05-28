@@ -78,22 +78,15 @@ m_FXsNumber(0)
 	render->setTextureVWrapMode(M_WRAP_REPEAT);
 	
 	render->sendTextureImage(&image, 1, 1, 0);
-	
-	/*
-	int size = 64;
-	for(int lod=0; lod<7; lod++)
-	{
-		render->texImage(lod, size, size, M_UBYTE, M_RGBA, image.getData());
-		size /= 2;
-	}*/
 }
 
 MStandardRenderer::~MStandardRenderer(void)
 {
+	unsigned int i;
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 	
 	// delete default FXs
-	for(unsigned int i=0; i<m_FXsNumber; i++)
+	for(i=0; i<m_FXsNumber; i++)
 	{
 		render->deleteFX(&m_FXs[i]);
 		render->deleteShader(&m_fragShaders[i]);
@@ -109,7 +102,13 @@ MStandardRenderer::~MStandardRenderer(void)
 		render->deleteTexture(&mit->second.shadowTexture);
 	}
 	
-	// rand texture
+	// delete occlusion queries
+	for(i=0; i<MAX_TRANSP; i++)
+		render->deleteQuery(&m_transpList[i].occlusionQuery);
+	for(i=0; i<MAX_OPAQUE; i++)
+		render->deleteQuery(&m_opaqueList[i].occlusionQuery);
+	
+	// delete rand texture
 	render->deleteTexture(&m_randTexture);
 	
 	// delete FBO
@@ -616,67 +615,6 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		render->setFogColor(currentFogColor);
 	}
 }
-/*
-void MStandardRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices)
-{
-	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-	
-	// begin / size
-	unsigned int begin = display->getBegin();
-	unsigned int size = display->getSize();
-	
-	// display properties
-	M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
-	M_CULL_MODES cullMode = display->getCullMode();
-	
-	// cull mode
-	if(cullMode == M_CULL_NONE){
-		render->disableCullFace();
-	}
-	else{
-		render->enableCullFace();
-		render->setCullMode(cullMode);
-	}
-	
-	// indices
-	M_TYPES indicesType = subMesh->getIndicesType();
-	void * indices = subMesh->getIndices();
-	
-	// FX
-	unsigned int fxId = m_FXs[0]; // Basic FX
-	render->bindFX(fxId);
-	
-	// Vertex
-	int attribIndex;
-	render->getAttribLocation(fxId, "Vertex", &attribIndex);
-	if(attribIndex != -1)
-	{
-		render->setAttribPointer(attribIndex, M_FLOAT, 3, vertices);
-		render->enableAttribArray(attribIndex);
-	}
-	
-	// draw
-	if(indices)
-	{
-		switch(indicesType)
-		{
-			case M_USHORT:
-				render->drawElement(primitiveType, size, indicesType, (unsigned short*)indices + begin);
-				break;
-			case M_UINT:
-				render->drawElement(primitiveType, size, indicesType, (unsigned int*)indices + begin);
-				break;
-		}
-	}
-	else
-		render->drawArray(primitiveType, begin, size);
-	
-	// disable attribs
-	render->disableAttribArray(0);
-	
-	// restore FX
-	render->bindFX(0);
-}*/
 
 void MStandardRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 {
@@ -1096,35 +1034,148 @@ void MStandardRenderer::drawText(MOText * textObj)
 	render->bindFX(0);
 }
 
+void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMesh * subMesh)
+{
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
+	MMesh * mesh = entity->getMesh();
+	MVector3 scale = entity->getTransformedScale();
+	MBox3d * box = subMesh->getBoundingBox();
+
+	// subMesh center
+	MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+	center = entity->getTransformedVector(center);
+	
+	// entity min scale
+	float minScale = scale.x;
+	minScale = MIN(minScale, scale.y);
+	minScale = MIN(minScale, scale.z);
+	minScale = 1.0f / minScale;
+	
+	// lights
+	unsigned int l;
+	unsigned int lSize = scene->getLightsNumber();
+	unsigned int lightsNumber = 0;
+	for(l=0; l<lSize; l++)
+	{
+		MOLight * light = scene->getLightByIndex(l);
+		
+		if(! light->isActive())
+			continue;
+		
+		if(! light->isVisible())
+			continue;
+		
+		if(light->getRadius() <= 0.0f)
+			continue;
+		
+		// light box
+		MVector3 lightPos = light->getTransformedPosition();
+		MVector3 localPos = entity->getInversePosition(lightPos);
+		
+		float localRadius = light->getRadius() * minScale;
+		
+		MBox3d lightBox(
+			MVector3(localPos - localRadius),
+			MVector3(localPos + localRadius)
+		);
+		
+		if(! box->isInCollisionWith(&lightBox))
+			continue;
+		
+		MEntityLight * entityLight = &m_entityLights[lightsNumber];
+		entityLight->lightBox = lightBox;
+		entityLight->light = light;
+		
+		m_entityLightsList[lightsNumber] = lightsNumber;
+		
+		float z = (center - light->getTransformedPosition()).getLength();
+		m_entityLightsZList[lightsNumber] = (1.0f/z)*light->getRadius();
+		
+		lightsNumber++;
+		if(lightsNumber == MAX_ENTITY_LIGHTS)
+			break;
+	}
+	
+	// sort lights
+	if(lightsNumber > 1)
+		sortFloatList(m_entityLightsList, m_entityLightsZList, 0, (int)lightsNumber-1);
+	
+	// animate armature
+	if(mesh->getArmature() && mesh->getArmatureAnim())
+		animateArmature(
+						mesh->getArmature(),
+						mesh->getArmatureAnim(),
+						entity->getCurrentFrame()
+						);
+	
+	// animate textures
+	if(mesh->getTexturesAnim())
+		animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
+	
+	// animate materials
+	if(mesh->getMaterialsAnim())
+		animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
+	
+	
+	// local lights
+	if(lightsNumber > 4)
+		lightsNumber = 4;
+	
+	for(l=0; l<lightsNumber; l++)
+	{
+		MEntityLight * entityLight = &m_entityLights[m_entityLightsList[l]];
+		MOLight * light = entityLight->light;
+		
+		// attenuation
+		float quadraticAttenuation = (8.0f / light->getRadius());
+		quadraticAttenuation = (quadraticAttenuation*quadraticAttenuation)*light->getIntensity();
+		
+		// color
+		MVector3 color = light->getFinalColor();
+		
+		// set light
+		render->enableLight(l);
+		render->setLightPosition(l, light->getTransformedPosition());
+		render->setLightDiffuse(l, MVector4(color));
+		render->setLightSpecular(l, MVector4(color));
+		render->setLightAmbient(l, MVector3(0, 0, 0));
+		render->setLightAttenuation(l, 1, 0, quadraticAttenuation);
+		
+		// spot
+		render->setLightSpotAngle(l, light->getSpotAngle());
+		if(light->getSpotAngle() < 90){
+			render->setLightSpotDirection(l, light->getRotatedVector(MVector3(0, 0, -1)).getNormalized());
+			render->setLightSpotExponent(l, light->getSpotExponent());
+		}
+		else {
+			render->setLightSpotExponent(l, 0.0f);
+		}
+		
+		// shadow
+		if(light->isCastingShadow())
+		{
+			MShadowLight * shadowLight = &m_shadowLights[(unsigned long)(light)];
+			m_lightShadow[l] = 1;
+			m_lightShadowBias[l] = light->getShadowBias()*shadowLight->biasUnity;
+			m_lightShadowBlur[l] = light->getShadowBlur();
+			m_lightShadowTexture[l] = (int)shadowLight->shadowTexture;
+			m_lightShadowMatrix[l] = shadowLight->shadowMatrix * (*entity->getMatrix());
+		}
+		else{
+			m_lightShadow[l] = 0;
+		}
+	}
+	
+	for(l=lightsNumber; l<4; l++){
+		render->setLightDiffuse(l, MVector4(0, 0, 0, 0));
+		render->disableLight(l);
+		m_lightShadow[l] = 0;
+	}
+}
+
 void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 {
-	struct MEntityLight
-	{
-		MBox3d lightBox;
-		MOLight * light;
-	};
-	
-	struct MSubMeshPass
-	{
-		unsigned int subMeshId;
-		unsigned int lightsNumber;
-		MObject3d * object;
-		MOLight * lights[4];
-	};
-	
-	// sub objects
-	#define MAX_TRANSP_SUBOBJ 4096
-	static int transpList[MAX_TRANSP_SUBOBJ];
-	static float transpZList[MAX_TRANSP_SUBOBJ];
-	static MSubMeshPass transpSubObjs[MAX_TRANSP_SUBOBJ];
-	
-	// lights list
-	#define MAX_ENTITY_LIGHTS 256
-	static int entityLightsList[MAX_ENTITY_LIGHTS];
-	static float entityLightsZList[MAX_ENTITY_LIGHTS];
-	static MEntityLight entityLights[MAX_ENTITY_LIGHTS];
-	
-	
 	// get render
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 	
@@ -1189,7 +1240,6 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		if(light->getSpotAngle() < 90.0f && light->isCastingShadow())
 		{
 			unsigned int i;
-			unsigned int zListSize = 0;
 			unsigned int eSize = scene->getEntitiesNumber();
 			unsigned int shadowQuality = light->getShadowQuality();
 			MShadowLight * shadowLight = createShadowLight(light);
@@ -1224,6 +1274,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			MFrustum * frustum = lightCamera.getFrustum();
 			frustum->makeVolume(&lightCamera);
 			
+			float distMin = lightCamera.getClippingFar();
+			float distMax = lightCamera.getClippingNear();
 			
 			for(i=0; i<eSize; i++)
 			{
@@ -1258,26 +1310,18 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					{
 						for(int p=0; p<8; p++)
 						{
-							if(zListSize == MAX_TRANSP_SUBOBJ)
-								break;
-						
 							float dist = (points[p] - cameraPos).dotProduct(cameraAxis);
-						
-							transpZList[zListSize] = dist;
-							zListSize++;
+							distMin = MIN(distMin, dist);
+							distMax = MAX(distMax, dist);
 						}
 					}
 				}
 			}
 			
 			// sort Zlist and set clipping
-			if(zListSize > 1)
-			{
-				sortFloatList(transpZList, 0, zListSize-1);
-				lightCamera.setClippingFar(MIN(lightCamera.getClippingFar(), transpZList[0]));
-				lightCamera.setClippingNear(MAX(lightCamera.getClippingNear(), transpZList[zListSize-1]));
-				lightCamera.enable(); // need to enable the camera again
-			}
+			lightCamera.setClippingFar(MIN(lightCamera.getClippingFar(), distMax));
+			lightCamera.setClippingNear(MAX(lightCamera.getClippingNear(), distMin));
+			lightCamera.enable(); // need to enable the camera again
 			
 			m_currentCamera = &lightCamera;
 			
@@ -1395,11 +1439,9 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	// camera
 	MVector3 cameraPos = camera->getTransformedPosition();
 	
-	// enable lightning
-	render->enableLighting();
-	
-	// transp sub obj number
-	unsigned int transpSubObsNumber = 0;
+	// opaque/transp number
+	unsigned int opaqueNumber = 0;
+	unsigned int transpNumber = 0;
 	
 	m_currentCamera = camera;
 	
@@ -1408,88 +1450,13 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	unsigned int eSize = scene->getEntitiesNumber();
 	
 	
-	// Z pre-pass
-	render->setColorMask(0, 0, 0, 0);
 	
-	for(i=0; i<eSize; i++)
-	{
-		// get entity
-		MOEntity * entity = scene->getEntityByIndex(i);
-		MMesh * mesh = entity->getMesh();
-		
-		if(! entity->isActive())
-			continue;
-		
-		if(! entity->isVisible())
-			continue;
 	
-		if(mesh)
-		{
-			// animate armature
-			if(mesh->getArmature() && mesh->getArmatureAnim())
-				animateArmature(
-					mesh->getArmature(),
-					mesh->getArmatureAnim(),
-					entity->getCurrentFrame()
-				);
-			
-			// animate textures
-			if(mesh->getTexturesAnim())
-				animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
-			
-			// animate materials
-			if(mesh->getMaterialsAnim())
-				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
-			
-			unsigned int s;
-			unsigned int sSize = mesh->getSubMeshsNumber();
-			for(s=0; s<sSize; s++)
-			{
-				MSubMesh * subMesh = &mesh->getSubMeshs()[s];
-				MBox3d * box = subMesh->getBoundingBox();
-				
-				// check if submesh visible
-				if(sSize > 1)
-				{
-					MVector3 * min = box->getMin();
-					MVector3 * max = box->getMax();
-					
-					MVector3 points[8] = {
-						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
-						entity->getTransformedVector(MVector3(min->x, max->y, min->z)),
-						entity->getTransformedVector(MVector3(max->x, max->y, min->z)),
-						entity->getTransformedVector(MVector3(max->x, min->y, min->z)),
-						entity->getTransformedVector(MVector3(min->x, min->y, max->z)),
-						entity->getTransformedVector(MVector3(min->x, max->y, max->z)),
-						entity->getTransformedVector(MVector3(max->x, max->y, max->z)),
-						entity->getTransformedVector(MVector3(max->x, min->y, max->z))
-					};
-					
-					if(! frustum->isVolumePointsVisible(points, 8))
-						continue;
-				}
-				
-				render->pushMatrix();
-				render->multMatrix(entity->getMatrix());
-				
-				// draw opaques
-				drawOpaques(subMesh, mesh->getArmature());
-				
-				render->popMatrix();
-			}
-			
-			mesh->updateBoundingBox();
-			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
-		}
-	}
-		
 	
-	// opaque pass
-	m_forceNoFX = false;
-	render->setColorMask(1, 1, 1, 1);
-	render->setDepthMask(0);
-	render->setDepthMode(M_DEPTH_EQUAL);
 	
+	
+	
+	// make opaque and transp list
 	for(i=0; i<eSize; i++)
 	{
 		// get entity
@@ -1510,10 +1477,10 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					// animate armature
 					if(armatureAnim)
 						animateArmature(
-										mesh->getArmature(),
-										mesh->getArmatureAnim(),
-										entity->getCurrentFrame()
-										);
+							mesh->getArmature(),
+							mesh->getArmatureAnim(),
+							entity->getCurrentFrame()
+						);
 					
 					// TODO : optimize and add a tag to desactivate it
 					updateSkinning(mesh, armature);
@@ -1524,71 +1491,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			continue;
 		}
 		
-		// draw mesh
 		if(mesh)
 		{
-			MVector3 scale = entity->getTransformedScale();
-			MBox3d * entityBox = entity->getBoundingBox();
-			
-			float minScale = scale.x;
-			minScale = MIN(minScale, scale.y);
-			minScale = MIN(minScale, scale.z);
-			minScale = 1.0f / minScale;
-			
-			unsigned int entityLightsNumber = 0;
-			for(l=0; l<lSize; l++)
-			{
-				// get entity
-				MOLight * light = scene->getLightByIndex(l);
-				
-				if(! light->isActive())
-					continue;
-				
-				if(! light->isVisible())
-					continue;
-				
-				if(light->getRadius() <= 0.0f)
-					continue;
-				
-				// light box
-				MVector3 lightPos = light->getTransformedPosition();
-				MVector3 localPos = entity->getInversePosition(lightPos);
-				
-				float localRadius = light->getRadius() * minScale;
-				
-				MBox3d lightBox(
-					MVector3(localPos - localRadius),
-					MVector3(localPos + localRadius)
-				);
-				
-				if(! entityBox->isInCollisionWith(&lightBox))
-					continue;
-				
-				MEntityLight * entityLight = &entityLights[entityLightsNumber];
-				entityLight->lightBox = lightBox;
-				entityLight->light = light;
-				
-				entityLightsNumber++;
-				if(entityLightsNumber == MAX_ENTITY_LIGHTS)
-					break;
-			}
-			
-			// animate armature
-			if(mesh->getArmature() && mesh->getArmatureAnim())
-				animateArmature(
-								mesh->getArmature(),
-								mesh->getArmatureAnim(),
-								entity->getCurrentFrame()
-								);
-			
-			// animate textures
-			if(mesh->getTexturesAnim())
-				animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
-			
-			// animate materials
-			if(mesh->getMaterialsAnim())
-				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
-			
 			unsigned int s;
 			unsigned int sSize = mesh->getSubMeshsNumber();
 			for(s=0; s<sSize; s++)
@@ -1621,159 +1525,59 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
 				center = entity->getTransformedVector(center);
 				
-				// sort entity lights
-				unsigned int lightsNumber = 0;
-				for(l=0; l<entityLightsNumber; l++)
-				{
-					MEntityLight * entityLight = &entityLights[l];
-					if(! box->isInCollisionWith(&entityLight->lightBox))
-						continue;
-					
-					entityLightsList[lightsNumber] = l;
-					
-					MOLight * light = entityLight->light;
-					float z = (center - light->getTransformedPosition()).getLength();
-					entityLightsZList[l] = (1.0f/z)*light->getRadius();
-					
-					/*
-					// box intersection volume
-					{
-						MVector3 * MINA = entityLight->lightBox.getMin();
-						MVector3 * MAXA = entityLight->lightBox.getMax();
-						MVector3 * MINB = box->getMin();
-						MVector3 * MAXB = box->getMax();
-						float VX, VY, VZ;
-						
-						if(MAXA->x > MINB->x)
-							VX = MAXA->x - MINB->x;
-						else
-							VX = MAXB->x - MINA->x;
-
-						if(MAXA->y > MINB->y)
-							VY = MAXA->y - MINB->y;
-						else
-							VY = MAXB->y - MINA->y;
-						
-						if(MAXA->z > MINB->z)
-							VZ = MAXA->z - MINB->z;
-						else
-							VZ = MAXB->z - MINA->z;
-						
-						entityLightsZList[l] = (VX*VY*VZ);
-					}*/
-					
-					lightsNumber++;
-				}
+				// z distance
+				float z = getDistanceToCam(camera, center);
 				
-				if(lightsNumber > 1)
-					sortFloatList(entityLightsList, entityLightsZList, 0, (int)lightsNumber-1);
-				
-				// local lights
-				if(lightsNumber > 4)
-					lightsNumber = 4;
-				
-				for(l=0; l<lightsNumber; l++)
-				{
-					MEntityLight * entityLight = &entityLights[entityLightsList[l]];
-					MOLight * light = entityLight->light;
-					
-					// attenuation
-					float quadraticAttenuation = (8.0f / light->getRadius());
-					quadraticAttenuation = (quadraticAttenuation*quadraticAttenuation)*light->getIntensity();
-					
-					// color
-					MVector3 color = light->getFinalColor();
-					
-					// set light
-					render->enableLight(l);
-					render->setLightPosition(l, light->getTransformedPosition());
-					render->setLightDiffuse(l, MVector4(color));
-					render->setLightSpecular(l, MVector4(color));
-					render->setLightAmbient(l, MVector3(0, 0, 0));
-					render->setLightAttenuation(l, 1, 0, quadraticAttenuation);
-					
-					// spot
-					render->setLightSpotAngle(l, light->getSpotAngle());
-					if(light->getSpotAngle() < 90){
-						render->setLightSpotDirection(l, light->getRotatedVector(MVector3(0, 0, -1)).getNormalized());
-						render->setLightSpotExponent(l, light->getSpotExponent());
-					}
-					else {
-						render->setLightSpotExponent(l, 0.0f);
-					}
-					
-					// shadow
-					if(light->isCastingShadow())
-					{
-						MShadowLight * shadowLight = &m_shadowLights[(unsigned long)(light)];
-						m_lightShadow[l] = 1;
-						m_lightShadowBias[l] = light->getShadowBias()*shadowLight->biasUnity;
-						m_lightShadowBlur[l] = light->getShadowBlur();
-						m_lightShadowTexture[l] = (int)shadowLight->shadowTexture;
-						m_lightShadowMatrix[l] = shadowLight->shadowMatrix * (*entity->getMatrix());
-					}
-					else{
-						m_lightShadow[l] = 0;
-					}
-				}
-				
-				for(l=lightsNumber; l<4; l++){
-					render->setLightDiffuse(l, MVector4(0, 0, 0, 0));
-					render->disableLight(l);
-					m_lightShadow[l] = 0;
-				}
-				
-				render->pushMatrix();
-				render->multMatrix(entity->getMatrix());
-				
-				// draw opaques
-				drawOpaques(subMesh, mesh->getArmature());
-				
+				// transparent
 				if(subMesh->hasTransparency())
 				{
-					if(transpSubObsNumber < MAX_TRANSP_SUBOBJ)
+					if(transpNumber < MAX_TRANSP)
 					{
 						// transparent subMesh pass
-						MSubMeshPass * subMeshPass = &transpSubObjs[transpSubObsNumber];
-						
-						// lights
-						subMeshPass->lightsNumber = lightsNumber;
-						for(l=0; l<lightsNumber; l++)
-							subMeshPass->lights[l] = entityLights[entityLightsList[l]].light;
-						
-						// z distance to camera
-						float z = getDistanceToCam(camera, center);
+						MSubMeshPass * subMeshPass = &m_transpList[transpNumber];
 						
 						// set values
-						transpList[transpSubObsNumber] = transpSubObsNumber;
-						transpZList[transpSubObsNumber] = z;
+						m_transpSortList[transpNumber] = transpNumber;
+						m_transpSortZList[transpNumber] = z;
 						subMeshPass->subMeshId = s;
 						subMeshPass->object = entity;
-						
-						transpSubObsNumber++;
+						if(subMeshPass->occlusionQuery == 0)
+							render->createQuery(&subMeshPass->occlusionQuery);
+						transpNumber++;
 					}
 				}
-				
-				render->popMatrix();
+				// opaque
+				else
+				{
+					if(opaqueNumber < MAX_OPAQUE)
+					{
+						// opaque subMesh pass
+						MSubMeshPass * subMeshPass = &m_opaqueList[opaqueNumber];
+						
+						// set values
+						m_opaqueSortList[opaqueNumber] = opaqueNumber;
+						m_opaqueSortZList[opaqueNumber] = z;
+						subMeshPass->subMeshId = s;
+						subMeshPass->object = entity;
+						if(subMeshPass->occlusionQuery == 0)
+							render->createQuery(&subMeshPass->occlusionQuery);
+						opaqueNumber++;
+					}
+				}
+
 			}
-			
-			mesh->updateBoundingBox();
-			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 		}
 	}
 	
-	render->setDepthMask(1);
-	render->setDepthMode(M_DEPTH_LEQUAL);
-	
-	// texts
+	// add texts to transp list
 	unsigned int tSize = scene->getTextsNumber();
 	for(i=0; i<tSize; i++)
 	{
 		MOText * text = scene->getTextByIndex(i);
-		if(text->isActive() && text->isVisible())
+		if(text->isActive() && text->isVisible() && transpNumber < MAX_TRANSP)
 		{
 			// transparent pass
-			MSubMeshPass * subMeshPass = &transpSubObjs[transpSubObsNumber];
+			MSubMeshPass * subMeshPass = &m_transpList[transpNumber];
 			
 			// center
 			MBox3d * box = text->getBoundingBox();
@@ -1784,125 +1588,145 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			float z = getDistanceToCam(camera, center);
 			
 			// set values
-			transpList[transpSubObsNumber] = transpSubObsNumber;
-			transpZList[transpSubObsNumber] = z;
+			m_transpSortList[transpNumber] = transpNumber;
+			m_transpSortZList[transpNumber] = z;
 			subMeshPass->object = text;
 			
-			transpSubObsNumber++;
+			transpNumber++;
 		}
 	}
 	
 	
-	// sort transparent list
-	if(transpSubObsNumber > 1)
-		sortFloatList(transpList, transpZList, 0, (int)transpSubObsNumber-1);
 	
-	// draw transparents
-	for(i=0; i<transpSubObsNumber; i++)
+	
+	// draw opaques
 	{
-		MSubMeshPass * subMeshPass = &transpSubObjs[transpList[i]];
-		MObject3d * object = subMeshPass->object;
+		if(opaqueNumber > 1)
+			sortFloatList(m_opaqueSortList, m_opaqueSortZList, 0, (int)opaqueNumber-1);
 		
-		// objects
-		switch(object->getType())
+		// Z pre-pass
+		render->setDepthMode(M_DEPTH_LEQUAL);
+		render->setColorMask(0, 0, 0, 0);
+	
+		for(int s=(int)opaqueNumber-1; s>=0; s--)
 		{
-			case M_OBJECT3D_ENTITY:
+			MSubMeshPass * subMeshPass = &m_opaqueList[m_opaqueSortList[s]];
+			MOEntity * entity = (MOEntity *)subMeshPass->object;
+			MMesh * mesh = entity->getMesh();
+			MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
+			
+			// animate armature
+			if(mesh->getArmature() && mesh->getArmatureAnim())
+				animateArmature(
+					mesh->getArmature(),
+					mesh->getArmatureAnim(),
+					entity->getCurrentFrame()
+				);
+			
+			// animate textures
+			if(mesh->getTexturesAnim())
+				animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
+			
+			// animate materials
+			if(mesh->getMaterialsAnim())
+				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
+			
+			render->pushMatrix();
+			render->multMatrix(entity->getMatrix());
+			
+			// draw opaques
+			render->beginQuery(subMeshPass->occlusionQuery);
+			drawOpaques(subMesh, mesh->getArmature());
+			render->endQuery();
+			
+			render->popMatrix();
+			
+			// update bounding box
+			mesh->updateBoundingBox();
+			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
+		}
+		
+		
+		// render pass
+		m_forceNoFX = false;
+		render->setColorMask(1, 1, 1, 1);
+		render->setDepthMask(0);
+		render->setDepthMode(M_DEPTH_EQUAL);
+		
+		for(int s=(int)opaqueNumber-1; s>=0; s--)
+		{
+			MSubMeshPass * subMeshPass = &m_opaqueList[m_opaqueSortList[s]];
+			MOEntity * entity = (MOEntity *)subMeshPass->object;
+			MMesh * mesh = entity->getMesh();
+			MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
+			
+			
+			// read occlusion result
+			unsigned int queryResult = 1;
+			render->getQueryResult(subMeshPass->occlusionQuery, &queryResult);
+			if(queryResult > 0)
 			{
-				MOEntity * entity = (MOEntity *)object;
-				unsigned int subMeshId = subMeshPass->subMeshId;
-				MMesh * mesh = entity->getMesh();
-				MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshId];
-				
-				// animate armature
-				if(mesh->getArmature() && mesh->getArmatureAnim())
-					animateArmature(
-									mesh->getArmature(),
-									mesh->getArmatureAnim(),
-									entity->getCurrentFrame()
-									);
-				
-				// animate textures
-				if(mesh->getTexturesAnim())
-					animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
-				
-				// animate materials
-				if(mesh->getMaterialsAnim())
-					animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
-				
-				// lights
-				for(l=0; l<subMeshPass->lightsNumber; l++)
-				{
-					MOLight * light = subMeshPass->lights[l];
-					
-					// attenuation
-					float quadraticAttenuation = (8.0f / light->getRadius());
-					quadraticAttenuation = (quadraticAttenuation*quadraticAttenuation)*light->getIntensity();
-					
-					// color
-					MVector3 color = light->getFinalColor();
-					
-					// set light
-					render->enableLight(l);
-					render->setLightPosition(l, light->getTransformedPosition());
-					render->setLightDiffuse(l, MVector4(color));
-					render->setLightSpecular(l, MVector4(color));
-					render->setLightAmbient(l, MVector3(0, 0, 0));
-					render->setLightAttenuation(l, 1, 0, quadraticAttenuation);
-					
-					// spot
-					render->setLightSpotAngle(l, light->getSpotAngle());
-					if(light->getSpotAngle() < 90){
-						render->setLightSpotDirection(l, light->getRotatedVector(MVector3(0, 0, -1)).getNormalized());
-						render->setLightSpotExponent(l, light->getSpotExponent());
-					}
-					else {
-						render->setLightSpotExponent(l, 0.0f);
-					}
-					
-					// shadow
-					if(light->isCastingShadow())
-					{
-						MShadowLight * shadowLight = &m_shadowLights[(unsigned long)(light)];
-						m_lightShadow[l] = 1;
-						m_lightShadowBias[l] = light->getShadowBias()*shadowLight->biasUnity;
-						m_lightShadowBlur[l] = light->getShadowBlur();
-						m_lightShadowTexture[l] = (int)shadowLight->shadowTexture;
-						m_lightShadowMatrix[l] = shadowLight->shadowMatrix * (*entity->getMatrix());
-					}
-					else{
-						m_lightShadow[l] = 0;
-					}
-				}
-				
-				for(l=subMeshPass->lightsNumber; l<4; l++){
-					render->setLightDiffuse(l, MVector4(0, 0, 0, 0));
-					render->disableLight(l);
-					m_lightShadow[l] = 0;
-				}
+				prepareSubMesh(scene, camera, entity, subMesh);
 				
 				render->pushMatrix();
 				render->multMatrix(entity->getMatrix());
-				drawTransparents(subMesh, mesh->getArmature());
-				render->popMatrix();
-				
-				mesh->updateBoundingBox();
-				(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
-			}
-				break;
-				
-			case M_OBJECT3D_TEXT:
-			{
-				MOText * text = (MOText *)object;
-				
-				render->pushMatrix();
-				render->multMatrix(text->getMatrix());
-				drawText(text);
+				drawOpaques(subMesh, mesh->getArmature());
 				render->popMatrix();
 			}
-				break;
 		}
+		
+		render->setDepthMask(1);
+		render->setDepthMode(M_DEPTH_LEQUAL);
 	}
 	
-	render->disableLighting();
-	render->disableFog();	
+
+	m_forceNoFX = false;
+	
+	// draw transparent
+	{
+		if(transpNumber > 1)
+			sortFloatList(m_transpSortList, m_transpSortZList, 0, (int)transpNumber-1);
+	
+		for(int s=0; s<transpNumber; s++)
+		{
+			MSubMeshPass * subMeshPass = &m_transpList[m_transpSortList[s]];
+			MObject3d * object = subMeshPass->object;
+			
+			// objects
+			switch(object->getType())
+			{
+				case M_OBJECT3D_ENTITY:
+				{
+					MOEntity * entity = (MOEntity *)object;
+					MMesh * mesh = entity->getMesh();
+					MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
+			
+					prepareSubMesh(scene, camera, entity, subMesh);
+						
+					render->pushMatrix();
+					render->multMatrix(entity->getMatrix());
+					drawTransparents(subMesh, mesh->getArmature());
+					render->popMatrix();
+					
+					// update bounding box
+					mesh->updateBoundingBox();
+					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
+					
+					break;
+				}
+					
+				case M_OBJECT3D_TEXT:
+				{
+					MOText * text = (MOText *)object;
+					
+					render->pushMatrix();
+					render->multMatrix(text->getMatrix());
+					drawText(text);
+					render->popMatrix();
+					
+					break;
+				}
+			}
+		}
+	}
 }

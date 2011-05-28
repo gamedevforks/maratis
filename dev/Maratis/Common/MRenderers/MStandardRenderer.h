@@ -32,8 +32,33 @@
 #define _M_STANDARD_RENDERER_H
 
 
+#define MAX_ENTITY_LIGHTS 256
 #define MAX_SHADOW_LIGHTS 64
 #define MAX_DEFAULT_FXS 16
+#define MAX_OPAQUE 4096
+#define MAX_TRANSP 2048
+
+
+// Entity light
+struct MEntityLight
+{
+	MBox3d lightBox;
+	MOLight * light;
+};
+
+
+// SubMesh pass
+class MSubMeshPass
+{
+public:
+	MSubMeshPass(void):occlusionQuery(0){}
+	
+	unsigned int occlusionQuery;
+	unsigned int subMeshId;
+	unsigned int lightsNumber;
+	MObject3d * object;
+	MOLight * lights[4];
+};
 
 
 // Shadow Light
@@ -41,6 +66,7 @@ class MShadowLight
 {
 public:
 	MShadowLight(void):shadowTexture(0), score(0){}
+	
 	int score;
 	unsigned int shadowTexture;
 	unsigned int shadowQuality;
@@ -87,6 +113,19 @@ private:
 	unsigned int m_fragShaders[MAX_DEFAULT_FXS];
 	unsigned int m_FXs[MAX_DEFAULT_FXS];
 	
+	// lists
+	int m_transpSortList[MAX_TRANSP];
+	int m_opaqueSortList[MAX_OPAQUE];
+	float m_transpSortZList[MAX_TRANSP];
+	float m_opaqueSortZList[MAX_OPAQUE];
+	MSubMeshPass m_transpList[MAX_TRANSP];	
+	MSubMeshPass m_opaqueList[MAX_OPAQUE];
+	
+	// lights list
+	int m_entityLightsList[MAX_ENTITY_LIGHTS];
+	float m_entityLightsZList[MAX_ENTITY_LIGHTS];
+	MEntityLight m_entityLights[MAX_ENTITY_LIGHTS];
+	
 private:
 	
 	void addFX(const char * vert, const char * frag);
@@ -110,6 +149,9 @@ private:
 	MVector3 * getVertices(unsigned int size);
 	MVector3 * getNormals(unsigned int size);
 	MVector3 * getTangents(unsigned int size);
+	
+	// subMesh
+	void prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMesh * subMesh);
 	
 	// text
 	void drawText(MOText * textObj);

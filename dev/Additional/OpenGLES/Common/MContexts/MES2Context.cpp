@@ -156,7 +156,8 @@ GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
 		return GL_COLOR_ATTACHMENT0 + ((int)type - 1);
 }
 
-MES2Context::MES2Context(void)
+MES2Context::MES2Context(void):
+m_currentFrameBuffer(0)
 {
 	m_matrixStep = 0;
 	m_matrixMode = M_MATRIX_MODELVIEW;
@@ -476,6 +477,10 @@ void MES2Context::deleteFrameBuffer(unsigned int * frameBufferId){
 }
 void MES2Context::bindFrameBuffer(unsigned int frameBufferId){
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
+	m_currentFrameBuffer = frameBufferId;
+}
+void MES2Context::getCurrentFrameBuffer(unsigned int * frameBufferId){
+	(*frameBufferId) = m_currentFrameBuffer;
 }
 void MES2Context::attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId){
 	glFramebufferTexture2D(GL_FRAMEBUFFER, returnAttachType(attachment), GL_TEXTURE_2D, textureId, 0);

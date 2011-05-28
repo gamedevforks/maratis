@@ -159,7 +159,8 @@ GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
 		return GL_COLOR_ATTACHMENT0_OES + ((int)type - 1);
 }
 
-MES1Context::MES1Context(void)
+MES1Context::MES1Context(void):
+m_currentFrameBuffer(0)
 {
 	// version
 	const char * version = (const char *)glGetString(GL_VERSION);
@@ -468,6 +469,10 @@ void MES1Context::deleteFrameBuffer(unsigned int * frameBufferId){
 }
 void MES1Context::bindFrameBuffer(unsigned int frameBufferId){
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, frameBufferId);
+	m_currentFrameBuffer = frameBufferId;
+}
+void MES1Context::getCurrentFrameBuffer(unsigned int * frameBufferId){
+	(*frameBufferId) = m_currentFrameBuffer;
 }
 void MES1Context::attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId){
 	glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, returnAttachType(attachment), GL_TEXTURE_2D, textureId, 0);

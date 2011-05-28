@@ -119,14 +119,13 @@ m_physicsProperties(NULL)
 MOEntity::MOEntity(const MOEntity & entity):
 MObject3d(entity),
 m_isInvisible(entity.m_isInvisible),
-m_meshRef(entity.m_meshRef),
 m_physicsProperties(NULL),
-m_boundingBox(entity.m_boundingBox),
 m_animationSpeed(entity.m_animationSpeed),
 m_currentFrame(entity.m_currentFrame),
 m_currentLoop(entity.m_currentLoop),
 m_animationId(entity.m_animationId)
 {
+	setMeshRef(entity.m_meshRef);
 	if(entity.m_physicsProperties)
 		m_physicsProperties = new MPhysicsProperties(*entity.m_physicsProperties);
 }
@@ -182,13 +181,16 @@ MPhysicsProperties * MOEntity::createPhysicsProperties(void)
 
 void MOEntity::setMeshRef(MMeshRef * meshRef)
 {
+	// set mesh ref
 	m_meshRef = meshRef;
-
 	if(meshRef)
 	{
 		MMesh * mesh = meshRef->getMesh();
 		if(mesh)
+		{
+			// create nounding box
 			m_boundingBox = (*mesh->getBoundingBox());
+		}
 	}
 }
 

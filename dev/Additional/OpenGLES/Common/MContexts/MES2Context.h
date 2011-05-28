@@ -52,6 +52,9 @@ private:
 	MMatrix4x4 * m_currentMatrix;
 	MMatrix4x4 m_matrixSteps[MAX_MATRIX_STEPS];
 	
+	// frame buffer
+	unsigned int m_currentFrameBuffer;
+	
 	// fog
 	float m_fogMin, m_fogMax;
 	MVector3 m_fogColor;
@@ -105,6 +108,7 @@ public:
 	void createFrameBuffer(unsigned int * frameBufferId);
 	void deleteFrameBuffer(unsigned int * frameBufferId);
 	void bindFrameBuffer(unsigned int frameBufferId);
+	void getCurrentFrameBuffer(unsigned int * frameBufferId);
 	void attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId);
 	void setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size);
 	
