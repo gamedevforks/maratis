@@ -277,29 +277,9 @@ void loadProject(const char * filename)
     return YES;
 }
 
-- (void) configureMobileInput
-{
-    // Create space for the touches dictionary
-    for (int i = 0; i < 5; i++)
-    {
-        touchPointAvailable[i] = true;
-    }
-    
-    touchPoints = CFDictionaryCreateMutable(kCFAllocatorDefault, 10, NULL, NULL);
-    
-    // Create three axis to handle the accelerometer data
-    input->createAxis("ACCEL_X");
-    input->createAxis("ACCEL_Y");
-    input->createAxis("ACCEL_Z");
-    
-    // Setup the accelerometer object
-    UIAccelerometer* accelerometer = [UIAccelerometer sharedAccelerometer];
-    accelerometer.updateInterval = 1/50.0;
-    accelerometer.delegate = self;
-}
-
 - (void) drawView:(id)sender
 {
+    [self processMotionEvents];
     [renderer render];
 }
 
@@ -353,6 +333,9 @@ void loadProject(const char * filename)
 			animationTimer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)((1.0 / 60.0) * animationFrameInterval) target:self selector:@selector(drawView:) userInfo:nil repeats:TRUE];
 		}
         
+        // Start the CoreMotion updates
+        [self startMobileInput];
+        
 		animating = TRUE;
 	}
 }
@@ -371,21 +354,140 @@ void loadProject(const char * filename)
 			[animationTimer invalidate];
 			animationTimer = nil;
 		}
+        
+        // Stop the CoreMotion updates
+        [self stopMobileInput];
 		
 		animating = FALSE;
 	}
 }
 
-- (void) accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
+#pragma mark -
+#pragma iOS Input
+
+- (void) configureMobileInput
 {
-    // To provide some standard support on non-mobile devices
-    input->setAxis("MOUSE_X", acceleration.x);
-    input->setAxis("MOUSE_Y", acceleration.y);
+    // Create space for the touches dictionary
+    maxTouches = 5;
+    touchPointAvailable = new bool[maxTouches];
     
-    // Send data to accelerometer-specific axis
-    input->setAxis("ACCEL_X", acceleration.x);
-    input->setAxis("ACCEL_Y", acceleration.y);
-    input->setAxis("ACCEL_Z", acceleration.z);
+    for (int i = 0; i < maxTouches; i++)
+    {
+        touchPointAvailable[i] = true;
+    }
+    
+    touchPoints = CFDictionaryCreateMutable(kCFAllocatorDefault, 10, NULL, NULL);
+    
+    // Use CoreMotion to get the latest data from sensors (accelerometer+gyroscope)
+    motionManager = [[CMMotionManager alloc] init];
+    
+    if (motionManager.deviceMotionAvailable)
+    {
+        // Set the update interval for device motion (gyro + accelerometer)
+        motionManager.deviceMotionUpdateInterval = 1/50.0;
+        
+        // Create three axis to handle the gyro data
+        input->createAxis("MOTION_X");
+        input->createAxis("MOTION_Y");
+        input->createAxis("MOTION_Z");
+        
+        // Create three axis to handle the accelerometer data
+        input->createAxis("ACCEL_X");
+        input->createAxis("ACCEL_Y");
+        input->createAxis("ACCEL_Z");
+        
+        input->createVectorProperty("REAL_GRAVITY");
+        
+        input->createProperty("YAW");
+        input->createProperty("PITCH");
+        input->createProperty("ROLL");
+    }
+    else if (motionManager.accelerometerAvailable)
+    {
+        // Set the update interval for the accelerometer
+        motionManager.gyroUpdateInterval = 1/50.0;
+        
+        // Create three axis to handle the accelerometer data
+        input->createAxis("ACCEL_X");
+        input->createAxis("ACCEL_Y");
+        input->createAxis("ACCEL_Z");
+    }
+}
+
+- (void) startMobileInput
+{
+    if (motionManager.deviceMotionAvailable)
+    {
+        [motionManager startDeviceMotionUpdates];
+    }
+    else
+    {
+        [motionManager startAccelerometerUpdates];
+    }
+}
+
+- (void) stopMobileInput
+{
+    if (motionManager.deviceMotionAvailable)
+    {
+        [motionManager stopDeviceMotionUpdates];
+    }
+    else
+    {
+        [motionManager stopAccelerometerUpdates];
+    }
+}
+
+- (void) processMotionEvents
+{
+    if (motionManager.deviceMotionAvailable && motionManager.deviceMotionActive)
+    {
+        // To provide some standard support on non-mobile devices
+        input->setAxis("MOUSE_X", motionManager.deviceMotion.userAcceleration.x);
+        input->setAxis("MOUSE_Y", motionManager.deviceMotion.userAcceleration.y);
+        
+        input->setAxis("MOTION_X", motionManager.deviceMotion.rotationRate.x);
+        input->setAxis("MOTION_Y", motionManager.deviceMotion.rotationRate.y);
+        input->setAxis("MOTION_Z", motionManager.deviceMotion.rotationRate.z);
+        
+        // Send data to the real gravity
+        input->setVectorProperty("REAL_GRAVITY", MVector3(motionManager.deviceMotion.gravity.x, 
+                                                          motionManager.deviceMotion.gravity.y, 
+                                                          motionManager.deviceMotion.gravity.z));
+        
+        // Send data to accelerometer-specific axis
+        input->setAxis("ACCEL_X", motionManager.deviceMotion.userAcceleration.x);
+        input->setAxis("ACCEL_Y", motionManager.deviceMotion.userAcceleration.y);
+        input->setAxis("ACCEL_Z", motionManager.deviceMotion.userAcceleration.z);
+        
+        // Get change in attitude
+        CMAttitude* currentAttitude = motionManager.deviceMotion.attitude;
+        
+        // Send Euler-Angles
+        if (referenceAttitude != nil)
+        {
+            [currentAttitude multiplyByInverseOfAttitude:referenceAttitude];
+            
+            input->setProperty("YAW", currentAttitude.yaw);
+            input->setProperty("PITCH", currentAttitude.pitch);
+            input->setProperty("ROLL", currentAttitude.roll);
+        }
+        else
+        {
+            referenceAttitude = [motionManager.deviceMotion.attitude retain];
+        }
+    }
+    else if (motionManager.accelerometerAvailable && motionManager.accelerometerActive)
+    {    
+        // To provide some standard support on non-mobile devices
+        input->setAxis("MOUSE_X", motionManager.accelerometerData.acceleration.x);
+        input->setAxis("MOUSE_Y", motionManager.accelerometerData.acceleration.y);
+        
+        // Send data to accelerometer-specific axis
+        input->setAxis("ACCEL_X", motionManager.accelerometerData.acceleration.x);
+        input->setAxis("ACCEL_Y", motionManager.accelerometerData.acceleration.y);
+        input->setAxis("ACCEL_Z", motionManager.accelerometerData.acceleration.z);
+    }
 }
 
 - (int) getAvailableTouchID
@@ -507,7 +609,12 @@ void loadProject(const char * filename)
 		SAFE_DELETE(msystem);
 	}
     
+    // Device Motion
+    [referenceAttitude release];
+    [motionManager release];
+    
     // Release the touches dictionary
+    delete [] touchPointAvailable;
     CFRelease(touchPoints);
 	
     [renderer release];

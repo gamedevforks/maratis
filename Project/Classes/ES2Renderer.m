@@ -34,7 +34,7 @@ enum {
 // Create an ES 2.0 context
 - (id) init
 {
-	if (self = [super init])
+	if ((self = [super init]))
 	{
 		context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         

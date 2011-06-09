@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <CoreMotion/CoreMotion.h>
 
 #import "ESRenderer.h"
 
@@ -30,8 +31,12 @@
 	id displayLink;
     NSTimer *animationTimer;
 
-    bool touchPointAvailable[5];
+    int maxTouches;
+    bool *touchPointAvailable;
     CFMutableDictionaryRef touchPoints;
+    
+    CMMotionManager* motionManager;
+    CMAttitude* referenceAttitude;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
@@ -40,6 +45,9 @@
 - (BOOL) initRenderingContext;
 
 - (void) configureMobileInput;
+- (void) startMobileInput;
+- (void) stopMobileInput;
+- (void) processMotionEvents;
 
 - (void) startAnimation;
 - (void) stopAnimation;

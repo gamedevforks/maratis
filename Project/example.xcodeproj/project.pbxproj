@@ -17,6 +17,7 @@
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		6BE2BB6A1367754800C3BB17 /* MES1Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2BB681367754800C3BB17 /* MES1Context.cpp */; };
+		AEB652441373D8B5007EAB33 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEB652431373D8B5007EAB33 /* CoreMotion.framework */; };
 		AEFF8FCC1364FA9300195AEF /* exampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AEFF8FCB1364FA9300195AEF /* exampleViewController.m */; };
 		E942A8E4132A3E3900B6E793 /* Demos.mproj in Resources */ = {isa = PBXBuildFile; fileRef = E942A897132A3E3800B6E793 /* Demos.mproj */; };
 		E942A8E5132A3E3900B6E793 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = E942A898132A3E3800B6E793 /* fonts */; };
@@ -276,6 +277,7 @@
 		6BE2BB681367754800C3BB17 /* MES1Context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MES1Context.cpp; path = ../../../trunk/dev/Additional/OpenGLES/Common/MContexts/MES1Context.cpp; sourceTree = SOURCE_ROOT; };
 		6BE2BB691367754800C3BB17 /* MES1Context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MES1Context.h; path = ../../../trunk/dev/Additional/OpenGLES/Common/MContexts/MES1Context.h; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* example-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "example-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		AEB652431373D8B5007EAB33 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		AEFF8FCA1364FA9300195AEF /* exampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exampleViewController.h; sourceTree = "<group>"; };
 		AEFF8FCB1364FA9300195AEF /* exampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = exampleViewController.m; sourceTree = "<group>"; };
 		E942A897132A3E3800B6E793 /* Demos.mproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Demos.mproj; path = ../examples/Demos/Demos.mproj; sourceTree = SOURCE_ROOT; };
@@ -824,6 +826,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEB652441373D8B5007EAB33 /* CoreMotion.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
@@ -903,6 +906,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AEB652431373D8B5007EAB33 /* CoreMotion.framework */,
 				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
 				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,

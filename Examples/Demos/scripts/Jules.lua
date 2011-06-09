@@ -14,6 +14,8 @@ function onSceneUpdate()
 
 	coll = getNumCollisions(Feet)
 
+    rotate(Player, {0, 0, 1}, getProperty("YAW"));
+
 	-- rotate left
 	if isKeyPressed("LEFT") then
 		rotate(Player, {0, 0, 1}, 5)
@@ -25,12 +27,12 @@ function onSceneUpdate()
 	end
 	
 	-- jump (commented as an example)
-    --[[
+    
 	if isKeyPressed("SPACE") or getTouchPhase(0) == 2 then
 		if coll > 1 then
 			addCentralForce(Player, {0, 0, 30})
 		end
-	end]]
+	end
 	
 	-- move Jules
 	if isKeyPressed("UP") then
