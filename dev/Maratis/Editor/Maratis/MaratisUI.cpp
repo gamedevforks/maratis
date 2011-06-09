@@ -81,12 +81,12 @@ void MaratisUI::setSpecialEvent(int specialEvent, const char * info)
 void MaratisUI::specialEvents(void)
 {
 	/*switch(m_specialEvent)
-	{
-	case 1:
-		// do something
-		m_specialEvent = 0;
-		break;
-	}*/
+     {
+     case 1:
+     // do something
+     m_specialEvent = 0;
+     break;
+     }*/
 }
 
 void MaratisUI::updateAnimIdText(MOEntity * entity)
@@ -107,7 +107,7 @@ void MaratisUI::addVariableName(MGuiWindow * window, const char * variableName, 
 	float size = 16;
 	float ySpace = 15;
 	MVector4 variableColor(0.66f, 0.76f, 0.87f, 1.0f);
-
+    
 	MGuiText * text = new MGuiText(variableName, *position, size, variableColor);
 	window->addText(text);
 	*position += MVector2(0, ySpace);
@@ -120,7 +120,7 @@ void MaratisUI::addValue(MGuiWindow * window, const char * valueName, M_VAR_TYPE
 	MVector4 color(1, 1, 1, 1);
 	MVector4 valueColor(1.0f, 0.95f, 0.45f, 0.85f); // 1.0 0.97 0.33
 	MVector4 variableColor(0.66f, 0.76f, 0.87f, 1.0f);
-
+    
 	if(varType == M_VAR_BOOL)
 	{
 		MGuiButton * button = new MGuiButton(*position + MVector2(28, 0), MVector2(16, 16), color, dVarButtonEvents);
@@ -130,11 +130,11 @@ void MaratisUI::addValue(MGuiWindow * window, const char * valueName, M_VAR_TYPE
 		button->setPressedColor(valueColor);
 		button->enableVariable(pointer, varType);
 		window->addButton(button);
-
+        
 		*position += MVector2(0, ySpace);
 		return;
 	}
-
+    
 	int x = 10;
 	if(valueName)
 	{
@@ -142,21 +142,21 @@ void MaratisUI::addValue(MGuiWindow * window, const char * valueName, M_VAR_TYPE
 		text->autoScaleFromText();
 		window->addText(text);
 		
-		 x += (int)text->getScale().x;
+        x += (int)text->getScale().x;
 	}
-
+    
 	if(varType == M_VAR_NONE)
 	{
 		*position += MVector2(0, ySpace);
 		return;
 	}
-
+    
 	// value
 	MGuiEditText * editText = new MGuiEditText("", *position + MVector2((float)x, 0.0f), size, color, editEvents);
 	editText->setSingleLine(true);
 	editText->enableVariable(pointer, varType);
 	window->addEditText(editText);
-
+    
 	*position += MVector2(0, ySpace);
 }
 
@@ -205,96 +205,96 @@ void MaratisUI::editProject(void)
 	//m_objectEdit->setText(scene->getName());
 	
 	/*
-	// script
-	{
-		// color
-		MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
-		imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
-		
-		// script
-		addVariableName(m_editWin, "script", &position);
-		position += MVector2(0, 5);
-		
-		// text
-		int textLength = 0;
-		MGuiText * text;
-		
-		const char * script = scene->getScriptFilename();
-		if(script)
-		{
-			char rep[256];
-			char name[256];
-			
-			getRepertory(rep, script);
-			getLocalFilename(name, rep, script);
-			
-			text = new MGuiText(name, MVector2(28, position.y), size, color);
-			textLength = (int)text->getScale().x + 50 + 20;
-		}
-		else
-		{
-			text = new MGuiText("none", MVector2(28, position.y), size, color);
-			textLength = (int)text->getScale().x + 50;
-		}
-		
-		// image
-		MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
-		m_editWin->addImage(image);
-		
-		image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
-		m_editWin->addImage(image);
-		
-		// add text
-		m_editWin->addText(text);
-		
-		// delete script
-		float x = textLength - 14.0f;
-		if(script)
-		{
-			MGuiButton * button = new MGuiButton(MVector2(x, position.y), MVector2(16, 16), color, deleteScriptEvents);
-			button->setHighLightColor(highLightColor);
-			button->setPressedColor(pressColor);
-			button->setNormalTexture("gui/buttonDelete.tga");
-			m_editWin->addButton(button);
-			x -= 20;
-		}
-		
-		// open script
-		MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadScriptEvents);
-		button->setHighLightColor(highLightColor);
-		button->setPressedColor(pressColor);
-		button->setNormalTexture("gui/buttonOpen.tga");
-		m_editWin->addButton(button);
-		
-		position += MVector2(0, ySpace*3);
-	}
-	
-	// dataMode
-	addVariableName(m_editWin, "data", &position);
-	
-	MGuiMenu * dataMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), dataMenuEvents);
-	
-	dataMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
-	dataMenu->setTextColor(MVector4(1, 1, 1, 1));
-	
-	dataMenu->addSimpleButton("Static", NULL);
-	dataMenu->addSimpleButton("Dynamic", NULL);
-	//dataMenu->addSimpleButton("Stream", NULL);
-	
-	dataMenu->setMenuId((unsigned int)scene->getDataMode());
-	dataMenu->getWindowMenu()->setShadow(true);
-	dataMenu->getWindowMenu()->setNormalColor(menuColor);
-	
-	m_editWin->addMenu(dataMenu);
-	position += MVector2(0, ySpace*2);
-	
-	// gravity
-	MVector3 * gravity = scene->getGravity();
-	addVariableName(m_editWin, "gravity", &position);
-	addValue(m_editWin, "x", M_VAR_FLOAT, &gravity->x, &position);
-	addValue(m_editWin, "y", M_VAR_FLOAT, &gravity->y, &position);
-	addValue(m_editWin, "z", M_VAR_FLOAT, &gravity->z, &position);
-	position += MVector2(0, ySpace);
+     // script
+     {
+     // color
+     MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
+     imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
+     
+     // script
+     addVariableName(m_editWin, "script", &position);
+     position += MVector2(0, 5);
+     
+     // text
+     int textLength = 0;
+     MGuiText * text;
+     
+     const char * script = scene->getScriptFilename();
+     if(script)
+     {
+     char rep[256];
+     char name[256];
+     
+     getRepertory(rep, script);
+     getLocalFilename(name, rep, script);
+     
+     text = new MGuiText(name, MVector2(28, position.y), size, color);
+     textLength = (int)text->getScale().x + 50 + 20;
+     }
+     else
+     {
+     text = new MGuiText("none", MVector2(28, position.y), size, color);
+     textLength = (int)text->getScale().x + 50;
+     }
+     
+     // image
+     MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
+     m_editWin->addImage(image);
+     
+     image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
+     m_editWin->addImage(image);
+     
+     // add text
+     m_editWin->addText(text);
+     
+     // delete script
+     float x = textLength - 14.0f;
+     if(script)
+     {
+     MGuiButton * button = new MGuiButton(MVector2(x, position.y), MVector2(16, 16), color, deleteScriptEvents);
+     button->setHighLightColor(highLightColor);
+     button->setPressedColor(pressColor);
+     button->setNormalTexture("gui/buttonDelete.tga");
+     m_editWin->addButton(button);
+     x -= 20;
+     }
+     
+     // open script
+     MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadScriptEvents);
+     button->setHighLightColor(highLightColor);
+     button->setPressedColor(pressColor);
+     button->setNormalTexture("gui/buttonOpen.tga");
+     m_editWin->addButton(button);
+     
+     position += MVector2(0, ySpace*3);
+     }
+     
+     // dataMode
+     addVariableName(m_editWin, "data", &position);
+     
+     MGuiMenu * dataMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), dataMenuEvents);
+     
+     dataMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
+     dataMenu->setTextColor(MVector4(1, 1, 1, 1));
+     
+     dataMenu->addSimpleButton("Static", NULL);
+     dataMenu->addSimpleButton("Dynamic", NULL);
+     //dataMenu->addSimpleButton("Stream", NULL);
+     
+     dataMenu->setMenuId((unsigned int)scene->getDataMode());
+     dataMenu->getWindowMenu()->setShadow(true);
+     dataMenu->getWindowMenu()->setNormalColor(menuColor);
+     
+     m_editWin->addMenu(dataMenu);
+     position += MVector2(0, ySpace*2);
+     
+     // gravity
+     MVector3 * gravity = scene->getGravity();
+     addVariableName(m_editWin, "gravity", &position);
+     addValue(m_editWin, "x", M_VAR_FLOAT, &gravity->x, &position);
+     addValue(m_editWin, "y", M_VAR_FLOAT, &gravity->y, &position);
+     addValue(m_editWin, "z", M_VAR_FLOAT, &gravity->z, &position);
+     position += MVector2(0, ySpace);
 	 */
 	
 	m_editWin->resizeScroll();
@@ -303,14 +303,14 @@ void MaratisUI::editProject(void)
 void MaratisUI::editScene(void)
 {
 	MWindow * window = MWindow::getInstance();
-
+    
 	m_editWin->clear();
 	setNeedToUpdateEdit(false);
-
+    
 	float winHeight = (float)window->getHeight();
 	float headHeight = m_headWin->getScale().y;
 	float viewPropHeight = m_viewProp->getScale().y;
-
+    
 	float size = 16;
 	float ySpace = 15;
 	MVector4 color(1, 1, 1, 1);
@@ -318,18 +318,18 @@ void MaratisUI::editScene(void)
 	MVector4 highLightColor(0.8f, 0.9f, 1, 1);
 	MVector4 menuColor(0.32f, 0.53f, 0.70f, 1.0f);
 	MVector4 pressColor(1, 1, 0.5f, 1);
-
+    
 	MVector2 position = MVector2(15, 40);
-
-
+    
+    
 	// scene properties
 	MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
-
+    
 	m_cameraWin->setVisible(false);
 	m_editWin->setYPosition(headHeight + viewPropHeight*2);
 	m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
 	m_editTopWin->setYScale(viewPropHeight*2);
-
+    
 	m_editedObject = NULL;
 	m_tabImage->setVisible(false);
 	m_objectEdit->setVisible(false);
@@ -339,33 +339,33 @@ void MaratisUI::editScene(void)
 	m_tabBehavior->setVisible(false);
 	m_projProperties->setVisible(false);
 	m_tabText->setVisible(false);
-
+    
 	m_tabImage->setVisible(true);
 	m_sceneProperties->setVisible(true);
 	
 	m_objectEdit->setVisible(true);
 	m_objectEdit->setText(scene->getName());
-
+    
 	// script
 	{
 		// color
 		MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
 		imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
-
+        
 		// script
 		addVariableName(m_editWin, "script", &position);
 		position += MVector2(0, 5);
-
+        
 		// text
 		int textLength = 0;
 		MGuiText * text;
-
+        
 		const char * script = scene->getScriptFilename();
 		if(script)
 		{
 			char rep[256];
 			char name[256];
-
+            
 			getRepertory(rep, script);
 			getLocalFilename(name, rep, script);
 			
@@ -377,23 +377,23 @@ void MaratisUI::editScene(void)
 			text = new MGuiText("none", MVector2(28, position.y), size, color);
 			textLength = (int)text->getScale().x + 50;
 		}
-
+        
 		// image
 		MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
 		m_editWin->addImage(image);
-
+        
 		// edit script
 		{
 			MGuiButton * button = new MGuiButton(MVector2(10, position.y-2), MVector2((float)textLength - 50, 20), MVector4(0.0f, 0.0f, 0.0f, 0.0f), editScriptEvents);
 			m_editWin->addButton(button);
 		}
-
+        
 		image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
 		m_editWin->addImage(image);
-
+        
 		// add text
 		m_editWin->addText(text);
-
+        
 		// delete script
 		float x = textLength - 14.0f;
 		if(script)
@@ -405,7 +405,7 @@ void MaratisUI::editScene(void)
 			m_editWin->addButton(button);
 			x -= 20;
 		}
-
+        
 		// open script
 		MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadScriptEvents);
 		button->setHighLightColor(highLightColor);
@@ -415,26 +415,26 @@ void MaratisUI::editScene(void)
 		
 		position += MVector2(0, ySpace*3);
 	}
-
+    
 	// dataMode
 	addVariableName(m_editWin, "data", &position);
-
+    
 	MGuiMenu * dataMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), dataMenuEvents);
-
+    
 	dataMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
 	dataMenu->setTextColor(MVector4(1, 1, 1, 1));
-
+    
 	dataMenu->addSimpleButton("Static", NULL);
 	dataMenu->addSimpleButton("Dynamic", NULL);
 	//dataMenu->addSimpleButton("Stream", NULL);
-
+    
 	dataMenu->setMenuId((unsigned int)scene->getDataMode());
 	dataMenu->getWindowMenu()->setShadow(true);
 	dataMenu->getWindowMenu()->setNormalColor(menuColor);
 	
 	m_editWin->addMenu(dataMenu);
 	position += MVector2(0, ySpace*2);
-
+    
 	// gravity
 	MVector3 * gravity = scene->getGravity();
 	addVariableName(m_editWin, "gravity", &position);
@@ -442,21 +442,21 @@ void MaratisUI::editScene(void)
 	addValue(m_editWin, "y", M_VAR_FLOAT, &gravity->y, &position);
 	addValue(m_editWin, "z", M_VAR_FLOAT, &gravity->z, &position);
 	position += MVector2(0, ySpace);
-
+    
 	m_editWin->resizeScroll();
 }
 
 void MaratisUI::editObject(MObject3d * object)
 {
 	MWindow * window = MWindow::getInstance();
-
+    
 	m_editWin->clear();
 	setNeedToUpdateEdit(false);
-
+    
 	float winHeight = (float)window->getHeight();
 	float headHeight = m_headWin->getScale().y;
 	float viewPropHeight = m_viewProp->getScale().y;
-
+    
 	float size = 16;
 	float ySpace = 15;
 	MVector4 color(1, 1, 1, 1);
@@ -464,14 +464,14 @@ void MaratisUI::editObject(MObject3d * object)
 	MVector4 highLightColor(0.8f, 0.9f, 1, 1);
 	MVector4 menuColor(0.32f, 0.53f, 0.70f, 1.0f);
 	MVector4 pressColor(1, 1, 0.5f, 1);
-
+    
 	MVector2 position = MVector2(15, 40);
-
+    
 	// other properties
 	m_sceneProperties->setVisible(false);
 	m_projProperties->setVisible(false);
 	m_tabText->setVisible(false);
-
+    
 	// NULL
 	if(! object)
 	{
@@ -482,38 +482,38 @@ void MaratisUI::editObject(MObject3d * object)
 		m_tabTransform->setVisible(false);
 		m_tabProperties->setVisible(false);
 		m_tabBehavior->setVisible(false);
-
+        
 		m_editWin->resizeScroll();
 		//editProject();
 		return;
 	}
-
+    
 	// object properties
 	if(object != m_editedObject)
 	{
 		m_editedBehavior = object->getBehaviorsNumber();
 		m_editedObject = object;
 	}
-
+    
 	const char * name = object->getName();
 	if(name)
 		m_objectEdit->setText(name);
-
+    
 	m_objectEdit->setVisible(true);
 	m_tabImage->setVisible(true);
 	m_tabTransform->setVisible(true);
 	m_tabProperties->setVisible(true);
 	m_tabBehavior->setVisible(true);
-
+    
 	if(object->getType() == M_OBJECT3D_CAMERA)
 	{
 		int previewHeight = 230;
-
+        
 		m_cameraWin->setVisible(true);
 		m_editWin->setYPosition(headHeight + viewPropHeight*2 + previewHeight);
 		m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
 		m_editTopWin->setYScale(viewPropHeight*2 + previewHeight);
-
+        
 		m_cameraWin->setNormalColor(*((MOCamera*)object)->getClearColor());
 	}
 	else
@@ -523,8 +523,8 @@ void MaratisUI::editObject(MObject3d * object)
 		m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
 		m_editTopWin->setYScale(viewPropHeight*2);
 	}
-
-
+    
+    
 	// transform
 	if(m_tabTransform->isPressed())
 	{
@@ -534,35 +534,35 @@ void MaratisUI::editObject(MObject3d * object)
 		addValue(m_editWin, "y", M_VAR_FLOAT, &m_editPosition.y, &position);
 		addValue(m_editWin, "z", M_VAR_FLOAT, &m_editPosition.z, &position);
 		position += MVector2(0, ySpace);
-
+        
 		m_editRotation = object->getEulerRotation();
 		addVariableName(m_editWin, "rotation", &position);
 		addValue(m_editWin, "x", M_VAR_FLOAT, &m_editRotation.x, &position);
 		addValue(m_editWin, "y", M_VAR_FLOAT, &m_editRotation.y, &position);
 		addValue(m_editWin, "z", M_VAR_FLOAT, &m_editRotation.z, &position);
 		position += MVector2(0, ySpace);
-
+        
 		m_editScale = object->getScale();
 		addVariableName(m_editWin, "scale", &position);
 		addValue(m_editWin, "x", M_VAR_FLOAT, &m_editScale.x, &position);
 		addValue(m_editWin, "y", M_VAR_FLOAT, &m_editScale.y, &position);
 		addValue(m_editWin, "z", M_VAR_FLOAT, &m_editScale.z, &position);
 		position += MVector2(0, ySpace);
-
+        
 		m_editWin->resizeScroll();
 		return;
 	}
-
+    
 	if(m_tabProperties->isPressed())
 	{
 		switch(object->getType())
 		{
-		case M_OBJECT3D_ENTITY:
+            case M_OBJECT3D_ENTITY:
 			{
 				MOEntity * entity = (MOEntity *)object;
 				MMeshRef * meshRef = entity->getMeshRef();
 				MMesh * mesh = meshRef->getMesh();
-
+                
 				// data ref
 				if(meshRef)
 				{
@@ -570,13 +570,13 @@ void MaratisUI::editObject(MObject3d * object)
 					char name[256];
 					getRepertory(rep, meshRef->getFilename());
 					getLocalFilename(name, rep, meshRef->getFilename());
-
+                    
 					addVariableName(m_editWin, "Mesh", &position);
 					addValue(m_editWin, name, M_VAR_NONE, NULL, &position);
-
+                    
 					position += MVector2(0, ySpace);
 				}
-
+                
 				// anims
 				if(mesh)
 				{
@@ -586,83 +586,83 @@ void MaratisUI::editObject(MObject3d * object)
 						MGuiText * text = new MGuiText("animation", position, size, variableColor);
 						m_editWin->addText(text);
 						position += MVector2(0, ySpace);
-
+                        
 						// image
 						MGuiImage * image = new MGuiImage("gui/imgAnim.tga", MVector2(5, position.y), MVector2(128, 32), MVector4(0, 0, 0, 0.2f));
 						m_editWin->addImage(image);
-
+                        
 						// left button
 						MGuiButton * button = new MGuiButton(MVector2(21, position.y + 8), MVector2(16, 16), color, leftAnimIdEvents);
 						button->setHighLightColor(highLightColor);
 						button->setPressedColor(pressColor);
 						button->setNormalTexture("gui/buttonLeft.tga");
 						m_editWin->addButton(button);
-
+                        
 						// right button
 						button = new MGuiButton(MVector2(101, position.y + 8), MVector2(16, 16), color, rightAnimIdEvents);
 						button->setHighLightColor(highLightColor);
 						button->setPressedColor(pressColor);
 						button->setNormalTexture("gui/buttonRight.tga");
 						m_editWin->addButton(button);
-
+                        
 						// id
 						m_animIdText = new MGuiText("", MVector2(40, position.y + 8), size, color);
 						updateAnimIdText(entity);
 						m_editWin->addText(m_animIdText);
-
+                        
 						position += MVector2(0, ySpace*3);
 					}
 					else
 					{
 						MVector4 grayColor(0.5f, 0.5f, 0.5f, 1);
-
+                        
 						// text
 						MGuiText * text = new MGuiText("animation", position, size, grayColor);
 						m_editWin->addText(text);
 						position += MVector2(0, ySpace);
-
+                        
 						// image
 						MGuiImage * image = new MGuiImage("gui/imgAnim.tga", MVector2(5, position.y), MVector2(128, 32), MVector4(0.5f, 0.5f, 0.5f, 0.2f));
 						m_editWin->addImage(image);
-
+                        
 						// left button
 						image = new MGuiImage("gui/buttonLeft.tga", MVector2(21, position.y + 8), MVector2(16, 16), grayColor);
 						m_editWin->addImage(image);
-
+                        
 						// right button
 						image = new MGuiImage("gui/buttonRight.tga", MVector2(101, position.y + 8), MVector2(16, 16), grayColor);
 						m_editWin->addImage(image);
-
+                        
 						// id
 						m_animIdText = new MGuiText("0/0", MVector2(53, position.y + 8), size, grayColor);
 						m_editWin->addText(m_animIdText);
-
+                        
 						position += MVector2(0, ySpace*3);
 					}
 				}
-
+                
 				// invisible
 				m_editInvisible = entity->isInvisible();
 				addVariableName(m_editWin, "invisible", &position);
 				addValue(m_editWin, "", M_VAR_BOOL, &m_editInvisible, &position);
 				position += MVector2(0, ySpace);
-
+                
 				// physics
 				{		
 					MPhysicsProperties * phyProps = entity->getPhysicsProperties();
-
+                    
 					m_editPhysics = (phyProps != NULL);
 					addVariableName(m_editWin, "Physics", &position);
 					addValue(m_editWin, "", M_VAR_BOOL, &m_editPhysics, &position);
 					position += MVector2(0, ySpace);
-
+                    
 					if(phyProps)
 					{
 						// shape
 						MGuiText * text = new MGuiText("shape", position, size, variableColor);
 						m_editWin->addText(text);
 						position += MVector2(0, ySpace);
-
+                        
 						MGuiMenu * menu = new MGuiMenu(MVector2(position.x+10, position.y), MVector2(10, 10), MVector4(1, 1, 1, 0), collisionShapeEvents);
 						menu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
 						menu->setTextColor(MVector4(1, 1, 1, 1));
@@ -676,10 +676,10 @@ void MaratisUI::editObject(MObject3d * object)
 						menu->getWindowMenu()->setShadow(true);
 						menu->getWindowMenu()->setNormalColor(menuColor);
 						m_editWin->addMenu(menu);
-					
+                        
 						menu->setMenuId((int)phyProps->getCollisionShape());
 						position += MVector2(0, ySpace*2);
-
+                        
 						// ghost
 						m_editGhost = phyProps->isGhost();
 						addVariableName(m_editWin, "ghost", &position);
@@ -706,13 +706,13 @@ void MaratisUI::editObject(MObject3d * object)
 							addValue(m_editWin, "lin", M_VAR_FLOAT, &m_editLinearDamping, &position);
 							addValue(m_editWin, "ang", M_VAR_FLOAT, &m_editAngularDamping, &position);
 							position += MVector2(0, ySpace);
-
+                            
 							// angular factor
 							m_editAngularFactor = phyProps->getAngularFactor();
 							addVariableName(m_editWin, "angularFactor", &position);
 							addValue(m_editWin, "", M_VAR_FLOAT, &m_editAngularFactor, &position);
 							position += MVector2(0, ySpace);
-
+                            
 							// linear factor
 							MVector3 * linearFactor = phyProps->getLinearFactor();
 							addVariableName(m_editWin, "linearFactor", &position);
@@ -780,22 +780,22 @@ void MaratisUI::editObject(MObject3d * object)
 					}
 				}
 			}
-			break;
-		case M_OBJECT3D_LIGHT:
+                break;
+            case M_OBJECT3D_LIGHT:
 			{
 				MOLight * light = (MOLight *)object;
-
+                
 				m_editRadius = light->getRadius();
 				addVariableName(m_editWin, "radius", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editRadius, &position);
 				position += MVector2(0, ySpace);
-
+                
 				addVariableName(m_editWin, "color", &position);
 				addValue(m_editWin, "r", M_VAR_FLOAT, &light->getColor()->x, &position);
 				addValue(m_editWin, "v", M_VAR_FLOAT, &light->getColor()->y, &position);
 				addValue(m_editWin, "b", M_VAR_FLOAT, &light->getColor()->z, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editIntensity = light->getIntensity();
 				addVariableName(m_editWin, "intensity", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editIntensity, &position);
@@ -812,7 +812,7 @@ void MaratisUI::editObject(MObject3d * object)
 					addVariableName(m_editWin, "spotAngle", &position);
 					addValue(m_editWin, "", M_VAR_FLOAT, &m_editSpotAngle, &position);
 					position += MVector2(0, ySpace);
-				
+                    
 					m_editSpotExponent = light->getSpotExponent();
 					addVariableName(m_editWin, "spotExponent", &position);
 					addValue(m_editWin, "", M_VAR_FLOAT, &m_editSpotExponent, &position);
@@ -842,53 +842,53 @@ void MaratisUI::editObject(MObject3d * object)
 					}
 				}
 			}
-			break;
-		case M_OBJECT3D_CAMERA:
+                break;
+            case M_OBJECT3D_CAMERA:
 			{
 				MOCamera * camera = (MOCamera *)object;
-
+                
 				addVariableName(m_editWin, "clearColor", &position);
 				addValue(m_editWin, "r", M_VAR_FLOAT, &camera->getClearColor()->x, &position);
 				addValue(m_editWin, "v", M_VAR_FLOAT, &camera->getClearColor()->y, &position);
 				addValue(m_editWin, "b", M_VAR_FLOAT, &camera->getClearColor()->z, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editOrtho = camera->isOrtho();
 				addVariableName(m_editWin, "ortho", &position);
 				addValue(m_editWin, "", M_VAR_BOOL, &m_editOrtho, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editFov = camera->getFov();
 				addVariableName(m_editWin, "fov", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editFov, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editClipNear = camera->getClippingNear();
 				addVariableName(m_editWin, "clippingNear", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editClipNear, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editClipFar = camera->getClippingFar();
 				addVariableName(m_editWin, "clippingFar", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editClipFar, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editFog = camera->hasFog();
 				addVariableName(m_editWin, "fog", &position);
 				addValue(m_editWin, "", M_VAR_BOOL, &m_editFog, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editFogDistance = camera->getFogDistance();
 				addVariableName(m_editWin, "fogDistance", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editFogDistance, &position);
 				position += MVector2(0, ySpace);
 			}
-			break;
-		case M_OBJECT3D_SOUND:
+                break;
+            case M_OBJECT3D_SOUND:
 			{
 				MOSound * sound = (MOSound *)object;
 				MSoundRef * soundRef = sound->getSoundRef();
-
+                
 				// data ref
 				if(soundRef)
 				{
@@ -896,57 +896,57 @@ void MaratisUI::editObject(MObject3d * object)
 					char name[256];
 					getRepertory(rep, soundRef->getFilename());
 					getLocalFilename(name, rep, soundRef->getFilename());
-
+                    
 					addVariableName(m_editWin, "Sound", &position);
 					addValue(m_editWin, name, M_VAR_NONE, NULL, &position);
-
+                    
 					position += MVector2(0, ySpace);
 				}
-
+                
 				m_editLoop = sound->isLooping();
 				addVariableName(m_editWin, "loop", &position);
 				addValue(m_editWin, "", M_VAR_BOOL, &m_editLoop, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editPitch = sound->getPitch();
 				addVariableName(m_editWin, "pitch", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editPitch, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editGain = sound->getGain();
 				addVariableName(m_editWin, "gain", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editGain, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editSndRadius = sound->getRadius();
 				addVariableName(m_editWin, "radius", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editSndRadius, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editRolloff = sound->getRolloff();
 				addVariableName(m_editWin, "rolloff", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editRolloff, &position);
 				position += MVector2(0, ySpace);
-
+                
 				m_editRelative = sound->isRelative();
 				addVariableName(m_editWin, "relative", &position);
 				addValue(m_editWin, "", M_VAR_BOOL, &m_editRelative, &position);
 				position += MVector2(0, ySpace);
 			}
-			break;
-		case M_OBJECT3D_TEXT:
+                break;
+            case M_OBJECT3D_TEXT:
 			{
 				MEngine * engine = MEngine::getInstance();
 				MLevel * level = engine->getLevel();
 				MDataManager * fontManager = level->getFontManager();
 				MOText * text = (MOText *)object;
-
+                
 				int textLength = 0;
 				MGuiText * guiText = NULL;
-
+                
 				addVariableName(m_editWin, "font", &position);
 				position += MVector2(0, 4);
-
+                
 				// font
 				MFont * font = text->getFont();
 				if(font)
@@ -954,7 +954,7 @@ void MaratisUI::editObject(MObject3d * object)
 					const char * fontFilename = NULL;
 					unsigned int r;
 					unsigned int rSize = fontManager->getRefsNumber();
-
+                    
 					for(r=0; r<rSize; r++)
 					{
 						MFontRef * ref = (MFontRef*)fontManager->getRef(r);
@@ -962,72 +962,72 @@ void MaratisUI::editObject(MObject3d * object)
 							fontFilename = ref->getFilename();
 							break;
 						}
-
+                        
 					}
-
+                    
 					if(fontFilename)
 					{
 						char rep[256];
 						char name[256];
-
+                        
 						getRepertory(rep, fontFilename);
 						getLocalFilename(name, rep, fontFilename);
 						
 						guiText = new MGuiText(name, MVector2(28, position.y), size, color);
 					}
 				}
-
+                
 				if(! guiText)
 					guiText = new MGuiText("none", MVector2(28, position.y), size, color);
-
+                
 				textLength = (int)guiText->getScale().x + 50 + 20;
 				float x = textLength - 14.0f;
-
+                
 				// image
 				MVector4 imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
 				MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
 				m_editWin->addImage(image);
-
+                
 				image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
 				m_editWin->addImage(image);
-
+                
 				// add text
 				m_editWin->addText(guiText);
-
+                
 				// open font
 				MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadFontEvents);
 				button->setHighLightColor(highLightColor);
 				button->setNormalTexture("gui/buttonOpen.tga");
 				button->setPressedColor(pressColor);
 				m_editWin->addButton(button);
-	
+                
 				position += MVector2(0, ySpace*2);
-
+                
 				// size
 				m_editSize = text->getSize();
 				addVariableName(m_editWin, "size", &position);
 				addValue(m_editWin, "", M_VAR_FLOAT, &m_editSize, &position);
 				position += MVector2(0, ySpace);
-
+                
 				// align
 				addVariableName(m_editWin, "align", &position);
-
+                
 				MGuiMenu * alignMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), textAlignMenuEvents);
-
+                
 				alignMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
 				alignMenu->setTextColor(MVector4(1, 1, 1, 1));
-
+                
 				alignMenu->addSimpleButton("Left", NULL);
 				alignMenu->addSimpleButton("Right", NULL);
 				alignMenu->addSimpleButton("Center", NULL);
-
+                
 				alignMenu->setMenuId((unsigned int)text->getAlign());
 				alignMenu->getWindowMenu()->setShadow(true);
 				alignMenu->getWindowMenu()->setNormalColor(menuColor);
 				
 				m_editWin->addMenu(alignMenu);
 				position += MVector2(0, ySpace*2);
-
+                
 				// color
 				addVariableName(m_editWin, "color", &position);
 				addValue(m_editWin, "r", M_VAR_FLOAT, &text->getColor()->x, &position);
@@ -1035,26 +1035,26 @@ void MaratisUI::editObject(MObject3d * object)
 				addValue(m_editWin, "b", M_VAR_FLOAT, &text->getColor()->z, &position);
 				addValue(m_editWin, "a", M_VAR_FLOAT, &text->getColor()->w, &position);
 				position += MVector2(0, ySpace);
-
+                
 				//text
 				m_editText = text->getText();
 				addVariableName(m_editWin, "text", &position);
-			
+                
 				//addValue(m_editWin, "", M_VAR_STRING, &m_editText, &position);
 				MGuiEditText * editText = new MGuiEditText("", position + MVector2(24, 0), size, color, editEvents);
 				editText->enableVariable(&m_editText, M_VAR_STRING);
 				m_editWin->addEditText(editText);
 				position += MVector2(0, ySpace);
-
+                
 				position += MVector2(0, ySpace);
-
+                
 			}
-			break;
+                break;
 		}
 		m_editWin->resizeScroll();
 		return;
 	}
-
+    
 	if(m_tabBehavior->isPressed())
 	{
 		// behaviors
@@ -1066,27 +1066,27 @@ void MaratisUI::editObject(MObject3d * object)
 			MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
 			if(i+1 == m_editedBehavior)
 				imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
-
+            
 			// behavior
 			MBehavior * behavior = object->getBehavior(i);
-
+            
 			// image
 			MGuiImage * image = new MGuiImage("gui/imgBehavior.tga", MVector2(0, position.y - 8), MVector2(256, 32), imgColor);
 			m_editWin->addImage(image);
-
+            
 			// text
 			string name("- ");
 			name += behavior->getName();
 			MGuiText * text = new MGuiText(name.c_str(), position, size, color);
 			m_editWin->addText(text);
-
+            
 			// current behavior
 			if(i+1 == m_editedBehavior)
 			{
 				// buttons
 				int x = 218;
 				MGuiButton * button;
-
+                
 				if((i + 1) != bSize)
 				{
 					button = new MGuiButton(MVector2(218, position.y + 4), MVector2(8, 8), color, downBehaviorEvents);
@@ -1096,7 +1096,7 @@ void MaratisUI::editObject(MObject3d * object)
 					m_editWin->addButton(button);
 					x -= 20;
 				}
-
+                
 				if(i != 0)
 				{
 					button = new MGuiButton(MVector2((float)x, position.y + 4), MVector2(8, 8), color, upBehaviorEvents);
@@ -1105,62 +1105,71 @@ void MaratisUI::editObject(MObject3d * object)
 					button->setNormalTexture("gui/buttonUp.tga");
 					m_editWin->addButton(button);
 				}
-
+                
 				button = new MGuiButton(MVector2(233, position.y), MVector2(16, 16), color, deleteBehaviorEvents);
 				button->setHighLightColor(highLightColor);
 				button->setPressedColor(pressColor);
 				button->setNormalTexture("gui/buttonDelete.tga");
 				m_editWin->addButton(button);
-
+                
 				// behavior properties
 				position += MVector2(0, 30);
-
+                
 				unsigned int v;
 				unsigned int vSize = behavior->getVariablesNumber();
 				for(v=0; v<vSize; v++)
 				{
 					MVariable variable = behavior->getVariable(v);
 					M_VARIABLE_TYPE varType = variable.getType();
-
+                    
 					if(varType == M_VARIABLE_NULL)
 						continue;
-
+                    
 					addVariableName(m_editWin, variable.getName(), &position);
-						
+                    
 					switch(varType)
 					{
-					case M_VARIABLE_BOOL:
-						addValue(m_editWin, "", M_VAR_BOOL, variable.getPointer(), &position);
-						position += MVector2(0, ySpace);
-						break;
-					case M_VARIABLE_INT:
-						addValue(m_editWin, "", M_VAR_INT, variable.getPointer(), &position);
-						position += MVector2(0, ySpace);
-						break;
-					case M_VARIABLE_UINT:
-						addValue(m_editWin, "", M_VAR_UINT, variable.getPointer(), &position);
-						position += MVector2(0, ySpace);
-						break;
-					case M_VARIABLE_FLOAT:
-						addValue(m_editWin, "", M_VAR_FLOAT, variable.getPointer(), &position);
-						position += MVector2(0, ySpace);
-						break;
-					case M_VARIABLE_STRING:
-						addValue(m_editWin, "", M_VAR_STRING, variable.getPointer(), &position);
-						position += MVector2(0, ySpace);
-						break;
-					case M_VARIABLE_VEC2:
-						addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
-						position += MVector2(0, ySpace);
-						addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
-						position += MVector2(0, ySpace);
-						break;
-					case M_VARIABLE_VEC3:
-						addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->x, &position);
-						addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->y, &position);
-						addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->z, &position);
-						position += MVector2(0, ySpace);
-						break;
+                        case M_VARIABLE_BOOL:
+                            addValue(m_editWin, "", M_VAR_BOOL, variable.getPointer(), &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        case M_VARIABLE_INT:
+                            addValue(m_editWin, "", M_VAR_INT, variable.getPointer(), &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        case M_VARIABLE_UINT:
+                            addValue(m_editWin, "", M_VAR_UINT, variable.getPointer(), &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        case M_VARIABLE_FLOAT:
+                            addValue(m_editWin, "", M_VAR_FLOAT, variable.getPointer(), &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        case M_VARIABLE_STRING:
+                            addValue(m_editWin, "", M_VAR_STRING, variable.getPointer(), &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        case M_VARIABLE_VEC2:
+                            addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
+                            position += MVector2(0, ySpace);
+                            addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        case M_VARIABLE_VEC3:
+                            addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->x, &position);
+                            addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->y, &position);
+                            addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->z, &position);
+                            position += MVector2(0, ySpace);
+                            break;
+                            
+                        default:
+                            break;
 					case M_VARIABLE_VEC4:
 						addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->x, &position);
 						addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->y, &position);
@@ -1170,7 +1179,7 @@ void MaratisUI::editObject(MObject3d * object)
 						break;
 					}
 				}
-
+                
 				position += MVector2(0, 30);
 			}
 			else
@@ -1178,16 +1187,16 @@ void MaratisUI::editObject(MObject3d * object)
 				position += MVector2(0, 24);
 			}
 		}
-
+        
 		// behaviors menu
 		MGuiImage * behaviorImage = new MGuiImage("gui/imgAddBehavior.tga", MVector2(0, position.y - 8), MVector2(32, 32), MVector4(0, 0, 0, 0.2f));
-
+        
 		MBehaviorManager * bManager = MEngine::getInstance()->getBehaviorManager();
 		MGuiMenu * behaviorMenu = new MGuiMenu(position, MVector2(16, 16), color, behaviorMenuEvents);
-
+        
 		behaviorMenu->setNormalTexture("gui/buttonSup.tga");
 		behaviorMenu->setDrawingText(false);
-
+        
 		unsigned int y = 10;
 		
 		bSize = bManager->getBehaviorsNumber();
@@ -1196,17 +1205,17 @@ void MaratisUI::editObject(MObject3d * object)
 			MBehaviorCreator * behavior = bManager->getBehaviorByIndex(i);
 			if((behavior->getObjectFilter() != M_OBJECT3D) && (behavior->getObjectFilter() != object->getType()))
 				continue;
-
+            
 			addTextButtonToMenu(behaviorMenu, behavior->getName(), MVector2(0, (float)y), NULL);
 			y += 20;
 		}
-
+        
 		addTextToMenu(behaviorMenu, "", MVector2(0, (float)y-10));
-
+        
 		behaviorMenu->setMenuId(bSize);
 		behaviorMenu->getWindowMenu()->setShadow(true);
 		behaviorMenu->getWindowMenu()->setNormalColor(menuColor);
-
+        
 		m_editWin->addImage(behaviorImage);
 		m_editWin->addMenu(behaviorMenu);
 		m_editWin->resizeScroll();
@@ -1226,31 +1235,31 @@ void MaratisUI::drawInfoText(void)
 {
 	MWindow * window = MWindow::getInstance();
 	MMouse * mouse = MMouse::getInstance();
-
+    
 	unsigned int wWidth = window->getWidth();
 	unsigned int wHeight = window->getHeight();
-
+    
 	int mX = mouse->getXPosition();
 	int mY = mouse->getYPosition();
-
+    
 	float sX = m_infoText->getScale().x;
 	float sY = m_infoText->getScale().y;
-
+    
 	float pX = (float)(mX - 20);
 	float pY = (float)(mY + 20);
-
+    
 	if(pX < 0)
 		pX = 0;
-
+    
 	if(pY < 0)
 		pY = 0;
-
-	if((pX + sX) > window->getWidth())
-		pX = window->getWidth() - sX;
-
-	if((pY + sY) >  window->getHeight())
-		pY = window->getHeight() - sY;
-
+    
+	if((pX + sX) > wWidth)
+		pX = wWidth - sX;
+    
+	if((pY + sY) >  wHeight)
+		pY = wHeight - sY;
+    
 	m_infoText->setPosition(MVector2(pX, pY));
 	m_infoText->draw();
 	m_infoText->setText("");
@@ -1258,60 +1267,60 @@ void MaratisUI::drawInfoText(void)
 
 void MaratisUI::drawInfoTransform(void)
 {
-/*
-	MMouse * mouse = MMouse::getInstance();
-
-	int mX = mouse->getXPosition();
-	int mY = mouse->getYPosition();
-
-	switch(m_transformMode)
-	{
-	case M_TRANSFORM_POSITION:
-		m_positionImage->setPosition(MVector2(mX, mY + 24));
-		m_positionImage->draw();
-		break;
-	case M_TRANSFORM_ROTATION:
-		m_rotationImage->setPosition(MVector2(mX, mY + 24));
-		m_rotationImage->draw();
-		break;
-	case M_TRANSFORM_SCALE:
-		m_scaleImage->setPosition(MVector2(mX, mY + 24));
-		m_scaleImage->draw();
-		break;
-	}
-*/
+    /*
+     MMouse * mouse = MMouse::getInstance();
+     
+     int mX = mouse->getXPosition();
+     int mY = mouse->getYPosition();
+     
+     switch(m_transformMode)
+     {
+     case M_TRANSFORM_POSITION:
+     m_positionImage->setPosition(MVector2(mX, mY + 24));
+     m_positionImage->draw();
+     break;
+     case M_TRANSFORM_ROTATION:
+     m_rotationImage->setPosition(MVector2(mX, mY + 24));
+     m_rotationImage->draw();
+     break;
+     case M_TRANSFORM_SCALE:
+     m_scaleImage->setPosition(MVector2(mX, mY + 24));
+     m_scaleImage->draw();
+     break;
+     }
+     */
 }
 
 void MaratisUI::setTransformMode(M_TRANSFORM_MODE mode)
 {
 	Maratis::getInstance()->setTransformMode(mode);
-
+    
 	switch(mode)
 	{
-	case M_TRANSFORM_MOUSE:
-		m_mouse = true;
-		m_position = false;
-		m_rotation = false;
-		m_scale = false;
-		break;
-	case M_TRANSFORM_POSITION:
-		m_mouse = false;
-		m_position = true;
-		m_rotation = false;
-		m_scale = false;
-		break;
-	case M_TRANSFORM_ROTATION:
-		m_mouse = false;
-		m_position = false;
-		m_rotation = true;
-		m_scale = false;
-		break;
-	case M_TRANSFORM_SCALE:
-		m_mouse = false;
-		m_position = false;
-		m_rotation = false;
-		m_scale = true;
-		break;
+        case M_TRANSFORM_MOUSE:
+            m_mouse = true;
+            m_position = false;
+            m_rotation = false;
+            m_scale = false;
+            break;
+        case M_TRANSFORM_POSITION:
+            m_mouse = false;
+            m_position = true;
+            m_rotation = false;
+            m_scale = false;
+            break;
+        case M_TRANSFORM_ROTATION:
+            m_mouse = false;
+            m_position = false;
+            m_rotation = true;
+            m_scale = false;
+            break;
+        case M_TRANSFORM_SCALE:
+            m_mouse = false;
+            m_position = false;
+            m_rotation = false;
+            m_scale = true;
+            break;
 	}
 }
 
@@ -1319,24 +1328,24 @@ void MaratisUI::addTextButtonToMenu(MGuiMenu * menu, const char * text, MVector2
 {
 	MVector4 normalColor(0.8f, 0.9f, 1, 0.0f);
 	MVector4 highLightColor(0.8f, 0.9f, 1, 0.2f);
-
+    
 	MGuiButton * newButton = new MGuiButton(
-		position, MVector2(), normalColor, 
-		buttonPointerEvent);
-
+                                            position, MVector2(), normalColor, 
+                                            buttonPointerEvent);
+    
 	newButton->setText(text);
 	newButton->setPressedColor(highLightColor);
 	newButton->setHighLightColor(highLightColor);
 	newButton->setTextColor(MVector4(1, 1, 1, 1));
-
+    
 	menu->getWindowMenu()->addButton(newButton);
 }
 
 void MaratisUI::addTextToMenu(MGuiMenu * menu, const char * text, MVector2 position)
 {
 	MGuiText * newText = new MGuiText(
-		text, position, 16, MVector4(1, 1, 1, 0.5f));
-
+                                      text, position, 16, MVector4(1, 1, 1, 0.5f));
+    
 	menu->getWindowMenu()->addText(newText);
 }
 
@@ -1346,17 +1355,17 @@ MGuiButton * MaratisUI::addButtonToWindow(MGuiWindow * window, const char * text
 	MVector4 normalColor(1, 1, 1, 1);
 	MVector4 highLightColor(0.8f, 0.9f, 1, 1);
 	MVector4 pressColor(1, 1, 0.5f, 1);
-
+    
 	MGuiButton * newButton = new MGuiButton(
-		position, MVector2(16, 16), normalColor, 
-		buttonPointerEvent);
-
+                                            position, MVector2(16, 16), normalColor, 
+                                            buttonPointerEvent);
+    
 	newButton->setNormalTexture(texture);
 	newButton->setHighLightColor(highLightColor);
 	newButton->setPressedColor(pressColor);
-
+    
 	window->addButton(newButton);
-
+    
 	return newButton;
 }
 
@@ -1365,12 +1374,12 @@ void MaratisUI::updateViewMenu(void)
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
 	MScene * scene = level->getCurrentScene();
-
+    
 	m_viewMenu->clearWindowMenu();
-
+    
 	// scenes
 	float y = 10;
-
+    
 	addTextButtonToMenu(m_viewMenu, "Perspective ", MVector2(0, y), NULL); y += 20;
 	addTextButtonToMenu(m_viewMenu, "Ortho ", MVector2(0, y), NULL); y += 20;
 	y += 10;
@@ -1378,20 +1387,20 @@ void MaratisUI::updateViewMenu(void)
 	addTextButtonToMenu(m_viewMenu, "Right ", MVector2(0, y), NULL); y += 20;
 	addTextButtonToMenu(m_viewMenu, "Top ", MVector2(0, y), NULL); y += 20;
 	addTextButtonToMenu(m_viewMenu, "Bottom ", MVector2(0, y), NULL); y += 20;
-
+    
 	unsigned int i;
 	unsigned int cSize = scene->getCamerasNumber();
-
+    
 	if(cSize > 0)
 		y += 10;
-
+    
 	for(i=0; i<cSize; i++)
 	{
 		MOCamera * camera = scene->getCameraByIndex(i);
 		addTextButtonToMenu(m_viewMenu, camera->getName(), MVector2(0, y), NULL);
 		y += 20;
 	}
-
+    
 	addTextToMenu(m_viewMenu, "", MVector2(0, y-10));
 }
 
@@ -1399,9 +1408,9 @@ void MaratisUI::updateSceneMenu(void)
 {
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	m_sceneMenu->clearWindowMenu();
-
+    
 	// scenes
 	float y = 10;
 	unsigned int i;
@@ -1412,15 +1421,15 @@ void MaratisUI::updateSceneMenu(void)
 		addTextButtonToMenu(m_sceneMenu, scn->getName(), MVector2(0, y), NULL);
 		y += 20;
 	}
-
+    
 	// add new scene
 	addTextButtonToMenu(m_sceneMenu, "Add New ", MVector2(0, y+10), newSceneEvents);
 	addTextToMenu(m_sceneMenu, "", MVector2(0, y+20));
-
+    
 	if(level)
 	{
 		m_sceneMenu->setMenuId(level->getCurrentSceneId());
-
+        
 		if(level->getScenesNumber() > 0)
 		{
 			MScene * scene = level->getCurrentScene();
@@ -1434,48 +1443,45 @@ void MaratisUI::closePopupButton(void)
 {
 	MWinEvent winEvent;
 	winEvent.type = MWIN_EVENT_MOUSE_MOVE;
-
+    
 	m_popupWin->setVisible(false);
 	MGui::getInstance()->onEvent(&winEvent);
 }
 
 void MaratisUI::setPopupButton(const char * text, void (* buttonPointerEvent)(MGuiButton * button, MGuiEvent * guiEvents))
 {
-	MaratisUI * UI = MaratisUI::getInstance();
-	MEngine * engine = MEngine::getInstance();
-	MLevel * level = engine->getLevel();
 	MWindow * window = MWindow::getInstance();
-
+    
 	MMouse * mouse = MMouse::getInstance();
 	int mX = mouse->getXPosition();
 	int mY = mouse->getYPosition();
-
+    
 	MGuiButton * pButton = m_popupWin->getButton(0);
-
+    
 	pButton->setText(text);
 	pButton->setPointerEvent(buttonPointerEvent);
 	MGui::getInstance()->unHighLightAllWindows();
 	m_popupWin->autoScale();
 	m_popupWin->setHighLight(true);
 	m_popupWin->setVisible(true);
-
+    
 	float sX = m_popupWin->getScale().x;
 	float sY = m_popupWin->getScale().y;
 	float pX = mX - sX*0.5f;
 	float pY = mY - sY*0.5f;
-
+    
 	if(pX < 0)
 		pX = 0;
-
+    
 	if(pY < 0)
 		pY = 0;
-
+    
 	if((pX + sX) > window->getWidth())
 		pX = window->getWidth() - sX;
-
+    
 	if((pY + sY) >  window->getHeight())
 		pY = window->getHeight() - sY;
-
+    
 	m_popupWin->setPosition(MVector2(pX, pY));
 }
 
@@ -1486,13 +1492,13 @@ void MaratisUI::createGUI(void)
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
 	MScene * scene = level->getCurrentScene();
-
+    
 	MGui * gui = MGui::getInstance();
-
+    
 	// sizes
 	float winWidth  = (float)window->getWidth();
 	float winHeight = (float)window->getHeight();
-
+    
 	float headHeight = 50;
 	float editWidth = 270; //270
 	float keysHeight = 100;
@@ -1501,37 +1507,37 @@ void MaratisUI::createGUI(void)
 	float timeLeftWidth = 90;
 	float timeRightWidth = 90;
 	float viewPropHeight = 23;
-
+    
 	// colors
 	MVector4 normalColor(1, 1, 1, 1);
 	MVector4 highLightColor(0.8f, 0.9f, 1, 1);
 	MVector4 pressColor(1, 1, 0.5f, 1);
-
+    
 	MVector4 normalColorA(1, 1, 1, 0.2f);
-
+    
 	MVector4 menuColor(0.32f, 0.53f, 0.70f, 1.0f);
-
+    
 	// head
 	m_headWin = new MGuiWindow(
-		MVector2(0, 0),
-		MVector2(winWidth, headHeight),
-		MVector4(1, 1, 1, 1),
-		MaratisUI::headWinEvents);
-
+                               MVector2(0, 0),
+                               MVector2(winWidth, headHeight),
+                               MVector4(1, 1, 1, 1),
+                               MaratisUI::headWinEvents);
+    
 	float x = 10;
-
+    
 	// file menu
 	MGuiMenu * fileMenu = new MGuiMenu(
-		MVector2(x, 9), 
-		MVector2(64, 32),
-		normalColor,
-		NULL);
-
+                                       MVector2(x, 9), 
+                                       MVector2(64, 32),
+                                       normalColor,
+                                       NULL);
+    
 	x += 8;
-
+    
 	MGuiText * fileText = new MGuiText(
-		"File", MVector2(x, 17), 16, MVector4(1, 1, 1, 1));
-
+                                       "File", MVector2(x, 17), 16, MVector4(1, 1, 1, 1));
+    
 	fileMenu->setHighLightColor(highLightColor);
 	fileMenu->setPressedColor(pressColor);
 	fileMenu->setNormalTexture("gui/menuShort.tga");
@@ -1543,29 +1549,29 @@ void MaratisUI::createGUI(void)
 	addTextButtonToMenu(fileMenu, " Open Level", MVector2(0, 80), openLevelEvents);
 	addTextButtonToMenu(fileMenu, " Save", MVector2(0, 110), saveEvents);
 	addTextButtonToMenu(fileMenu, " Save as", MVector2(0, 130), saveAsEvents);
-
+    
 	addTextButtonToMenu(fileMenu, " Quit", MVector2(0, 160), quitEvents);
-
+    
 	addTextToMenu(fileMenu, "Ctrl O ", MVector2(120, 80));
 	addTextToMenu(fileMenu, "Ctrl S ", MVector2(120, 110));
 	addTextToMenu(fileMenu, "Ctrl Q ", MVector2(120, 160));
 	addTextToMenu(fileMenu, "", MVector2(0, 170));
-
+    
 	fileMenu->getWindowMenu()->setShadow(true);
 	fileMenu->getWindowMenu()->setNormalColor(menuColor);
-
+    
 	// edit menu
 	x = 84;
 	MGuiMenu * editMenu = new MGuiMenu(
-		MVector2(x, 9), 
-		MVector2(64, 32),
-		normalColor,
-		NULL);
-
+                                       MVector2(x, 9), 
+                                       MVector2(64, 32),
+                                       normalColor,
+                                       NULL);
+    
 	x += 8;
 	MGuiText * editText = new MGuiText(
-		"Edit", MVector2(x, 17), 16, MVector4(1, 1, 1, 1));
-
+                                       "Edit", MVector2(x, 17), 16, MVector4(1, 1, 1, 1));
+    
 	editMenu->setHighLightColor(highLightColor);
 	editMenu->setPressedColor(pressColor);
 	editMenu->setNormalTexture("gui/menuShort.tga");
@@ -1587,150 +1593,150 @@ void MaratisUI::createGUI(void)
 	addTextToMenu(editMenu, "Ctrl D ", MVector2(200, 190));	
 	addTextToMenu(editMenu, "Suppr ", MVector2(200, 220));
 	addTextToMenu(editMenu, "", MVector2(0, 230));
-
+    
 	editMenu->getWindowMenu()->setShadow(true);
 	editMenu->getWindowMenu()->setNormalColor(menuColor);
-
-
+    
+    
 	// mouse button
 	int buttonSpace = 20;
 	//x = 158;
 	x = 280;
-
+    
 	MGuiImage * image = new MGuiImage("gui/sep.png", MVector2(270, 0), MVector2(2, 50), MVector4(1, 1, 1, 0.75f));
 	m_headWin->addImage(image);
-
+    
 	m_mouseButton = addButtonToWindow(
-		m_headWin, "gui/buttonMouse.tga", MVector2(x, 17), mouseButtonEvents);
-
+                                      m_headWin, "gui/buttonMouse.tga", MVector2(x, 17), mouseButtonEvents);
+    
 	m_mouseButton->setMode(MGUI_BUTTON_GROUP);
 	m_mouseButton->enableVariable(&m_mouse, M_VAR_BOOL);
-
+    
 	// position
 	x += buttonSpace;
 	m_positionButton = addButtonToWindow(
-		m_headWin, "gui/buttonPosition.tga", MVector2(x, 17), positionButtonEvents);
+                                         m_headWin, "gui/buttonPosition.tga", MVector2(x, 17), positionButtonEvents);
 	m_positionButton->setMode(MGUI_BUTTON_GROUP);
 	m_positionButton->enableVariable(&m_position, M_VAR_BOOL);
-
+    
 	// rotation
 	x += buttonSpace;
 	m_rotationButton = addButtonToWindow(
-		m_headWin, "gui/buttonRotation.tga", MVector2(x, 17), rotationButtonEvents);
+                                         m_headWin, "gui/buttonRotation.tga", MVector2(x, 17), rotationButtonEvents);
 	m_rotationButton->setMode(MGUI_BUTTON_GROUP);
 	m_rotationButton->enableVariable(&m_rotation, M_VAR_BOOL);
-
+    
 	// scale
 	x += buttonSpace;
 	m_scaleButton = addButtonToWindow(
-		m_headWin, "gui/buttonScale.tga", MVector2(x, 17), scaleButtonEvents);
+                                      m_headWin, "gui/buttonScale.tga", MVector2(x, 17), scaleButtonEvents);
 	m_scaleButton->setMode(MGUI_BUTTON_GROUP);
 	m_scaleButton->enableVariable(&m_scale, M_VAR_BOOL);
-
+    
 	// world / local menu
 	x += buttonSpace + 2;
 	MGuiMenu * worldMenu = new MGuiMenu(
-		MVector2(x, 17), 
-		MVector2(64, 32),
-		MVector4(1, 1, 1, 0),
-		NULL);
-
+                                        MVector2(x, 17), 
+                                        MVector2(64, 32),
+                                        MVector4(1, 1, 1, 0),
+                                        NULL);
+    
 	worldMenu->enableVariable(&m_worldMenu, M_VAR_INT);
 	worldMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
 	worldMenu->setTextColor(MVector4(1, 1, 1, 1));
 	worldMenu->addSimpleButton(" Global ", worldButtonEvents);
 	worldMenu->addSimpleButton(" Local ", localButtonEvents);
-
+    
 	worldMenu->getWindowMenu()->setShadow(true);
 	worldMenu->getWindowMenu()->setNormalColor(menuColor);
-
+    
 	// camera
 	x += 75;
 	buttonSpace = 24;
 	addButtonToWindow(m_headWin, "gui/buttonCamera.tga", MVector2(x, 17), cameraButtonEvents);
-
+    
 	// entity
 	x += buttonSpace;
 	addButtonToWindow(m_headWin, "gui/buttonEntity.tga", MVector2(x, 17), entityButtonEvents);
-
+    
 	// particles
 	//x += buttonSpace;
 	//addButtonToWindow(m_headWin, "gui/buttonParticles.tga", MVector2(x, 17), particlesButtonEvents);
-
+    
 	// light
 	x += buttonSpace;
 	addButtonToWindow(m_headWin, "gui/buttonLight.tga", MVector2(x, 17), lightButtonEvents);
-
+    
 	// sound
 	x += buttonSpace;
 	addButtonToWindow(m_headWin, "gui/buttonSound.tga", MVector2(x, 17), soundButtonEvents);
-
+    
 	// text
 	x += buttonSpace;
 	addButtonToWindow(m_headWin, "gui/buttonText.tga", MVector2(x, 17), textButtonEvents);
-
-
+    
+    
 	// scene menu
 	x += 39;
 	MGuiImage * sceneMenuImg = new MGuiImage(
-		"gui/menuLong.tga",
-		MVector2(x, 9),
-		MVector2(128, 32),
-		normalColor);
-
+                                             "gui/menuLong.tga",
+                                             MVector2(x, 9),
+                                             MVector2(128, 32),
+                                             normalColor);
+    
 	x += 5;
 	m_sceneMenu = new MGuiMenu(
-		MVector2(x, 9), 
-		MVector2(16, 32),
-		normalColor,
-		sceneMenuEvents);
-
+                               MVector2(x, 9), 
+                               MVector2(16, 32),
+                               normalColor,
+                               sceneMenuEvents);
+    
 	m_sceneMenu->setHighLightColor(highLightColor);
 	m_sceneMenu->setPressedColor(pressColor);
 	m_sceneMenu->setNormalTexture("gui/buttonList.tga");
 	m_sceneMenu->setDrawingText(false);
-
+    
 	m_sceneMenu->getWindowMenu()->setShadow(true);
 	m_sceneMenu->getWindowMenu()->setNormalColor(menuColor);
-
+    
 	// scene edit
 	x += 17;
 	m_sceneEdit = new MGuiEditText(
-		scene->getName(),
-		MVector2(x, 17),
-		16,
-		normalColor,
-		sceneNameEvents);
-
+                                   scene->getName(),
+                                   MVector2(x, 17),
+                                   16,
+                                   normalColor,
+                                   sceneNameEvents);
+    
 	m_sceneEdit->setSingleLine(true);
 	m_sceneEdit->limitLength(9);
-
+    
 	// scene delete
 	x += 82;
 	addButtonToWindow(m_headWin, "gui/buttonDelete.tga", MVector2(x, 17), deleteSceneEvents);
-
+    
 	// level properties
 	/*x += 45;
-	addButtonToWindow(
-		m_headWin, "gui/buttonLevel.tga", MVector2(x, 17), levelButtonEvents)->setXScale(32);
-*/
+     addButtonToWindow(
+     m_headWin, "gui/buttonLevel.tga", MVector2(x, 17), levelButtonEvents)->setXScale(32);
+     */
 	// scene properties
 	x += buttonSpace+16;
 	addButtonToWindow(
-		m_headWin, "gui/buttonScene.tga", MVector2(x, 17), sceneButtonEvents)->setXScale(32);
-
+                      m_headWin, "gui/buttonScene.tga", MVector2(x, 17), sceneButtonEvents)->setXScale(32);
+    
 	// game
 	x += 54;
 	addButtonToWindow(
-		m_headWin, "gui/buttonGame.tga", MVector2(x, 17), gameButtonEvents);
-
+                      m_headWin, "gui/buttonGame.tga", MVector2(x, 17), gameButtonEvents);
+    
 	// renderer menu
 	x += 32;
 	MGuiMenu * m_rendererMenu = new MGuiMenu(
-		MVector2(x, 17), 
-		MVector2(64, 32),
-		MVector4(1, 1, 1, 0),
-		rendererMenuEvents);
+                                             MVector2(x, 17), 
+                                             MVector2(64, 32),
+                                             MVector4(1, 1, 1, 0),
+                                             rendererMenuEvents);
 	
 	m_rendererMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
 	m_rendererMenu->setTextColor(MVector4(1, 1, 1, 1));
@@ -1749,87 +1755,87 @@ void MaratisUI::createGUI(void)
 	m_headWin->addMenu(m_rendererMenu);
 	m_headWin->setNormalTexture("gui/winHead.tga");
 	gui->addWindow(m_headWin);
-
+    
 	// edit top
 	m_editTopWin = new MGuiWindow(
-		MVector2(0, headHeight),
-		MVector2(editWidth, viewPropHeight*2),
-		MVector4(40/255.0f, 95/255.0f, 138/255.0f, 1),
-		editTopWinEvents);
-
+                                  MVector2(0, headHeight),
+                                  MVector2(editWidth, viewPropHeight*2),
+                                  MVector4(40/255.0f, 95/255.0f, 138/255.0f, 1),
+                                  editTopWinEvents);
+    
 	m_tabTransform = new MGuiButton(
-		MVector2(0, 3),
-		MVector2(48, 20),
-		MVector4(1, 1, 1, 1),
-		&tabTransformEvents);
-
+                                    MVector2(0, 3),
+                                    MVector2(48, 20),
+                                    MVector4(1, 1, 1, 1),
+                                    &tabTransformEvents);
+    
 	m_tabTransform->setNormalTexture("gui/tabTransform0.tga");
 	m_tabTransform->setPressedTexture("gui/tabTransform1.tga");
 	m_tabTransform->setMode(MGUI_BUTTON_GROUP);
 	m_tabTransform->setPressed(true);
 	m_tabTransform->setVisible(false);
-
+    
 	m_tabProperties = new MGuiButton(
-		MVector2(54, 3),
-		MVector2(48, 20),
-		MVector4(1, 1, 1, 1),
-		&tabPropertiesEvents);
-
+                                     MVector2(54, 3),
+                                     MVector2(48, 20),
+                                     MVector4(1, 1, 1, 1),
+                                     &tabPropertiesEvents);
+    
 	m_tabProperties->setNormalTexture("gui/tabProperties0.tga");
 	m_tabProperties->setPressedTexture("gui/tabProperties1.tga");
 	m_tabProperties->setMode(MGUI_BUTTON_GROUP);
 	m_tabProperties->setVisible(false);
-
+    
 	m_tabBehavior = new MGuiButton(
-		MVector2(108, 3),
-		MVector2(48, 20),
-		MVector4(1, 1, 1, 1),
-		&tabBehaviorEvents);
-
+                                   MVector2(108, 3),
+                                   MVector2(48, 20),
+                                   MVector4(1, 1, 1, 1),
+                                   &tabBehaviorEvents);
+    
 	m_tabBehavior->setNormalTexture("gui/tabBehavior0.tga");
 	m_tabBehavior->setPressedTexture("gui/tabBehavior1.tga");
 	m_tabBehavior->setMode(MGUI_BUTTON_GROUP);
 	m_tabBehavior->setVisible(false);
-
+    
 	m_tabImage = new MGuiImage(
-		NULL, 
-		MVector2(0, viewPropHeight), 
-		MVector2(editWidth, viewPropHeight),
-		MVector4(0.294f, 0.474f, 0.619f, 1));
-
+                               NULL, 
+                               MVector2(0, viewPropHeight), 
+                               MVector2(editWidth, viewPropHeight),
+                               MVector4(0.294f, 0.474f, 0.619f, 1));
+    
 	m_tabImage->setVisible(false);
-
+    
 	m_sceneProperties = new MGuiImage(
-		"gui/tabScene.tga", 
-		MVector2(0, 3),
-		MVector2(48, 20),
-		MVector4(1, 1, 1, 1));
+                                      "gui/tabScene.tga", 
+                                      MVector2(0, 3),
+                                      MVector2(48, 20),
+                                      MVector4(1, 1, 1, 1));
 	m_sceneProperties->setVisible(false);
-
+    
 	m_projProperties = new MGuiImage(
-		"gui/tabProject.tga", 
-		MVector2(0, 3),
-		MVector2(48, 20),
-		MVector4(1, 1, 1, 1));
+                                     "gui/tabProject.tga", 
+                                     MVector2(0, 3),
+                                     MVector2(48, 20),
+                                     MVector4(1, 1, 1, 1));
 	m_projProperties->setVisible(false);
 	
 	m_objectEdit = new MGuiEditText(
-		"",
-		MVector2(15, viewPropHeight + 4),
-		16,
-		normalColor,
-		&objectEditEvents);
+                                    "",
+                                    MVector2(15, viewPropHeight + 4),
+                                    16,
+                                    normalColor,
+                                    &objectEditEvents);
 	
 	m_tabText = new MGuiText(
-		"Project", MVector2(15, viewPropHeight + 4),
-		16,
-		normalColor);
+                             "Project", MVector2(15, viewPropHeight + 4),
+                             16,
+                             normalColor);
 	m_tabText->setVisible(false);
-
+    
 	m_objectEdit->setVisible(false);
 	m_objectEdit->setSingleLine(true);
 	m_objectEdit->limitLength(30);
-
+    
 	m_editTopWin->addButton(m_tabTransform);
 	m_editTopWin->addButton(m_tabProperties);
 	m_editTopWin->addButton(m_tabBehavior);
@@ -1839,129 +1845,129 @@ void MaratisUI::createGUI(void)
 	m_editTopWin->addEditText(m_objectEdit);
 	m_editTopWin->addText(m_tabText);
 	gui->addWindow(m_editTopWin);
-
+    
 	// edit
 	m_editWin = new MGuiWindow(
-		MVector2(0, headHeight + viewPropHeight*2),
-		MVector2(editWidth, winHeight - headHeight - (viewPropHeight*2)),
-		MVector4(1, 1, 1, 1),
-		editWinEvents);
-
+                               MVector2(0, headHeight + viewPropHeight*2),
+                               MVector2(editWidth, winHeight - headHeight - (viewPropHeight*2)),
+                               MVector4(1, 1, 1, 1),
+                               editWinEvents);
+    
 	m_editWin->setNormalTexture("gui/winEdit.tga");
 	gui->addWindow(m_editWin);
-
+    
 	// camera win
 	m_cameraWin = new MGuiWindow(
-		MVector2(7, headHeight + viewPropHeight*2 + 30),
-		MVector2(256, 192),
-		m_guiColor,
-		cameraWinEvents);
-
+                                 MVector2(7, headHeight + viewPropHeight*2 + 30),
+                                 MVector2(256, 192),
+                                 m_guiColor,
+                                 cameraWinEvents);
+    
 	m_cameraWin->setVisible(false);
 	gui->addWindow(m_cameraWin);
-
+    
 	// text
 	m_textWin = new MGuiWindow(
-		MVector2(editWidth, headHeight),
-		MVector2(winWidth - editWidth, winHeight - headHeight - timeBlockHeight),
-		MVector4(1, 1, 1, 1),
-		textWinEvents);
-
+                               MVector2(editWidth, headHeight),
+                               MVector2(winWidth - editWidth, winHeight - headHeight - timeBlockHeight),
+                               MVector4(1, 1, 1, 1),
+                               textWinEvents);
+    
 	m_textWin->setVisible(false);
 	gui->addWindow(m_textWin);
-
+    
 	// time left
 	m_timeLeftWin = new MGuiWindow(
-		MVector2(editWidth, winHeight - timeBlockHeight),
-		MVector2(timeLeftWidth, timeBlockHeight),
-		MVector4(1, 1, 1, 1),
-		MaratisUI::timeLeftWinEvents);
-
+                                   MVector2(editWidth, winHeight - timeBlockHeight),
+                                   MVector2(timeLeftWidth, timeBlockHeight),
+                                   MVector4(1, 1, 1, 1),
+                                   MaratisUI::timeLeftWinEvents);
+    
 	MGuiImage * timeLeftImg = new MGuiImage(
-		"gui/timeLeftEdit.tga", 
-		MVector2(0, 0), 
-		MVector2(timeLeftWidth, timelineHeight),
-		MVector4(1, 1, 1, 1));
-
+                                            "gui/timeLeftEdit.tga", 
+                                            MVector2(0, 0), 
+                                            MVector2(timeLeftWidth, timelineHeight),
+                                            MVector4(1, 1, 1, 1));
+    
 	// time min edit
 	MGuiEditText * timeLeftEdit = new MGuiEditText(
-		"",
-		MVector2(20, 8),
-		16,
-		MVector4(1, 1, 1, 1),
-		timeLeftEditEvents);
-
+                                                   "",
+                                                   MVector2(20, 8),
+                                                   16,
+                                                   MVector4(1, 1, 1, 1),
+                                                   timeLeftEditEvents);
+    
 	timeLeftEdit->enableVariable(maratis->getTimelineMinPtr(), M_VAR_INT);
 	timeLeftEdit->setSingleLine(true);
 	timeLeftEdit->limitLength(7);
-
+    
 	m_timeLeftWin->setNormalTexture("gui/winTime.tga");
 	m_timeLeftWin->addImage(timeLeftImg);
 	m_timeLeftWin->addEditText(timeLeftEdit);
 	gui->addWindow(m_timeLeftWin);
-
+    
 	// time right
 	m_timeRightWin = new MGuiWindow(
-		MVector2(winWidth - timeRightWidth, winHeight - timeBlockHeight),
-		MVector2(timeRightWidth, timeBlockHeight),
-		MVector4(1, 1, 1, 1),
-		timeRightWinEvents);
-
+                                    MVector2(winWidth - timeRightWidth, winHeight - timeBlockHeight),
+                                    MVector2(timeRightWidth, timeBlockHeight),
+                                    MVector4(1, 1, 1, 1),
+                                    timeRightWinEvents);
+    
 	MGuiImage * timeRightImg = new MGuiImage(
-		"gui/timeRightEdit.tga", 
-		MVector2(0, 0), 
-		MVector2(timeRightWidth, timelineHeight),
-		MVector4(1, 1, 1, 1));
-
+                                             "gui/timeRightEdit.tga", 
+                                             MVector2(0, 0), 
+                                             MVector2(timeRightWidth, timelineHeight),
+                                             MVector4(1, 1, 1, 1));
+    
 	// time max edit
 	MGuiEditText * timeRightEdit = new MGuiEditText(
-		"",
-		MVector2(5, 8),
-		16,
-		MVector4(1, 1, 1, 1),
-		timeRightEditEvents);
-
+                                                    "",
+                                                    MVector2(5, 8),
+                                                    16,
+                                                    MVector4(1, 1, 1, 1),
+                                                    timeRightEditEvents);
+    
 	timeRightEdit->enableVariable(maratis->getTimelineMaxPtr(), M_VAR_INT);
 	timeRightEdit->setSingleLine(true);
 	timeRightEdit->limitLength(7);
-
+    
 	// key button
 	MGuiButton * keyButton = new MGuiButton(
-		MVector2(30, 75),
-		MVector2(32, 32),
-		normalColor,
-		keyButtonEvents);
-
+                                            MVector2(30, 75),
+                                            MVector2(32, 32),
+                                            normalColor,
+                                            keyButtonEvents);
+    
 	keyButton->setHighLightColor(highLightColor);
 	keyButton->setPressedColor(pressColor);
 	keyButton->setNormalTexture("gui/buttonKey.tga");
-
+    
 	// play button
 	MGuiButton * playButton = new MGuiButton(
-		MVector2(30, 50),
-		MVector2(16, 16),
-		normalColor,
-		playButtonEvents);
-
+                                             MVector2(30, 50),
+                                             MVector2(16, 16),
+                                             normalColor,
+                                             playButtonEvents);
+    
 	playButton->enableVariable(&m_play, M_VAR_BOOL);
 	playButton->setHighLightColor(highLightColor);
 	playButton->setPressedColor(pressColor);
 	playButton->setNormalTexture("gui/buttonPlay.tga");
 	playButton->setMode(MGUI_BUTTON_GROUP);
-
+    
 	// pause button
 	MGuiButton * pauseButton = new MGuiButton(
-		MVector2(30 + 16, 50),
-		MVector2(16, 16),
-		normalColor,
-		pauseButtonEvents);
-
+                                              MVector2(30 + 16, 50),
+                                              MVector2(16, 16),
+                                              normalColor,
+                                              pauseButtonEvents);
+    
 	pauseButton->enableVariable(&m_pause, M_VAR_BOOL);
 	pauseButton->setHighLightColor(highLightColor);
 	pauseButton->setPressedColor(pressColor);
 	pauseButton->setNormalTexture("gui/buttonPause.tga");
 	pauseButton->setMode(MGUI_BUTTON_GROUP);
-
+    
 	m_timeRightWin->addImage(timeRightImg);
 	m_timeRightWin->addButton(playButton);
 	m_timeRightWin->addButton(pauseButton);
@@ -1969,23 +1975,23 @@ void MaratisUI::createGUI(void)
 	m_timeRightWin->addEditText(timeRightEdit);
 	m_timeRightWin->setNormalTexture("gui/winTime.tga");
 	gui->addWindow(m_timeRightWin);
-
+    
 	// timeline
 	float timelineWidth = winWidth - timeRightWidth - timeLeftWidth - editWidth;
-
+    
 	m_timelineWin = new MGuiWindow(
-		MVector2(editWidth + timeLeftWidth, winHeight - timeBlockHeight),
-		MVector2(timelineWidth, timelineHeight),
-		MVector4(1, 1, 1, 1),
-		timelineWinEvents);
-
+                                   MVector2(editWidth + timeLeftWidth, winHeight - timeBlockHeight),
+                                   MVector2(timelineWidth, timelineHeight),
+                                   MVector4(1, 1, 1, 1),
+                                   timelineWinEvents);
+    
 	// timeline slide
 	m_timelineSlide = new MGuiSlide(
-		MVector2(1, 1),
-		MVector2(8, timelineHeight-2),
-		normalColor,
-		timelineSlideEvents);
-
+                                    MVector2(1, 1),
+                                    MVector2(8, timelineHeight-2),
+                                    normalColor,
+                                    timelineSlideEvents);
+    
 	m_timelineSlide->enableVariable(maratis->getTimelinePosPtr(), M_VAR_INT);
 	m_timelineSlide->setMinValue((float)maratis->getTimelineMin());
 	m_timelineSlide->setMaxValue((float)maratis->getTimelineMax());
@@ -1993,90 +1999,90 @@ void MaratisUI::createGUI(void)
 	m_timelineSlide->setPressedColor(pressColor);
 	m_timelineSlide->setNormalTexture("gui/slideTimeline.tga");
 	m_timelineSlide->setDirection(MVector2(timelineWidth - m_timelineSlide->getButtonScale().x - 2, 0));
-
+    
 	// time pos edit
 	m_timePosEdit = new MGuiEditText(
-		"",
-		MVector2(8, 8),
-		16,
-		MVector4(1, 1, 1, 1),
-		timePosEditEvents);
-
+                                     "",
+                                     MVector2(8, 8),
+                                     16,
+                                     MVector4(1, 1, 1, 1),
+                                     timePosEditEvents);
+    
 	m_timePosEdit->enableVariable(maratis->getTimelinePosPtr(), M_VAR_INT);
 	m_timePosEdit->setSingleLine(true);
 	m_timePosEdit->limitLength(7);
-
+    
 	m_timelineWin->addEditText(m_timePosEdit);
 	m_timelineWin->addSlide(m_timelineSlide);
 	m_timelineWin->setNormalTexture("gui/winTimeline.tga");
 	gui->addWindow(m_timelineWin);
-
+    
 	// keys
 	m_keysWin = new MGuiWindow(
-		MVector2(editWidth + timeLeftWidth, winHeight - keysHeight),
-		MVector2(winWidth - timeRightWidth - timeLeftWidth - editWidth, keysHeight),
-		*getGUIColor(),
-		keysWinEvents);
-
+                               MVector2(editWidth + timeLeftWidth, winHeight - keysHeight),
+                               MVector2(winWidth - timeRightWidth - timeLeftWidth - editWidth, keysHeight),
+                               *getGUIColor(),
+                               keysWinEvents);
+    
 	gui->addWindow(m_keysWin);
-
+    
 	// view properties
 	{
 		m_viewProp = new MGuiWindow(
-			MVector2(editWidth, headHeight),
-			MVector2(winWidth - editWidth, viewPropHeight),
-			MVector4(0.2f, 0.27f, 0.35f, 1.0f),
-			NULL);
-
+                                    MVector2(editWidth, headHeight),
+                                    MVector2(winWidth - editWidth, viewPropHeight),
+                                    MVector4(0.2f, 0.27f, 0.35f, 1.0f),
+                                    NULL);
+        
 		// view menu
 		m_viewMenu = new MGuiMenu(
-			MVector2(10, 0), 
-			MVector2(16, 23),
-			normalColor,
-			viewMenuEvents);
-
+                                  MVector2(10, 0), 
+                                  MVector2(16, 23),
+                                  normalColor,
+                                  viewMenuEvents);
+        
 		m_viewMenu->setHighLightColor(highLightColor);
 		m_viewMenu->setPressedColor(pressColor);
 		m_viewMenu->setNormalTexture("gui/buttonList.tga");
 		m_viewMenu->setDrawingText(false);
-
+        
 		m_viewMenu->getWindowMenu()->setShadow(true);
 		m_viewMenu->getWindowMenu()->setNormalColor(menuColor);
-
+        
 		m_viewProp->addMenu(m_viewMenu);
 		gui->addWindow(m_viewProp);
 	}
-
+    
 	// view
 	m_view = new MGuiWindow(
-		MVector2(editWidth, headHeight + viewPropHeight),
-		MVector2(winWidth - editWidth, winHeight - headHeight - viewPropHeight - timeBlockHeight),
-		m_guiColor,
-		viewEvents);
-
+                            MVector2(editWidth, headHeight + viewPropHeight),
+                            MVector2(winWidth - editWidth, winHeight - headHeight - viewPropHeight - timeBlockHeight),
+                            m_guiColor,
+                            viewEvents);
+    
 	gui->addWindow(m_view);
-
+    
 	// popup
 	m_popupWin = new MGuiWindow(
-		MVector2(30, 30),
-		MVector2(150, 16),
-		MVector4(1.0f, 0.95f, 0.3f, 0.8f),
-		popupWinEvents);
-
+                                MVector2(30, 30),
+                                MVector2(150, 16),
+                                MVector4(1.0f, 0.95f, 0.3f, 0.8f),
+                                popupWinEvents);
+    
 	MGuiButton * okButton = new MGuiButton(
-		MVector2(0, 0),
-		MVector2(),
-		MVector4(1, 1, 1, 0),
-		NULL);
-
+                                           MVector2(0, 0),
+                                           MVector2(),
+                                           MVector4(1, 1, 1, 0),
+                                           NULL);
+    
 	okButton->setTextColor(MVector4(0, 0, 0, 1));
-
+    
 	m_popupWin->addButton(okButton);
 	m_popupWin->autoScale();
 	m_popupWin->setVisible(false);
-
+    
 	gui->addWindow(m_popupWin);
-
+    
 	updateSceneMenu();
 	updateViewMenu();
 }
@@ -2084,11 +2090,11 @@ void MaratisUI::createGUI(void)
 void MaratisUI::resizeGUI(void)
 {
 	MWindow * window = MWindow::getInstance();
-
+    
 	// sizes
 	float winWidth  = (float)window->getWidth();
 	float winHeight = (float)window->getHeight();
-
+    
 	float headHeight = m_headWin->getScale().y;
 	float editWidth = m_editWin->getScale().x;
 	float keysHeight = m_keysWin->getScale().y;
@@ -2097,39 +2103,39 @@ void MaratisUI::resizeGUI(void)
 	float timeLeftWidth = m_timeLeftWin->getScale().x;
 	float timeRightWidth = m_timeRightWin->getScale().x;
 	float viewPropHeight = m_viewProp->getScale().y;
-
+    
 	// head
 	m_headWin->setXScale(winWidth);
-
+    
 	// edit
 	m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
-
+    
 	// text
 	m_textWin->setXScale(winWidth - editWidth);
 	m_textWin->setYScale(winHeight - headHeight - timeBlockHeight);
-
+    
 	// time left
 	m_timeLeftWin->setYPosition(winHeight - timeBlockHeight);
-
+    
 	// time right
 	m_timeRightWin->setXPosition(winWidth - timeRightWidth);
 	m_timeRightWin->setYPosition(winHeight - timeBlockHeight);
-
+    
 	// timeline
 	float timelineWidth = winWidth - timeRightWidth - timeLeftWidth - editWidth;
 	m_timelineWin->setYPosition(winHeight - timeBlockHeight);
 	m_timelineWin->setXScale(timelineWidth);
-
+    
 	m_timelineSlide->setDirection(MVector2(timelineWidth - m_timelineSlide->getButtonScale().x - 2, 0));
 	m_timelineSlide->onChange();
-
+    
 	// keys
 	m_keysWin->setYPosition(winHeight - keysHeight);
 	m_keysWin->setXScale(winWidth - timeRightWidth - timeLeftWidth - editWidth);
-
+    
 	// view properties
 	m_viewProp->setXScale(winWidth - editWidth);
-
+    
 	// view
 	m_view->setXScale(winWidth - editWidth);
 	m_view->setYScale(winHeight - headHeight - viewPropHeight - timeBlockHeight);
@@ -2140,18 +2146,17 @@ void MaratisUI::timelineSlideEvents(MGuiSlide * slide, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
 	MGuiEditText * timePosEdit = UI->getTimePosEdit();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_ON_CHANGE:
+        case MGUI_EVENT_ON_CHANGE:
 		{
 			timePosEdit->updateFromVariable();
-
-			float tXPos = timePosEdit->getPosition().x;
+            
 			float tWidth = timePosEdit->getScale().x;
 			float sXPos = slide->getButtonPosition().x;
 			float sWidth = slide->getButtonScale().x;
-
+            
 			float value = slide->getNormalizedValue();
 			
 			if(value <= 0.5f)
@@ -2159,7 +2164,10 @@ void MaratisUI::timelineSlideEvents(MGuiSlide * slide, MGuiEvent * guiEvents)
 			else
 				timePosEdit->setXPosition(sXPos - tWidth - 1);
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2169,157 +2177,160 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
 	MObject3d * object = UI->getEditedObject();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
-
-		maratis->autoSave();
-
-		// rotation
-		if(	edit->getVariablePointer() == &UI->m_editPosition.x ||
-			edit->getVariablePointer() == &UI->m_editPosition.y ||
-			edit->getVariablePointer() == &UI->m_editPosition.z)
-		{
-			object->setPosition(UI->m_editPosition);
-		}
-
-		// rotation
-		else
-		if(	edit->getVariablePointer() == &UI->m_editRotation.x ||
-			edit->getVariablePointer() == &UI->m_editRotation.y ||
-			edit->getVariablePointer() == &UI->m_editRotation.z)
-		{
-			object->setEulerRotation(UI->m_editRotation);
-		}
-
-		// scale
-		else
-		if(	edit->getVariablePointer() == &UI->m_editScale.x ||
-			edit->getVariablePointer() == &UI->m_editScale.y ||
-			edit->getVariablePointer() == &UI->m_editScale.z)
-		{
-			object->setScale(UI->m_editScale);
-		}
-
-		// radius
-		else if(edit->getVariablePointer() == &UI->m_editRadius)
-			((MOLight *)object)->setRadius(UI->m_editRadius);
-		// intensity
-		else if(edit->getVariablePointer() == &UI->m_editIntensity)
-			((MOLight *)object)->setIntensity(UI->m_editIntensity);
-		// spotAngle
-		else if(edit->getVariablePointer() == &UI->m_editSpotAngle)
-		{
-			float angle = CLAMP(UI->m_editSpotAngle, 1.0f, 90.0f);
-			((MOLight *)object)->setSpotAngle(angle);
-			UI->m_editSpotAngle = angle;
-		}
-		// spotExponent
-		else if(edit->getVariablePointer() == &UI->m_editSpotExponent)
-		{
-			((MOLight *)object)->setSpotExponent(UI->m_editSpotExponent);
-			UI->m_editSpotExponent = ((MOLight *)object)->getSpotExponent();
-		}
-		// shadowBias
-		else if(edit->getVariablePointer() == &UI->m_editShadowBias)
-		{
-			((MOLight *)object)->setShadowBias(UI->m_editShadowBias);
-		}
-		// shadowBlur
-		else if(edit->getVariablePointer() == &UI->m_editShadowBlur)
-		{
-			((MOLight *)object)->setShadowBlur(UI->m_editShadowBlur);
-		}
-		// shadowQuality
-		else if(edit->getVariablePointer() == &UI->m_editShadowQuality)
-		{
-			UI->m_editShadowQuality = MIN(4096, /*getNextPowerOfTwo*/(UI->m_editShadowQuality));
-			((MOLight *)object)->setShadowQuality(UI->m_editShadowQuality);
-		}
+        case MGUI_EVENT_SEND_VARIABLE:
+            
+            maratis->autoSave();
+            
+            // rotation
+            if(	edit->getVariablePointer() == &UI->m_editPosition.x ||
+               edit->getVariablePointer() == &UI->m_editPosition.y ||
+               edit->getVariablePointer() == &UI->m_editPosition.z)
+            {
+                object->setPosition(UI->m_editPosition);
+            }
+            
+            // rotation
+            else
+                if(	edit->getVariablePointer() == &UI->m_editRotation.x ||
+                   edit->getVariablePointer() == &UI->m_editRotation.y ||
+                   edit->getVariablePointer() == &UI->m_editRotation.z)
+                {
+                    object->setEulerRotation(UI->m_editRotation);
+                }
+            
+            // scale
+                else
+                    if(	edit->getVariablePointer() == &UI->m_editScale.x ||
+                       edit->getVariablePointer() == &UI->m_editScale.y ||
+                       edit->getVariablePointer() == &UI->m_editScale.z)
+                    {
+                        object->setScale(UI->m_editScale);
+                    }
+            
+            // radius
+                    else if(edit->getVariablePointer() == &UI->m_editRadius)
+                        ((MOLight *)object)->setRadius(UI->m_editRadius);
+            // intensity
+                    else if(edit->getVariablePointer() == &UI->m_editIntensity)
+                        ((MOLight *)object)->setIntensity(UI->m_editIntensity);
+            // spotAngle
+                    else if(edit->getVariablePointer() == &UI->m_editSpotAngle)
+                    {
+                        float angle = CLAMP(UI->m_editSpotAngle, 1.0f, 90.0f);
+                        ((MOLight *)object)->setSpotAngle(angle);
+                        UI->m_editSpotAngle = angle;
+                    }
+            // spotExponent
+                    else if(edit->getVariablePointer() == &UI->m_editSpotExponent)
+                    {
+                        ((MOLight *)object)->setSpotExponent(UI->m_editSpotExponent);
+                        UI->m_editSpotExponent = ((MOLight *)object)->getSpotExponent();
+                    }
+            // shadowBias
+                    else if(edit->getVariablePointer() == &UI->m_editShadowBias)
+                    {
+                        ((MOLight *)object)->setShadowBias(UI->m_editShadowBias);
+                    }
+            // shadowBlur
+                    else if(edit->getVariablePointer() == &UI->m_editShadowBlur)
+                    {
+                        ((MOLight *)object)->setShadowBlur(UI->m_editShadowBlur);
+                    }
+            // shadowQuality
+                    else if(edit->getVariablePointer() == &UI->m_editShadowQuality)
+                    {
+                        UI->m_editShadowQuality = MIN(4096, /*getNextPowerOfTwo*/(UI->m_editShadowQuality));
+                        ((MOLight *)object)->setShadowQuality(UI->m_editShadowQuality);
+                    }
 			
-		// fov
-		else if(edit->getVariablePointer() == &UI->m_editFov)
-			((MOCamera *)object)->setFov(UI->m_editFov);
-		// clip near
-		else if(edit->getVariablePointer() == &UI->m_editClipNear)
-			((MOCamera *)object)->setClippingNear(UI->m_editClipNear);
-		// clip far
-		else if(edit->getVariablePointer() == &UI->m_editClipFar)
-			((MOCamera *)object)->setClippingFar(UI->m_editClipFar);
-		// fog distance
-		else if(edit->getVariablePointer() == &UI->m_editFogDistance)
-			((MOCamera *)object)->setFogDistance(UI->m_editFogDistance);
-
-		// pitch
-		else if(edit->getVariablePointer() == &UI->m_editPitch)
-			((MOSound *)object)->setPitch(UI->m_editPitch);
-		// gain
-		else if(edit->getVariablePointer() == &UI->m_editGain)
-			((MOSound *)object)->setGain(UI->m_editGain = CLAMP(UI->m_editGain, 0.0f, 1.0f));
-		// radius
-		else if(edit->getVariablePointer() == &UI->m_editSndRadius)
-			((MOSound *)object)->setRadius(UI->m_editSndRadius);
-		// rolloff
-		else if(edit->getVariablePointer() == &UI->m_editRolloff)
-			((MOSound *)object)->setRolloff(UI->m_editRolloff);
-
-		// mass
-		else if(edit->getVariablePointer() == &UI->m_editMass)
-			((MOEntity *)object)->getPhysicsProperties()->setMass(UI->m_editMass);
-		// friction
-		else if(edit->getVariablePointer() == &UI->m_editFriction)
-			((MOEntity *)object)->getPhysicsProperties()->setFriction(UI->m_editFriction);
-		// restitution
-		else if(edit->getVariablePointer() == &UI->m_editRestitution)
-			((MOEntity *)object)->getPhysicsProperties()->setRestitution(UI->m_editRestitution);
-		// linear damping
-		else if(edit->getVariablePointer() == &UI->m_editLinearDamping)
-			((MOEntity *)object)->getPhysicsProperties()->setLinearDamping(UI->m_editLinearDamping);
-		// angular damping
-		else if(edit->getVariablePointer() == &UI->m_editAngularDamping)
-			((MOEntity *)object)->getPhysicsProperties()->setAngularDamping(UI->m_editAngularDamping);
-		// angular factor
-		else if(edit->getVariablePointer() == &UI->m_editAngularFactor)
-			((MOEntity *)object)->getPhysicsProperties()->setAngularFactor(UI->m_editAngularFactor);
-
-		// size
-		else if(edit->getVariablePointer() == &UI->m_editSize)
-			((MOText *)object)->setSize(UI->m_editSize);
-		else if(edit->getVariablePointer() == &UI->m_editText)
-			((MOText *)object)->setText(UI->m_editText.getData());
-
-		break;
-	case MGUI_EVENT_DRAW:
-		if(! edit->isPressed())
-		{
-			// position
-			if(	edit->getVariablePointer() == &UI->m_editPosition.x ||
-				edit->getVariablePointer() == &UI->m_editPosition.y ||
-				edit->getVariablePointer() == &UI->m_editPosition.z)
-			{
-				UI->m_editPosition = object->getPosition();
-			}
-
-			// rotation
-			else
-			if(	edit->getVariablePointer() == &UI->m_editRotation.x ||
-				edit->getVariablePointer() == &UI->m_editRotation.y ||
-				edit->getVariablePointer() == &UI->m_editRotation.z)
-			{
-				UI->m_editRotation = object->getEulerRotation();
-			}
-
-			// scale
-			else
-			if(	edit->getVariablePointer() == &UI->m_editScale.x ||
-				edit->getVariablePointer() == &UI->m_editScale.y ||
-				edit->getVariablePointer() == &UI->m_editScale.z)
-			{
-				UI->m_editScale = object->getScale();
-			}
-		}
-		break;
+            // fov
+                    else if(edit->getVariablePointer() == &UI->m_editFov)
+                        ((MOCamera *)object)->setFov(UI->m_editFov);
+            // clip near
+                    else if(edit->getVariablePointer() == &UI->m_editClipNear)
+                        ((MOCamera *)object)->setClippingNear(UI->m_editClipNear);
+            // clip far
+                    else if(edit->getVariablePointer() == &UI->m_editClipFar)
+                        ((MOCamera *)object)->setClippingFar(UI->m_editClipFar);
+            // fog distance
+                    else if(edit->getVariablePointer() == &UI->m_editFogDistance)
+                        ((MOCamera *)object)->setFogDistance(UI->m_editFogDistance);
+            
+            // pitch
+                    else if(edit->getVariablePointer() == &UI->m_editPitch)
+                        ((MOSound *)object)->setPitch(UI->m_editPitch);
+            // gain
+                    else if(edit->getVariablePointer() == &UI->m_editGain)
+                        ((MOSound *)object)->setGain(UI->m_editGain = CLAMP(UI->m_editGain, 0.0f, 1.0f));
+            // radius
+                    else if(edit->getVariablePointer() == &UI->m_editSndRadius)
+                        ((MOSound *)object)->setRadius(UI->m_editSndRadius);
+            // rolloff
+                    else if(edit->getVariablePointer() == &UI->m_editRolloff)
+                        ((MOSound *)object)->setRolloff(UI->m_editRolloff);
+            
+            // mass
+                    else if(edit->getVariablePointer() == &UI->m_editMass)
+                        ((MOEntity *)object)->getPhysicsProperties()->setMass(UI->m_editMass);
+            // friction
+                    else if(edit->getVariablePointer() == &UI->m_editFriction)
+                        ((MOEntity *)object)->getPhysicsProperties()->setFriction(UI->m_editFriction);
+            // restitution
+                    else if(edit->getVariablePointer() == &UI->m_editRestitution)
+                        ((MOEntity *)object)->getPhysicsProperties()->setRestitution(UI->m_editRestitution);
+            // linear damping
+                    else if(edit->getVariablePointer() == &UI->m_editLinearDamping)
+                        ((MOEntity *)object)->getPhysicsProperties()->setLinearDamping(UI->m_editLinearDamping);
+            // angular damping
+                    else if(edit->getVariablePointer() == &UI->m_editAngularDamping)
+                        ((MOEntity *)object)->getPhysicsProperties()->setAngularDamping(UI->m_editAngularDamping);
+            // angular factor
+                    else if(edit->getVariablePointer() == &UI->m_editAngularFactor)
+                        ((MOEntity *)object)->getPhysicsProperties()->setAngularFactor(UI->m_editAngularFactor);
+            
+            // size
+                    else if(edit->getVariablePointer() == &UI->m_editSize)
+                        ((MOText *)object)->setSize(UI->m_editSize);
+                    else if(edit->getVariablePointer() == &UI->m_editText)
+                        ((MOText *)object)->setText(UI->m_editText.getData());
+            
+            break;
+        case MGUI_EVENT_DRAW:
+            if(! edit->isPressed())
+            {
+                // position
+                if(	edit->getVariablePointer() == &UI->m_editPosition.x ||
+                   edit->getVariablePointer() == &UI->m_editPosition.y ||
+                   edit->getVariablePointer() == &UI->m_editPosition.z)
+                {
+                    UI->m_editPosition = object->getPosition();
+                }
+                
+                // rotation
+                else
+                    if(	edit->getVariablePointer() == &UI->m_editRotation.x ||
+                       edit->getVariablePointer() == &UI->m_editRotation.y ||
+                       edit->getVariablePointer() == &UI->m_editRotation.z)
+                    {
+                        UI->m_editRotation = object->getEulerRotation();
+                    }
+                
+                // scale
+                    else
+                        if(	edit->getVariablePointer() == &UI->m_editScale.x ||
+                           edit->getVariablePointer() == &UI->m_editScale.y ||
+                           edit->getVariablePointer() == &UI->m_editScale.z)
+                        {
+                            UI->m_editScale = object->getScale();
+                        }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2330,64 +2341,69 @@ void MaratisUI::objectEditEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 	MLevel * level = MEngine::getInstance()->getLevel();
 	MScene * scene = level->getCurrentScene();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
-	{
-	case MGUI_EVENT_SEND_VARIABLE:
-		maratis->autoSave();
-		MObject3d * object = UI->getEditedObject();
-		if(object)
-		{
-			const char * name = edit->getText();
-			if(name)
-			{
-				int size = scene->getObjectsNumber();
-				for(int i=0; i<size; i++)
-				{
-					MObject3d * obj = scene->getObjectByIndex(i);
-					if(obj->getName())
-					if(strcmp(name, obj->getName()) == 0)
-					{
-						edit->setText(object->getName());
-						return;
-					}
-				}
-
-				object->setName(name);
-				UI->updateViewMenu();
-			}
-		}
-		else
-		{
-			MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
-
-			const char * name = edit->getText();
-			if(name)
-			{
-				unsigned int i;
-				unsigned int sSize = level->getScenesNumber();
-				for(i=0; i<sSize; i++)
-				{
-					MScene * scn = level->getSceneByIndex(i);
-					if(scn != scene)
-					{
-						if(! strcmp(name, scn->getName()))
-						{
-							// name already exist
-							edit->setText(scene->getName());
-							return;
-						}
-					}
-				}
-
-				scene->setName(name);
-
-				// menu
-				UI->updateSceneMenu();
-				UI->getSceneEdit()->setText(name);
-			}
-		}
-		break;
+	{            
+        case MGUI_EVENT_SEND_VARIABLE:
+        {
+            maratis->autoSave();
+            MObject3d * object = UI->getEditedObject();
+            if(object)
+            {
+                const char * name = edit->getText();
+                if(name)
+                {
+                    int size = scene->getObjectsNumber();
+                    for(int i=0; i<size; i++)
+                    {
+                        MObject3d * obj = scene->getObjectByIndex(i);
+                        if(obj->getName())
+                            if(strcmp(name, obj->getName()) == 0)
+                            {
+                                edit->setText(object->getName());
+                                return;
+                            }
+                    }
+                    
+                    object->setName(name);
+                    UI->updateViewMenu();
+                }
+            }
+            else
+            {
+                MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
+                
+                const char * name = edit->getText();
+                if(name)
+                {
+                    unsigned int i;
+                    unsigned int sSize = level->getScenesNumber();
+                    for(i=0; i<sSize; i++)
+                    {
+                        MScene * scn = level->getSceneByIndex(i);
+                        if(scn != scene)
+                        {
+                            if(! strcmp(name, scn->getName()))
+                            {
+                                // name already exist
+                                edit->setText(scene->getName());
+                                return;
+                            }
+                        }
+                    }
+                    
+                    scene->setName(name);
+                    
+                    // menu
+                    UI->updateSceneMenu();
+                    UI->getSceneEdit()->setText(name);
+                }
+            }
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2396,22 +2412,25 @@ void MaratisUI::timeLeftEditEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	int min = maratis->getTimelineMin();
 	int max = maratis->getTimelineMax();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
-		if(min >= max)
-		{
-			maratis->setTimelineMin(max - 1);
-			edit->updateFromVariable();
-		}
-
-		UI->getTimelineSlide()->setMinValue((float)maratis->getTimelineMin());
-		UI->getTimelineSlide()->onChange();
-		break;
+        case MGUI_EVENT_SEND_VARIABLE:
+            if(min >= max)
+            {
+                maratis->setTimelineMin(max - 1);
+                edit->updateFromVariable();
+            }
+            
+            UI->getTimelineSlide()->setMinValue((float)maratis->getTimelineMin());
+            UI->getTimelineSlide()->onChange();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2420,22 +2439,25 @@ void MaratisUI::timeRightEditEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	int min = maratis->getTimelineMin();
 	int max = maratis->getTimelineMax();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
-		if(max <= min)
-		{
-			maratis->setTimelineMax(min + 1);
-			edit->updateFromVariable();
-		}
-
-		UI->getTimelineSlide()->setMaxValue((float)maratis->getTimelineMax());
-		UI->getTimelineSlide()->onChange();
-		break;
+        case MGUI_EVENT_SEND_VARIABLE:
+            if(max <= min)
+            {
+                maratis->setTimelineMax(min + 1);
+                edit->updateFromVariable();
+            }
+            
+            UI->getTimelineSlide()->setMaxValue((float)maratis->getTimelineMax());
+            UI->getTimelineSlide()->onChange();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2445,22 +2467,22 @@ void MaratisUI::timePosEditEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
 	MGuiSlide * timelineSlide = UI->getTimelineSlide();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
+        case MGUI_EVENT_SEND_VARIABLE:
 		{
 			int tPos = maratis->getTimelinePos();
 			int min = maratis->getTimelineMin();
 			int max = maratis->getTimelineMax();
-
+            
 			if(tPos < min)
 				maratis->setTimelinePos(min);
 			else if(tPos > max)
 				maratis->setTimelinePos(max);
-
+            
 			edit->updateFromVariable();
-
+            
 			float tWidth = edit->getScale().x;
 			float sXPos = timelineSlide->getButtonPosition().x;
 			float value = timelineSlide->getNormalizedValue();
@@ -2468,9 +2490,9 @@ void MaratisUI::timePosEditEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 			if(value > 0.5f)
 				edit->setXPosition(sXPos - tWidth - 1);
 		}
-		break;
-
-	case MGUI_EVENT_ON_CHANGE:
+            break;
+            
+        case MGUI_EVENT_ON_CHANGE:
 		{
 			float tWidth = edit->getScale().x;
 			float sXPos = timelineSlide->getButtonPosition().x;
@@ -2479,7 +2501,10 @@ void MaratisUI::timePosEditEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 			if(value > 0.5f)
 				edit->setXPosition(sXPos - tWidth - 1);
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2491,7 +2516,7 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
 	MKeyboard * keyboard = MKeyboard::getInstance();
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	// game
 	MGame * game = MEngine::getInstance()->getGame();
 	if(game)
@@ -2499,21 +2524,21 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
 		if(game->isRunning())
 		{
 			gameWinEvents(windowEvents);
-
+            
 			if((windowEvents->type == MWIN_EVENT_KEY_UP) && (windowEvents->data[0] == MKEY_ESCAPE))
 			{
 				MLevel * level = engine->getLevel();
 				MScene * scene = level->getCurrentScene();
-
+                
 				// stop sound
 				scene->stopAllSounds();
-
+                
 				// show mouse
 				MWindow::getInstance()->showCursor();
-
+                
 				// end game
 				game->end();
-
+                
 				// load temp level
 				const char * temp = maratis->getTempDir();
 				if(temp)
@@ -2525,51 +2550,51 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
 				}
 				
 				scene = level->getCurrentScene();
-
+                
 				maratis->clearSelectedObjects();
 				UI->resizeGUI();
 				UI->editObject(NULL);
 				UI->updateSceneMenu();
 				UI->updateViewMenu();
-						
+                
 				// update matrices
 				scene->updateObjectsMatrices();
-
+                
 				return;
 			}
-
+            
 			/*
-			if(windowEvents->type == MWIN_EVENT_WINDOW_CLOSE)
-			{
-				MWindow::getInstance()->setActive(false);
-				return;
-			}*/
-
+             if(windowEvents->type == MWIN_EVENT_WINDOW_CLOSE)
+             {
+             MWindow::getInstance()->setActive(false);
+             return;
+             }*/
+            
 			return;
 		}
 	}
 	
 	// gui
 	MGui * gui = MGui::getInstance();
-
+    
 	switch(windowEvents->type)
 	{
-	case MWIN_EVENT_MOUSE_BUTTON_UP:
-		maratis->clearCurrentAxis();
-		break;
-
-	case MWIN_EVENT_MOUSE_MOVE:
+        case MWIN_EVENT_MOUSE_BUTTON_UP:
+            maratis->clearCurrentAxis();
+            break;
+            
+        case MWIN_EVENT_MOUSE_MOVE:
 		{
 			MGuiWindow * popup = UI->getPopupWin();
 			if(! popup->isMouseInside())
 				popup->setVisible(false);
-
+            
 			if(mouse->isLeftButtonPushed())
 			{
 				maratis->transformSelectedObjects();
 				break;
 			}
-
+            
 			if(UI->getView()->isScrolled() && mouse->isMiddleButtonPushed())
 			{
 				if(keyboard->isKeyPressed(MKEY_CONTROL))
@@ -2577,111 +2602,112 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
 					maratis->panCurrentVue();
 					break;
 				}
-
+                
 				maratis->rotateCurrentVue();
 			}
 		}
-		break;
-
-	case MWIN_EVENT_MOUSE_WHEEL_MOVE:
+            break;
+            
+        case MWIN_EVENT_MOUSE_WHEEL_MOVE:
 		{
 			if(UI->getView()->isHighLight())
 				maratis->zoomCurrentVue();
 		}
-		break;
-
-	case MWIN_EVENT_WINDOW_RESIZE:
-		UI->resizeGUI();
-		break;
-
-	case MWIN_EVENT_KEY_DOWN:
-		switch(windowEvents->data[0])
+            break;
+            
+        case MWIN_EVENT_WINDOW_RESIZE:
+            UI->resizeGUI();
+            break;
+            
+        case MWIN_EVENT_KEY_DOWN:
+            switch(windowEvents->data[0])
 		{
-		case 'S':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				maratis->save();
-			else
-			{
-				if(! gui->isSomethingEditing())
-					UI->setTransformMode(M_TRANSFORM_SCALE);
-			}
-			break;
-
-		case 'Z':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				maratis->undo();
-			break;
-		case 'Y':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				maratis->redo();
-			break;
-
-		case 'O':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				maratis->loadLevel();
-			break;
-		case 'Q':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				UI->setPopupButton(" Ok To Quit ", okQuitEvents);
-			break;
-		case 'D':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				maratis->duplicateSelectedObjects();
-			break;
-		case 'A':
-			if(keyboard->isKeyPressed(MKEY_CONTROL))
-				maratis->selectAll();
-			break;
+            case 'S':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    maratis->save();
+                else
+                {
+                    if(! gui->isSomethingEditing())
+                        UI->setTransformMode(M_TRANSFORM_SCALE);
+                }
+                break;
+                
+            case 'Z':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    maratis->undo();
+                break;
+            case 'Y':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    maratis->redo();
+                break;
+                
+            case 'O':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    maratis->loadLevel();
+                break;
+            case 'Q':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    UI->setPopupButton(" Ok To Quit ", okQuitEvents);
+                break;
+            case 'D':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    maratis->duplicateSelectedObjects();
+                break;
+            case 'A':
+                if(keyboard->isKeyPressed(MKEY_CONTROL))
+                    maratis->selectAll();
+                break;
 		}
-		break;
-
-	case MWIN_EVENT_KEY_UP:
-		switch(windowEvents->data[0])
+            break;
+            
+        case MWIN_EVENT_KEY_UP:
+            switch(windowEvents->data[0])
 		{
-		case MKEY_KP5:
-			if(! gui->isSomethingEditing())
-				maratis->switchCurrentVueMode();
-			break;
-		case MKEY_KP1:
-			if(! gui->isSomethingEditing())
-				maratis->changeCurrentVue(1);
-			break;
-		case MKEY_KP3:
-			if(! gui->isSomethingEditing())
-				maratis->changeCurrentVue(3);
-			break;
-		case MKEY_KP7:
-			if(! gui->isSomethingEditing())
-				maratis->changeCurrentVue(7);
-			break;
-		case MKEY_KP9:
-			if(! gui->isSomethingEditing())
-				maratis->changeCurrentVue(9);
-			break;
-		case 'M':
-			if(! gui->isSomethingEditing())
-				UI->setTransformMode(M_TRANSFORM_MOUSE);
-			break;
-		case 'T':
-			if(! gui->isSomethingEditing())
-				UI->setTransformMode(M_TRANSFORM_POSITION);
-			break;
-		case 'R':
-			if(! gui->isSomethingEditing())
-				UI->setTransformMode(M_TRANSFORM_ROTATION);
-			break;
-		case MKEY_DELETE:
-			if((! gui->isSomethingEditing()) && (maratis->getSelectedObjectsNumber() > 0))
-				UI->setPopupButton(" Ok To Delete ", okDeleteObjectsEvents);
-			break;
+            case MKEY_KP5:
+                if(! gui->isSomethingEditing())
+                    maratis->switchCurrentVueMode();
+                break;
+            case MKEY_KP1:
+                if(! gui->isSomethingEditing())
+                    maratis->changeCurrentVue(1);
+                break;
+            case MKEY_KP3:
+                if(! gui->isSomethingEditing())
+                    maratis->changeCurrentVue(3);
+                break;
+            case MKEY_KP7:
+                if(! gui->isSomethingEditing())
+                    maratis->changeCurrentVue(7);
+                break;
+            case MKEY_KP9:
+                if(! gui->isSomethingEditing())
+                    maratis->changeCurrentVue(9);
+                break;
+            case 'M':
+                if(! gui->isSomethingEditing())
+                    UI->setTransformMode(M_TRANSFORM_MOUSE);
+                break;
+            case 'T':
+                if(! gui->isSomethingEditing())
+                    UI->setTransformMode(M_TRANSFORM_POSITION);
+                break;
+            case 'R':
+                if(! gui->isSomethingEditing())
+                    UI->setTransformMode(M_TRANSFORM_ROTATION);
+                break;
+            case MKEY_BACKSPACE:
+            case MKEY_DELETE:
+                if((! gui->isSomethingEditing()) && (maratis->getSelectedObjectsNumber() > 0))
+                    UI->setPopupButton(" Ok To Delete ", okDeleteObjectsEvents);
+                break;
 		}
-		break;
-
-	/*case MWIN_EVENT_WINDOW_CLOSE:
-		MWindow::getInstance()->setActive(false);
-		break;*/
+            break;
+            
+            /*case MWIN_EVENT_WINDOW_CLOSE:
+             MWindow::getInstance()->setActive(false);
+             break;*/
 	}
-
+    
 	gui->onEvent(windowEvents);
 }
 
@@ -2691,13 +2717,13 @@ void MaratisUI::dVarButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
 	MObject3d * object = UI->getEditedObject();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_ON_CHANGE:
+        case MGUI_EVENT_ON_CHANGE:
 		{
 			maratis->autoSave();
-
+            
 			// ortho
 			if(button->getVariablePointer() == &UI->m_editOrtho)
 				((MOCamera *)object)->enableOrtho(UI->m_editOrtho);
@@ -2753,7 +2779,10 @@ void MaratisUI::dVarButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 				UI->setNeedToUpdateEdit(true);
 			}
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2761,13 +2790,16 @@ void MaratisUI::dVarButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::playButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("play");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("play");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2775,13 +2807,16 @@ void MaratisUI::playButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::pauseButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("pause");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("pause");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2789,13 +2824,16 @@ void MaratisUI::pauseButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::keyButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("make key");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("make key");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2803,17 +2841,21 @@ void MaratisUI::keyButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::mouseButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setTransformMode(M_TRANSFORM_MOUSE);
-		break;
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("mouse (M)");
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setTransformMode(M_TRANSFORM_MOUSE);
+            break;
+            
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("mouse (M)");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2821,17 +2863,21 @@ void MaratisUI::mouseButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::positionButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setTransformMode(M_TRANSFORM_POSITION);
-		break;
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("translate (T)");
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setTransformMode(M_TRANSFORM_POSITION);
+            break;
+            
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("translate (T)");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2839,17 +2885,21 @@ void MaratisUI::positionButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::rotationButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setTransformMode(M_TRANSFORM_ROTATION);
-		break;
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("rotate (R)");
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setTransformMode(M_TRANSFORM_ROTATION);
+            break;
+            
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("rotate (R)");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2857,17 +2907,21 @@ void MaratisUI::rotationButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::scaleButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setTransformMode(M_TRANSFORM_SCALE);
-		break;
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("scale (S)");
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setTransformMode(M_TRANSFORM_SCALE);
+            break;
+            
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("scale (S)");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2875,13 +2929,16 @@ void MaratisUI::scaleButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::worldButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->setOrientationMode(M_ORIENTATION_WORLD);
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->setOrientationMode(M_ORIENTATION_WORLD);
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2889,13 +2946,16 @@ void MaratisUI::worldButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::localButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->setOrientationMode(M_ORIENTATION_LOCAL);
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->setOrientationMode(M_ORIENTATION_LOCAL);
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2904,17 +2964,21 @@ void MaratisUI::cameraButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add camera");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-			maratis->addCamera();
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add camera");
+            break;
+            
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+                maratis->addCamera();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2923,17 +2987,21 @@ void MaratisUI::entityButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add entity");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-			maratis->addEntity();
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add entity");
+            break;
+            
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+                maratis->addEntity();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2941,13 +3009,16 @@ void MaratisUI::entityButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::backgroundButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("load background");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("load background");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2955,13 +3026,16 @@ void MaratisUI::backgroundButtonEvents(MGuiButton * button, MGuiEvent * guiEvent
 void MaratisUI::particlesButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add particles");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add particles");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2970,17 +3044,21 @@ void MaratisUI::lightButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add light");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-			maratis->addLight();
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add light");
+            break;
+            
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+                maratis->addLight();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -2989,17 +3067,21 @@ void MaratisUI::soundButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add sound");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-			maratis->addSound();
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add sound");
+            break;
+            
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+                maratis->addSound();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3008,17 +3090,21 @@ void MaratisUI::textButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add text");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-			maratis->addText();
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add text");
+            break;
+            
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+                maratis->addText();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3026,13 +3112,16 @@ void MaratisUI::textButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::shapeButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("add shape");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("add shape");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3040,13 +3129,16 @@ void MaratisUI::shapeButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::levelButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("level properties");
-		break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("level properties");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3054,18 +3146,21 @@ void MaratisUI::levelButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::sceneButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-			UI->editScene();
-		break;
-		
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("scene properties");
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+                UI->editScene();
+            break;
+            
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("scene properties");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3077,44 +3172,47 @@ void MaratisUI::gameButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MGame * game = MEngine::getInstance()->getGame();
 	MScriptContext * scriptContext = engine->getScriptContext();
 	
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed() && game)
-		{
-			MLevel * level = engine->getLevel();
-			MScene * scene = level->getCurrentScene();
-
-			const char * temp = Maratis::getInstance()->getTempDir();
-			if(temp)
-			{
-				string tempFile(temp);
-				tempFile += "/";
-				tempFile += "temp.level";
-
-				// save temp level
-				xmlLevelSave(engine->getLevel(), tempFile.c_str());
-			}
-			
-			// play sound
-			scene->stopAllSounds();
-			scene->playLoopSounds();
-
-			// hide mouse
-			MWindow::getInstance()->hideCursor();
-
-			// begin game
-			game->begin();
-
-			// run script
-			scriptContext->runScript(engine->getLevel()->getCurrentScene()->getScriptFilename());
-		}
-		break;
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("play game");
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed() && game)
+            {
+                MLevel * level = engine->getLevel();
+                MScene * scene = level->getCurrentScene();
+                
+                const char * temp = Maratis::getInstance()->getTempDir();
+                if(temp)
+                {
+                    string tempFile(temp);
+                    tempFile += "/";
+                    tempFile += "temp.level";
+                    
+                    // save temp level
+                    xmlLevelSave(engine->getLevel(), tempFile.c_str());
+                }
+                
+                // play sound
+                scene->stopAllSounds();
+                scene->playLoopSounds();
+                
+                // hide mouse
+                MWindow::getInstance()->hideCursor();
+                
+                // begin game
+                game->begin();
+                
+                // run script
+                scriptContext->runScript(engine->getLevel()->getCurrentScene()->getScriptFilename());
+            }
+            break;
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("play game");
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3125,48 +3223,51 @@ void MaratisUI::newSceneEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside())
-		{
-			unsigned int id = level->getScenesNumber();
-			unsigned int count = id;
-
-			char name[256];
-			sprintf(name, "Scene-%d", count);
-
-			int i;
-			int sSize = (int)level->getScenesNumber();
-			for(i=0; i<sSize; i++)
-			{
-				MScene * scn = level->getSceneByIndex(i);
-				if(! strcmp(name, scn->getName()))
-				{
-					// name already exist
-					count++;
-					sprintf(name, "Scene-%d", count);
-					i = -1;
-				}
-			}
-
-			maratis->autoSave();
-			MScene * scene = level->addNewScene();
-			scene->setName(name);
-
-			level->setCurrentSceneId(id);
-
-			MGuiEditText * sceneEdit = UI->getSceneEdit();
-			sceneEdit->setText(scene->getName());
-
-			// menu
-			UI->updateSceneMenu();
-			UI->updateViewMenu();
-			UI->editObject(NULL);
-			maratis->clearSelectedObjects();
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside())
+            {
+                unsigned int id = level->getScenesNumber();
+                unsigned int count = id;
+                
+                char name[256];
+                sprintf(name, "Scene-%d", count);
+                
+                int i;
+                int sSize = (int)level->getScenesNumber();
+                for(i=0; i<sSize; i++)
+                {
+                    MScene * scn = level->getSceneByIndex(i);
+                    if(! strcmp(name, scn->getName()))
+                    {
+                        // name already exist
+                        count++;
+                        sprintf(name, "Scene-%d", count);
+                        i = -1;
+                    }
+                }
+                
+                maratis->autoSave();
+                MScene * scene = level->addNewScene();
+                scene->setName(name);
+                
+                level->setCurrentSceneId(id);
+                
+                MGuiEditText * sceneEdit = UI->getSceneEdit();
+                sceneEdit->setText(scene->getName());
+                
+                // menu
+                UI->updateSceneMenu();
+                UI->updateViewMenu();
+                UI->editObject(NULL);
+                maratis->clearSelectedObjects();
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3177,13 +3278,13 @@ void MaratisUI::sceneNameEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
+        case MGUI_EVENT_SEND_VARIABLE:
 		{
 			MScene * scene = level->getCurrentScene();
-
+            
 			const char * name = edit->getText();
 			if(name)
 			{
@@ -3202,34 +3303,41 @@ void MaratisUI::sceneNameEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 						}
 					}
 				}
-
+                
 				maratis->autoSave();
 				scene->setName(name);
-
+                
 				// menu
 				UI->updateSceneMenu();
-
+                
 				if(UI->getEditedObject() == NULL)
 					UI->getObjectEdit()->setText(name);
 			}
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
 // scene data
 void MaratisUI::dataMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 {
-	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
-		MScene * scene = level->getCurrentScene();
-		scene->setDataMode((M_DATA_MODES)menu->getMenuId());
-		break;
+        case MGUI_EVENT_SEND_VARIABLE:
+        {
+            MScene * scene = level->getCurrentScene();
+            scene->setDataMode((M_DATA_MODES)menu->getMenuId());
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3238,19 +3346,24 @@ void MaratisUI::upBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			maratis->autoSave();
-			MObject3d * object = UI->getEditedObject();
-			object->invertBehavior(UI->getEditedBehavior() - 2, UI->getEditedBehavior() - 1);
-			UI->setEditedBehavior(UI->getEditedBehavior() - 1);
-			UI->setNeedToUpdateEdit(true);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+        {
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                maratis->autoSave();
+                MObject3d * object = UI->getEditedObject();
+                object->invertBehavior(UI->getEditedBehavior() - 2, UI->getEditedBehavior() - 1);
+                UI->setEditedBehavior(UI->getEditedBehavior() - 1);
+                UI->setNeedToUpdateEdit(true);
+            }
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3259,19 +3372,22 @@ void MaratisUI::downBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			maratis->autoSave();
-			MObject3d * object = UI->getEditedObject();
-			object->invertBehavior(UI->getEditedBehavior() - 1, UI->getEditedBehavior());
-			UI->setEditedBehavior(UI->getEditedBehavior() + 1);
-			UI->setNeedToUpdateEdit(true);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                maratis->autoSave();
+                MObject3d * object = UI->getEditedObject();
+                object->invertBehavior(UI->getEditedBehavior() - 1, UI->getEditedBehavior());
+                UI->setEditedBehavior(UI->getEditedBehavior() + 1);
+                UI->setNeedToUpdateEdit(true);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3279,15 +3395,18 @@ void MaratisUI::downBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::deleteBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside())
-		{
-			UI->setPopupButton(" Ok To Delete ", okDeleteBehaviorEvents);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside())
+            {
+                UI->setPopupButton(" Ok To Delete ", okDeleteBehaviorEvents);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3295,24 +3414,26 @@ void MaratisUI::okDeleteBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvent
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			maratis->autoSave();
-
-			MGuiWindow * popup = UI->getPopupWin();
-			UI->closePopupButton();
-
-			MObject3d * object = UI->getEditedObject();
-			object->deleteBehavior(UI->getEditedBehavior() - 1);
-			UI->setEditedBehavior(0);
-			
-			UI->editObject(object);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                maratis->autoSave();
+                
+                UI->closePopupButton();
+                
+                MObject3d * object = UI->getEditedObject();
+                object->deleteBehavior(UI->getEditedBehavior() - 1);
+                UI->setEditedBehavior(0);
+                
+                UI->editObject(object);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3320,15 +3441,20 @@ void MaratisUI::okDeleteBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvent
 void MaratisUI::textAlignMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
-		MOText * text = (MOText *)UI->getEditedObject();
-		if(text){
-			text->setAlign((M_ALIGN_MODES)menu->getMenuId());
-		}
-		break;
+        case MGUI_EVENT_SEND_VARIABLE:
+        {
+            MOText * text = (MOText *)UI->getEditedObject();
+            if(text){
+                text->setAlign((M_ALIGN_MODES)menu->getMenuId());
+            }
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3337,24 +3463,30 @@ void MaratisUI::behaviorMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
 	MBehaviorManager * behaviorManager = MEngine::getInstance()->getBehaviorManager();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(menu->isHighLight() && !menu->isPressed())
-			UI->getInfoText()->setText("add behavior");
-		break;
-	case MGUI_EVENT_SEND_VARIABLE:
-		const char * behaviorName = menu->getText();
-		MObject3d * object = UI->getEditedObject();
-		if(object && behaviorName)
-		{
-			MBehaviorCreator * behavior = behaviorManager->getBehaviorByName(behaviorName);
-			object->addBehavior(behavior->getNewBehavior(object));
-			UI->setNeedToUpdateEdit(true);
-			UI->setEditedBehavior(object->getBehaviorsNumber());
-		}
-		break;
+        case MGUI_EVENT_DRAW:
+            if(menu->isHighLight() && !menu->isPressed())
+                UI->getInfoText()->setText("add behavior");
+            break;
+            
+        case MGUI_EVENT_SEND_VARIABLE:
+        {
+            const char * behaviorName = menu->getText();
+            MObject3d * object = UI->getEditedObject();
+            if(object && behaviorName)
+            {
+                MBehaviorCreator * behavior = behaviorManager->getBehaviorByName(behaviorName);
+                object->addBehavior(behavior->getNewBehavior(object));
+                UI->setNeedToUpdateEdit(true);
+                UI->setEditedBehavior(object->getBehaviorsNumber());
+            }
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3365,20 +3497,25 @@ void MaratisUI::sceneMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_ON_CHANGE:
-		maratis->autoSave();
-		level->setCurrentSceneId(menu->getMenuId());
-		MScene * scene = level->getCurrentScene();
-
-		// update scene name edit
-		MGuiEditText * sceneEdit = UI->getSceneEdit();
-		sceneEdit->setText(scene->getName());
-		UI->editObject(NULL);
-		maratis->clearSelectedObjects();
-		break;
+        case MGUI_EVENT_ON_CHANGE:
+        {
+            maratis->autoSave();
+            level->setCurrentSceneId(menu->getMenuId());
+            MScene * scene = level->getCurrentScene();
+            
+            // update scene name edit
+            MGuiEditText * sceneEdit = UI->getSceneEdit();
+            sceneEdit->setText(scene->getName());
+            UI->editObject(NULL);
+            maratis->clearSelectedObjects();
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3388,15 +3525,18 @@ void MaratisUI::deleteSceneEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed() && (level->getScenesNumber() > 1))
-		{
-			UI->setPopupButton(" Ok To Delete ", okDeleteSceneEvents);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed() && (level->getScenesNumber() > 1))
+            {
+                UI->setPopupButton(" Ok To Delete ", okDeleteSceneEvents);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3407,32 +3547,33 @@ void MaratisUI::okDeleteSceneEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			MGuiWindow * popup = UI->getPopupWin();
-
-			maratis->autoSave();
-			level->deleteScene(level->getCurrentSceneId());
-
-			// update scene name edit
-			MScene * scene = level->getCurrentScene();
-			MGuiEditText * sceneEdit = UI->getSceneEdit();
-			sceneEdit->setText(scene->getName());
-
-			UI->closePopupButton();
-
-			// update scene menu
-			UI->updateSceneMenu();
-			UI->updateViewMenu();
-
-			UI->editObject(NULL);
-			maratis->clearSelectedObjects();
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                maratis->autoSave();
+                level->deleteScene(level->getCurrentSceneId());
+                
+                // update scene name edit
+                MScene * scene = level->getCurrentScene();
+                MGuiEditText * sceneEdit = UI->getSceneEdit();
+                sceneEdit->setText(scene->getName());
+                
+                UI->closePopupButton();
+                
+                // update scene menu
+                UI->updateSceneMenu();
+                UI->updateViewMenu();
+                
+                UI->editObject(NULL);
+                maratis->clearSelectedObjects();
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3440,17 +3581,18 @@ void MaratisUI::okDeleteSceneEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::quitEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-	MEngine * engine = MEngine::getInstance();
-	MLevel * level = engine->getLevel();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside())
-		{
-			UI->setPopupButton(" Ok To Quit ", okQuitEvents);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside())
+            {
+                UI->setPopupButton(" Ok To Quit ", okQuitEvents);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3459,10 +3601,13 @@ void MaratisUI::okQuitEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			MWindow::getInstance()->setActive(false);
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                MWindow::getInstance()->setActive(false);
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3470,13 +3615,15 @@ void MaratisUI::okQuitEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::newLevelEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
 			UI->setPopupButton(" Ok New Level ", okNewLevelEvents);
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3484,17 +3631,19 @@ void MaratisUI::okNewLevelEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			MGuiWindow * popup = UI->getPopupWin();
-			UI->closePopupButton();
-			maratis->newLevel();
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                UI->closePopupButton();
+                maratis->newLevel();
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3504,9 +3653,12 @@ void MaratisUI::openLevelEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		maratis->loadLevel();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->loadLevel();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3514,12 +3666,15 @@ void MaratisUI::openLevelEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::saveEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		maratis->save();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->save();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3527,12 +3682,15 @@ void MaratisUI::saveEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::saveAsEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		maratis->saveAs();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->saveAs();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3542,9 +3700,12 @@ void MaratisUI::newProjectEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		maratis->newProject();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->newProject();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3554,9 +3715,12 @@ void MaratisUI::openProjectEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		maratis->loadProject();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->loadProject();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3564,29 +3728,45 @@ void MaratisUI::openProjectEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
+        case MGUI_EVENT_DRAW:
 		{
 			MEngine * engine = MEngine::getInstance();
 			MLevel * level = engine->getLevel();
 			MScene * scene = level->getCurrentScene();
 			MRenderingContext * render = engine->getRenderingContext();
-
+            
 			// clear screen
 			//window->setNormalColor(*scene->getClearColor());
-
+            
 			// viewport
 			unsigned int w = (unsigned int)window->getScale().x;
 			unsigned int h = (unsigned int)window->getScale().y;
 			int x = (int)window->getPosition().x;
 			int y = MWindow::getInstance()->getHeight() - h - (int)window->getPosition().y;
 			render->setViewport(x, y, w, h);
-
+            
 			// draw
 			maratis->drawMainView(scene);
 		}
+<<<<<<< .mine
+            break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                MEngine * engine = MEngine::getInstance();
+                MLevel * level = engine->getLevel();
+                MScene * scene = level->getCurrentScene();
+                
+                maratis->selectObjectsInMainView(scene);
+            }
+            break;
+            
+        default:
+            break;
+=======
 		break;
 	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
 		if(window->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
@@ -3598,6 +3778,7 @@ void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 			maratis->selectObjectsInMainView(scene);
 		}
 		break;
+>>>>>>> .r51
 	}
 }
 
@@ -3606,24 +3787,25 @@ void MaratisUI::okDeleteObjectsEvents(MGuiButton * button, MGuiEvent * guiEvents
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			MGuiWindow * popup = UI->getPopupWin();
-
-			maratis->deleteSelectedObjects();
-			UI->closePopupButton();
-
-			// update scene menu
-			UI->updateSceneMenu();
-			UI->updateViewMenu();
-
-			UI->editObject(NULL);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                maratis->deleteSelectedObjects();
+                UI->closePopupButton();
+                
+                // update scene menu
+                UI->updateSceneMenu();
+                UI->updateViewMenu();
+                
+                UI->editObject(NULL);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3631,20 +3813,23 @@ void MaratisUI::okDeleteObjectsEvents(MGuiButton * button, MGuiEvent * guiEvents
 void MaratisUI::leftAnimIdEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-		{
-			MOEntity * entity = (MOEntity *)UI->getEditedObject();
-			if(entity->getAnimationId() > 0)
-			{
-				entity->changeAnimation(entity->getAnimationId() - 1);
-				UI->updateAnimIdText(entity);
-			}
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+            {
+                MOEntity * entity = (MOEntity *)UI->getEditedObject();
+                if(entity->getAnimationId() > 0)
+                {
+                    entity->changeAnimation(entity->getAnimationId() - 1);
+                    UI->updateAnimIdText(entity);
+                }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3652,77 +3837,89 @@ void MaratisUI::leftAnimIdEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::rightAnimIdEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-		{
-			MOEntity * entity = (MOEntity *)UI->getEditedObject();
-			MMesh * mesh = entity->getMesh();
-			if(mesh){
-				if(entity->getAnimationId() < (mesh->getAnimsRangesNumber() - 1))
-				{
-					entity->changeAnimation(entity->getAnimationId() + 1);
-					UI->updateAnimIdText(entity);
-				}
-			}
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+            {
+                MOEntity * entity = (MOEntity *)UI->getEditedObject();
+                MMesh * mesh = entity->getMesh();
+                if(mesh){
+                    if(entity->getAnimationId() < (mesh->getAnimsRangesNumber() - 1))
+                    {
+                        entity->changeAnimation(entity->getAnimationId() + 1);
+                        UI->updateAnimIdText(entity);
+                    }
+                }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::tabTransformEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("transform");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setNeedToUpdateEdit(true);
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("transform");
+            break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setNeedToUpdateEdit(true);
 			//UI->editObject(UI->getEditedObject());
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::tabPropertiesEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("properties");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setNeedToUpdateEdit(true);
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("properties");
+            break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setNeedToUpdateEdit(true);
 			//UI->editObject(UI->getEditedObject());
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::tabBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(button->isHighLight() && !button->isPressed())
-			UI->getInfoText()->setText("behaviors");
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(button->isPressed())
-			UI->setNeedToUpdateEdit(true);
+        case MGUI_EVENT_DRAW:
+            if(button->isHighLight() && !button->isPressed())
+                UI->getInfoText()->setText("behaviors");
+            break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(button->isPressed())
+                UI->setNeedToUpdateEdit(true);
 			//UI->editObject(UI->getEditedObject());
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3734,17 +3931,16 @@ void MaratisUI::viewPropEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 void MaratisUI::viewMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
 	MScene * scene = level->getCurrentScene();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_SEND_VARIABLE:
+        case MGUI_EVENT_SEND_VARIABLE:
 		{
 			MOCamera * vue = maratis->getPerspectiveVue();
-
+            
 			unsigned int menuId = menu->getMenuId();
 			if(menuId > 5)
 			{
@@ -3757,29 +3953,32 @@ void MaratisUI::viewMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 			}
 			else switch(menuId)
 			{
-			case 0: // Perspective
-				if(vue->isOrtho())
-					maratis->switchCurrentVueMode();
-				break;
-			case 1: // Ortho
-				if(! vue->isOrtho())
-					maratis->switchCurrentVueMode();
-				break;
-			case 2:
-				maratis->changeCurrentVue(1);
-				break;
-			case 3:
-				maratis->changeCurrentVue(3);
-				break;
-			case 4:
-				maratis->changeCurrentVue(7);
-				break;
-			case 5:
-				maratis->changeCurrentVue(9);
-				break;
+                case 0: // Perspective
+                    if(vue->isOrtho())
+                        maratis->switchCurrentVueMode();
+                    break;
+                case 1: // Ortho
+                    if(! vue->isOrtho())
+                        maratis->switchCurrentVueMode();
+                    break;
+                case 2:
+                    maratis->changeCurrentVue(1);
+                    break;
+                case 3:
+                    maratis->changeCurrentVue(3);
+                    break;
+                case 4:
+                    maratis->changeCurrentVue(7);
+                    break;
+                case 5:
+                    maratis->changeCurrentVue(9);
+                    break;
 			}
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3787,40 +3986,43 @@ void MaratisUI::cameraWinEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
+        case MGUI_EVENT_DRAW:
 		{
 			MObject3d * object = UI->getEditedObject();
-
+            
 			if(! object)
 				break;
-
+            
 			if(object->getType() != M_OBJECT3D_CAMERA)
 				break;
-
+            
 			MOCamera * camera = (MOCamera *)object;
-
+            
 			MEngine * engine = MEngine::getInstance();
 			MLevel * level = engine->getLevel();
 			MScene * scene = level->getCurrentScene();
 			MRenderingContext * render = engine->getRenderingContext();
-
+            
 			// clear screen
 			window->setNormalColor(*camera->getClearColor());
-
+            
 			// viewport
 			int x = (int)window->getPosition().x;
 			int y = (int)window->getPosition().y;
 			unsigned int w = (unsigned int)window->getScale().x;
 			unsigned int h = (unsigned int)window->getScale().y;
 			render->setViewport(x, MWindow::getInstance()->getHeight() - h - y, w, h);
-
+            
 			// draw
 			maratis->drawCamera(scene, camera);
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3839,33 +4041,36 @@ void MaratisUI::editTopWinEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 void MaratisUI::editWinEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(UI->needToUpdateEdit())
-			UI->editObject(UI->getEditedObject());
-		break;
-	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(UI->m_tabBehavior->isPressed() && window->isPressed() && (UI->getEditedObject()))
-		{
-			unsigned int iSize = window->getImagesNumber();
-			if(iSize < 2)
-				break;
-
-			unsigned int i;
-			for(i=0; i<(iSize-1); i++)
-			{
-				MGuiImage * image = window->getImage(i);
-				if(image->isMouseInside())
-				{
-					UI->setEditedBehavior(i+1);
-					UI->setNeedToUpdateEdit(true);
-					break;
-				}
-			}
-		}
-		break;
+        case MGUI_EVENT_DRAW:
+            if(UI->needToUpdateEdit())
+                UI->editObject(UI->getEditedObject());
+            break;
+        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
+            if(UI->m_tabBehavior->isPressed() && window->isPressed() && (UI->getEditedObject()))
+            {
+                unsigned int iSize = window->getImagesNumber();
+                if(iSize < 2)
+                    break;
+                
+                unsigned int i;
+                for(i=0; i<(iSize-1); i++)
+                {
+                    MGuiImage * image = window->getImage(i);
+                    if(image->isMouseInside())
+                    {
+                        UI->setEditedBehavior(i+1);
+                        UI->setNeedToUpdateEdit(true);
+                        break;
+                    }
+                }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -3893,110 +4098,128 @@ void MaratisUI::keysWinEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 void MaratisUI::activeEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->activeSelection();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->activeSelection();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::undoEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->undo();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->undo();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::redoEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->redo();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->redo();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::selectAllEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->selectAll();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->selectAll();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::selectSameMeshEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->selectSameMesh();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->selectSameMesh();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::duplicateEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->duplicateSelectedObjects();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->duplicateSelectedObjects();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::linkEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->linkSelectedObjects();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->linkSelectedObjects();
+            break;
+            
+        default:
+            break;
 	}
 }
 
 void MaratisUI::unlinkEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-			maratis->unlinkSelectedObjects();
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+                maratis->unlinkSelectedObjects();
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4005,16 +4228,19 @@ void MaratisUI::deleteEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-		{
-			if(maratis->getSelectedObjectsNumber() > 0)
-				UI->setPopupButton(" Ok To Delete ", okDeleteObjectsEvents);
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+            {
+                if(maratis->getSelectedObjectsNumber() > 0)
+                    UI->setPopupButton(" Ok To Delete ", okDeleteObjectsEvents);
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4022,13 +4248,18 @@ void MaratisUI::deleteEvents(MGuiButton * button, MGuiEvent * guiEvents)
 void MaratisUI::collisionShapeEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_ON_CHANGE:
-		MOEntity * entity = (MOEntity *)UI->getEditedObject();
-		entity->getPhysicsProperties()->setCollisionShape((M_COLLISION_SHAPE_TYPE)menu->getMenuId());
-		break;
+        case MGUI_EVENT_ON_CHANGE:
+        {
+            MOEntity * entity = (MOEntity *)UI->getEditedObject();
+            entity->getPhysicsProperties()->setCollisionShape((M_COLLISION_SHAPE_TYPE)menu->getMenuId());
+        }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4038,24 +4269,27 @@ void MaratisUI::loadScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MWindow * window = MWindow::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
 	MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-		{
-			char startPath[256];
-			getGlobalFilename(startPath, window->getWorkingDirectory(), "scripts");
-			
-			// get filename
-			const char * filename = window->getOpenFilename("Load script", "*.lua\0*.lua\0*.*\0*.*\0", startPath);
-			if(filename)
-			{
-				scene->setScriptFilename(filename);
-				UI->editScene();
-			}
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+            {
+                char startPath[256];
+                getGlobalFilename(startPath, window->getWorkingDirectory(), "scripts");
+                
+                // get filename
+                const char * filename = window->getOpenFilename("Load script", "*.lua\0*.lua\0*.*\0*.*\0", startPath);
+                if(filename)
+                {
+                    scene->setScriptFilename(filename);
+                    UI->editScene();
+                }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4063,16 +4297,19 @@ void MaratisUI::deleteScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MaratisUI * UI = MaratisUI::getInstance();
 	MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-		{
-			scene->setScriptFilename(NULL);
-			UI->editScene();
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+            {
+                scene->setScriptFilename(NULL);
+                UI->editScene();
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4080,27 +4317,29 @@ void MaratisUI::editScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MEngine * engine = MEngine::getInstance();
 	MWindow * window = MWindow::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
 	MScene * scene = engine->getLevel()->getCurrentScene();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-		{
-			const char * script = scene->getScriptFilename();
-			if(strlen(script) > 0)
-			{
-				#ifdef _WIN32
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+            {
+                const char * script = scene->getScriptFilename();
+                if(strlen(script) > 0)
+                {
+#ifdef _WIN32
 					char args[256];
 					sprintf(args, "\"%s\"", script);
 					window->execute(SCRIPT_READER, args);
-				#else
+#else
 					window->execute(SCRIPT_READER, script);
-				#endif
-			}
-		}
-		break;
+#endif
+                }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4111,28 +4350,31 @@ void MaratisUI::loadFontEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MaratisUI * UI = MaratisUI::getInstance();
 	MLevel * level = MEngine::getInstance()->getLevel();
 	MOText * text = (MOText *)UI->getEditedObject();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_MOUSE_BUTTON_UP:
-		if(button->isPressed())
-		{
-			char startPath[256];
-			getGlobalFilename(startPath, window->getWorkingDirectory(), "fonts");
-			
-			// get filename
-			const char * filename = window->getOpenFilename("Select Font", "*.ttf, *.font\0*.ttf;*.font\0*.*\0*.*\0", startPath);
-			if(filename)
-			{
-				MFontRef * fontRef = level->loadFont(filename);
-				if(fontRef){
-					text->setFontRef(fontRef);
-					UI->setEditedObject(text);
-					UI->setNeedToUpdateEdit(true);
-				}
-			}
-		}
-		break;
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            if(button->isPressed())
+            {
+                char startPath[256];
+                getGlobalFilename(startPath, window->getWorkingDirectory(), "fonts");
+                
+                // get filename
+                const char * filename = window->getOpenFilename("Select Font", "*.ttf, *.font\0*.ttf;*.font\0*.*\0*.*\0", startPath);
+                if(filename)
+                {
+                    MFontRef * fontRef = level->loadFont(filename);
+                    if(fontRef){
+                        text->setFontRef(fontRef);
+                        UI->setEditedObject(text);
+                        UI->setNeedToUpdateEdit(true);
+                    }
+                }
+            }
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -4143,50 +4385,53 @@ void MaratisUI::rendererMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	MRendererManager * rendererManager = engine->getRendererManager();
 	MRenderer * renderer = engine->getRenderer();
-
+    
 	switch(guiEvents->type)
 	{
-	case MGUI_EVENT_DRAW:
-		if(! menu->isPressed())
-		{
-			const char * currentRendererName = NULL;
-			if(renderer)
-				currentRendererName = renderer->getName();
-			
-			static unsigned int frame = 0;
-			unsigned int menuId = 0;
-			unsigned int rSize = rendererManager->getRenderersNumber();
-			
-			if(frame%10) // update menu
-			{
-				menu->clearWindowMenu();
-				for(unsigned i=0; i<rSize; i++)
-				{
-					MRendererCreator * renderer = rendererManager->getRendererByIndex(i);
-					const char * name = renderer->getName();
-					if(name)
-					{
-						if(currentRendererName){
-							if(strcmp(currentRendererName, name) == 0)
-							   menuId = menu->getWindowMenu()->getButtonsNumber();
-						}
-							   
-						menu->addSimpleButton(name, NULL);
-					}
-				}
-				menu->setMenuId(menuId);
-			}
-			
-			frame++;
-		}
-		break;			
-	case MGUI_EVENT_SEND_VARIABLE:
+        case MGUI_EVENT_DRAW:
+            if(! menu->isPressed())
+            {
+                const char * currentRendererName = NULL;
+                if(renderer)
+                    currentRendererName = renderer->getName();
+                
+                static unsigned int frame = 0;
+                unsigned int menuId = 0;
+                unsigned int rSize = rendererManager->getRenderersNumber();
+                
+                if(frame%10) // update menu
+                {
+                    menu->clearWindowMenu();
+                    for(unsigned i=0; i<rSize; i++)
+                    {
+                        MRendererCreator * renderer = rendererManager->getRendererByIndex(i);
+                        const char * name = renderer->getName();
+                        if(name)
+                        {
+                            if(currentRendererName){
+                                if(strcmp(currentRendererName, name) == 0)
+                                    menuId = menu->getWindowMenu()->getButtonsNumber();
+                            }
+                            
+                            menu->addSimpleButton(name, NULL);
+                        }
+                    }
+                    menu->setMenuId(menuId);
+                }
+                
+                frame++;
+            }
+            break;			
+        case MGUI_EVENT_SEND_VARIABLE:
 		{
 			const char * name = menu->getText();
 			if(name)
 				maratis->changeRenderer(name);
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 

@@ -62,6 +62,7 @@ private :
 	map<string, int> m_keys;
 	map<string, float> m_axis;
 	map<string, int> m_props;
+    map<string, MVector3> m_vecprops;
     map<int, TouchData> m_touches;
 
 public:
@@ -69,17 +70,20 @@ public:
 	void createKey(const char * name);
 	void createAxis(const char * name);
 	void createProperty(const char * name);
+    void createVectorProperty(const char * name);
 
 	void downKey(const char * name);
 	void upKey(const char * name);
 	void setAxis(const char * name, float axis);
 	void setProperty(const char * name, int prop);
+    void setVectorProperty(const char * name, MVector3 vec);
 
 	bool isKeyPressed(const char * name);
 	bool onKeyDown(const char * name);
 	bool onKeyUp(const char * name);
 	float getAxis(const char * name);
 	int getProperty(const char * name);
+    MVector3 getVectorProperty(const char * name);
     
     // Multi-Touch Support
     // Touch events

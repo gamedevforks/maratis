@@ -57,7 +57,7 @@ private:
 
 	// events function pointer
 	void (* m_pointerEvent)(MWinEvent * windowEvents);
-
+    
 public:
 
 	MWindow(void);

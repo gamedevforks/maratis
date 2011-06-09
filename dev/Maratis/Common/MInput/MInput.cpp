@@ -31,6 +31,7 @@
 #include "MInput.h"
 
 #include "MVector2.h"
+#include "MVector3.h"
 
 
 MInput::MInput(void)
@@ -153,6 +154,12 @@ void MInput::createProperty(const char * name)
 		m_props[name] = 0;
 }
 
+void MInput::createVectorProperty(const char *name)
+{
+    if (name)
+        m_vecprops[name] = 0;
+}
+
 void MInput::downKey(const char * name)
 {
 	map<string, int>::iterator iter = m_keys.find(name);
@@ -179,6 +186,13 @@ void MInput::setProperty(const char * name, int prop)
 	map<string, int>::iterator iter = m_props.find(name);
 	if(iter != m_props.end())
 		iter->second = prop;
+}
+
+void MInput::setVectorProperty(const char *name, MVector3 vec)
+{
+    map<string, MVector3>::iterator iter = m_vecprops.find(name);
+    if (iter != m_vecprops.end())
+        iter->second = vec;
 }
 
 bool MInput::isKeyPressed(const char * name)
@@ -224,6 +238,15 @@ int MInput::getProperty(const char * name)
 		return iter->second;
 
 	return 0;
+}
+
+MVector3 MInput::getVectorProperty(const char * name)
+{
+    map<string, MVector3>::iterator iter = m_vecprops.find(name);
+    if (iter != m_vecprops.end())
+        return iter->second;
+    
+    return MVector3();
 }
 
 // Multi-Touch Support

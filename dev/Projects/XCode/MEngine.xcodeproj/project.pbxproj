@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E918E4221305ABEC0080ED5C /* MCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E4211305ABEC0080ED5C /* MCore.dylib */; };
+		AE7B1343136C30E60031A599 /* MCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE7B1342136C30E60031A599 /* MCore.dylib */; };
 		E918E47C1305AC0F0080ED5C /* MMorphingData.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E4241305AC0E0080ED5C /* MMorphingData.h */; };
 		E918E47D1305AC0F0080ED5C /* MBox3d.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E4251305AC0E0080ED5C /* MBox3d.h */; };
 		E918E47E1305AC0F0080ED5C /* MArmatureAnimRef.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E4261305AC0E0080ED5C /* MArmatureAnimRef.h */; };
@@ -98,8 +98,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AE7B1342136C30E60031A599 /* MCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = MCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AAC09D05546B4700DB518D /* MEngine.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MEngine.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		E918E4211305ABEC0080ED5C /* MCore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MCore.dylib; path = build/Release/MCore.dylib; sourceTree = SOURCE_ROOT; };
 		E918E4241305AC0E0080ED5C /* MMorphingData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMorphingData.h; path = ../../MSDK/MEngine/Includes/MMorphingData.h; sourceTree = SOURCE_ROOT; };
 		E918E4251305AC0E0080ED5C /* MBox3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBox3d.h; path = ../../MSDK/MEngine/Includes/MBox3d.h; sourceTree = SOURCE_ROOT; };
 		E918E4261305AC0E0080ED5C /* MArmatureAnimRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MArmatureAnimRef.h; path = ../../MSDK/MEngine/Includes/MArmatureAnimRef.h; sourceTree = SOURCE_ROOT; };
@@ -194,7 +194,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E918E4221305ABEC0080ED5C /* MCore.dylib in Frameworks */,
+				AE7B1343136C30E60031A599 /* MCore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +222,7 @@
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				E918E4211305ABEC0080ED5C /* MCore.dylib */,
+				AE7B1342136C30E60031A599 /* MCore.dylib */,
 			);
 			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
@@ -420,7 +420,11 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB916408733D950010E9CD /* Build configuration list for PBXProject "MEngine" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 0867D691FE84028FC02AAC07 /* MEngine */;
 			productRefGroup = 034768DDFF38A45A11DB9C8B /* Products */;
 			projectDirPath = "";

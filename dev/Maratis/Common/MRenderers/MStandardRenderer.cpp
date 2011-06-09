@@ -261,7 +261,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		render->getFogColor(&currentFogColor);
 		
 		// set cull mode
-		if(cullMode == M_CULL_NONE){
+		if(cullMode == M_CULL_NONE)
+        {
 			render->disableCullFace();
 		}
 		else{
@@ -279,9 +280,13 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			case M_BLENDING_LIGHT:
 				render->setFogColor(MVector3(0, 0, 0));
 				break;
+                
 			case M_BLENDING_PRODUCT:
 				render->setFogColor(MVector3(1, 1, 1));
 				break;
+                
+            default:
+                break;
 		}
 		
 		// texture passes

@@ -60,6 +60,9 @@ void MGuiButton::sendVariable(void)
 			*value = isPressed();
 		}
 		break;
+            
+        default:
+            break;
 	}
 }
 
@@ -76,7 +79,10 @@ void MGuiButton::updateFromVariable(void)
 			else
 				m_isPressed = false;
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 
@@ -96,7 +102,6 @@ void MGuiButton::onChange(void)
 
 void MGuiButton::press(bool press)
 {
-	MGuiButton * btn = this;
 	if(press != isPressed())
 	{
 		MGui2d::setPressed(press);
@@ -106,7 +111,6 @@ void MGuiButton::press(bool press)
 
 void MGuiButton::setPressed(bool pressed)
 {
-	MGuiButton * btn = this;
 	if(pressed != isPressed())
 	{
 		MGui2d::setPressed(pressed);
@@ -221,7 +225,10 @@ void MGuiButton::onEvent(MWinEvent * windowEvent)
 
 		m_isActive = false;
 
-		break;
+            break;
+            
+        default:
+            break;
 	}
 }
 

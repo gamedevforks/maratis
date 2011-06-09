@@ -928,6 +928,23 @@ int getProperty(lua_State * L)
 	return 0;
 }
 
+int getVectorProperty(lua_State * L)
+{
+    MInputContext * input = MEngine::getInstance()->getInputContext();
+    
+    if (!isFunctionOk(L, "getVectorProperty", 1))
+        return 0;
+    
+    const char* name = lua_tostring(L, 1);
+    if (name)
+    {
+        pushFloatArray(L, input->getVectorProperty(name), 3);
+        return 1;
+    }
+    
+    return 0;
+}
+
 int getTouchPosition(lua_State * L)
 {
     MInputContext * input = MEngine::getInstance()->getInputContext();

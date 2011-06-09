@@ -39,16 +39,19 @@ void windowEvents(MWinEvent * windowEvents)
 	MGame * game = engine->getGame();
 	if(game)
 	{
-		if(game->isRunning()){
+		if(game->isRunning())
+        {
 			gameWinEvents(windowEvents);
 		}
 	}
 
-	if(windowEvents->type == MWIN_EVENT_KEY_DOWN && windowEvents->data[0] == MKEY_ESCAPE){
+	if(windowEvents->type == MWIN_EVENT_KEY_DOWN && windowEvents->data[0] == MKEY_ESCAPE)
+    {
 		MWindow::getInstance()->setActive(false);
 	}
 
-	if(windowEvents->type == MWIN_EVENT_WINDOW_CLOSE){
+	if(windowEvents->type == MWIN_EVENT_WINDOW_CLOSE)
+    {
 		MWindow::getInstance()->setActive(false);
 	}
 }
@@ -74,7 +77,7 @@ int main(int argc, char **argv)
 
 	unsigned int width = 1024;
 	unsigned int height = 768;
-	int fullscreen = false;
+	int fullscreen = true;
 
 	if(argc > 2)
 		sscanf(argv[2], "%d", &width);
@@ -101,13 +104,13 @@ int main(int argc, char **argv)
 
 	// get Maratis (first time call onstructor)
 	MaratisPlayer * maratis = MaratisPlayer::getInstance();
-	MRenderingContext * render = engine->getRenderingContext();
 
 	// window pointer event
 	window->setPointerEvent(windowEvents);
 
 	// load project
-	if(argc > 1){
+	if(argc > 1)
+    {
 		char filename[256];
 		getGlobalFilename(filename, window->getCurrentDirectory(), argv[1]);
 		maratis->loadProject(filename);

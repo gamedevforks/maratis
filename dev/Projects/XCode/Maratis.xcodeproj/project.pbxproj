@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		AE7B1347136C31000031A599 /* MCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE7B1345136C31000031A599 /* MCore.dylib */; };
+		AE7B1349136C31110031A599 /* MCore.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = AE7B1345136C31000031A599 /* MCore.dylib */; };
+		AE7B134C136C31390031A599 /* MEngine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE7B134B136C31390031A599 /* MEngine.dylib */; };
+		AE7B134D136C31430031A599 /* MEngine.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = AE7B134B136C31390031A599 /* MEngine.dylib */; };
 		E918E5C71305AEF10080ED5C /* font in Resources */ = {isa = PBXBuildFile; fileRef = E918E5801305AEF00080ED5C /* font */; };
 		E918E5C81305AEF10080ED5C /* gui in Resources */ = {isa = PBXBuildFile; fileRef = E918E5831305AEF00080ED5C /* gui */; };
 		E918E6681305B1180080ED5C /* libiL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E6661305B1180080ED5C /* libiL.a */; };
-		E918E66D1305B1400080ED5C /* MEngine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E66C1305B1400080ED5C /* MEngine.dylib */; };
-		E918E66F1305B1480080ED5C /* MCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E918E66E1305B1480080ED5C /* MCore.dylib */; };
 		E918E69C1305B1D40080ED5C /* MCocoaWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = E918E6771305B1D40080ED5C /* MCocoaWindow.mm */; };
 		E918E69D1305B1D40080ED5C /* MGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E6781305B1D40080ED5C /* MGui.cpp */; };
 		E918E69E1305B1D40080ED5C /* MGuiSlide.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E6791305B1D40080ED5C /* MGuiSlide.cpp */; };
@@ -209,8 +211,6 @@
 		E918E95C1305B3420080ED5C /* lvm.c in Sources */ = {isa = PBXBuildFile; fileRef = E918E9371305B3420080ED5C /* lvm.c */; };
 		E918E95D1305B3420080ED5C /* lzio.c in Sources */ = {isa = PBXBuildFile; fileRef = E918E9391305B3420080ED5C /* lzio.c */; };
 		E918E95E1305B3420080ED5C /* print.c in Sources */ = {isa = PBXBuildFile; fileRef = E918E93B1305B3420080ED5C /* print.c */; };
-		E918E9721305B5B10080ED5C /* MCore.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = E918E66E1305B1480080ED5C /* MCore.dylib */; };
-		E918E9731305B5B10080ED5C /* MEngine.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = E918E66C1305B1400080ED5C /* MEngine.dylib */; };
 		E9496DF0128EC67000639F42 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9496DEF128EC67000639F42 /* OpenAL.framework */; };
 		E99D52F3136AADE200EC8924 /* libSndFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
 		E99D52F4136AADF300EC8924 /* libSndFile.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
@@ -228,9 +228,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				AE7B134D136C31430031A599 /* MEngine.dylib in CopyFiles */,
+				AE7B1349136C31110031A599 /* MCore.dylib in CopyFiles */,
 				E99D52F4136AADF300EC8924 /* libSndFile.dylib in CopyFiles */,
-				E918E9721305B5B10080ED5C /* MCore.dylib in CopyFiles */,
-				E918E9731305B5B10080ED5C /* MEngine.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,11 +241,11 @@
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		AE7B1345136C31000031A599 /* MCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = MCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE7B134B136C31390031A599 /* MEngine.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = MEngine.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E918E5801305AEF00080ED5C /* font */ = {isa = PBXFileReference; lastKnownFileType = folder; name = font; path = ../../Data/Editor/font; sourceTree = SOURCE_ROOT; };
 		E918E5831305AEF00080ED5C /* gui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = gui; path = ../../Data/Editor/gui; sourceTree = SOURCE_ROOT; };
 		E918E6661305B1180080ED5C /* libiL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiL.a; path = ../../../../3rdparty/devil/osx/libiL.a; sourceTree = SOURCE_ROOT; };
-		E918E66C1305B1400080ED5C /* MEngine.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MEngine.dylib; path = build/Release/MEngine.dylib; sourceTree = SOURCE_ROOT; };
-		E918E66E1305B1480080ED5C /* MCore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MCore.dylib; path = build/Release/MCore.dylib; sourceTree = SOURCE_ROOT; };
 		E918E6771305B1D40080ED5C /* MCocoaWindow.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MCocoaWindow.mm; path = ../../MSDK/MGui/Sources/COCOA/MCocoaWindow.mm; sourceTree = SOURCE_ROOT; };
 		E918E6781305B1D40080ED5C /* MGui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MGui.cpp; path = ../../MSDK/MGui/Sources/MGui.cpp; sourceTree = SOURCE_ROOT; };
 		E918E6791305B1D40080ED5C /* MGuiSlide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MGuiSlide.cpp; path = ../../MSDK/MGui/Sources/MGuiSlide.cpp; sourceTree = SOURCE_ROOT; };
@@ -725,12 +725,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE7B134C136C31390031A599 /* MEngine.dylib in Frameworks */,
+				AE7B1347136C31000031A599 /* MCore.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				E9EA9709127D8CB800CEA357 /* OpenGL.framework in Frameworks */,
 				E9496DF0128EC67000639F42 /* OpenAL.framework in Frameworks */,
 				E918E6681305B1180080ED5C /* libiL.a in Frameworks */,
-				E918E66D1305B1400080ED5C /* MEngine.dylib in Frameworks */,
-				E918E66F1305B1480080ED5C /* MCore.dylib in Frameworks */,
 				E9D7A8051369DB1200B81096 /* libfreetype.a in Frameworks */,
 				E9D7A80C1369DBCC00B81096 /* libjpeg.a in Frameworks */,
 				E9D7A80E1369DBFC00B81096 /* libpng.a in Frameworks */,
@@ -758,9 +758,9 @@
 				E9D7A80D1369DBFC00B81096 /* libpng.a */,
 				E9D7A80B1369DBCC00B81096 /* libjpeg.a */,
 				E9D7A8041369DB1200B81096 /* libfreetype.a */,
-				E918E66E1305B1480080ED5C /* MCore.dylib */,
-				E918E66C1305B1400080ED5C /* MEngine.dylib */,
 				E918E6661305B1180080ED5C /* libiL.a */,
+				AE7B134B136C31390031A599 /* MEngine.dylib */,
+				AE7B1345136C31000031A599 /* MCore.dylib */,
 				E9EA9708127D8CB800CEA357 /* OpenGL.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
@@ -1661,7 +1661,11 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Maratis" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* manual */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1919,7 +1923,6 @@
 				INSTALL_PATH = "(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					build/Release,
 					../../../../3rdparty/libjpeg/osx,
 					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
@@ -1927,6 +1930,7 @@
 					../../../../3rdparty/freetype/osx,
 					../../../../3rdparty/zlib/osx,
 					"\"$(SRCROOT)/../../../../3rdparty/libsndfile/osx\"",
+					"\"$(SRCROOT)\"",
 				);
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "";
@@ -1962,7 +1966,6 @@
 				INSTALL_PATH = "(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					build/Release,
 					../../../../3rdparty/libjpeg/osx,
 					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
@@ -1970,6 +1973,7 @@
 					../../../../3rdparty/freetype/osx,
 					../../../../3rdparty/zlib/osx,
 					"\"$(SRCROOT)/../../../../3rdparty/libsndfile/osx\"",
+					"\"$(SRCROOT)\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -2008,7 +2012,6 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					build/Release,
 					../../../../3rdparty/libjpeg/osx,
 					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,
@@ -2049,7 +2052,6 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					build/Release,
 					../../../../3rdparty/libjpeg/osx,
 					../../../../3rdparty/libpng/osx,
 					../../../../3rdparty/devil/osx,

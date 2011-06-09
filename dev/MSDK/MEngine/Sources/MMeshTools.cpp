@@ -50,18 +50,20 @@ bool animateFloat(MKey * keys, unsigned int keysNumber, float t, float * value)
 	int tMin = keyMin->getT();
 	int tMax = keyMax->getT();
 
-	if(t <= tMin){
+	if (t <= tMin)
+    {
 		(*value) = *((float *)keyMin->getData());
 		return true;
 	}
 
-	if(t >= tMax){
+	if (t >= tMax)
+    {
 		(*value) = *((float *)keyMax->getData());
 		return true;
 	}
 
 	// interpolation
-	for(unsigned int i=1; i<keysNumber; i++)
+	for (unsigned int i = 1; i < keysNumber; i++)
 	{
 		MKey * key0 = keys;
 		MKey * key1 = keys+1;
@@ -69,7 +71,7 @@ bool animateFloat(MKey * keys, unsigned int keysNumber, float t, float * value)
 		int t0 = key0->getT();
 		int t1 = key1->getT();
 
-		if((t >= t0) && (t <= t1))
+		if ((t >= t0) && (t <= t1))
 		{
 			float factor = (t - t0) / (float)(t1 - t0);
 			float * data0 = (float *)key0->getData();
@@ -88,11 +90,12 @@ bool animateFloat(MKey * keys, unsigned int keysNumber, float t, float * value)
 bool animateVector2(MKey * keys, unsigned int keysNumber, float t, MVector2 * vector2)
 {
 	// no keys
-	if(keysNumber == 0)
+	if (keysNumber == 0)
 		return false;
 
 	// one key
-	if(keysNumber == 1){
+	if (keysNumber == 1)
+    {
 		(*vector2) = *((MVector2 *)keys->getData());
 		return true;
 	}
@@ -104,18 +107,20 @@ bool animateVector2(MKey * keys, unsigned int keysNumber, float t, MVector2 * ve
 	int tMin = keyMin->getT();
 	int tMax = keyMax->getT();
 
-	if(t <= tMin){
+	if (t <= tMin)
+    {
 		(*vector2) = *((MVector2 *)keyMin->getData());
 		return true;
 	}
 
-	if(t >= tMax){
+	if (t >= tMax)
+    {
 		(*vector2) = *((MVector2 *)keyMax->getData());
 		return true;
 	}
 
 	// interpolation
-	for(unsigned int i=1; i<keysNumber; i++)
+	for (unsigned int i = 1; i < keysNumber; i++)
 	{
 		MKey * key0 = keys;
 		MKey * key1 = keys+1;
@@ -123,7 +128,7 @@ bool animateVector2(MKey * keys, unsigned int keysNumber, float t, MVector2 * ve
 		int t0 = key0->getT();
 		int t1 = key1->getT();
 
-		if((t >= t0) && (t <= t1))
+		if ((t >= t0) && (t <= t1))
 		{
 			float factor = (t - t0) / (float)(t1 - t0);
 			MVector2 * data0 = (MVector2 *)key0->getData();
@@ -142,11 +147,12 @@ bool animateVector2(MKey * keys, unsigned int keysNumber, float t, MVector2 * ve
 bool animateVector3(MKey * keys, unsigned int keysNumber, float t, MVector3 * vector3)
 {
 	// no keys
-	if(keysNumber == 0)
+	if (keysNumber == 0)
 		return false;
 
 	// one key
-	if(keysNumber == 1){
+	if (keysNumber == 1)
+    {
 		(*vector3) = *((MVector3 *)keys->getData());
 		return true;
 	}
@@ -158,18 +164,20 @@ bool animateVector3(MKey * keys, unsigned int keysNumber, float t, MVector3 * ve
 	int tMin = keyMin->getT();
 	int tMax = keyMax->getT();
 
-	if(t <= tMin){
+	if (t <= tMin)
+    {
 		(*vector3) = *((MVector3 *)keyMin->getData());
 		return true;
 	}
 
-	if(t >= tMax){
+	if (t >= tMax)
+    {
 		(*vector3) = *((MVector3 *)keyMax->getData());
 		return true;
 	}
 
 	// interpolation
-	for(unsigned int i=1; i<keysNumber; i++)
+	for (unsigned int i = 1; i < keysNumber; i++)
 	{
 		MKey * key0 = keys;
 		MKey * key1 = keys+1;
@@ -177,7 +185,7 @@ bool animateVector3(MKey * keys, unsigned int keysNumber, float t, MVector3 * ve
 		int t0 = key0->getT();
 		int t1 = key1->getT();
 
-		if((t >= t0) && (t <= t1))
+		if ((t >= t0) && (t <= t1))
 		{
 			float factor = (t - t0) / (float)(t1 - t0);
 			MVector3 * data0 = (MVector3 *)key0->getData();
@@ -196,11 +204,12 @@ bool animateVector3(MKey * keys, unsigned int keysNumber, float t, MVector3 * ve
 bool animateQuaternion(MKey * keys, unsigned int keysNumber, float t, MQuaternion * quaternion)
 {
 	// no keys
-	if(keysNumber == 0)
+	if (keysNumber == 0)
 		return false;
 
 	// one key
-	if(keysNumber == 1){
+	if (keysNumber == 1)
+    {
 		(*quaternion) = *((MQuaternion *)keys->getData());
 		return true;
 	}
@@ -212,18 +221,20 @@ bool animateQuaternion(MKey * keys, unsigned int keysNumber, float t, MQuaternio
 	int tMin = keyMin->getT();
 	int tMax = keyMax->getT();
 
-	if(t <= tMin){
+	if (t <= tMin)
+    {
 		(*quaternion) = *((MQuaternion *)keyMin->getData());
 		return true;
 	}
 
-	if(t >= tMax){
+	if (t >= tMax)
+    {
 		(*quaternion) = *((MQuaternion *)keyMax->getData());
 		return true;
 	}
 
 	// interpolation
-	for(unsigned int i=1; i<keysNumber; i++)
+	for (unsigned int i = 1; i < keysNumber; i++)
 	{
 		MKey * key0 = keys;
 		MKey * key1 = keys+1;
@@ -231,19 +242,19 @@ bool animateQuaternion(MKey * keys, unsigned int keysNumber, float t, MQuaternio
 		int t0 = key0->getT();
 		int t1 = key1->getT();
 
-		if(t == t0)
+		if (t == t0)
 		{
 			(*quaternion) = *(MQuaternion *)key0->getData();
 			return true;
 		}
 
-		if(t == t1)
+		if (t == t1)
 		{
 			(*quaternion) = *(MQuaternion *)key1->getData();
 			return true;
 		}
 
-		if((t > t0) && (t < t1))
+		if ((t > t0) && (t < t1))
 		{
 			float factor = (t - t0) / (float)(t1 - t0);
 			MQuaternion * data0 = (MQuaternion *)key0->getData();
@@ -269,7 +280,7 @@ void animateArmature(MArmature * armature, MArmatureAnim * armatureAnim, float t
 
 	unsigned int b;
 	unsigned int bSize = armatureAnim->getBonesAnimNumber();
-	for(b=0; b<bSize; b++)
+	for (b = 0; b < bSize; b++)
 	{
 		MOBone * bone = armature->getBone(b);
 		
@@ -302,7 +313,7 @@ void animateTextures(MMesh * mesh, MTexturesAnim * texturesAnim, float t)
 
 	unsigned int tex;
 	unsigned int texSize = texturesAnim->getTexturesAnimNumber();
-	for(tex=0; tex<texSize; tex++)
+	for (tex = 0; tex < texSize; tex++)
 	{
 		MTexture * texture = mesh->getTexture(tex);
 		
@@ -336,7 +347,7 @@ void animateMaterials(MMesh * mesh, MMaterialsAnim * materialsAnim, float t)
 
 	unsigned int m;
 	unsigned int mSize = materialsAnim->getMaterialsAnimNumber();
-	for(m=0; m<mSize; m++)
+	for (m = 0; m < mSize; m++)
 	{
 		MMaterial * material = mesh->getMaterial(m);
 		
@@ -376,9 +387,9 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 {
 	unsigned int p;
 	unsigned int pSize = skinData->getPointsNumber();
-	if(baseTangents && baseNormals)
+	if (baseTangents && baseNormals)
 	{
-		for(p=0; p<pSize; p++)
+		for (p = 0; p < pSize; p++)
 		{
 			MSkinPoint * point = skinData->getPoint(p);
 			unsigned short * bonesIds = point->getBonesIds();
@@ -387,7 +398,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 			unsigned int vertexId = point->getVertexId();
 			unsigned int bSize = point->getBonesNumber();
 			
-			if(bSize > 1) // weighted skin
+			if (bSize > 1) // weighted skin
 			{
 				MOBone * bone = armature->getBone(bonesIds[0]);
 				MMatrix4x4 matrix((*bone->getSkinMatrix()) * bonesWeights[0]);
@@ -403,7 +414,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 				normals[vertexId] = matrix.getRotatedVector3(baseNormals[vertexId]);
 				tangents[vertexId] = matrix.getRotatedVector3(baseTangents[vertexId]);
 			}
-			else if(bSize == 1) // simple skin
+			else if (bSize == 1) // simple skin
 			{
 				MOBone * bone = armature->getBone(bonesIds[0]);
 				vertices[vertexId] = (*bone->getSkinMatrix()) * baseVertices[vertexId];
@@ -412,9 +423,9 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 			}
 		}
 	}
-	else if(baseNormals)
+	else if (baseNormals)
 	{
-		for(p=0; p<pSize; p++)
+		for (p = 0; p < pSize; p++)
 		{
 			MSkinPoint * point = skinData->getPoint(p);
 			unsigned short * bonesIds = point->getBonesIds();
@@ -423,7 +434,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 			unsigned int vertexId = point->getVertexId();
 			unsigned int bSize = point->getBonesNumber();
 			
-			if(bSize > 1) // weighted skin
+			if (bSize > 1) // weighted skin
 			{
 				MOBone * bone = armature->getBone(bonesIds[0]);
 				MMatrix4x4 matrix((*bone->getSkinMatrix()) * bonesWeights[0]);
@@ -438,7 +449,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 				vertices[vertexId] = matrix * baseVertices[vertexId];
 				normals[vertexId] = matrix.getRotatedVector3(baseNormals[vertexId]);
 			}
-			else if(bSize == 1) // simple skin
+			else if (bSize == 1) // simple skin
 			{
 				MOBone * bone = armature->getBone(bonesIds[0]);
 				vertices[vertexId] = (*bone->getSkinMatrix()) * baseVertices[vertexId];
@@ -448,7 +459,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 	}
 	else
 	{
-		for(p=0; p<pSize; p++)
+		for (p = 0; p < pSize; p++)
 		{
 			MSkinPoint * point = skinData->getPoint(p);
 			unsigned short * bonesIds = point->getBonesIds();
@@ -457,7 +468,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 			unsigned int vertexId = point->getVertexId();
 			unsigned int bSize = point->getBonesNumber();
 			
-			if(bSize > 1) // weighted skin
+			if (bSize > 1) // weighted skin
 			{
 				MOBone * bone = armature->getBone(bonesIds[0]);
 				MMatrix4x4 matrix((*bone->getSkinMatrix()) * bonesWeights[0]);
@@ -471,7 +482,7 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 
 				vertices[vertexId] = matrix * baseVertices[vertexId];
 			}
-			else if(bSize == 1) // simple skin
+			else if (bSize == 1) // simple skin
 			{
 				MOBone * bone = armature->getBone(bonesIds[0]);
 				vertices[vertexId] = (*bone->getSkinMatrix()) * baseVertices[vertexId];
@@ -488,7 +499,7 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 		{
 			unsigned int v;
 			unsigned short * idx = (unsigned short *)indices;
-			for(v=0; v<size; v+=3)
+			for (v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -503,11 +514,12 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 			}
 		}
 		break;
+            
 	case M_UINT:
 		{
 			unsigned int v;
 			unsigned int * idx = (unsigned int *)indices;
-			for(v=0; v<size; v+=3)
+			for (v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -521,7 +533,10 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 					return true;
 			}
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 
 	return false;
@@ -544,7 +559,7 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 		{
 			unsigned int v;
 			unsigned short * idx = (unsigned short *)indices;
-			for(v=0; v<size; v+=3)
+			for (v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -568,11 +583,12 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 			}
 		}
 		break;
+            
 	case M_UINT:
 		{
 			unsigned int v;
 			unsigned int * idx = (unsigned int *)indices;
-			for(v=0; v<size; v+=3)
+			for (v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -595,7 +611,10 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 				}
 			}
 		}
-		break;
+            break;
+            
+        default:
+            break;
 	}
 	return isRaytraced;
 }
