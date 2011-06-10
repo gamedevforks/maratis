@@ -40,11 +40,11 @@
 #include "MES1Context.h"
 
 
-int g_GLversion = 0;
-float maxAnisotropy = 0.0f;
+static int g_GLversion = 0;
+static float maxAnisotropy = 0.0f;
 
 
-GLenum returnGLType(M_TYPES type)
+static GLenum returnGLType(M_TYPES type)
 {
 	switch(type)
 	{
@@ -80,7 +80,7 @@ GLenum returnGLType(M_TYPES type)
 	}
 }
 
-GLenum returnPrimitiveType(M_PRIMITIVE_TYPES type)
+static GLenum returnPrimitiveType(M_PRIMITIVE_TYPES type)
 {
 	switch(type)
 	{
@@ -104,7 +104,7 @@ GLenum returnPrimitiveType(M_PRIMITIVE_TYPES type)
 	}
 }
 
-GLenum returnTexFilterMode(M_TEX_FILTER_MODES mode)
+static GLenum returnTexFilterMode(M_TEX_FILTER_MODES mode)
 {
 	switch(mode)
 	{
@@ -129,7 +129,7 @@ GLenum returnTexFilterMode(M_TEX_FILTER_MODES mode)
 	}
 }
 
-GLenum returnTexMode(M_TEX_MODES mode)
+static GLenum returnTexMode(M_TEX_MODES mode)
 {
 	switch(mode)
 	{
@@ -151,7 +151,7 @@ GLenum returnTexMode(M_TEX_MODES mode)
 	}
 }
 
-GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
+static GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
 {
 	if(type == M_ATTACH_DEPTH)
 		return GL_DEPTH_ATTACHMENT_OES;
