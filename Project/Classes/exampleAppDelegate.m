@@ -50,6 +50,11 @@
 	[glView startAnimation];
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+	exit(0);
+}
+
 - (void)applicationWillTerminate:(UIApplication *)application
 {
 	[glView stopAnimation];

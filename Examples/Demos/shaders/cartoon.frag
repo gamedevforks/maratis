@@ -1,3 +1,5 @@
+precision mediump float;
+
 uniform vec4 FogColor;
 uniform float FogEnd;
 uniform float FogScale;
@@ -6,12 +8,12 @@ uniform vec3 MaterialEmit;
 uniform float MaterialShininess;
 uniform float MaterialOpacity;
 
-uniform vec4 LightPosition[4];
-uniform vec3 LightDiffuseProduct[4];
-uniform vec3 LightSpecularProduct[4];
-uniform float LightConstantAttenuation[4];
-uniform float LightQuadraticAttenuation[4];
-uniform bool LightActive[4];
+uniform vec4 LightPosition[1];
+uniform vec3 LightDiffuseProduct[1];
+uniform vec3 LightSpecularProduct[1];
+uniform float LightConstantAttenuation[1];
+uniform float LightQuadraticAttenuation[1];
+uniform bool LightActive[1];
 
 uniform sampler2D Texture[8];
 

@@ -1,3 +1,4 @@
+precision mediump float;
 attribute vec3 Vertex;
 uniform mat4 ProjModelViewMatrix;
 

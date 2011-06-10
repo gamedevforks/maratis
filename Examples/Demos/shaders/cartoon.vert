@@ -1,3 +1,4 @@
+precision mediump float;
 attribute vec3 Vertex;
 attribute vec3 Normal;
 

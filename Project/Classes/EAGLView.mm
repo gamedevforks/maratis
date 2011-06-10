@@ -9,12 +9,13 @@
 #include <MEngine.h>
 
 #include <MContexts/MES1Context.h>
+#include <MContexts/MES2Context.h>
 #include <MContexts/MALContext.h>
 #include <MContexts/MBulletContext.h>
 #include <MLoaders/MiOSImageLoader.h>
-//#include <MLoaders/MSndFileLoader.h>
+#include <MLoaders/MWavSoundLoader.h>
 //#include <MLoaders/MFreetypeLoader.h>
-//#include <MLoaders/MBinFontLoader.h>
+#include <MLoaders/MBinFontLoader.h>
 
 #include <MFileManager/MLevelLoad.h>
 #include <MBehaviors/MBLookAt.h>
@@ -24,18 +25,18 @@
 #include <MFileManager/MMeshLoad.h>
 #include <MFileManager/MLevelLoad.h>
 #include <MProject/MProject.h>
-//#include <MRenderers/MStandardRenderer.h>
+#include <MRenderers/MiOSStandardRenderer.h>
 #include <MRenderers/MFixedRenderer.h>
 
-MRenderingContext * render;
-MInputContext *	input;
-MLevel * level;
-MGame * game;
-MRenderer * mrenderer;
-MSystemContext * msystem;
-MPhysicsContext * physics;
-MScriptContext * script;
-MSoundContext * soundContext;
+MRenderingContext * render = NULL;
+MInputContext *	input = NULL;
+MLevel * level = NULL;
+MGame * game = NULL;
+MRenderer * mrenderer = NULL;
+MSystemContext * msystem = NULL;
+MPhysicsContext * physics = NULL;
+MScriptContext * script = NULL;
+MSoundContext * soundContext = NULL;
 
 class MiOSContext : public MSystemContext
 {
@@ -60,8 +61,6 @@ public:
 	const char * getWorkingDirectory(void)
 	{
 		static char currentDirectory[256] = "";
-		//NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
-		//strcpy(currentDirectory, [resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
 		return currentDirectory;
 	}	
 	
@@ -72,28 +71,6 @@ public:
 		return (unsigned long)(([NSDate timeIntervalSinceReferenceDate] - startTime ) * 1000.0);
 	}
 };
-
-void loadProject(const char * filename)
-{
-	MEngine * engine = MEngine::getInstance();
-	
-	if(! filename)
-		return;
-	
-	// load project file
-	MProject proj;
-	if(proj.loadXML(filename))
-	{
-		//loadGamePlugin();
-		
-		// renderer
-		//changeRenderer(proj.renderer.c_str());
-		
-		// load start level
-		engine->loadLevel(proj.startLevel.c_str());
-	}
-}
-
 
 
 
@@ -107,6 +84,61 @@ void loadProject(const char * filename)
 
 @synthesize animating;
 @dynamic animationFrameInterval;
+
+// load project
+- (void) loadMaratisProject:(const char *)filename;
+{
+	MEngine * engine = MEngine::getInstance();
+	
+	if(! filename)
+		return;
+	
+	// load project file
+	MProject proj;
+	if(proj.loadXML(filename))
+	{
+		//loadGamePlugin();
+		
+		// set renderer
+		{		
+			if(renderer)
+				[renderer release];
+			SAFE_DELETE(mrenderer);
+			SAFE_DELETE(render);
+			
+			if(strcmp(proj.renderer.c_str(), "StandardRenderer") == 0)
+			{
+				// rendering context
+				render = new MES2Context();
+				engine->setRenderingContext(render);
+				
+				// ES2 / StandardRenderer
+				renderer = [[ES2Renderer alloc] init];
+				if(renderer)
+					mrenderer = engine->getRendererManager()->getRendererByName("StandardRenderer")->getNewRenderer();
+			}
+			
+			if(! renderer)
+			{
+				// rendering context
+				render = new MES1Context();
+				engine->setRenderingContext(render);
+				
+				// ES1 / FixedRenderer
+				renderer = [[ES1Renderer alloc] init];
+				if(renderer)
+					mrenderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
+			}
+			
+			// set renderer
+			if(mrenderer)
+				engine->setRenderer(mrenderer);
+		}
+		
+		// load start level
+		engine->loadLevel(proj.startLevel.c_str());
+	}
+}
 
 // You must implement this method
 + (Class) layerClass
@@ -148,6 +180,8 @@ void loadProject(const char * filename)
 // This is called from initWithFrame and initWithCoder
 - (BOOL) initRenderingContext
 {
+	renderer = nil;
+	
     // Enable multitouch on this view
     self.multipleTouchEnabled = YES;
     
@@ -170,28 +204,7 @@ void loadProject(const char * filename)
     NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
     chdir([resourcePath cStringUsingEncoding:NSUTF8StringEncoding]);
     
-    /*
-     renderer = [[ES2Renderer alloc] init];
-     
-     if (!renderer)
-     {
-     renderer = [[ES1Renderer alloc] init];
-     
-     if (!renderer)
-     {
-     [self release];
-     return nil;
-     }
-     }*/
-    
-    
-    // ES1
-    renderer = [[ES1Renderer alloc] init];
-    
-    if (!renderer)
-    {
-        return NO;
-    }
+   
     
     
     // Maratis
@@ -201,7 +214,6 @@ void loadProject(const char * filename)
         
         // create virtual contexts
         soundContext = new MALContext();
-        render = new MES1Context();
         physics = new MBulletContext();
         script = new MScript();
         input = new MInput();
@@ -213,23 +225,22 @@ void loadProject(const char * filename)
         
         // init MEngine
         engine->setSoundContext(soundContext); // sound context
-        engine->setRenderingContext(render); // rendering context
         engine->setPhysicsContext(physics); // physics context
         engine->setScriptContext(script); // script context
         engine->setInputContext(input); // input context
         engine->setSystemContext(msystem); // system context
         
         engine->getImageLoader()->addLoader(M_loadImage); // image loader
-                                                          //engine->getSoundLoader()->addLoader(M_loadSound); // sound loader
+		engine->getSoundLoader()->addLoader(M_loadWavSound); // sound loader
         engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader
-                                                           //engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader
+        engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader
         
         // add some default "Maratis" behaviors : uncomment if wanted or add custom
         engine->getBehaviorManager()->addBehavior(MBLookAt::getStaticName(), M_OBJECT3D_CAMERA, MBLookAt::getNew);
         engine->getBehaviorManager()->addBehavior(MBFollow::getStaticName(), M_OBJECT3D, MBFollow::getNew);
         
         // add renderers
-        //engine->getRendererManager()->addRenderer(MStandardRenderer::getStaticName(), MStandardRenderer::getNew);
+        engine->getRendererManager()->addRenderer(MStandardRenderer::getStaticName(), MStandardRenderer::getNew);
         engine->getRendererManager()->addRenderer(MFixedRenderer::getStaticName(), MFixedRenderer::getNew);
         
         // mesh loader
@@ -243,18 +254,19 @@ void loadProject(const char * filename)
         
         // set game
         engine->setGame(game);
-        
-        // set renderer
-        mrenderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
-        engine->setRenderer(mrenderer);
-        
+		
         // configure accelerometer support
         [self configureMobileInput];
         
         char filename[256];
         getGlobalFilename(filename, msystem->getWorkingDirectory(), "Demos.mproj");
-        loadProject(filename);
+		[self loadMaratisProject:filename];
         
+		if(! renderer)
+		{
+			return NO;
+		}
+		
         // begin game
         game->begin();
     }
@@ -596,8 +608,8 @@ void loadProject(const char * filename)
 	// Maratis
 	{
 		game->end();
-		mrenderer->destroy();
-		
+
+		SAFE_DELETE(mrenderer);
 		SAFE_DELETE(game);
 		SAFE_DELETE(level);
 		

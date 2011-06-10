@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,13 +12,16 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		2514C27210084DB100A42282 /* ES1Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2514C26E10084DB100A42282 /* ES1Renderer.mm */; };
-		2514C27310084DB100A42282 /* ES2Renderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2514C27010084DB100A42282 /* ES2Renderer.m */; };
+		2514C27310084DB100A42282 /* ES2Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2514C27010084DB100A42282 /* ES2Renderer.mm */; };
 		28FD14FE0DC6FC130079059D /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 28FD14FD0DC6FC130079059D /* EAGLView.mm */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
-		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		6BE2BB6A1367754800C3BB17 /* MES1Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2BB681367754800C3BB17 /* MES1Context.cpp */; };
 		AEB652441373D8B5007EAB33 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEB652431373D8B5007EAB33 /* CoreMotion.framework */; };
 		AEFF8FCC1364FA9300195AEF /* exampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AEFF8FCB1364FA9300195AEF /* exampleViewController.m */; };
+		E936071213A245ED00ED816C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E936071113A245ED00ED816C /* QuartzCore.framework */; };
+		E93607B913A24D5600ED816C /* MiOSStandardRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */; };
+		E936082413A2540100ED816C /* MBinFontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082213A2540100ED816C /* MBinFontLoader.cpp */; };
+		E936082713A2542000ED816C /* MWavSoundLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082513A2542000ED816C /* MWavSoundLoader.cpp */; };
 		E942A8E4132A3E3900B6E793 /* Demos.mproj in Resources */ = {isa = PBXBuildFile; fileRef = E942A897132A3E3800B6E793 /* Demos.mproj */; };
 		E942A8E5132A3E3900B6E793 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = E942A898132A3E3800B6E793 /* fonts */; };
 		E942A8E6132A3E3900B6E793 /* levels in Resources */ = {isa = PBXBuildFile; fileRef = E942A89F132A3E3800B6E793 /* levels */; };
@@ -186,6 +189,7 @@
 		E98BB6751329F46000DD8E3B /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E98BB6741329F46000DD8E3B /* OpenAL.framework */; };
 		E98BB68B132A0EB500DD8E3B /* MiOSImageLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = E98BB68A132A0EB500DD8E3B /* MiOSImageLoader.mm */; };
 		E98BB6F5132A197A00DD8E3B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E98BB6F4132A197A00DD8E3B /* CoreGraphics.framework */; };
+		E99531901374FF0800BD2CEB /* MES2Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E995318E1374FF0800BD2CEB /* MES2Context.cpp */; };
 		E9BA0C6F132939AC00C98E56 /* MBFollow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C58132939AC00C98E56 /* MBFollow.cpp */; };
 		E9BA0C70132939AC00C98E56 /* MBLookAt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C5A132939AC00C98E56 /* MBLookAt.cpp */; };
 		E9BA0C71132939AC00C98E56 /* MLevelSave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C5E132939AC00C98E56 /* MLevelSave.cpp */; };
@@ -266,12 +270,11 @@
 		2514C26D10084DB100A42282 /* ES1Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ES1Renderer.h; sourceTree = "<group>"; };
 		2514C26E10084DB100A42282 /* ES1Renderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ES1Renderer.mm; sourceTree = "<group>"; };
 		2514C26F10084DB100A42282 /* ES2Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ES2Renderer.h; sourceTree = "<group>"; };
-		2514C27010084DB100A42282 /* ES2Renderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ES2Renderer.m; sourceTree = "<group>"; };
+		2514C27010084DB100A42282 /* ES2Renderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ES2Renderer.mm; sourceTree = "<group>"; };
 		2514C27110084DB100A42282 /* ESRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESRenderer.h; sourceTree = "<group>"; };
 		28FD14FC0DC6FC130079059D /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		28FD14FD0DC6FC130079059D /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* example_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = example_Prefix.pch; sourceTree = "<group>"; };
 		6BE2BB681367754800C3BB17 /* MES1Context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MES1Context.cpp; path = ../../../trunk/dev/Additional/OpenGLES/Common/MContexts/MES1Context.cpp; sourceTree = SOURCE_ROOT; };
@@ -280,6 +283,14 @@
 		AEB652431373D8B5007EAB33 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		AEFF8FCA1364FA9300195AEF /* exampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exampleViewController.h; sourceTree = "<group>"; };
 		AEFF8FCB1364FA9300195AEF /* exampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = exampleViewController.m; sourceTree = "<group>"; };
+		E936071113A245ED00ED816C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
+		E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MiOSStandardRenderer.cpp; path = ../Common/MRenderers/MiOSStandardRenderer.cpp; sourceTree = SOURCE_ROOT; };
+		E93607B713A24D5600ED816C /* MiOSStandardRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSStandardRenderer.h; path = ../Common/MRenderers/MiOSStandardRenderer.h; sourceTree = SOURCE_ROOT; };
+		E93607B813A24D5600ED816C /* MiOSStandardShaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSStandardShaders.h; path = ../Common/MRenderers/MiOSStandardShaders.h; sourceTree = SOURCE_ROOT; };
+		E936082213A2540100ED816C /* MBinFontLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBinFontLoader.cpp; path = ../../../trunk/dev/Maratis/Common/MLoaders/MBinFontLoader.cpp; sourceTree = SOURCE_ROOT; };
+		E936082313A2540100ED816C /* MBinFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinFontLoader.h; path = ../../../trunk/dev/Maratis/Common/MLoaders/MBinFontLoader.h; sourceTree = SOURCE_ROOT; };
+		E936082513A2542000ED816C /* MWavSoundLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MWavSoundLoader.cpp; path = ../../../trunk/dev/Additional/MLoaders/MWavSoundLoader.cpp; sourceTree = SOURCE_ROOT; };
+		E936082613A2542000ED816C /* MWavSoundLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MWavSoundLoader.h; path = ../../../trunk/dev/Additional/MLoaders/MWavSoundLoader.h; sourceTree = SOURCE_ROOT; };
 		E942A897132A3E3800B6E793 /* Demos.mproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Demos.mproj; path = ../examples/Demos/Demos.mproj; sourceTree = SOURCE_ROOT; };
 		E942A898132A3E3800B6E793 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../examples/Demos/fonts; sourceTree = SOURCE_ROOT; };
 		E942A89F132A3E3800B6E793 /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../examples/Demos/levels; sourceTree = SOURCE_ROOT; };
@@ -674,6 +685,8 @@
 		E98BB689132A0EB500DD8E3B /* MiOSImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSImageLoader.h; path = ../Common/MLoaders/MiOSImageLoader.h; sourceTree = SOURCE_ROOT; };
 		E98BB68A132A0EB500DD8E3B /* MiOSImageLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MiOSImageLoader.mm; path = ../Common/MLoaders/MiOSImageLoader.mm; sourceTree = SOURCE_ROOT; };
 		E98BB6F4132A197A00DD8E3B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		E995318E1374FF0800BD2CEB /* MES2Context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MES2Context.cpp; path = ../../../trunk/dev/Additional/OpenGLES/Common/MContexts/MES2Context.cpp; sourceTree = SOURCE_ROOT; };
+		E995318F1374FF0800BD2CEB /* MES2Context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MES2Context.h; path = ../../../trunk/dev/Additional/OpenGLES/Common/MContexts/MES2Context.h; sourceTree = SOURCE_ROOT; };
 		E9BA0C58132939AC00C98E56 /* MBFollow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBFollow.cpp; path = ../../../trunk/dev/Maratis/Common/MBehaviors/MBFollow.cpp; sourceTree = SOURCE_ROOT; };
 		E9BA0C59132939AC00C98E56 /* MBFollow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBFollow.h; path = ../../../trunk/dev/Maratis/Common/MBehaviors/MBFollow.h; sourceTree = SOURCE_ROOT; };
 		E9BA0C5A132939AC00C98E56 /* MBLookAt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBLookAt.cpp; path = ../../../trunk/dev/Maratis/Common/MBehaviors/MBLookAt.cpp; sourceTree = SOURCE_ROOT; };
@@ -830,9 +843,9 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
-				28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */,
 				E98BB6751329F46000DD8E3B /* OpenAL.framework in Frameworks */,
 				E98BB6F5132A197A00DD8E3B /* CoreGraphics.framework in Frameworks */,
+				E936071213A245ED00ED816C /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -845,7 +858,7 @@
 				2514C26D10084DB100A42282 /* ES1Renderer.h */,
 				2514C26E10084DB100A42282 /* ES1Renderer.mm */,
 				2514C26F10084DB100A42282 /* ES2Renderer.h */,
-				2514C27010084DB100A42282 /* ES2Renderer.m */,
+				2514C27010084DB100A42282 /* ES2Renderer.mm */,
 				2514C27110084DB100A42282 /* ESRenderer.h */,
 				28FD14FC0DC6FC130079059D /* EAGLView.h */,
 				28FD14FD0DC6FC130079059D /* EAGLView.mm */,
@@ -1464,6 +1477,10 @@
 		E98BB688132A0EA200DD8E3B /* MLoaders */ = {
 			isa = PBXGroup;
 			children = (
+				E936082513A2542000ED816C /* MWavSoundLoader.cpp */,
+				E936082613A2542000ED816C /* MWavSoundLoader.h */,
+				E936082213A2540100ED816C /* MBinFontLoader.cpp */,
+				E936082313A2540100ED816C /* MBinFontLoader.h */,
 				E98BB689132A0EB500DD8E3B /* MiOSImageLoader.h */,
 				E98BB68A132A0EB500DD8E3B /* MiOSImageLoader.mm */,
 			);
@@ -1519,6 +1536,9 @@
 		E9BA0C69132939AC00C98E56 /* MRenderers */ = {
 			isa = PBXGroup;
 			children = (
+				E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */,
+				E93607B713A24D5600ED816C /* MiOSStandardRenderer.h */,
+				E93607B813A24D5600ED816C /* MiOSStandardShaders.h */,
 				E9BA0C6B132939AC00C98E56 /* MFixedRenderer.cpp */,
 				E9BA0C6C132939AC00C98E56 /* MFixedRenderer.h */,
 			);
@@ -1706,6 +1726,8 @@
 		E9C99888132920BF002A3F21 /* MContexts */ = {
 			isa = PBXGroup;
 			children = (
+				E995318E1374FF0800BD2CEB /* MES2Context.cpp */,
+				E995318F1374FF0800BD2CEB /* MES2Context.h */,
 				E98BB6711329F44B00DD8E3B /* MALContext.cpp */,
 				E98BB6721329F44B00DD8E3B /* MALContext.h */,
 				E98BB54B1329E2D700DD8E3B /* MBulletContext.cpp */,
@@ -1780,7 +1802,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "example" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1822,7 +1844,7 @@
 				1D3623260D0F684500981E51 /* exampleAppDelegate.m in Sources */,
 				28FD14FE0DC6FC130079059D /* EAGLView.mm in Sources */,
 				2514C27210084DB100A42282 /* ES1Renderer.mm in Sources */,
-				2514C27310084DB100A42282 /* ES2Renderer.m in Sources */,
+				2514C27310084DB100A42282 /* ES2Renderer.mm in Sources */,
 				E9C9100C13291B9600FDD872 /* MImage.cpp in Sources */,
 				E9C9100D13291B9600FDD872 /* MDataManager.cpp in Sources */,
 				E9C9100E13291B9600FDD872 /* MMatrix4x4.cpp in Sources */,
@@ -2051,6 +2073,10 @@
 				E98BB68B132A0EB500DD8E3B /* MiOSImageLoader.mm in Sources */,
 				AEFF8FCC1364FA9300195AEF /* exampleViewController.m in Sources */,
 				6BE2BB6A1367754800C3BB17 /* MES1Context.cpp in Sources */,
+				E99531901374FF0800BD2CEB /* MES2Context.cpp in Sources */,
+				E93607B913A24D5600ED816C /* MiOSStandardRenderer.cpp in Sources */,
+				E936082413A2540100ED816C /* MBinFontLoader.cpp in Sources */,
+				E936082713A2542000ED816C /* MWavSoundLoader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2071,6 +2097,7 @@
 					../../../trunk/dev/MSDK/MCore/Includes,
 					../../../trunk/dev/MSDK/MEngine/Includes,
 					../../../trunk/dev/Maratis/Common,
+					../../../trunk/dev/Additional,
 					../../../trunk/dev/Additional/OpenGLES/Common,
 					../Common,
 					../../../3rdparty/tinyxml,
@@ -2098,6 +2125,7 @@
 					../../../trunk/dev/MSDK/MCore/Includes,
 					../../../trunk/dev/MSDK/MEngine/Includes,
 					../../../trunk/dev/Maratis/Common,
+					../../../trunk/dev/Additional,
 					../../../trunk/dev/Additional/OpenGLES/Common,
 					../Common,
 					../../../3rdparty/tinyxml,
@@ -2125,6 +2153,7 @@
 					../../../trunk/dev/MSDK/MCore/Includes,
 					../../../trunk/dev/MSDK/MEngine/Includes,
 					../../../trunk/dev/Maratis/Common,
+					../../../trunk/dev/Additional,
 					../../../trunk/dev/Additional/OpenGLES/Common,
 					"\"$(SRCROOT)/../../../trunk/dev/Additional/OpenGLES/Common\"",
 					../Common,
@@ -2152,6 +2181,7 @@
 					../../../trunk/dev/MSDK/MCore/Includes,
 					../../../trunk/dev/MSDK/MEngine/Includes,
 					../../../trunk/dev/Maratis/Common,
+					../../../trunk/dev/Additional,
 					../../../trunk/dev/Additional/OpenGLES/Common,
 					../Common,
 					../../../3rdparty/tinyxml,

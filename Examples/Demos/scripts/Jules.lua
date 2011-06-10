@@ -9,17 +9,25 @@ Player = getObject("Player")
 Set = getObject("Set")
 Feet = getObject("Feet")
 
+touch = 0
+
 -- scene update
 function onSceneUpdate()
+
+	if getTouchPhase(0) == 0 then
+		touch = 1
+	elseif getTouchPhase(0) == 2 then
+		touch = 0
+	end
 
 	coll = getNumCollisions(Feet)
 
     rotate(Player, {0, 0, 1}, getProperty("YAW"));
 
 	-- rotate left
-	if isKeyPressed("LEFT") then
-		rotate(Player, {0, 0, 1}, 5)
-	end
+	--if isKeyPressed("LEFT") then
+		rotate(Player, {0, 0, 1}, 1)
+	--end
 
 	-- rotate right
 	if isKeyPressed("RIGHT") then
@@ -27,15 +35,14 @@ function onSceneUpdate()
 	end
 	
 	-- jump (commented as an example)
-    
-	if isKeyPressed("SPACE") or getTouchPhase(0) == 2 then
-		if coll > 1 then
-			addCentralForce(Player, {0, 0, 30})
-		end
-	end
+	--if isKeyPressed("SPACE") or getTouchPhase(0) == 2 then
+	--	if coll > 1 then
+	--		addCentralForce(Player, {0, 0, 30})
+	--	end
+	--end
 	
 	-- move Jules
-	if isKeyPressed("UP") then
+	if isKeyPressed("UP") or touch == 1 then
 		changeAnimation(Jules, 2)
 		if coll > 1 then
 			addCentralForce(Player, {0, 0, 15}, "local")

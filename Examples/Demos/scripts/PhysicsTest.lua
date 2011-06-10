@@ -13,9 +13,17 @@ torque = 100
 
 pos = getPosition(Car)
 
+touch = 0
+
 -- scene update
 function onSceneUpdate()
 
+	if getTouchPhase(0) == 0 then
+		touch = 1
+	elseif getTouchPhase(0) == 2 then
+		touch = 0
+	end
+	
 	x = 0
 	force = 0
 	newPos = getPosition(Car)
@@ -23,7 +31,7 @@ function onSceneUpdate()
 	speed = math.sqrt(dir[1]*dir[1] + dir[2]*dir[2] + dir[3]*dir[3])
 
 	-- control
-	if isKeyPressed("UP") then
+	if isKeyPressed("UP") or touch == 1 then
 		force = 1
 	end
 

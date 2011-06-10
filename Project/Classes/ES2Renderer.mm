@@ -6,8 +6,10 @@
 //  Copyright __MyCompanyName__ 2011. All rights reserved.
 //
 
+#include <MEngine.h>
 #import "ES2Renderer.h"
 
+/*
 // uniform index
 enum {
     UNIFORM_TRANSLATE,
@@ -27,98 +29,109 @@ enum {
 - (BOOL) compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL) linkProgram:(GLuint)prog;
 - (BOOL) validateProgram:(GLuint)prog;
-@end
+@end*/
+
+// time
+static unsigned int frequency = 60;
+static unsigned long previousFrame = 0;
+static unsigned long startTick;
 
 @implementation ES2Renderer
 
 // Create an ES 2.0 context
 - (id) init
 {
-	if ((self = [super init]))
+	if (self = [super init])
 	{
 		context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         
-        if (!context || ![EAGLContext setCurrentContext:context] || ![self loadShaders])
+        if (!context || ![EAGLContext setCurrentContext:context])
 		{
             [self release];
             return nil;
         }
-
+		
 		// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
 		glGenFramebuffers(1, &defaultFramebuffer);
 		glGenRenderbuffers(1, &colorRenderbuffer);
+		glGenRenderbuffers(1, &depthRenderbuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
+		
 		glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
+		
+		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 	}
 	
+	// start tick
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	startTick = system->getSystemTick();
+
 	return self;
 }
 
+
+
 - (void) render
-{
-    // Replace the implementation of this method to do your own custom drawing
-    
-    static const GLfloat squareVertices[] = {
-        -0.5f, -0.33f,
-         0.5f, -0.33f,
-        -0.5f,  0.33f,
-         0.5f,  0.33f,
-    };
-	
-    static const GLubyte squareColors[] = {
-        255, 255,   0, 255,
-        0,   255, 255, 255,
-        0,     0,   0,   0,
-        255,   0, 255, 255,
-    };
-    
-	static float transY = 0.0f;
-	
+{	
 	// This application only creates a single context which is already set current at this point.
 	// This call is redundant, but needed if dealing with multiple contexts.
     [EAGLContext setCurrentContext:context];
-    
-	// This application only creates a single default framebuffer which is already bound at this point.
-	// This call is redundant, but needed if dealing with multiple framebuffers.
-    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-    glViewport(0, 0, backingWidth, backingHeight);
-    
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-	// Use shader program
-    glUseProgram(program);
 	
-	// Update uniform value
-	glUniform1f(uniforms[UNIFORM_TRANSLATE], (GLfloat)transY);
-	transY += 0.075f;	
-	
-	// Update attribute values
-    glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
-    glEnableVertexAttribArray(ATTRIB_VERTEX);
-    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, 1, 0, squareColors);
-    glEnableVertexAttribArray(ATTRIB_COLOR);
-    
-	// Validate program before drawing. This is a good check, but only really necessary in a debug build.
-	// DEBUG macro must be defined in your debug configurations if that's not already the case.
-#if defined(DEBUG)
-	if (![self validateProgram:program])
+	// Maratis
 	{
-		NSLog(@"Failed to validate program: %d", program);
-		return;
+		MEngine * engine = MEngine::getInstance();
+		MRenderingContext * render = engine->getRenderingContext();
+		MSystemContext * system = engine->getSystemContext();
+		
+		render->bindFrameBuffer(defaultFramebuffer);
+		glViewport(0, 0, backingWidth, backingHeight);
+		
+		MGame * game = engine->getGame();
+		if(game)
+		{
+			if(game->isRunning())
+			{
+				// compute target tick
+				unsigned long currentTick = system->getSystemTick();
+				
+				unsigned long tick = currentTick - startTick;
+				unsigned long frame = (unsigned long)(tick * (frequency * 0.001f));
+				
+				// update elapsed time
+				unsigned int i;
+				unsigned int steps = (unsigned int)(frame - previousFrame);
+				
+				if(steps >= (frequency/2))
+				{
+					game->update();
+					game->draw();
+					previousFrame += steps;
+				}
+				else
+				{
+					for(i=0; i<steps; i++)
+					{
+						game->update();
+						previousFrame++;
+					}
+				
+					game->draw();
+				}
+			}
+		}
 	}
-#endif
 	
-    // Draw
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	
+    
 	// This application only creates a single color renderbuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple renderbuffers.
     glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-    [context presentRenderbuffer:GL_RENDERBUFFER];
+    [context presentRenderbuffer:GL_RENDERBUFFER];	
+	
 }
-
+/*
 - (BOOL) compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
 {
 	GLint status;
@@ -255,7 +268,7 @@ enum {
 		glDeleteShader(fragShader);
 	
 	return TRUE;
-}
+}*/
 
 - (BOOL) resizeFromLayer:(CAEAGLLayer *)layer
 {
@@ -265,6 +278,10 @@ enum {
 	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
     glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
 	
+	// Allocate depth buffer
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, backingWidth, backingHeight);
+
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
         NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
@@ -289,11 +306,17 @@ enum {
 		colorRenderbuffer = 0;
 	}
 	
+	if (depthRenderbuffer)
+	{
+		glDeleteRenderbuffers(1, &depthRenderbuffer);
+		depthRenderbuffer = 0;
+	}
+	/*
 	if (program)
 	{
 		glDeleteProgram(program);
 		program = 0;
-	}
+	}*/
 	
 	// Tear down context
 	if ([EAGLContext currentContext] == context)

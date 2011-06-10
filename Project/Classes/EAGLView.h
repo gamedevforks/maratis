@@ -42,6 +42,8 @@
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
 
+- (void) loadMaratisProject:(const char *)filename;
+
 - (BOOL) initRenderingContext;
 
 - (void) configureMobileInput;

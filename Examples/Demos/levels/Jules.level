@@ -26,7 +26,7 @@
 				shadow="true"
 				shadowBias="4.000000"
 				shadowBlur="0.250000"
-				shadowQuality="512" />
+				shadowQuality="256" />
 		</Light>
 		<Light name="Light2">
 			<active value="true" />
@@ -68,10 +68,7 @@
 				intensity="10.000000"
 				spotAngle="45.000000"
 				spotExponent="0.000000"
-				shadow="true"
-				shadowBias="3.000000"
-				shadowBlur="0.250000"
-				shadowQuality="256" />
+				shadow="false" />
 		</Light>
 		<Light name="Light1">
 			<active value="true" />

@@ -11,6 +11,11 @@
 
 @implementation ES1Renderer
 
+// time
+static unsigned int frequency = 60;
+static unsigned long previousFrame = 0;
+static unsigned long startTick;
+
 // Create an ES 1.1 context
 - (id) init
 {
@@ -37,6 +42,11 @@
 		glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer);
 	}
 	
+	// start tick
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	startTick = system->getSystemTick();
+
 	return self;
 }
 
@@ -46,27 +56,49 @@
 	// This call is redundant, but needed if dealing with multiple contexts.
     [EAGLContext setCurrentContext:context];
     
-	// This application only creates a single default framebuffer which is already bound at this point.
-	// This call is redundant, but needed if dealing with multiple framebuffers.
-    glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-    glViewport(0, 0, backingWidth, backingHeight);
-    
-
 	// Maratis
 	{
 		MEngine * engine = MEngine::getInstance();
-		MGame * game = engine->getGame();
+		MRenderingContext * render = engine->getRenderingContext();
+		MSystemContext * system = engine->getSystemContext();
 		
+		render->bindFrameBuffer(defaultFramebuffer);
+		glViewport(0, 0, backingWidth, backingHeight);
+		
+		MGame * game = engine->getGame();
 		if(game)
 		{
 			if(game->isRunning())
 			{
-				game->update();
-				game->draw();
+				// compute target tick
+				unsigned long currentTick = system->getSystemTick();
+				
+				unsigned long tick = currentTick - startTick;
+				unsigned long frame = (unsigned long)(tick * (frequency * 0.001f));
+				
+				// update elapsed time
+				unsigned int i;
+				unsigned int steps = (unsigned int)(frame - previousFrame);
+				
+				if(steps >= (frequency/2))
+				{
+					game->update();
+					game->draw();
+					previousFrame += steps;
+				}
+				else
+				{
+					for(i=0; i<steps; i++)
+					{
+						game->update();
+						previousFrame++;
+					}
+					
+					game->draw();
+				}
 			}
 		}
 	}
-	
     
 	// This application only creates a single color renderbuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple renderbuffers.
