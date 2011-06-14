@@ -174,13 +174,6 @@ m_currentFrameBuffer(0)
 	enableCullFace();
 	setCullMode(M_CULL_BACK);
     
-	// normalize
-	//glEnable(GL_NORMALIZE);
-    
-	// fog
-	//glHint(GL_FOG_HINT, GL_NICEST);
-	//glFogf(GL_FOG_MODE, GL_LINEAR);
-    
 	// depth
 	enableDepthTest();
 	setDepthMode(M_DEPTH_LEQUAL);
@@ -244,13 +237,21 @@ void MES2Context::setPerspectiveView(float fov, float ratio, float zNear, float 
 
 void MES2Context::setOrthoView(float left, float right, float bottom, float top, float zNear, float zFar)
 {
-	//glOrthof(left, right, bottom, top, zNear, zFar);
+	if(right == left || top == bottom || zFar == zNear)
+	{
+		// GL_INVALID_VALUE;
+		return;
+	}
+	
+	float tx = - (right + left)/(right - left);
+	float ty = - (top + bottom)/(top - bottom);
+	float tz = - (zFar + zNear)/(zFar - zNear);
 	
 	MMatrix4x4 matrix(
-		2.0f/(right-left), 0.0f, 0.0f, -1.0f,
-		0.0f, 2.0f/(top-bottom), 0.0f, -1.0f,
+		2.0f/(right-left), 0.0f, 0.0f, 0.0f,
+		0.0f, 2.0f/(top-bottom), 0.0f, 0.0f,
 		0.0f, 0.0f, -2.0f/(zFar-zNear), 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
+		tx, ty, tz, 1.0f
 	);
 	
 	multMatrix(&matrix);
@@ -448,9 +449,7 @@ void MES2Context::texImage(unsigned int level, unsigned int width, unsigned int 
 {
 	GLenum format = returnTexMode(mode);
 	GLenum intFormat = format;
-	//if(type == M_FLOAT && mode == M_RGB)
-	//	intFormat = GL_RGB32F_ARB;
-	
+
 	glTexImage2D(GL_TEXTURE_2D, level, intFormat, width, height, 0, format, returnGLType(type), pixels);
 	if(level > 0)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering

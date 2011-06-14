@@ -3751,23 +3751,7 @@ void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 			// draw
 			maratis->drawMainView(scene);
 		}
-<<<<<<< .mine
             break;
-        case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-            if(guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
-            {
-                MEngine * engine = MEngine::getInstance();
-                MLevel * level = engine->getLevel();
-                MScene * scene = level->getCurrentScene();
-                
-                maratis->selectObjectsInMainView(scene);
-            }
-            break;
-            
-        default:
-            break;
-=======
-		break;
 	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
 		if(window->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
 		{
@@ -3778,7 +3762,6 @@ void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 			maratis->selectObjectsInMainView(scene);
 		}
 		break;
->>>>>>> .r51
 	}
 }
 
