@@ -1,4 +1,7 @@
-precision mediump float;
+#ifdef GL_ES
+precision highp float;
+#endif
+
 attribute vec3 Vertex;
 uniform mat4 ProjModelViewMatrix;
 

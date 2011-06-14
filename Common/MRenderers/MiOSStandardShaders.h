@@ -31,7 +31,9 @@
 // vert header
 string vertHeader =
 
-"precision mediump float;"
+"#ifdef GL_ES\n"
+"precision mediump float;\n"
+"#endif\n"
 
 "attribute vec3 Vertex;"
 "attribute vec3 Normal;"
@@ -119,32 +121,18 @@ string functionsShader = string(
 	"vec3 L = normalize(lightDir);"
 
 	"float lambertTerm = max(dot(N, L), 0.0);"
-	"if(lambertTerm > 0.0)"
+	//"if(lambertTerm > 0.0)"
 	"{"
-		"if(spotCos > 0.0)"
-		"{"
-			"float spot = dot(spotDir, -L);"
+		"float spot = dot(spotDir, -L);"
 			
-			"if(spot > spotCos)"
-			"{"
-				"float shadow = computeShadow(shad, shadCoord, shadMap, shadBias, shadBlur);"
-								
-				"spot = clamp(pow(spot, spotExp), 0.0, 1.0);"
-								
-				"float lightDirLength2 = dot(lightDir, lightDir);"
-				"float attenuation = (spot / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)))*shadow;"
-
-				"diffuse = diffuse + (lightDiffuse * lambertTerm * attenuation);"
-
-				"vec3 S = normalize(E + L);"
-				"float spec = pow(max(dot(S, N), 0.0), MaterialShininess) * attenuation;"
-				"specular = specular + (lightSpecular * spec);"
-			"}"
-		"}"
-		"else"
+		"if(spot >= spotCos)"
 		"{"
+			"float shadow = computeShadow(shad, shadCoord, shadMap, shadBias, shadBlur);"
+								
+			"spot = clamp(pow(spot, spotExp), 0.0, 1.0);"
+								
 			"float lightDirLength2 = dot(lightDir, lightDir);"
-			"float attenuation = (1.0 / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)));"
+			"float attenuation = (spot / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)))*shadow;"
 
 			"diffuse = diffuse + (lightDiffuse * lambertTerm * attenuation);"
 
@@ -155,45 +143,35 @@ string functionsShader = string(
 	"}"
 "}"
 
+/*
 "void computeLightNoShadow(vec3 lightPosition, float constantAttenuation, float quadraticAttenuation, vec3 lightDiffuse, vec3 lightSpecular, vec3 spotDir, float spotCos, float spotExp)"
 "{"
 	"vec3 lightDir = lightPosition - position.xyz;"
 	"vec3 L = normalize(lightDir);"
 
 	"float lambertTerm = max(dot(N, L), 0.0);"
-	"if(lambertTerm > 0.0)"
+	//"if(lambertTerm > 0.0)"
 	"{"
-		"if(spotCos > 0.0)"
-		"{"
-			"float spot = dot(spotDir, -L);"
-			
-			"if(spot > spotCos)"
-			"{"			
-				"spot = clamp(pow(spot, spotExp), 0.0, 1.0);"
-								
-				"float lightDirLength2 = dot(lightDir, lightDir);"
-				"float attenuation = (spot / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)));"
-
-				"diffuse = diffuse + (lightDiffuse * lambertTerm * attenuation);"
-
-				"vec3 S = normalize(E + L);"
-				"float spec = pow(max(dot(S, N), 0.0), MaterialShininess) * attenuation;"
-				"specular = specular + (lightSpecular * spec);"
-			"}"
-		"}"
-		"else"
-		"{"
+		
+		"float spot = dot(spotDir, -L);"
+								 
+		"if(spot >= spotCos)"
+		"{"			
+			"spot = clamp(pow(spot, spotExp), 0.0, 1.0);"
+								 
 			"float lightDirLength2 = dot(lightDir, lightDir);"
-			"float attenuation = (1.0 / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)));"
-
+			"float attenuation = (spot / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)));"
+								 
 			"diffuse = diffuse + (lightDiffuse * lambertTerm * attenuation);"
-
+								 
 			"vec3 S = normalize(E + L);"
 			"float spec = pow(max(dot(S, N), 0.0), MaterialShininess) * attenuation;"
 			"specular = specular + (lightSpecular * spec);"
-		"}"
+		"}"											
 	"}"
-"}");
+"}"*/
+ 
+ );
 
 
 
@@ -203,7 +181,7 @@ string functionsShader = string(
 // lights
 string lightShader = string(
 						
-"if(LightActive[0])"
+//"if(LightActive[0])"
 "{"
 	"computeLight("
 		"LightPosition[0].xyz,"
@@ -377,7 +355,7 @@ vertHeader +
 
 "void main(void)"
 "{"
-	"if(LightShadow[0]) shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
+	/*"if(LightShadow[0])*/"shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
 							
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
@@ -413,7 +391,7 @@ vertHeader +
 							
 "void main(void)"
 "{"
-	"if(LightShadow[0]) shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
+	/*"if(LightShadow[0])*/"shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
@@ -456,7 +434,7 @@ vertHeader +
 							
 "void main(void)"
 "{"
-	"if(LightShadow[0]) shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
+	/*"if(LightShadow[0])*/"shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
@@ -502,7 +480,7 @@ vertHeader +
 
 "void main(void)"
 "{"
-	"if(LightShadow[0]) shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
+	/*"if(LightShadow[0])*/"shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
@@ -558,7 +536,7 @@ vertHeader +
 							
 "void main(void)"
 "{"
-	"if(LightShadow[0]) shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
+	/*"if(LightShadow[0])*/"shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"
@@ -607,7 +585,7 @@ vertHeader +
 
 "void main(void)"
 "{"
-	"if(LightShadow[0]) shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
+	/*"if(LightShadow[0])*/"shadowCoord[0] = LightShadowMatrix[0] * vec4(Vertex, 1.0);"
 
 	"normal = NormalMatrix * vec4(Normal, 1.0);"
 	"position = ModelViewMatrix * vec4(Vertex, 1.0);"

@@ -1,4 +1,6 @@
-precision mediump float;
+#ifdef GL_ES
+precision highp float;
+#endif
 
 uniform vec4 FogColor;
 uniform float FogEnd;
@@ -35,7 +37,7 @@ void main(void)
 		float lambertTerm = max(dot(N, L), 0.0);
 
 		// use texture 0 as a ramp shader
-		vec4 ramp = texture2D(Texture[0], vec2(lambertTerm, 0.5));
+		vec4 ramp = texture2DLod(Texture[0], vec2(lambertTerm, 0.5), 0.0);
 
 		float attenuation = 1.0/(LightConstantAttenuation[0] + (lightDirLength*lightDirLength)* LightQuadraticAttenuation[0]);
 

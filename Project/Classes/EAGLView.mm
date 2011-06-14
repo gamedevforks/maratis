@@ -102,37 +102,44 @@ public:
 		// set renderer
 		{		
 			if(renderer)
+			{
 				[renderer release];
+				renderer = nil;
+			}
 			SAFE_DELETE(mrenderer);
 			SAFE_DELETE(render);
 			
 			if(strcmp(proj.renderer.c_str(), "StandardRenderer") == 0)
 			{
-				// rendering context
-				render = new MES2Context();
-				engine->setRenderingContext(render);
-				
 				// ES2 / StandardRenderer
 				renderer = [[ES2Renderer alloc] init];
 				if(renderer)
+				{
+					// rendering context
+					render = new MES2Context();
+					engine->setRenderingContext(render);
+					
+					// renderer
 					mrenderer = engine->getRendererManager()->getRendererByName("StandardRenderer")->getNewRenderer();
+					engine->setRenderer(mrenderer);
+				}
 			}
 			
 			if(! renderer)
 			{
-				// rendering context
-				render = new MES1Context();
-				engine->setRenderingContext(render);
-				
 				// ES1 / FixedRenderer
 				renderer = [[ES1Renderer alloc] init];
 				if(renderer)
+				{
+					// rendering context
+					render = new MES1Context();
+					engine->setRenderingContext(render);
+					
+					// renderer
 					mrenderer = engine->getRendererManager()->getRendererByName("FixedRenderer")->getNewRenderer();
+					engine->setRenderer(mrenderer);
+				}
 			}
-			
-			// set renderer
-			if(mrenderer)
-				engine->setRenderer(mrenderer);
 		}
 		
 		// load start level

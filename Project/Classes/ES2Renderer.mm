@@ -73,7 +73,6 @@ static unsigned long startTick;
 }
 
 
-
 - (void) render
 {	
 	// This application only creates a single context which is already set current at this point.

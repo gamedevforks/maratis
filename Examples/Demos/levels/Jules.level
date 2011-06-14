@@ -22,10 +22,10 @@
 				color="1.000000 0.500000 0.400000"
 				intensity="100.000000"
 				spotAngle="60.000000"
-				spotExponent="0.050000"
+				spotExponent="0.040000"
 				shadow="true"
-				shadowBias="4.000000"
-				shadowBlur="0.250000"
+				shadowBias="2.000000"
+				shadowBlur="0.0000"
 				shadowQuality="256" />
 		</Light>
 		<Light name="Light2">
