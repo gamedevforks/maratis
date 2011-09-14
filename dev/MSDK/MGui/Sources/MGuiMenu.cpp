@@ -187,7 +187,8 @@ void MGuiMenu::onEvent(MWinEvent * windowEvent)
 			}
 			break;
 		case MWIN_EVENT_MOUSE_BUTTON_DOWN: // mouse button down
-			if(isHighLight())
+			//if(isHighLight())
+			if(isMouseInside())
 			{
 				if(windowEvent->data[0] == MMOUSE_BUTTON_LEFT) // left mouse button
 				{
@@ -225,7 +226,8 @@ void MGuiMenu::onEvent(MWinEvent * windowEvent)
 			
 			break;
 		case MWIN_EVENT_MOUSE_BUTTON_UP:
-			if(isHighLight())
+			//if(isHighLight())
+			if(isMouseInside())
 			{
 				if(m_pointerEvent) // send mouse button up gui event
 				{

@@ -72,6 +72,8 @@ public:
 		z(vec.z)
 	{}
 
+	MVector3(const MVector4 & vec);
+	
 	MVector3(const MVector2 & vec):	
 		x(vec.x), 
 		y(vec.y), 

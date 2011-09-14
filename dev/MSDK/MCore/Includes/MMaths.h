@@ -40,8 +40,8 @@
 #endif
 
 // Degree/Radian conversions
-#define DEG_TO_RAD ((M_PI * 2) / 360.0f)
-#define RAD_TO_DEG (1.0f / DEG_TO_RAD)
+#define DEG_TO_RAD ((M_PI * 2) / 360.0)
+#define RAD_TO_DEG (1.0 / DEG_TO_RAD)
 
 // MIN
 #ifndef MIN
@@ -103,12 +103,16 @@ M_CORE_EXPORT bool isEdgeTriangleIntersection(const MVector3 & origin, const MVe
 
 M_CORE_EXPORT MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b, const MVector3 & c);
 
+M_CORE_EXPORT float cubicInterpolation(float y0, float y1, float y2, float y3, float mu);
+M_CORE_EXPORT float CatmullRomInterpolation(float y0, float y1, float y2, float y3, float mu);
+M_CORE_EXPORT float HermiteInterpolation(float y0, float y1, float y2, float y3, float mu, float tension, float bias, bool begin = false, bool end = false);
+
 // color convertions
-float HueToRGB(float v1, float v2, float vH);
-MVector3 RGBToHSV(MVector3 rgbColor);
-MVector3 HSVToRGB(MVector3 HSVColor);
-MVector3 RGBToHSL(MVector3 rgbColor);
-MVector3 HSLToRGB(MVector3 hslColor);
+M_CORE_EXPORT float HueToRGB(float v1, float v2, float vH);
+M_CORE_EXPORT MVector3 RGBToHSV(MVector3 rgbColor);
+M_CORE_EXPORT MVector3 HSVToRGB(MVector3 HSVColor);
+M_CORE_EXPORT MVector3 RGBToHSL(MVector3 rgbColor);
+M_CORE_EXPORT MVector3 HSLToRGB(MVector3 hslColor);
 
 
 // include classes

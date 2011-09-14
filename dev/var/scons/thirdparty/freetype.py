@@ -33,7 +33,7 @@ def getFreeTypeParameters():
         # FreeType settings for osx
         params['frameworks'] = 'Cocoa'
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # FreeType settings for linux
         pass
     

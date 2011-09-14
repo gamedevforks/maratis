@@ -33,11 +33,10 @@
 #include <MWindow.h>
 
 #import <Cocoa/Cocoa.h>
+#import <Carbon/Carbon.h>
 
 #import <OpenGL/OpenGL.h>
 #import <OpenGL/gl.h>
-
-
 
 
 id window = nil;
@@ -51,17 +50,45 @@ id AutoreleasePool = nil;
 
 
 
-
+// GLFWApplication
 @interface GLFWApplication : NSApplication
 @end
 
 @implementation GLFWApplication
 
-// From http://cocoadev.com/index.pl?GameKeyboardHandlingAlmost
-// This works around an AppKit bug, where key up events while holding
-// down the command key don't get sent to the key window.
+- (id)init
+{
+	self = [super init];
+	return self;
+}
+
+- (void)dealloc
+{
+	[super dealloc];
+}
+
 - (void)sendEvent:(NSEvent *)event
 {
+	if([event type] == NSTabletPoint)
+	{
+		MMouse::getInstance()->setPressure([event pressure]);
+		
+		/*
+		//if(([event type] == NSTabletPoint) || ([event subtype] == NSTabletPointEventSubtype))
+		{
+			SInt32 mAbsX = [event absoluteX];
+			SInt32 mAbsY = [event absoluteY];
+			
+			NSPoint tilt = [event tilt];
+			mTiltX = tilt.x;
+			mTiltY = tilt.y;
+			
+			mRotDeg = [event rotation];
+			
+			//UInt16 mDeviceID =  [theEvent deviceID];
+		}*/
+	}
+	
     if([event type] == NSKeyUp && ([event modifierFlags] & NSCommandKeyMask))
     {
         [[self keyWindow] sendEvent:event];
@@ -76,11 +103,7 @@ id AutoreleasePool = nil;
 
 
 
-
-
-
-
-
+// GLFWWindowDelegate
 @interface GLFWWindowDelegate : NSObject
 @end
 
@@ -304,17 +327,24 @@ static int convertMacKeyCode(unsigned int macKeyCode)
     return YES;
 }
 
+- (BOOL) canBecomeKeyWindow
+{
+    return YES;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
 	MWinEvent mevent;
 	mevent.type = MWIN_EVENT_MOUSE_BUTTON_DOWN;
 	mevent.data[0] = MMOUSE_BUTTON_LEFT;
 	MWindow::getInstance()->sendEvents(&mevent);
+	MMouse::getInstance()->setPressure([event pressure]);
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
     [self mouseMoved:event];
+	MMouse::getInstance()->setPressure([event pressure]);
 }
 
 - (void)mouseUp:(NSEvent *)event
@@ -323,6 +353,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 	mevent.type = MWIN_EVENT_MOUSE_BUTTON_UP;
 	mevent.data[0] = MMOUSE_BUTTON_LEFT;
 	MWindow::getInstance()->sendEvents(&mevent);
+	MMouse::getInstance()->setPressure([event pressure]);
 }
 
 - (void)mouseMoved:(NSEvent *)event
@@ -334,6 +365,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 	mevent.data[0] = p.x;
 	mevent.data[1] = [[window contentView] bounds].size.height - p.y;
 	MWindow::getInstance()->sendEvents(&mevent);
+	MMouse::getInstance()->setPosition(p.x, [[window contentView] bounds].size.height - p.y);
 }
 
 - (void)rightMouseDown:(NSEvent *)event
@@ -480,7 +512,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 {
 	MWinEvent mevent;
 	mevent.type = MWIN_EVENT_MOUSE_WHEEL_MOVE;
-	//mevent.data[0] = (int)[event deltaY];
+
 	if([event deltaY] > 0)
 		mevent.data[0] = 1;
 	else if([event deltaY] < 0)
@@ -654,9 +686,9 @@ void MWindow::sendEvents(MWinEvent * events)
 			mouse->setWheelDirection(events->data[0]);
 			break;
 			
-		case MWIN_EVENT_MOUSE_MOVE:
-			mouse->setPosition(events->data[0], events->data[1]);
-			break;
+		//case MWIN_EVENT_MOUSE_MOVE:
+		//	mouse->setPosition(events->data[0], events->data[1]);
+		//	break;
 	}
 	
 	if(m_pointerEvent)
@@ -743,7 +775,7 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
     unsigned int styleMask = 0;
     if(! fullscreen)
     {
-        styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
     }
     else
     {
@@ -758,7 +790,6 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
     [window setContentView:[[GLFWContentView alloc] init]];
     [window setDelegate:delegate];
     [window setAcceptsMouseMovedEvents:YES];
-    [window center];
 	
     if(fullscreen)
     {
@@ -847,6 +878,16 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	m_width = contentRect.size.width;
 	m_height = contentRect.size.height;
 	
+	if(title == NULL)
+	{
+		[window setStyleMask:NSBorderlessWindowMask];
+		[NSApp activateIgnoringOtherApps:YES]; 
+	}
+	else
+	{
+		[window center];
+	}
+	
 	return true;
 }
 
@@ -898,10 +939,12 @@ bool MWindow::getOpenMultipleFiles(const char * title, const char * filter, stri
 				filesList->push_back(filename);
 			}
 			
+			[window makeKeyAndOrderFront:window];
 			return true;
 		}
 	}	
 	
+	[window makeKeyAndOrderFront:window];
 	return false;
 }
 
@@ -928,13 +971,14 @@ const char * MWindow::getOpenDir(const char * title, const char * startPath)
 			const char * string = (const char *)[file UTF8String];
 			
 			strcpy(filename, string);
+			[window makeKeyAndOrderFront:window];
 			return filename;
 		}
 	}	
 	
+	[window makeKeyAndOrderFront:window];
 	return NULL;	
 }
-
 
 const char * MWindow::getOpenFilename(const char * title, const char * filter, const char * startPath)
 {
@@ -945,7 +989,7 @@ const char * MWindow::getOpenFilename(const char * title, const char * filter, c
 	NSString * path = nil;
 	if(startPath)
 		path = [NSString stringWithCString:startPath encoding:NSISOLatin1StringEncoding];
-
+	
 	[openDlg setCanChooseFiles:YES];
 	
 	if([openDlg runModalForDirectory:path file:nil] == NSOKButton)
@@ -958,10 +1002,12 @@ const char * MWindow::getOpenFilename(const char * title, const char * filter, c
 			const char * string = (const char *)[file UTF8String];
 			
 			strcpy(filename, string);
+			[window makeKeyAndOrderFront:window];
 			return filename;
 		}
 	}	
 	
+	[window makeKeyAndOrderFront:window];
 	return NULL;
 }
 
@@ -979,8 +1025,10 @@ const char * MWindow::getSaveFilename(const char * title, const char * filter, c
 		NSString * file = [saveDlg filename];
 		const char * string = (const char *)[file UTF8String];
 		strcpy(filename, string);
+		[window makeKeyAndOrderFront:window];
 		return filename;
 	}
 	
+	[window makeKeyAndOrderFront:window];
 	return NULL;
 }

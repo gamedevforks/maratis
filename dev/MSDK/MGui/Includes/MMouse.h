@@ -43,16 +43,18 @@ public:
 		m_position[0] = m_position[1] = 0;
 		m_direction[0] = m_direction[1] = 0;
 		m_lastPosition[0] = m_lastPosition[1] = 0;
+		m_pressure = 0;
 	}
 
 private:
 
 	bool m_buttons[3];
 	
-	int	m_position[2];
-	int	m_direction[2];
 	int	m_wheelDirection;
-	int	m_lastPosition[2];
+	float m_position[2];
+	float m_direction[2];
+	float m_lastPosition[2];
+	float m_pressure;
 
 public:
 
@@ -65,10 +67,11 @@ public:
 
 	inline void refreshLastPosition(){ m_lastPosition[0] = m_position[0]; m_lastPosition[1] = m_position[1]; }
 
-	void setPosition(const int x, const int y);
-	inline void setDirection(const int x, const int y){ m_direction[0] = x; m_direction[1] = y; }
+	void setPosition(float x, float y);
+	inline void setDirection(float x, float y){ m_direction[0] = x; m_direction[1] = y; }
 	inline void setWheelDirection(const int w){ m_wheelDirection = w; }
-
+	inline void setPressure(float pressure){ m_pressure = pressure; }
+	
 	inline bool isLeftButtonPushed()	{ return m_buttons[0]; }
 	inline bool isMiddleButtonPushed()	{ return m_buttons[1]; }
 	inline bool isRightButtonPushed()	{ return m_buttons[2]; }
@@ -90,10 +93,11 @@ public:
 		}
 	}
 
-	inline int getXPosition(){ return m_position[0]; }
-	inline int getYPosition(){ return m_position[1]; }
-	inline int getXDirection(){ return m_direction[0]; }
-	inline int getYDirection(){ return m_direction[1]; }
+	inline float getXPosition(){ return m_position[0]; }
+	inline float getYPosition(){ return m_position[1]; }
+	inline float getXDirection(){ return m_direction[0]; }
+	inline float getYDirection(){ return m_direction[1]; }
+	inline float getPressure(){ return m_pressure; }
 	inline int getWheelDirection(){ return m_wheelDirection; }
 };
 

@@ -57,6 +57,13 @@ public:
 		w(newW)
 	{}
 
+	MVector4(const float value):
+		x(value),
+		y(value),
+		z(value),
+		w(value)
+	{}
+	
 	MVector4(const float * values):
 		x(*(values)),
 		y(*(values + 1)),

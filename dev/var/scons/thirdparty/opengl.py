@@ -30,7 +30,7 @@ def getOpenGLParameters():
         # OpenGL settings for osx
         params['frameworks'] = 'OpenGL'
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # OpenGL settings for linux
         pass
     

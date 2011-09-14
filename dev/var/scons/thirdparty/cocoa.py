@@ -29,7 +29,7 @@ def getCocoaParameters():
         # Cocoa settings for osx
         params['frameworks'] = 'Cocoa'
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # Cocoa settings for linux
         pass
     

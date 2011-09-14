@@ -30,7 +30,7 @@ def getZlibParameters():
     elif sys.platform=='darwin':
         # Zlib settings for osx
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # Zlib settings for linux
         pass
     

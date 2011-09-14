@@ -86,7 +86,7 @@ void MGuiWindow::clear(void)
 	m_slides.clear();
 
 	m_breakEvents = true;
-	resizeScroll();
+	//resizeScroll();
 }
 
 bool MGuiWindow::isSomethingEditing(void)

@@ -31,7 +31,7 @@ def getDevilParameters():
     elif sys.platform=='darwin':
         # devil settings for osx
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # devil settings for linux
         pass
     

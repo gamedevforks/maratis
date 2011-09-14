@@ -92,6 +92,7 @@ public:
 	void texImage(unsigned int level, unsigned int width, unsigned int height, M_TYPES type, M_TEX_MODES mode, const void * pixels);
 	void texSubImage(unsigned int level, int xoffset, int yoffset, unsigned int width, unsigned int height, M_TYPES type, M_TEX_MODES mode, const void * pixels);
 	void generateMipMap(void);
+	void getTexImage(unsigned int level, MImage * image);
 
 	// frame buffer
 	void createFrameBuffer(unsigned int * frameBufferId);
@@ -99,7 +100,14 @@ public:
 	void bindFrameBuffer(unsigned int frameBufferId);
 	void getCurrentFrameBuffer(unsigned int * frameBufferId);
 	void attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId);
+	void attachFrameBufferRB(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int renderBufferId);
 	void setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size);
+	
+	// render buffer
+	void createRenderBuffer(unsigned int * renderBufferId);
+	void deleteRenderBuffer(unsigned int * renderBufferId);
+	void bindRenderBuffer(unsigned int renderBufferId);
+	void setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width, unsigned int height);
 	
 	// shaders
 	void createVertexShader(unsigned int * shaderId);
@@ -177,7 +185,9 @@ public:
 	// stencil
 	void enableStencilTest(void);
 	void disableStencilTest(void);
-
+	void setStencilFunc(M_STENCIL_FUNCS func, int ref=0);
+	void setStencilOp(M_STENCIL_OPS op);
+	
 	// cull face
 	void enableCullFace(void);
 	void disableCullFace(void);

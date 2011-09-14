@@ -22,12 +22,15 @@
 //
 //========================================================================
 
-
 #ifndef _M_RENDER_ARRAY_H
 #define _M_RENDER_ARRAY_H
 
+#include <MCore.h>
+
 void beginDraw(M_PRIMITIVE_TYPES primitiveType);
 void pushVertex(const MVector3 & vertex);
-void endDraw(void);
+void setColor(const MVector4 & color);
+void setTexcoords(const MVector2 & texcoords);
+void endDraw(MRenderingContext * render);
 
 #endif

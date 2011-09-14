@@ -33,7 +33,7 @@ def getOpenALParameters():
         # OpenAL settings for osx
         params['frameworks'] = 'OpenAL'
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # OpenAL settings for linux
         params['includePath'].append('openal/include')
         params['libPath'].append('openal/linux')

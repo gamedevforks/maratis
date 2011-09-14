@@ -28,7 +28,7 @@ def getDirentParameters():
     elif sys.platform=='darwin':
         # Dirent settings for osx
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # Dirent settings for linux
         pass
     

@@ -22,16 +22,6 @@
 //
 //========================================================================
 
-
-#include <stdio.h>
-
-#ifdef _WIN32
-#include <GLee.h>
-#include <GL/glu.h>
-#elif __APPLE__
-#include <OpenGL/OpenGL.h>
-#endif
-
 #include "MFontBin.h"
 
 char M_FONT_HEADER[8] = {'M', 'F', 'O', 'N', 'T', NULL, NULL, NULL};
@@ -46,26 +36,18 @@ bool exportFontBin(const char * filename, MFont * font)
 	MRenderingContext * render = engine->getRenderingContext();
 
 	// read image
+	MImage image;
 	render->bindTexture(font->getTextureId());
-
-	GLint w = 0;
-	GLint h = 0;
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-
-	unsigned int width = (unsigned int)w;
-	unsigned int height = (unsigned int)h;
+	render->getTexImage(0, &image);
+	
+	unsigned int width = image.getWidth();
+	unsigned int height = image.getHeight();
 
 	if(width == 0 && height == 0)
 	{
 		printf("Error : unable to create image font for %s\n", filename);
 		return false;
 	}
-
-	// create image
-	MImage image;
-	image.create(M_UBYTE, width, height, 4);
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getData());
 
 	// create file
 	FILE * file = fopen(filename, "wb");

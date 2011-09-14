@@ -149,7 +149,7 @@ bool MGui::isSomethingEditing(void)
 	unsigned int wSize = m_windows.size();
 	for(i=0; i<wSize; i++)
 	{
-		if(m_windows[i]->isSomethingEditing())
+		if(m_windows[i]->isVisible() && m_windows[i]->isSomethingEditing())
 			return true;
 	}
 

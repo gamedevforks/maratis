@@ -72,7 +72,8 @@ enum M_PRIMITIVE_TYPES
 	M_PRIMITIVE_LINE_LOOP,
 	M_PRIMITIVE_LINE_STRIP,
 	M_PRIMITIVE_TRIANGLES,
-	M_PRIMITIVE_TRIANGLE_STRIP
+	M_PRIMITIVE_TRIANGLE_STRIP,
+	M_PRIMITIVE_TRIANGLE_FAN
 };
 
 // buffer types
@@ -156,6 +157,7 @@ enum M_TYPES
 enum M_FRAME_BUFFER_ATTACHMENT
 {
 	M_ATTACH_DEPTH = 0,
+	M_ATTACH_STENCIL,
 	M_ATTACH_COLOR0,
 	M_ATTACH_COLOR1,
 	M_ATTACH_COLOR2,
@@ -164,6 +166,36 @@ enum M_FRAME_BUFFER_ATTACHMENT
 	M_ATTACH_COLOR5,
 	M_ATTACH_COLOR6,
 	M_ATTACH_COLOR7
+};
+
+enum M_RENDER_BUFFER_MODES
+{
+	M_RENDER_DEPTH = 0,
+	M_RENDER_STENCIL,
+	M_RENDER_DEPTH_STENCIL
+};
+
+// stencil funcs
+enum M_STENCIL_FUNCS
+{
+	M_STENCIL_ALWAYS = 0,
+	M_STENCIL_NEVER,
+	M_STENCIL_EQUAL,
+	M_STENCIL_NOTEQUAL,
+	M_STENCIL_LESS,
+	M_STENCIL_LEQUAL,
+	M_STENCIL_GREATER,
+	M_STENCIL_GEQUAL
+};
+
+// stencil ops
+enum M_STENCIL_OPS
+{
+	M_STENCIL_KEEP = 0,
+	M_STENCIL_INVERT,
+	M_STENCIL_DECR,
+	M_STENCIL_INCR,
+	M_STENCIL_REPLACE
 };
 
 
@@ -201,6 +233,7 @@ public:
 	virtual void texImage(unsigned int level, unsigned int width, unsigned int height, M_TYPES type, M_TEX_MODES mode, const void * pixels) = 0;
 	virtual void texSubImage(unsigned int level, int xoffset, int yoffset, unsigned int width, unsigned int height, M_TYPES type, M_TEX_MODES mode, const void * pixels) = 0;
 	virtual void generateMipMap(void) = 0;
+	virtual void getTexImage(unsigned int level, MImage * image){}
 
 	// frame buffer
 	virtual void createFrameBuffer(unsigned int * frameBufferId) = 0;
@@ -208,7 +241,14 @@ public:
 	virtual void bindFrameBuffer(unsigned int frameBufferId) = 0;
 	virtual void getCurrentFrameBuffer(unsigned int * frameBufferId) = 0;
 	virtual void attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId) = 0;
+	virtual void attachFrameBufferRB(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int renderBufferId){}
 	virtual void setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size) = 0;
+	
+	// render buffer
+	virtual void createRenderBuffer(unsigned int * renderBufferId){}
+	virtual void deleteRenderBuffer(unsigned int * renderBufferId){}
+	virtual void bindRenderBuffer(unsigned int renderBufferId){}
+	virtual void setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width, unsigned int height){}
 	
 	// shaders
 	virtual void createVertexShader(unsigned int * shaderId) = 0;
@@ -286,6 +326,8 @@ public:
 	// stencil
 	virtual void enableStencilTest(void) = 0;
 	virtual void disableStencilTest(void) = 0;
+	virtual void setStencilFunc(M_STENCIL_FUNCS func, int ref=0){};
+	virtual void setStencilOp(M_STENCIL_OPS op){};
 
 	// cull face
 	virtual void enableCullFace(void) = 0;

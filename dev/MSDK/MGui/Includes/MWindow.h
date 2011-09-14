@@ -40,6 +40,8 @@
 	#include "WIN32/MWin32Window.h"
 #elif __APPLE__
 	#include "COCOA/MCocoaWindow.h"
+#elif linux
+	#include "X11/MX11Window.h"
 #endif
 
 #endif

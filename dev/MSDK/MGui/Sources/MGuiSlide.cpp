@@ -55,7 +55,7 @@ float MGuiSlide::getNormalizedValue(void)
 {
 	if(getVariableType())
 	{
-		if(getVariableType() == M_VAR_INT)
+		if(getVariableType() == M_VAR_INT || getVariableType() == M_VAR_UINT)
 		{
 			int iValue;
 			if(m_value >= 0)
@@ -85,6 +85,15 @@ void MGuiSlide::sendVariable(void)
 					*value = (int)(m_value - 0.5f);
 			}
 			break;
+		case M_VAR_UINT:
+			{
+				unsigned int * value = (unsigned int *)getVariablePointer();
+				if(m_value >= 0)
+					*value = (unsigned int)(m_value + 0.5f);
+				else
+					*value = 0;
+			}
+				break;
 		case M_VAR_FLOAT:
 			{
 				float * value = (float *)getVariablePointer();
@@ -114,6 +123,12 @@ void MGuiSlide::updateFromVariable(void)
 	case M_VAR_INT:
 		{
 			int * value = (int *)getVariablePointer();
+			setValue((float)*value);
+		}
+		break;
+	case M_VAR_UINT:
+		{
+			unsigned int * value = (unsigned int *)getVariablePointer();
 			setValue((float)*value);
 		}
 		break;
@@ -276,7 +291,7 @@ MVector2 MGuiSlide::getPointfromValue(float value)
 	// variable pointer
 	if(getVariablePointer())
 	{
-		if(getVariableType() == M_VAR_INT)
+		if(getVariableType() == M_VAR_INT || getVariableType() == M_VAR_UINT)
 		{
 			int iValue;
 

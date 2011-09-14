@@ -34,7 +34,7 @@ def getBulletParameters():
         # Bullet settings for osx
         dir(SCons)
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # Bullet settings for linux
         pass
     

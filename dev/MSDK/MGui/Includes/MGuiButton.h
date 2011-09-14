@@ -65,6 +65,9 @@ private:
 	
 public:
 
+	// active
+	bool isActive(void){ return m_isActive; }
+	
 	// linked variable
 	void sendVariable(void);
 	void updateFromVariable(void);

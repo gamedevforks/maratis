@@ -27,10 +27,13 @@
 
 // GL, TODO : remove opengl call (should use MRenderingContext to be fully virtual)
 #ifdef _WIN32
-#include <GLee.h>
-#include <GL/glu.h>
+	#include <GLee.h>
+	#include <GL/glu.h>
 #elif __APPLE__
-#include <OpenGL/OpenGL.h>
+	#include <OpenGL/OpenGL.h>
+#elif linux
+	#include <GLee.h>
+	#include <GL/glu.h>
 #endif
 
 #include "MaratisUI.h"
@@ -1347,6 +1350,8 @@ void Maratis::changeCurrentVue(int vue)
 
 void Maratis::drawBoundingBox(MBox3d * box)
 {
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
 	MVector3 * min = box->getMin();
 	MVector3 * max = box->getMax();
     
@@ -1388,7 +1393,7 @@ void Maratis::drawBoundingBox(MBox3d * box)
 	pushVertex(MVector3(max->x, min->y, max->z));
 	pushVertex(MVector3(max->x, min->y, min->z));
     
-	endDraw();
+	endDraw(render);
 }
 
 bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVector3 & origin, const MVector3 & dest, float * distance, MOEntity * entity = NULL)
@@ -1911,7 +1916,7 @@ void Maratis::drawGrid(MScene * scene)
 		pushVertex(MVector3(-gLength, length, 0));
 		pushVertex(MVector3( gLength, length, 0));
 	}
-	endDraw();
+	endDraw(render);
     
 	render->disableDepthTest();
     
@@ -1933,20 +1938,20 @@ void Maratis::drawGrid(MScene * scene)
 		pushVertex(MVector3(-gLength, length, 0));
 		pushVertex(MVector3( gLength, length, 0));
 	}
-	endDraw();
+	endDraw(render);
     
 	// axis
 	render->setColor3(red);
 	beginDraw(M_PRIMITIVE_LINES);
 	pushVertex(MVector3(-gLength, 0, 0));
 	pushVertex(MVector3( gLength, 0, 0));
-	endDraw();
+	endDraw(render);
     
 	render->setColor3(green);
 	beginDraw(M_PRIMITIVE_LINES);
 	pushVertex(MVector3(0, -gLength, 0));
 	pushVertex(MVector3(0,  gLength, 0));
-	endDraw();
+	endDraw(render);
 }
 
 void Maratis::drawScaleAxis(M_AXIS axis, MOCamera * camera, MMatrix4x4 * matrix, const bool viewTest)
@@ -2031,7 +2036,7 @@ void Maratis::drawScaleAxis(M_AXIS axis, MOCamera * camera, MMatrix4x4 * matrix,
 	beginDraw(M_PRIMITIVE_LINES);
 	pushVertex(MVector3(0, 0, 0.3f));
 	pushVertex(MVector3(0, 0, 0.9f));
-	endDraw();
+	endDraw(render);
     
 	render->translate(MVector3(0, 0, 0.9f));
 	drawTriangles(m_cubeEntity->getMesh());
@@ -2123,7 +2128,7 @@ void Maratis::drawPositionAxis(M_AXIS axis, MOCamera * camera, MMatrix4x4 * matr
 	beginDraw(M_PRIMITIVE_LINES);
 	pushVertex(MVector3(0, 0, 0.3f));
 	pushVertex(MVector3(0, 0, 0.9f));
-	endDraw();
+	endDraw(render);
     
 	render->translate(MVector3(0, 0, 0.9f));
 	drawTriangles(m_coneEntity->getMesh());
@@ -2208,7 +2213,7 @@ void Maratis::drawRotationCircle(M_AXIS axis, MOCamera * camera, MMatrix4x4 * ma
 		pushVertex(vec);
 	}
     
-	endDraw();
+	endDraw(render);
 	render->popMatrix();
 }
 
@@ -3584,6 +3589,8 @@ void Maratis::drawTriangles(MMesh * mesh)
 
 void Maratis::drawLight(void)
 {
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
 	MMesh * mesh = m_lightEntity->getMesh();
 	unsigned short * indices = (unsigned short *)mesh->getSubMeshs()[0].getIndices();
 	MVector3 * vertices = mesh->getSubMeshs()[0].getVertices();
@@ -3598,12 +3605,14 @@ void Maratis::drawLight(void)
         
 		pushVertex(vertices[indices[i+1]]);
 		pushVertex(vertices[indices[i+2]]);
-		endDraw();
+		endDraw(render);
 	}
 }
 
 void Maratis::drawCamera(void)
 {
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
 	MMesh * mesh = m_cameraEntity->getMesh();
 	unsigned short * indices = (unsigned short *)mesh->getSubMeshs()[0].getIndices();
 	MVector3 * vertices = mesh->getSubMeshs()[0].getVertices();
@@ -3618,12 +3627,14 @@ void Maratis::drawCamera(void)
         
 		pushVertex(vertices[indices[i+1]]);
 		pushVertex(vertices[indices[i+2]]);
-		endDraw();
+		endDraw(render);
 	}
 }
 
 void Maratis::drawSound(void)
 {
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
 	MMesh * mesh = m_soundEntity->getMesh();
 	unsigned short * indices = (unsigned short *)mesh->getSubMeshs()[0].getIndices();
 	MVector3 * vertices = mesh->getSubMeshs()[0].getVertices();
@@ -3638,7 +3649,7 @@ void Maratis::drawSound(void)
         
 		pushVertex(vertices[indices[i+1]]);
 		pushVertex(vertices[indices[i+2]]);
-		endDraw();
+		endDraw(render);
 	}
 }
 
@@ -3827,7 +3838,7 @@ void Maratis::drawMainView(MScene * scene)
 				pushVertex(pos + dir1*size);
 				pushVertex(pos);
 				pushVertex(pos + dir2*size);
-				endDraw();
+				endDraw(render);
                 
 				beginDraw(M_PRIMITIVE_LINE_LOOP);
 				for(int x=0; x<360; x+=10)
@@ -3837,7 +3848,7 @@ void Maratis::drawMainView(MScene * scene)
 					dir = light->getRotatedVector(dir).getNormalized();
 					pushVertex(pos + dir*size);
 				}
-				endDraw();
+				endDraw(render);
 			}
 		}
 	}

@@ -30,7 +30,7 @@ def getLibJpegParameters():
     elif sys.platform=='darwin':
         # LibJpeg settings for osx
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # LibJpeg settings for linux
         pass
     

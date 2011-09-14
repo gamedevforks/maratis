@@ -93,7 +93,7 @@ bool M_loadImage(const char * filename, void * data)
 	return true;
 }
 
-bool M_saveImage(const char * filename, void * data, unsigned int quality)
+bool M_saveImage(const char * filename, void * data, unsigned int quality, bool flip)
 {
 	DevILInit();
 
@@ -113,7 +113,8 @@ bool M_saveImage(const char * filename, void * data, unsigned int quality)
 	else if(components == 4)
 		ilTexImage(width, height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, image->getData());
 
-	iluFlipImage();
+	if(flip)
+		iluFlipImage();
 
 	if(quality < 100)
 		ilSetInteger(IL_JPG_QUALITY, quality);

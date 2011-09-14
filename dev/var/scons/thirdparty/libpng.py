@@ -30,7 +30,7 @@ def getLibPngParameters():
     elif sys.platform=='darwin':
         # LibPng settings for osx
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # LibPng settings for linux
         pass
     

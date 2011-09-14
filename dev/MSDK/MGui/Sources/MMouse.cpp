@@ -31,10 +31,10 @@
 #include "../Includes/MMouse.h"
 
 
-void MMouse::setPosition(const int x, const int y)
+void MMouse::setPosition(float x, float y)
 {
-	int dx = x - m_position[0];
-	int dy = y - m_position[1];
+	float dx = x - m_position[0];
+	float dy = y - m_position[1];
 
 	setDirection(dx, dy);
 

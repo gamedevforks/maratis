@@ -23,34 +23,74 @@
 //========================================================================
 
 
-#include "../Maratis/Maratis.h"
+#include "MRenderArray.h"
 
 
 #define M_MAX_ARRAY 30000
 
-M_PRIMITIVE_TYPES g_primitiveType;
-unsigned int g_verticesNumber;
-MVector3 g_vertices[M_MAX_ARRAY];
+static M_PRIMITIVE_TYPES g_primitiveType;
+static unsigned int g_verticesNumber;
+static MVector3 g_vertices[M_MAX_ARRAY];
+static MVector4 g_colors[M_MAX_ARRAY];
+static MVector2 g_texCoords[M_MAX_ARRAY];
 
+static MVector4 previousColor(1, 1, 1, 1);
+static MVector2 previousTexcoords(0, 0);
+static bool renderColors = false;
+static bool renderTexcoords = false;
 
 void beginDraw(M_PRIMITIVE_TYPES primitiveType)
 {
 	g_verticesNumber = 0;
 	g_primitiveType = primitiveType;
+	renderColors = false;
+	renderTexcoords = false;
+	previousColor = MVector4(1, 1, 1, 1);
+	previousTexcoords = MVector2(0, 0);
+}
+
+void setColor(const MVector4 & color)
+{
+	previousColor = color;
+	renderColors = true;
+}
+
+void setTexcoords(const MVector2 & texcoords)
+{
+	previousTexcoords = texcoords;
+	renderTexcoords = true;
 }
 
 void pushVertex(const MVector3 & vertex)
 {
 	g_vertices[g_verticesNumber] = vertex;
+	g_colors[g_verticesNumber] = previousColor;
+	g_texCoords[g_verticesNumber] = previousTexcoords;
 	g_verticesNumber++;
 }
 
-void endDraw(void)
+void endDraw(MRenderingContext * render)
 {
-	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-
-	render->disableTexCoordArray();
-	render->disableColorArray();
+	if(renderColors)
+	{
+		render->enableColorArray();
+		render->setColorPointer(M_FLOAT, 4, g_colors);
+	}
+	else
+	{
+		render->disableColorArray();
+	}
+	
+	if(renderTexcoords)
+	{
+		render->enableTexCoordArray();
+		render->setTexCoordPointer(M_FLOAT, 2, g_texCoords);
+	}
+	else
+	{
+		render->disableTexCoordArray();
+	}
+	
 	render->disableNormalArray();
 	render->enableVertexArray();
 

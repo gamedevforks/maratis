@@ -30,7 +30,7 @@ def getTinyXmlParameters():
     elif sys.platform=='darwin':
         # TinyXml settings for osx
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # TinyXml settings for linux
         pass
     

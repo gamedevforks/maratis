@@ -37,13 +37,16 @@
 	#include <GL/glu.h>
 #elif __APPLE__
 	#include <OpenGL/OpenGL.h>
+#elif linux
+	#include <GLee.h>
+	#include <GL/glu.h>
 #endif
 
 #include "MGLContext.h"
 
 
-int g_GLversion = 0;
-float maxAnisotropy = 0.0f;
+static int g_GLversion = 0;
+static float maxAnisotropy = 0.0f;
 
 
 GLenum returnGLType(M_TYPES type)
@@ -103,6 +106,9 @@ GLenum returnPrimitiveType(M_PRIMITIVE_TYPES type)
 
 	case M_PRIMITIVE_TRIANGLE_STRIP:
 		return GL_TRIANGLE_STRIP;
+			
+	case M_PRIMITIVE_TRIANGLE_FAN:
+		return GL_TRIANGLE_FAN;
 	}
 }
 
@@ -157,8 +163,10 @@ GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
 {
 	if(type == M_ATTACH_DEPTH)
 		return GL_DEPTH_ATTACHMENT_EXT;
+	else if(type == M_ATTACH_STENCIL)
+		return GL_STENCIL_ATTACHMENT_EXT;
 	else
-		return GL_COLOR_ATTACHMENT0_EXT + ((int)type - 1);
+		return GL_COLOR_ATTACHMENT0_EXT + ((int)type - 2);
 }
 
 MGLContext::MGLContext(void):
@@ -466,6 +474,49 @@ void MGLContext::generateMipMap(void){
 	glGenerateMipmapEXT(GL_TEXTURE_2D);
 }
 
+void MGLContext::getTexImage(unsigned int level, MImage * image)
+{
+	if(image)
+	{
+		int width, height;
+		int r, g, b, a, depth, format;
+		
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_WIDTH, &width);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_HEIGHT, &height);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_RED_SIZE, &r);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_GREEN_SIZE, &g);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_BLUE_SIZE, &b);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_ALPHA_SIZE, &a);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_DEPTH_SIZE, &depth);
+
+		unsigned int dpp = 0;
+		if(b > 0)
+		{
+			if(a > 0)
+			{
+				format = GL_RGBA;
+				dpp = 4;
+			}
+			else
+			{
+				format = GL_RGB;
+				dpp = 3;
+			}
+		}
+		else if(depth > 0)
+		{
+			format = GL_DEPTH_COMPONENT;
+			dpp = 1;
+		}
+		
+		if(dpp > 0)
+		{
+			image->create(M_UBYTE, width, height, dpp);
+			glGetTexImage(GL_TEXTURE_2D, level, format, GL_UNSIGNED_BYTE, image->getData());
+		}
+	}
+}
+
 // frame buffer
 void MGLContext::createFrameBuffer(unsigned int * frameBufferId){
 	glGenFramebuffersEXT(1, frameBufferId);
@@ -482,6 +533,9 @@ void MGLContext::getCurrentFrameBuffer(unsigned int * frameBufferId){
 }
 void MGLContext::attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId){
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, returnAttachType(attachment), GL_TEXTURE_2D, textureId, 0);
+}
+void MGLContext::attachFrameBufferRB(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int renderBufferId){
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, returnAttachType(attachment), GL_RENDERBUFFER_EXT, renderBufferId);
 }
 void MGLContext::setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size)
 {
@@ -503,6 +557,41 @@ void MGLContext::setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned
 		glDrawBuffer(GL_BACK);
 		glReadBuffer(GL_BACK);
 	}
+}
+
+// render buffer
+void MGLContext::createRenderBuffer(unsigned int * renderBufferId){
+	glGenRenderbuffersEXT(1, renderBufferId);
+}
+
+void MGLContext::deleteRenderBuffer(unsigned int * renderBufferId){
+	glDeleteRenderbuffersEXT(1, renderBufferId);
+}
+
+void MGLContext::bindRenderBuffer(unsigned int renderBufferId){
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, renderBufferId);
+}
+
+void MGLContext::setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width, unsigned int height)
+{
+	GLenum internalMode;
+	
+	switch(mode)
+	{
+		default:
+			return;
+		case M_RENDER_DEPTH:
+			internalMode = GL_DEPTH_COMPONENT;
+			break;
+		case M_RENDER_STENCIL:
+			internalMode = GL_STENCIL_INDEX;
+			break;
+		case M_RENDER_DEPTH_STENCIL:
+			internalMode = GL_DEPTH_STENCIL_EXT;
+			break;
+	}
+	
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, width, height);
 }
 
 // shaders
@@ -765,6 +854,59 @@ void MGLContext::setDepthMode(M_DEPTH_MODES mode)
 // stencil
 void MGLContext::enableStencilTest(void) { glEnable (GL_STENCIL_TEST); }
 void MGLContext::disableStencilTest(void){ glDisable(GL_STENCIL_TEST); }
+void MGLContext::setStencilFunc(M_STENCIL_FUNCS func, int ref)
+{
+	switch(func)
+	{
+		default:
+		case M_STENCIL_ALWAYS:
+			glStencilFunc(GL_ALWAYS, ref, ~0);
+			break;
+		case M_STENCIL_EQUAL:
+			glStencilFunc(GL_EQUAL, ref, ~0);
+			break;
+		case M_STENCIL_NOTEQUAL:
+			glStencilFunc(GL_NOTEQUAL, ref, ~0);
+			break;
+		case M_STENCIL_NEVER:
+			glStencilFunc(GL_NEVER, ref, ~0);
+			break;
+		case M_STENCIL_LESS:
+			glStencilFunc(GL_LESS, ref, ~0);
+			break;
+		case M_STENCIL_LEQUAL:
+			glStencilFunc(GL_LEQUAL, ref, ~0);
+			break;
+		case M_STENCIL_GREATER:
+			glStencilFunc(GL_GREATER, ref, ~0);
+			break;
+		case M_STENCIL_GEQUAL:
+			glStencilFunc(GL_GEQUAL, ref, ~0);
+			break;
+	}
+}
+void MGLContext::setStencilOp(M_STENCIL_OPS op)
+{
+	switch(op)
+	{
+		default:
+		case M_STENCIL_KEEP:
+			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+			break;
+		case M_STENCIL_INVERT:
+			glStencilOp(GL_KEEP, GL_INVERT, GL_INVERT);
+			break;
+		case M_STENCIL_DECR:
+			glStencilOp(GL_KEEP, GL_DECR, GL_DECR);
+			break;
+		case M_STENCIL_INCR:
+			glStencilOp(GL_KEEP, GL_INCR, GL_INCR);
+			break;
+		case M_STENCIL_REPLACE:
+			glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+			break;
+	}
+}
 
 // cull face
 void MGLContext::enableCullFace(void) { glEnable (GL_CULL_FACE); }

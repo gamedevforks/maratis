@@ -31,6 +31,12 @@
 #include "../Includes/MCore.h"
 
 
+MVector3::MVector3(const MVector4 & vec):	
+x(vec.x), 
+y(vec.y), 
+z(vec.z)
+{}
+
 void MVector3::normalize()
 {
 	float length = getLength();

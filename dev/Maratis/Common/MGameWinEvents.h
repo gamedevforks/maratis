@@ -46,6 +46,7 @@ const char * getKeyName(unsigned int key)
 	case MKEY_SPACE:	 return "SPACE";
 	case MKEY_DELETE:	 return "DELETE";
 
+	case MKEY_RETURN:
 	case MKEY_KP_ENTER:	 return "ENTER";
 	case MKEY_UP:		 return "UP";
 	case MKEY_DOWN:		 return "DOWN";

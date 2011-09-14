@@ -35,7 +35,7 @@ def getLibSndFileParameters():
         params['libs'].append('SndFile')
         params['installLibs'].append('libSndFile.dylib')
         pass
-    elif sys.platform=='linux2':
+    elif sys.platform=='linux2' or sys.platform=='linux3':
         # settings for linux
         params['libPath'].append('libsndfile/linux')
         params['libs'].append('sndfile')
