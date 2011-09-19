@@ -625,3 +625,79 @@ MVector3 HSLToRGB(MVector3 hslColor)
 	
 	return MVector3(R, G, B);
 }
+
+// simplifyDP():
+
+// Copyright 2002, softSurfer (www.softsurfer.com)
+// This code may be freely used and modified for any purpose
+// providing that this copyright notice is included with it.
+// SoftSurfer makes no warranty for this code, and cannot be held
+// liable for any real or imagined damage resulting from its use.
+// Users of this code must verify correctness for their application.
+// Modified by Anaël Seghezzi to use MVector3
+
+//  This is the Douglas-Peucker recursive simplification routine
+//  It just marks vertices that are part of the simplified polyline
+//  for approximating the polyline subchain v[j] to v[k].
+//    Input:  tol = approximation tolerance
+//            v[] = polyline array of vertex points
+//            j,k = indices for the subchain v[j] to v[k]
+//    Output: mk[] = array of markers matching vertex array v[]
+
+void simplifyDP(float tol, MVector3 * v, int j, int k, int * mk)
+{
+    if(k <= j+1) // there is nothing to simplify
+        return;
+	
+    // check for adequate approximation by segment S from v[j] to v[k]
+    int			maxi = j;					// index of vertex farthest from S
+    float		maxd2 = 0;					// distance squared of farthest vertex
+    float		tol2 = tol * tol;			// tolerance squared
+    MVector3	S[2] = {v[j], v[k]};		// segment from v[j] to v[k]
+    MVector3	u = S[1] - S[0];			// segment direction vector
+    float		cu = u.getSquaredLength();	// segment length squared
+	
+    // test each vertex v[i] for max distance from S
+    // compute using the Feb 2001 Algorithm's dist_Point_to_Segment()
+    // Note: this works in any dimension (2D, 3D, ...)
+    MVector3 w;
+    MVector3 Pb;               // base of perpendicular from v[i] to S
+    float  b, cw, dv2;        // dv2 = distance v[i] to S squared
+	
+    for(int i=j+1; i<k; i++)
+    {
+        // compute distance squared
+        w = v[i] - S[0];
+        cw = w.dotProduct(u);
+        if(cw <= 0)
+            dv2 = (v[i] - S[0]).getSquaredLength();
+        else if ( cu <= cw )
+            dv2 = (v[i] - S[1]).getSquaredLength();
+        else {
+            b = cw / cu;
+            Pb = S[0] + b * u;
+            dv2 = (v[i] - Pb).getSquaredLength();
+        }
+		
+        // test with current max distance squared
+        if (dv2 <= maxd2)
+            continue;
+		
+        // v[i] is a new max vertex
+        maxi = i;
+        maxd2 = dv2;
+    }
+	
+    if(maxd2 > tol2) // error is worse than the tolerance
+    {
+        // split the polyline at the farthest vertex from S
+        mk[maxi] = 1;      // mark v[maxi] for the simplified polyline
+		
+        // recursively simplify the two subpolylines at v[maxi]
+        simplifyDP( tol, v, j, maxi, mk );  // polyline v[j] to v[maxi]
+        simplifyDP( tol, v, maxi, k, mk );  // polyline v[maxi] to v[k]
+    }
+	
+    // else the approximation is OK, so ignore intermediate vertices
+    return;
+}

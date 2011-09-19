@@ -128,6 +128,9 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	
+	
+	render->setColor4(MVector4(1, 1, 1, 1));
+	
 
 	// get material
 	MMaterial * material = display->getMaterial();

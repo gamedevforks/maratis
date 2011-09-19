@@ -407,8 +407,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				
 					LightActive[i] = (lightDiffuse.w > 0.0f);
 					LightSpotCosCutoff[i] = cosf(spotAngle*DEG_TO_RAD);
-					LightDiffuseProduct[i] = (*diffuse) * lightDiffuse;
-					LightSpecularProduct[i] = (*specular) * lightDiffuse;
+					LightDiffuseProduct[i] = (*diffuse) * MVector3(lightDiffuse);
+					LightSpecularProduct[i] = (*specular) * MVector3(lightDiffuse);
 					LightPosition[i] = (*cameraViewMatrix) * MVector4(LightPosition[i]);
 					LightSpotDirection[i] = (cameraViewMatrix->getRotatedVector3(LightSpotDirection[i])).getNormalized();
 				}

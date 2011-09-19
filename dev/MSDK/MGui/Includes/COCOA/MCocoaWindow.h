@@ -174,10 +174,10 @@ public:
 #define MKEY_NUMLOCK	167
 #define MKEY_RSHIFT		168
 #define MKEY_LSHIFT		169
-#define MKEY_SHIFT		170
+#define MKEY_SHIFT		169 // deprecated
 #define MKEY_RCONTROL	171
 #define MKEY_LCONTROL	172
-#define MKEY_CONTROL	172
+#define MKEY_CONTROL	172 // deprecated
 #define MKEY_RALT		174
 #define MKEY_LALT		175
 #define MKEY_ADD		176
