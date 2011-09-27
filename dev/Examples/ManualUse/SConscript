@@ -28,6 +28,10 @@ env_local.AppendUnique(LIBS = ['MaratisCommon',
                                'MCore',
                                'MGui'] )
 
+if sys.platform=='linux2' or sys.platform=='linux3':
+    env_local.AppendUnique(LIBS = ['GL',
+                                   'Xxf86vm'] )
+
 # add 3rdparty libraries parameters
 thirdparty.lua.addLuaToEnv(env_local)
 thirdparty.bullet.addBulletToEnv(env_local)

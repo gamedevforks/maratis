@@ -26,6 +26,8 @@
 #define SCRIPT_READER "SciTe.exe"
 #elif __APPLE__
 #define SCRIPT_READER "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
+#elif LINUX
+#define SCRIPT_READER "gvim"
 #endif
 
 

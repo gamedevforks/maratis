@@ -11,8 +11,7 @@ Import('env')
 
 
 # build common
-SConscript( 'Common/SConscript',
-            exports='env' )
+SConscript( 'Common/SConscript', exports='env' )
 
 # build Editor
 maratis_editor = SConscript( 'Editor/SConscript', exports='env' )

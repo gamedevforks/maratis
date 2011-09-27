@@ -28,12 +28,10 @@
 // GL, TODO : remove opengl call (should use MRenderingContext to be fully virtual)
 #ifdef _WIN32
 	#include <GLee.h>
-	#include <GL/glu.h>
 #elif __APPLE__
 	#include <OpenGL/OpenGL.h>
 #elif linux
 	#include <GLee.h>
-	#include <GL/glu.h>
 #endif
 
 #include "MaratisUI.h"

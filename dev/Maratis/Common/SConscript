@@ -15,7 +15,6 @@ env_local = env.Clone()
 env_local.AppendUnique(CPPPATH = ['#MSDK/MCore/Includes',
                                   '#MSDK/MEngine/Includes',
 								  '#MSDK/MGui/Includes',
-								  '#MSDK/MaratisCore',
 								  '#Maratis/Common'] )
 # add 3rdparty libraries parameters
 thirdparty.bullet.addBulletToEnv(env_local)

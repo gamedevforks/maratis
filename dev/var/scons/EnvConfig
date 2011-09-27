@@ -6,6 +6,7 @@ Import('env')
 if sys.platform=='linux2' or sys.platform=='linux3':
     env.AppendUnique(LINKFLAGS = ['-Wl,--as-needed'] )
     env.AppendUnique(LINKFLAGS = ['-Wl,--allow-multiple-definition'])
+    env.AppendUnique(LINKFLAGS = ['-Wl,-rpath,.'])
     pass
 
 if sys.platform=='win32':

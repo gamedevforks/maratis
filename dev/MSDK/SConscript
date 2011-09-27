@@ -12,8 +12,7 @@ Import('env')
 
 
 # build MGui
-SConscript( 'MGui/SConscript',
-            exports='env' )
+mgui_lib = SConscript( 'MGui/SConscript', exports='env' )
 
 # build MCore
 mcore_lib = SConscript( 'MCore/SConscript', exports='env' )
@@ -29,7 +28,13 @@ mengine_lib = SConscript( 'MEngine/SConscript', exports='env' )
 # ####### #
 
 # install to prod dir
+
+# When MGui is built as a shared library
+#files = [mcore_lib, mengine_lib, mgui_lib]
+
+# When MGui is built as a static library
 files = [mcore_lib, mengine_lib]
+
 import thirdparty
 files.append(thirdparty.libsndfile.getLibSndFileLibs(env))
 inst_msdk = env.Install(os.path.join(env['proddir'],'MSDK'), files)

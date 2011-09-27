@@ -39,7 +39,7 @@ def getLibSndFileParameters():
         # settings for linux
         params['libPath'].append('libsndfile/linux')
         params['libs'].append('sndfile')
-        params['installLibs'].append('libsndfile.so.1.0.23')
+        params['installLibs'].append('libsndfile.so')
         pass
     else:
         raise Exception('Unknown platform')
