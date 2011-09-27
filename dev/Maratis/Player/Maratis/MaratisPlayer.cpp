@@ -202,8 +202,10 @@ void MaratisPlayer::loadGamePlugin(void)
 
 	#ifdef WIN32
 		getGlobalFilename(gameFile, window->getWorkingDirectory(), "Game.dll");
-	#else
+	#elif __APPLE__
 		getGlobalFilename(gameFile, window->getWorkingDirectory(), "Game.dylib");
+	#elif linux
+		getGlobalFilename(gameFile, window->getWorkingDirectory(), "Game.so");
 	#endif
 
 	SAFE_DELETE(m_gamePlugin);
