@@ -32,6 +32,7 @@
 #ifndef _M_X11_WINDOW_H
 #define _M_X11_WINDOW_H
 
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
@@ -45,92 +46,92 @@ long _glfwKeySym2Unicode(KeySym keysym);
 class MWindow
 {
 private:
-	
+
 	// infos
 	bool m_focus;
 	bool m_active;
 	bool m_fullscreen;
-	
+
 	int	m_position[2];
 	unsigned int m_width;
 	unsigned int m_height;
 	unsigned int m_colorBits;
-	
+
 	char m_title[256];
 	char m_workingDirectory[256];
-	
+
 	// joysticks
 	MJoystick m_joysticks[2];
-	
+
 	// events function pointer
 	void (* m_pointerEvent)(MWinEvent * windowEvents);
-    
+
 public:
-	
+
 	MWindow(void);
 	~MWindow(void);
-	
+
 	// instance
 	static MWindow * getInstance(void)
 	{
 		static MWindow m_instance;
 		return &m_instance;
 	};
-	
+
 public:
-	
+
 	// create
 	bool create(const char * title, unsigned int width, unsigned int height, int colorBits, bool fullscreen);
-	
+
 	// events
 	inline void setPointerEvent(void (*pointerEvent)(MWinEvent * windowEvents)){ m_pointerEvent = pointerEvent; }
 	void sendEvents(MWinEvent * events);
 	bool onEvents(void);
-	
+
 	// cursor
 	void setCursorPos(int x, int y);
 	void hideCursor(void);
 	void showCursor(void);
-	
+
 	// properties
 	inline bool getFocus(void){ return m_focus; }
 	inline bool isActive(void){ return m_active; }
 	inline bool isFullscreen(void){ return m_fullscreen; }
-	
+
 	void setTitle(const char * title);
 	void setFullscreen(bool fullscreen);
 	void setFocus(bool focus){ m_focus = focus; }
 	inline void setActive(bool active){ m_active = active; }
-	
+
 	// coords
 	bool isMouseOverWindow(void);
-	
+
 	inline int getXPosition(void){ return m_position[0]; }
 	inline int getYPosition(void){ return m_position[1]; }
 	inline unsigned int getWidth(void){ return m_width; }
 	inline unsigned int getHeight(void){ return m_height; }
-	
+
 	// swap buffer
 	void swapBuffer(void);
-	
+
 	// system tick
 	static unsigned long getSystemTick(void);
-	
+
 	// directories
 	void setCurrentDirectory(const char * directory);
 	void setWorkingDirectory(const char * directory);
-	
+
 	const char * getTempDirectory(void);
 	const char * getCurrentDirectory(void);
 	inline const char * getWorkingDirectory(void){ return m_workingDirectory; }
-	
+
 	// joysticks
 	MJoystick * getJoystick1(void){ return &m_joysticks[0]; }
 	MJoystick * getJoystick2(void){ return &m_joysticks[1]; }
-	
+
 	// execute
 	void execute(const char * path, const char * args);
-	
+
 	// files parsing
     bool getOpenMultipleFiles(const char * title, const char * filter, string * repertory, list <string> * filesList, const char * startPath = NULL);
     const char * getOpenDir(const char * title, const char * startPath = NULL);

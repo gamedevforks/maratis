@@ -34,16 +34,18 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/time.h>
 #include <X11/extensions/xf86vmode.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
 
 
+
 // start time
 static struct timeval startTime;
 
-// X11 
+// X11
 static Display * display = NULL;
 static GLXContext context;
 static Window window;
@@ -62,7 +64,7 @@ static Cursor createNULLCursor(Display * display, Window root)
     GC        gc;
     XColor    col;
     Cursor    cursor;
-	
+
     cursormask = XCreatePixmap(display, root, 1, 1, 1);
     xgc.function = GXclear;
     gc = XCreateGC(display, cursormask, GCFunction, &xgc);
@@ -73,17 +75,17 @@ static Cursor createNULLCursor(Display * display, Window root)
     cursor = XCreatePixmapCursor(display, cursormask, cursormask, &col,&col, 0, 0);
     XFreePixmap(display, cursormask);
     XFreeGC(display, gc);
-	
+
     return cursor;
 }
 
 static int translateChar(XKeyEvent * event)
 {
     KeySym keysym;
-	
+
     // Get X11 keysym
     XLookupString(event, NULL, 0, &keysym, NULL);
-	
+
     // Convert to Unicode (see x11_keysym2unicode.c)
     return (int) _glfwKeySym2Unicode( keysym );
 }
@@ -91,7 +93,7 @@ static int translateChar(XKeyEvent * event)
 static int translateKey(int keycode)
 {
     KeySym key, key_lc, key_uc;
-	
+
     // Try secondary keysym, for numeric keypad keys
     // Note: This way we always force "NumLock = ON", which at least
     // enables GLFW users to detect numeric keypad keys
@@ -112,7 +114,7 @@ static int translateKey(int keycode)
         case XK_KP_Enter:     return MKEY_KP_ENTER;
         default:              break;
     }
-	
+
     // Now try pimary keysym
     key = XKeycodeToKeysym(display, keycode, 0);
     switch( key )
@@ -171,26 +173,26 @@ static int translateKey(int keycode)
         case XK_F10:          return MKEY_F10;
         case XK_F11:          return MKEY_F11;
         case XK_F12:          return MKEY_F12;
-			
+
 		// Numeric keypad (should have been detected in secondary keysym!)
         case XK_KP_Subtract:  return MKEY_SUB;
         case XK_KP_Add:       return MKEY_ADD;
         case XK_KP_Enter:     return MKEY_KP_ENTER;
-			
+
 		// The rest (should be printable keys)
         default:
-		{	
+		{
             // Make uppercase
             XConvertCase( key, &key_lc, &key_uc );
             key = key_uc;
-			
+
             // Valid ISO 8859-1 character?
             if( (key >=  32 && key <= 126) ||
 			   (key >= 160 && key <= 255) )
             {
                 return (int) key;
             }
-			
+
             return -1;
 		}
     }
@@ -210,27 +212,30 @@ m_pointerEvent(NULL)
 	m_position[1] = 0;
 	strcpy(m_workingDirectory, getCurrentDirectory());
 	strcpy(m_title, "");
-	
+
 	// start time
 	gettimeofday(&startTime, NULL);
 }
 
 MWindow::~MWindow(void)
 {
-	if(context)    
-	{                
-		glXMakeCurrent(display, None, NULL);
-		glXDestroyContext(display, context);               
-		context = NULL;                                    
-	}                                                      
-	
-	if(m_fullscreen)                                                         
-	{                                                                        
-		XF86VidModeSwitchToMode(display, screen, &desktopMode);              
-		XF86VidModeSetViewPort(display, screen, 0, 0);                       
-	}
-	
-	XCloseDisplay(display);
+    if(display)
+    {
+        if(context)
+        {
+            glXMakeCurrent(display, None, NULL);
+            glXDestroyContext(display, context);
+            context = NULL;
+        }
+
+        if(m_fullscreen)
+        {
+            XF86VidModeSwitchToMode(display, screen, &desktopMode);
+            XF86VidModeSetViewPort(display, screen, 0, 0);
+        }
+
+        XCloseDisplay(display);
+    }
 }
 
 const char * MWindow::getTempDirectory(void)
@@ -282,44 +287,44 @@ void MWindow::sendEvents(MWinEvent * events)
 {
 	MKeyboard * keyboard = MKeyboard::getInstance();
 	MMouse * mouse = MMouse::getInstance();
-	
+
 	switch(events->type)
 	{
 		case MWIN_EVENT_KEY_DOWN:
 			keyboard->onKeyDown(events->data[0]);
 			break;
-			
+
 		case MWIN_EVENT_KEY_UP:
 			keyboard->onKeyUp(events->data[0]);
 			break;
-			
+
 		case MWIN_EVENT_WINDOW_RESIZE:
 			m_width = (unsigned int)events->data[0];
 			m_height = (unsigned int)events->data[1];
 			break;
-			
+
 		case MWIN_EVENT_WINDOW_MOVE:
 			m_position[0] = events->data[0];
 			m_position[1] = events->data[1];
 			break;
-			
+
 		case MWIN_EVENT_MOUSE_BUTTON_DOWN:
 			mouse->downButton(events->data[0]);
 			break;
-			
+
 		case MWIN_EVENT_MOUSE_BUTTON_UP:
 			mouse->upButton(events->data[0]);
 			break;
-			
+
 		case MWIN_EVENT_MOUSE_WHEEL_MOVE:
 			mouse->setWheelDirection(events->data[0]);
 			break;
-			
+
 		case MWIN_EVENT_MOUSE_MOVE:
 			mouse->setPosition(events->data[0], events->data[1]);
 			break;
 	}
-	
+
 	if(m_pointerEvent)
 		m_pointerEvent(events);
 }
@@ -329,10 +334,10 @@ bool MWindow::isMouseOverWindow(void)
 	MMouse * mouse = MMouse::getInstance();
 	int x = mouse->getXPosition();
 	int y = mouse->getYPosition();
-	
+
 	if(x >= 0 && y >= 0 && x < (int)getWidth() && y < (int)getHeight())
 		return true;
-	
+
 	return false;
 }
 
@@ -341,30 +346,28 @@ unsigned long MWindow::getSystemTick(void)
 	struct timeval currentTime;
 	gettimeofday(&currentTime, NULL);
 
-	return ((currentTime.tv_sec - startTime.tv_sec) * 1000 + (currentTime.tv_usec - startTime.tv_usec)/1000.0) + 0.5;	
+	return ((currentTime.tv_sec - startTime.tv_sec) * 1000 + (currentTime.tv_usec - startTime.tv_usec)/1000.0) + 0.5;
 }
 
 bool MWindow::onEvents(void)
-{	
+{
 	while(XPending(display))
 	{
 		MWinEvent mevent;
-		
+
 		XEvent event;
-		XNextEvent(display, &event);   
-		
-		printf("%d\n", event.type);
-		
-		switch(event.type)             
+		XNextEvent(display, &event);
+
+		switch(event.type)
 		{
-			case Expose: 
+			case Expose:
 			{
 				if(event.xexpose.count != 0)
 					break;
 				// refresh
 				break;
 			}
-			
+
 			case ButtonPress:
 			{
 				// A mouse button was pressed or a scrolling event occurred
@@ -386,7 +389,7 @@ bool MWindow::onEvents(void)
 					mevent.data[0] = MMOUSE_BUTTON_RIGHT;
 					sendEvents(&mevent);
 				}
-				
+
 				// XFree86 3.3.2 and later translates mouse wheel up/down into
 				// mouse button 4 & 5 presses
 				else if(event.xbutton.button == Button4)
@@ -403,7 +406,7 @@ bool MWindow::onEvents(void)
 				}
 				break;
 			}
-				
+
 			case ButtonRelease:
 			{
 				if(event.xbutton.button == Button1)
@@ -426,7 +429,7 @@ bool MWindow::onEvents(void)
 				}
 				break;
 			}
-				
+
 			case KeyPress:
 			{
 				int key = translateKey(event.xkey.keycode);
@@ -436,19 +439,19 @@ bool MWindow::onEvents(void)
 					mevent.data[0] = key;
 					sendEvents(&mevent);
 				}
-				
+
 				int car = translateChar(&event.xkey);
-				
+
 				if(car == 127 || car == 32 || car == 13 || car == 9) // not return, space, delete etc..
 					break;
-				
+
 				mevent.type = MWIN_EVENT_CHAR;
 				mevent.data[0] = car;
 				sendEvents(&mevent);
-				
+
 				break;
 			}
-				
+
 			case KeyRelease:
 			{
 				int key = translateKey(event.xkey.keycode);
@@ -458,10 +461,10 @@ bool MWindow::onEvents(void)
 					mevent.data[0] = key;
 					sendEvents(&mevent);
 				}
-				
+
 				break;
 			}
-				
+
 			case MotionNotify:
 			{
 				mevent.type = MWIN_EVENT_MOUSE_MOVE;
@@ -470,7 +473,7 @@ bool MWindow::onEvents(void)
 				sendEvents(&mevent);
 				break;
 			}
-				
+
 			case ConfigureNotify:
 			{
 				if(event.xconfigure.width != m_width || event.xconfigure.height != m_height)
@@ -485,23 +488,23 @@ bool MWindow::onEvents(void)
 
 			case FocusIn:
 			{
-				m_active = true;
+				m_focus = true;
 				break;
 			}
 
 			case FocusOut:
 			{
-				m_active = false;
+				m_focus = false;
 				break;
 			}
-				
+
 			case DestroyNotify:
 			{
 				mevent.type = MWIN_EVENT_WINDOW_CLOSE;
 				sendEvents(&mevent);
 				break;
 			}
-				
+
 			case ClientMessage:
 			{
 				if((Atom)event.xclient.data.l[0] == wmDelete)
@@ -511,12 +514,12 @@ bool MWindow::onEvents(void)
 				}
 				break;
 			}
-				
+
 			default:
 				break;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -532,56 +535,56 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	Colormap cmap;
 	XSetWindowAttributes swa;
 
-	
+
 	// open display
 	display = XOpenDisplay(NULL);
-	
+
 	// fullscreen
 	int vmMajor, vmMinor;
 	if(XF86VidModeQueryVersion(display, &vmMajor, &vmMinor) && fullscreen)
 	{
 		screen = DefaultScreen(display);
-		
+
 		int modeNum, screenMode=0;
 		XF86VidModeModeInfo **modes;
 		XF86VidModeGetAllModeLines(display, screen, &modeNum, &modes);
-		
+
 		if(modeNum > 0)
 		{
 			desktopMode = *modes[0];
-			
-			for(int i=0; i<modeNum; i++)                                        
-			{                                                                    
+
+			for(int i=0; i<modeNum; i++)
+			{
 				if((modes[i]->hdisplay == width) && (modes[i]->vdisplay == height))
-					screenMode = i;                                                   
+					screenMode = i;
 			}
-			
+
 			XF86VidModeSwitchToMode(display, screen, modes[screenMode]);
-			XF86VidModeSetViewPort(display, screen, 0, 0);            
-			m_width = modes[screenMode]->hdisplay;                     
-			m_height = modes[screenMode]->vdisplay;                    
-			
-			XFree(modes);                                             
-			
+			XF86VidModeSetViewPort(display, screen, 0, 0);
+			m_width = modes[screenMode]->hdisplay;
+			m_height = modes[screenMode]->vdisplay;
+
+			XFree(modes);
+
 			swa.override_redirect = True;
 			swa.event_mask =
 			StructureNotifyMask | KeyPressMask | KeyReleaseMask |
 			PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
 			ExposureMask | FocusChangeMask | VisibilityChangeMask;
-			
+
 			rootWindow = RootWindow(display,vi->screen);
-			
+
 			window = XCreateWindow(
-				display, rootWindow,    
+				display, rootWindow,
 				0, 0, m_width, m_height, 0, vi->depth, InputOutput, vi->visual,
-				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,   
+				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
 				&swa);
-			
-			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);               
-			XMapRaised(display, window);                                 
-			XGrabKeyboard(display, window, True, GrabModeAsync, GrabModeAsync, CurrentTime);                                     
+
+			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
+			XMapRaised(display, window);
+			XGrabKeyboard(display, window, True, GrabModeAsync, GrabModeAsync, CurrentTime);
 			XGrabPointer(display, window, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
-			
+
 			m_fullscreen = true;
 		}
 		else
@@ -589,45 +592,45 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 			return false;
 		}
 	}
-	
+
 	// window
 	else
 	{
 		m_fullscreen = false;
-		
+
 		vi = glXChooseVisual(display, DefaultScreen(display), dblBuf);
 		context = glXCreateContext(display, vi, None, True);
 		rootWindow = RootWindow(display,vi->screen);
 		cmap = XCreateColormap(display,rootWindow,vi->visual,AllocNone);
 		swa.colormap = cmap; swa.border_pixel = 0;
-		
-		swa.event_mask = 
+
+		swa.event_mask =
 		StructureNotifyMask | KeyPressMask | KeyReleaseMask |
 		PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
 		ExposureMask | FocusChangeMask | VisibilityChangeMask;
-		
+
 		m_width = width;
 		m_height = height;
-		
+
 		window = XCreateWindow(
 			display, rootWindow,
 			0, 0, m_width, m_height, 0, vi->depth, InputOutput, vi->visual,
 			CWBorderPixel | CWColormap | CWEventMask,
 			&swa);
-		
-		wmDelete = XInternAtom(display, "WM_DELETE_WINDOW", False);   
+
+		wmDelete = XInternAtom(display, "WM_DELETE_WINDOW", False);
 		XSetWMProtocols(display, window, &wmDelete, 1);
-		
+
 		XSetStandardProperties(display, window, title, title, None, NULL, 0, NULL);
 		XMapWindow(display, window);
 	}
-	
+
 	// make current context
-	glXMakeCurrent(display, window, context);	
-	
+	glXMakeCurrent(display, window, context);
+
 	// cursor
 	nullCursor = createNULLCursor(display, rootWindow);
-	
+
 	return true;
 }
 
@@ -635,11 +638,11 @@ void MWindow::execute(const char * path, const char * args)
 {
 	char dst[512];
 	memset(dst, 0, 512);
-	
+
 	strcat(dst, path);
 	strcat(dst, " ");
 	strcat(dst, args);
-	
+
 	system(dst);
 }
 
@@ -650,7 +653,7 @@ bool MWindow::getOpenMultipleFiles(const char * title, const char * filter, stri
 
 const char * MWindow::getOpenDir(const char * title, const char * startPath)
 {
-	return NULL;	
+	return NULL;
 }
 
 const char * MWindow::getOpenFilename(const char * title, const char * filter, const char * startPath)

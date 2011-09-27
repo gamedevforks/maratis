@@ -34,12 +34,12 @@
 
 #ifdef _WIN32
 	#include <GLee.h>
-	#include <GL/glu.h>
+	//#include <GL/glu.h>
 #elif __APPLE__
 	#include <OpenGL/OpenGL.h>
 #elif linux
 	#include <GLee.h>
-	#include <GL/glu.h>
+	//#include <GL/glu.h>
 #endif
 
 #include "MGLContext.h"
@@ -106,7 +106,7 @@ GLenum returnPrimitiveType(M_PRIMITIVE_TYPES type)
 
 	case M_PRIMITIVE_TRIANGLE_STRIP:
 		return GL_TRIANGLE_STRIP;
-			
+
 	case M_PRIMITIVE_TRIANGLE_FAN:
 		return GL_TRIANGLE_FAN;
 	}
@@ -205,7 +205,7 @@ m_currentFrameBuffer(0)
 	// pixel pack/unpack
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	
+
 	// anisotropic filtering
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
 }
@@ -456,7 +456,7 @@ void MGLContext::texImage(unsigned int level, unsigned int width, unsigned int h
 	GLenum intFormat = format;
 	//if(type == M_FLOAT && mode == M_RGB)
 	//	intFormat = GL_RGB32F_ARB;
-	
+
 	glTexImage2D(GL_TEXTURE_2D, level, intFormat, width, height, 0, format, returnGLType(type), pixels);
 	if(level > 0)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
@@ -480,7 +480,7 @@ void MGLContext::getTexImage(unsigned int level, MImage * image)
 	{
 		int width, height;
 		int r, g, b, a, depth, format;
-		
+
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_WIDTH, &width);
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_HEIGHT, &height);
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, level, GL_TEXTURE_RED_SIZE, &r);
@@ -508,7 +508,7 @@ void MGLContext::getTexImage(unsigned int level, MImage * image)
 			format = GL_DEPTH_COMPONENT;
 			dpp = 1;
 		}
-		
+
 		if(dpp > 0)
 		{
 			image->create(M_UBYTE, width, height, dpp);
@@ -547,13 +547,13 @@ void MGLContext::setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned
 	else
 	{
 		static GLenum glBuffers[8];
-	
+
 		size = MIN(8, size);
 		for(unsigned int i=0; i<size; i++)
 			glBuffers[i] = returnAttachType(buffers[i]);
-	
+
 		glDrawBuffers(size, glBuffers);
-		
+
 		glDrawBuffer(GL_BACK);
 		glReadBuffer(GL_BACK);
 	}
@@ -575,7 +575,7 @@ void MGLContext::bindRenderBuffer(unsigned int renderBufferId){
 void MGLContext::setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width, unsigned int height)
 {
 	GLenum internalMode;
-	
+
 	switch(mode)
 	{
 		default:
@@ -590,7 +590,7 @@ void MGLContext::setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width,
 			internalMode = GL_DEPTH_STENCIL_EXT;
 			break;
 	}
-	
+
 	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, width, height);
 }
 
