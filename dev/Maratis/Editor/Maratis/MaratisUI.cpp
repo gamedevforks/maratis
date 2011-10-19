@@ -50,7 +50,8 @@ m_worldMenu(0),
 m_editedBehavior(0),
 m_editedObject(NULL),
 m_specialEvent(0),
-m_guiColor(0.2f, 0.3f, 0.4f)
+m_guiColor(0.2f, 0.3f, 0.4f),
+m_fileBrowser(NULL)
 {
 	createGUI();
 	m_text = new MGuiText("", MVector2(), 16, MVector4(1, 1, 1, 0.5f));
@@ -72,6 +73,7 @@ void MaratisUI::clear(void)
 	SAFE_DELETE(m_positionImage);
 	SAFE_DELETE(m_rotationImage);
 	SAFE_DELETE(m_scaleImage);
+	SAFE_DELETE(m_fileBrowser);
 }
 
 void MaratisUI::setSpecialEvent(int specialEvent, const char * info)
@@ -2087,6 +2089,49 @@ void MaratisUI::createGUI(void)
     
 	updateSceneMenu();
 	updateViewMenu();
+	
+	// file browser
+	if(m_fileBrowser == NULL)
+	{
+		MVector2 fbPos = m_viewProp->getPosition();
+		MVector2 fbScale = MVector2(m_view->getScale().x, m_view->getScale().y + m_viewProp->getScale().y);
+		
+		m_fileBrowser = new MGuiFileBrowser(fbPos, fbScale);
+	}
+}
+
+void MaratisUI::fileBrowserEvents(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event)
+{
+	MaratisUI * UI = MaratisUI::getInstance();
+	
+	switch(event)
+	{
+		case MGUI_FILE_BROWSER_EVENT_CANCEL:
+			UI->m_view->setVisible(true);
+			break;
+			
+		case MGUI_FILE_BROWSER_EVENT_OK:
+		{
+			char filename[256];
+			const char * curDir = fileBrowser->getCurrentDirectory();
+			const char * curFile = fileBrowser->getCurrentFile();
+			getGlobalFilename(filename, curDir, curFile);
+			
+			UI->m_fileBrowserFuncPointer(filename);
+			UI->m_view->setVisible(true);
+			break;
+		}
+	}
+}
+
+void MaratisUI::openFileBrowser(const char * startPath, const char * startFile, const char * okName, void (* functionPointer)(const char * filename))
+{
+	if(m_fileBrowser)
+	{
+		m_fileBrowser->open(startPath, startFile, okName, fileBrowserEvents);
+		m_view->setVisible(false);
+		m_fileBrowserFuncPointer = functionPointer;
+	}
 }
 
 void MaratisUI::resizeGUI(void)
@@ -2141,6 +2186,14 @@ void MaratisUI::resizeGUI(void)
 	// view
 	m_view->setXScale(winWidth - editWidth);
 	m_view->setYScale(winHeight - headHeight - viewPropHeight - timeBlockHeight);
+	
+	// file browser
+	if(m_fileBrowser)
+	{
+		MVector2 fbPos = m_viewProp->getPosition();
+		MVector2 fbScale = MVector2(m_view->getScale().x, m_view->getScale().y + m_viewProp->getScale().y);
+		m_fileBrowser->resize(fbPos, fbScale);
+	}
 }
 
 // timeline slide
@@ -4249,12 +4302,23 @@ void MaratisUI::collisionShapeEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 }
 
 // script buttons
+void MaratisUI::okLoadScript(const char * filename)
+{
+	if(! filename)
+		return;
+	
+	MaratisUI * UI = MaratisUI::getInstance();
+	MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
+	
+	scene->setScriptFilename(filename);
+	UI->editScene();
+}
+
 void MaratisUI::loadScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MWindow * window = MWindow::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-	MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
-    
+
 	switch(guiEvents->type)
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
@@ -4262,14 +4326,7 @@ void MaratisUI::loadScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
             {
                 char startPath[256];
                 getGlobalFilename(startPath, window->getWorkingDirectory(), "scripts");
-                
-                // get filename
-                const char * filename = window->getOpenFilename("Load script", "*.lua\0*.lua\0*.*\0*.*\0", startPath);
-                if(filename)
-                {
-                    scene->setScriptFilename(filename);
-                    UI->editScene();
-                }
+				UI->openFileBrowser(startPath, "", "import script", okLoadScript);
             }
             break;
             
@@ -4329,13 +4386,28 @@ void MaratisUI::editScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
 }
 
 // font button
+void MaratisUI::okLoadFont(const char * filename)
+{
+	if(! filename)
+		return;
+	
+	MaratisUI * UI = MaratisUI::getInstance();
+	MLevel * level = MEngine::getInstance()->getLevel();
+	MOText * text = (MOText *)UI->getEditedObject();
+	
+	MFontRef * fontRef = level->loadFont(filename);
+	if(fontRef){
+		text->setFontRef(fontRef);
+		UI->setEditedObject(text);
+		UI->setNeedToUpdateEdit(true);
+	}
+}
+
 void MaratisUI::loadFontEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
 	MWindow * window = MWindow::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
-	MLevel * level = MEngine::getInstance()->getLevel();
-	MOText * text = (MOText *)UI->getEditedObject();
-    
+
 	switch(guiEvents->type)
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
@@ -4343,18 +4415,7 @@ void MaratisUI::loadFontEvents(MGuiButton * button, MGuiEvent * guiEvents)
             {
                 char startPath[256];
                 getGlobalFilename(startPath, window->getWorkingDirectory(), "fonts");
-                
-                // get filename
-                const char * filename = window->getOpenFilename("Select Font", "*.ttf, *.font\0*.ttf;*.font\0*.*\0*.*\0", startPath);
-                if(filename)
-                {
-                    MFontRef * fontRef = level->loadFont(filename);
-                    if(fontRef){
-                        text->setFontRef(fontRef);
-                        UI->setEditedObject(text);
-                        UI->setNeedToUpdateEdit(true);
-                    }
-                }
+                UI->openFileBrowser(startPath, "", "import font", okLoadFont);
             }
             break;
             

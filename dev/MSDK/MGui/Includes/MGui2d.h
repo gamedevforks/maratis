@@ -76,6 +76,8 @@ protected:
 
 	// style
 	bool m_isDrawingText;
+	bool m_centerText;
+	bool m_autoScaleFromText;
 
 	// colors
 	MVector4 m_normalColor;
@@ -124,7 +126,11 @@ public:
 	virtual void setTextSize(float size){ m_textSize = size; autoScaleFromText(); }
 	virtual bool isDrawingText(void){ return m_isDrawingText; }
 	virtual float getTextSize(void){ return m_textSize; }
-
+	inline void setCenterText(bool centerText){ m_centerText = centerText; }
+	inline void setAutoScaleFromText(bool autoScaleFromText){ m_autoScaleFromText = autoScaleFromText; }
+	inline bool isTextCentered(void){ return m_centerText; }
+	inline bool isAutoScaleFromTextEnabled(void){ return m_autoScaleFromText; }
+	
 	// parent
 	virtual void setParentWindow(MGuiWindow * window){ m_parentWindow = window; }
 	virtual MGuiWindow * getParentWindow(void){ if(m_parentWindow) return m_parentWindow; return NULL; }

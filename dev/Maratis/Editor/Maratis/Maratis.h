@@ -186,6 +186,15 @@ private:
 	M_AXIS selectEditPosition(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, float radius);
 	M_AXIS selectEditScale(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, float radius);
 
+	// file browser
+	static void okAddEntity(const char * filename);
+	static void okAddSound(const char * filename);
+	static void okAddFont(const char * filename);
+	static void okNewProject(const char * filename);
+	static void okLoadProject(const char * filename);
+	static void okLoadLevel(const char * filename);
+	static void okSaveAs(const char * filename);
+	
 public:
 
 	// temp dir

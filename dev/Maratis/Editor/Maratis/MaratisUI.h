@@ -187,7 +187,15 @@ private:
 	// special event
 	int m_specialEvent;
 	string m_specialEventInfo;
-
+	
+	// file browser
+	MGuiFileBrowser * m_fileBrowser;
+	static void fileBrowserEvents(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event);
+	void (* m_fileBrowserFuncPointer)(const char * filename);
+	
+	static void okLoadFont(const char * filename);
+	static void okLoadScript(const char * filename);
+	
 private:
 
 	// edit variable
@@ -207,6 +215,8 @@ private:
 
 public:
 
+	void openFileBrowser(const char * startPath, const char * startFile, const char * okName, void (* functionPointer)(const char * filename));
+	
 	// is playing
 	inline bool isPlaying(void){ return m_play; }
 

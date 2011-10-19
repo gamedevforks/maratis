@@ -790,110 +790,77 @@ void Maratis::addLight(void)
 	UI->editObject(light);
 }
 
-void Maratis::addEntity(void)
+void Maratis::okAddEntity(const char * filename)
 {
-	autoSave();
-    
-	MWindow * window = MWindow::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene = level->getCurrentScene();
-    
-	char startPath[256];
-	getGlobalFilename(startPath, window->getWorkingDirectory(), "meshs");
-    
-	// get filename
-	const char * filename;
-	filename = MWindow::getInstance()->getOpenFilename("Add Entity", "*.mesh\0*.mesh\0*.*\0*.*\0", startPath);
-    
 	if(filename)
 	{
+		Maratis * maratis = Maratis::getInstance();
+		MaratisUI * UI = MaratisUI::getInstance();
+		MLevel * level = MEngine::getInstance()->getLevel();
+		MScene * scene = level->getCurrentScene();
+		
 		MMeshRef * meshRef = level->loadMesh(filename);
 		if(meshRef)
 		{
 			char name[256] = "Entity0";
-			getNewObjectName("Entity", name);
+			maratis->getNewObjectName("Entity", name);
             
 			// add entity
 			MOEntity * entity = scene->addNewEntity(meshRef);
 			entity->setName(name);
             
 			// set entity position
-			entity->setPosition(*getSelectionCenter());
+			entity->setPosition(*maratis->getSelectionCenter());
 			entity->updateMatrix();
             
-			clearSelectedObjects();
-			addSelectedObject(entity);
+			maratis->clearSelectedObjects();
+			maratis->addSelectedObject(entity);
 			UI->setTransformMode(M_TRANSFORM_POSITION);
 			UI->editObject(entity);
 		}
 	}
-    
-	// up left mouse button (up event skipped by getOpenFilename)
-	MMouse::getInstance()->upButton(MMOUSE_BUTTON_LEFT);
 }
 
-void Maratis::addSound(void)
+void Maratis::okAddSound(const char * filename)
 {
-	autoSave();
-    
-	MWindow * window = MWindow::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene = level->getCurrentScene();
-    
-	char startPath[256];
-	getGlobalFilename(startPath, window->getWorkingDirectory(), "sounds");
-    
-	// get filename
-	const char * filename;
-	filename = MWindow::getInstance()->getOpenFilename("Add Sound", "*.wav, *.aif, *.aiff\0*.wav;*.aif;*.aiff\0*.*\0*.*\0", startPath);
-    
 	if(filename)
 	{
+		Maratis * maratis = Maratis::getInstance();
+		MaratisUI * UI = MaratisUI::getInstance();
+		MLevel * level = MEngine::getInstance()->getLevel();
+		MScene * scene = level->getCurrentScene();
+		
 		MSoundRef * soundRef = level->loadSound(filename);
 		if(soundRef)
 		{
 			char name[256] = "Sound0";
-			getNewObjectName("Sound", name);
+			maratis->getNewObjectName("Sound", name);
             
 			// add sound
 			MOSound * sound = scene->addNewSound(soundRef);
 			sound->setName(name);
             
 			// set position
-			sound->setPosition(*getSelectionCenter());
+			sound->setPosition(*maratis->getSelectionCenter());
 			sound->updateMatrix();
             
-			clearSelectedObjects();
-			addSelectedObject(sound);
+			maratis->clearSelectedObjects();
+			maratis->addSelectedObject(sound);
 			UI->setTransformMode(M_TRANSFORM_POSITION);
 			UI->editObject(sound);
 		}
 	}
-    
-	// up left mouse button (up event skipped by getOpenFilename)
-	MMouse::getInstance()->upButton(MMOUSE_BUTTON_LEFT);
 }
 
-void Maratis::addText(void)
+void Maratis::okAddFont(const char * filename)
 {
-	autoSave();
-    
-	MWindow * window = MWindow::getInstance();
-	MaratisUI * UI = MaratisUI::getInstance();
-	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene = level->getCurrentScene();
-    
-	char startPath[256];
-	getGlobalFilename(startPath, window->getWorkingDirectory(), "fonts");
-    
-	// get filename
-	const char * filename;
-	filename = MWindow::getInstance()->getOpenFilename("Select Font", "*.ttf, *.font\0*.ttf;*.font\0*.*\0*.*\0", startPath);
-    
 	if(filename)
 	{
+		Maratis * maratis = Maratis::getInstance();
+		MaratisUI * UI = MaratisUI::getInstance();
+		MLevel * level = MEngine::getInstance()->getLevel();
+		MScene * scene = level->getCurrentScene();
+		
 		// font test
 		MFontRef * fontRef = level->loadFont(filename);
 		if(fontRef)
@@ -901,18 +868,18 @@ void Maratis::addText(void)
 			MOText * text = scene->addNewText(fontRef);
             
 			char name[256] = "Text0";
-			getNewObjectName("Text", name);
+			maratis->getNewObjectName("Text", name);
             
 			text->setName(name);
 			text->setText("Text");
             
 			// set position
-			text->setPosition(*getSelectionCenter());
+			text->setPosition(*maratis->getSelectionCenter());
 			text->setEulerRotation(MVector3(180, 0, 0));
 			text->updateMatrix();
             
-			clearSelectedObjects();
-			addSelectedObject(text);
+			maratis->clearSelectedObjects();
+			maratis->addSelectedObject(text);
 			UI->setTransformMode(M_TRANSFORM_POSITION);
 			UI->editObject(text);
             
@@ -931,9 +898,42 @@ void Maratis::addText(void)
 			}
 		}
 	}
+}
+
+void Maratis::addEntity(void)
+{
+	autoSave();
     
-	// up left mouse button (up event skipped by getOpenFilename)
-	MMouse::getInstance()->upButton(MMOUSE_BUTTON_LEFT);
+	MWindow * window = MWindow::getInstance();
+	MaratisUI * UI = MaratisUI::getInstance();
+    
+	char startPath[256];
+	getGlobalFilename(startPath, window->getWorkingDirectory(), "meshs");
+	UI->openFileBrowser(startPath, "", "import entity", okAddEntity);
+}
+
+void Maratis::addSound(void)
+{
+	autoSave();
+    
+	MWindow * window = MWindow::getInstance();
+	MaratisUI * UI = MaratisUI::getInstance();
+	
+	char startPath[256];
+	getGlobalFilename(startPath, window->getWorkingDirectory(), "sounds");
+	UI->openFileBrowser(startPath, "", "import sound", okAddSound);
+}
+
+void Maratis::addText(void)
+{
+	autoSave();
+    
+	MWindow * window = MWindow::getInstance();
+	MaratisUI * UI = MaratisUI::getInstance();
+    
+	char startPath[256];
+	getGlobalFilename(startPath, window->getWorkingDirectory(), "fonts");
+    UI->openFileBrowser(startPath, "", "import font", okAddFont);
 }
 
 void Maratis::updateTitle(void)
@@ -951,15 +951,13 @@ void Maratis::updateTitle(void)
 	window->setTitle(title);
 }
 
-void Maratis::newProject(void)
+void Maratis::okNewProject(const char * filename)
 {
 	MWindow * window = MWindow::getInstance();
-    
-	// get filename
-	const char * filename = window->getSaveFilename("New Project", "*.mproj\0*.mproj\0*.*\0*.*\0");
-	if(! filename)
-		return;
-    
+	Maratis * maratis = Maratis::getInstance();
+	
+	printf("%s\n", filename);
+	
 	char file[256];
 	fileExtension(file, filename, ".mproj");
 	MProject proj;
@@ -987,22 +985,33 @@ void Maratis::newProject(void)
         
 		// update
 		window->setWorkingDirectory(rep);
-		strcpy(m_currentProject, file);
-		strcpy(m_currentLevel, "");
-		updateTitle();
+		strcpy(maratis->m_currentProject, file);
+		strcpy(maratis->m_currentLevel, "");
+		maratis->updateTitle();
         
 		// new
-		restart();
-		newLevel();
-		loadGamePlugin();
+		maratis->restart();
+		maratis->newLevel();
+		maratis->loadGamePlugin();
 	}
+}
+
+void Maratis::newProject(void)
+{
+	MaratisUI * UI = MaratisUI::getInstance();
+	UI->openFileBrowser(NULL, "untitled.mproj", "save project", okNewProject);
+}
+
+void Maratis::okLoadProject(const char * filename)
+{
+	Maratis * maratis = Maratis::getInstance();
+	maratis->loadProject(filename);
 }
 
 void Maratis::loadProject(void)
 {
-	// get filename
-	const char * filename = MWindow::getInstance()->getOpenFilename("Open Project", "*.mproj\0*.mproj\0*.*\0*.*\0");
-	loadProject(filename);
+	MaratisUI * UI = MaratisUI::getInstance();
+	UI->openFileBrowser(NULL, "", "open project", okLoadProject);
 }
 
 void Maratis::loadProject(const char * filename)
@@ -1103,6 +1112,12 @@ bool Maratis::loadLevel(const char * filename)
 	return false;
 }
 
+void Maratis::okLoadLevel(const char * filename)
+{
+	Maratis * maratis = Maratis::getInstance();
+	maratis->loadLevel(filename);
+}
+
 void Maratis::loadLevel(void)
 {
 	MWindow * window = MWindow::getInstance();
@@ -1110,8 +1125,8 @@ void Maratis::loadLevel(void)
 	char startPath[256];
 	getGlobalFilename(startPath, window->getWorkingDirectory(), "levels");
     
-	const char * filename = window->getOpenFilename("Load Level", "*.level\0*.level\0*.*\0*.*\0", startPath);
-	loadLevel(filename);
+	MaratisUI * UI = MaratisUI::getInstance();
+	UI->openFileBrowser(startPath, "", "open level", okLoadLevel);
 }
 
 void Maratis::save(void)
@@ -1138,38 +1153,42 @@ void Maratis::save(void)
 	}
 }
 
-void Maratis::saveAs(void)
+void Maratis::okSaveAs(const char * filename)
 {
-	MWindow * window = MWindow::getInstance();
-	MEngine * engine = MEngine::getInstance();
-    
-	char startPath[256];
-	getGlobalFilename(startPath, window->getWorkingDirectory(), "levels");
-    
-	// get filename
-	const char * filename;
-	filename = MWindow::getInstance()->getSaveFilename("Save Level", "*.level\0*.level\0*.*\0*.*\0", startPath);
-    
 	if(! filename)
 		return;
     
+	Maratis * maratis = Maratis::getInstance();
+	MEngine * engine = MEngine::getInstance();
+	
 	// save level
 	char file[256];
 	fileExtension(file, filename, ".level");
 	if(xmlLevelSave(engine->getLevel(), file))
 	{
-		strcpy(m_currentLevel, file);
+		strcpy(maratis->m_currentLevel, file);
 		MProject proj;
-		proj.startLevel = m_currentLevel;
-		if(m_renderer)
+		proj.startLevel = maratis->m_currentLevel;
+		if(maratis->m_renderer)
 		{
-			const char * name = m_renderer->getName();
+			const char * name = maratis->m_renderer->getName();
 			if(name)
 				proj.renderer = name;
 		}
-		proj.saveXML(m_currentProject);
-		updateTitle();
+		proj.saveXML(maratis->m_currentProject);
+		maratis->updateTitle();
 	}
+}
+
+void Maratis::saveAs(void)
+{
+	MWindow * window = MWindow::getInstance();
+
+	char startPath[256];
+	getGlobalFilename(startPath, window->getWorkingDirectory(), "levels");
+    
+	MaratisUI * UI = MaratisUI::getInstance();
+	UI->openFileBrowser(startPath, "untitled.level", "save level", okSaveAs);
 }
 
 void Maratis::addSelectedObject(MObject3d * object)

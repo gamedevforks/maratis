@@ -31,13 +31,13 @@
 #include "../Includes/MCore.h"
 
 #include <dirent.h>
+#include <sys/stat.h>
 
 #ifdef WIN32
 	#include <direct.h>
 	#define mkdir _mkdir
 	#define rmdir _rmdir
 #else //#elif __APPLE__
-	#include <sys/stat.h>
 	#define mkdir(file) mkdir(file, 0777)
 #endif
 
@@ -210,7 +210,7 @@ bool copyDirectory(const char * inFilename, const char * outFilename)
     return true;
 }
 
-bool readDirectory(const char * filename, vector<string> * files)
+bool readDirectory(const char * filename, vector<string> * files, bool hiddenFiles)
 {
 	DIR * pdir = opendir(filename);
 	if(! pdir)
@@ -225,9 +225,15 @@ bool readDirectory(const char * filename, vector<string> * files)
 		if(strcmp(pent->d_name, "..") == 0)
 			continue;
 
-		char file[256];
-		getGlobalFilename(file, filename, pent->d_name);
-		files->push_back(string(file));
+		if(! hiddenFiles && strlen(pent->d_name) > 0)
+		{
+			#ifndef _WIN32
+			if(pent->d_name[0] == '.')
+				continue;
+			#endif
+		}
+		   
+		files->push_back(string(pent->d_name));
     }
 
     closedir(pdir);

@@ -169,7 +169,8 @@ public:
 	inline void operator /= (const float value) 
 	{	
 		if(value == 0.0f){
-			return;
+			x = 0.0f;
+			y = 0.0f;
 		}
 		else
 		{	
@@ -217,6 +218,18 @@ public:
 
 	MVector2 getNormalized() const;
 	MVector2 getRotated(const float angle) const;	
+
+	inline float getAngleBetween(const MVector2 & vec)
+	{
+		float angle = (atan2(y, x) - atan2(vec.y, vec.x))*RAD_TO_DEG;
+		
+		if(angle > 180)
+			angle -= 360;
+		if(angle < -180)
+			angle += 360;
+		
+		return angle;
+	}
 
 	inline float getLength() const
 	{	

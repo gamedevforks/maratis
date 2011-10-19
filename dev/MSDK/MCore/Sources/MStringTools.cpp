@@ -64,7 +64,7 @@ void getLocalFilename(char * out, const char * workingDirectory, const char * fi
 		// next
 		token = strtok(NULL, "\\/");
 	}
-
+/*
 	if(filePasses.size() == 0){
 		strcpy(out, filename);
 		return;
@@ -73,9 +73,10 @@ void getLocalFilename(char * out, const char * workingDirectory, const char * fi
 	if(workPasses.size() == 0){
 		strcpy(out, filename);
 		return;
-	}
+	}*/
 
 	// not the same root
+	if(filePasses.size() > 0 && workPasses.size() > 0)
 	if(strcmp(filePasses[0].c_str(), workPasses[0].c_str()) != 0)
 	{
 		strcpy(out, filename);
@@ -150,6 +151,7 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 		token = strtok(NULL, "\\/");
 	}
 
+	/*
 	if(filePasses.size() == 0){
 		strcpy(out, workingDirectory);
 		return;
@@ -158,7 +160,7 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 	if(workPasses.size() == 0){
 		strcpy(out, filename);
 		return;
-	}
+	}*/
 
 	if((strncmp(filename+1, ":", 1) == 0) || (filename[0] == '/')){ // ROOT
 		strcpy(out, filename);
@@ -169,7 +171,7 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 	unsigned int size = filePasses.size();
 	for(i=0; i<size; i++)
 	{
-		if(strcmp(filePasses[i].c_str(), "..") == 0){
+		if((strcmp(filePasses[i].c_str(), "..") == 0) && (workPasses.size() > 0)){
 			workPasses.pop_back();
 		}
 		else
@@ -189,10 +191,14 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 	}
 
 	size = filePasses.size();
-	for(i=0; i<size; i++){
-		res += filePasses[i];
-		if((i+1) < size)
-			res += "/";
+	for(i=0; i<size; i++)
+	{
+		if(strcmp(filePasses[i].c_str(), "..") != 0)
+		{
+			res += filePasses[i];
+			if((i+1) < size)
+				res += "/";
+		}
 	}
 
 	strcpy(out, res.c_str());
@@ -220,12 +226,12 @@ void getRepertory(char * out, const char * filename)
 
 	unsigned int i;
 	unsigned int size = filePasses.size();
-	
+	/*
 	if(size == 0)
 	{
 		strcpy(out, "");
 		return;
-	}
+	}*/
 	
 	if(filename[0] == '/') // UNIX
 		res += "/";

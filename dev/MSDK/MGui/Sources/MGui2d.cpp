@@ -45,7 +45,9 @@ m_hasShadow(false),
 m_isScrollAffect(true),
 m_variableType(M_VAR_NONE),
 m_variablePointer(NULL),
-m_fontId(0)
+m_fontId(0),
+m_centerText(false),
+m_autoScaleFromText(true)
 {
 }
 
@@ -191,9 +193,17 @@ void MGui2d::draw(void)
 
 	if(isDrawingText() && (getText() != NULL))
 	{
+		MVector2 textDir;
+		
+		if(m_centerText)
+		{
+			MVector2 textScale = getFont()->getMaxSize(getText(), getTextSize());
+			textDir = (m_scale - textScale)*0.5f;
+		}
+		
 		render->enableTexture();
 		render->setColor4(getTextColor());
-		getFont()->draw(getText(), getPosition(), getTextSize());
+		getFont()->draw(getText(), getPosition() + textDir, getTextSize());
 	}
 
 	// draw shadows
@@ -264,8 +274,8 @@ bool MGui2d::isPointInside(const MVector2 & point)
 	MVector2 position = getPosition();
 	MVector2 scale = getScale();
 
-	if(point.x >= position.x && point.x <= (position.x + scale.x) &&
-	   point.y >= position.y && point.y <= (position.y + scale.y))
+	if(point.x >= position.x && point.x < (position.x + scale.x) &&
+	   point.y >= position.y && point.y < (position.y + scale.y))
 	   return true;
 
 	return false;

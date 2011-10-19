@@ -76,7 +76,7 @@ public:
 	void onChange(void);
 
 	// text
-	inline void setText(const char * text){ m_text = text; autoScaleFromText(); }
+	inline void setText(const char * text){ m_text = text; if(m_autoScaleFromText) autoScaleFromText(); }
 
 	// mode
 	inline bool isCheckButton(void){ return m_mode == MGUI_BUTTON_CHECK; }

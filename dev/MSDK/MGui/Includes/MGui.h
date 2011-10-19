@@ -67,6 +67,7 @@ class MGuiWindow;
 #include "MGuiText.h"
 #include "MGuiImage.h"
 #include "MGuiEditText.h"
+#include "MGuiFileBrowser.h"
 
 
 // global functions
