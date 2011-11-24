@@ -262,19 +262,41 @@ void MOEntity::update(void)
 			if(animRange->loops < 0)
 			{
 				m_currentFrame += m_animationSpeed;
-				if(m_currentFrame > animRange->end)
-					m_currentFrame = (float)animRange->start;
+				if(m_animationSpeed >= 0)
+				{
+					if(m_currentFrame > animRange->end)
+						m_currentFrame = (float)animRange->start + (m_currentFrame - animRange->end);
+				}
+				else // support backward animation
+				{
+					if(m_currentFrame < animRange->start)
+						m_currentFrame = (float)animRange->end - (animRange->start - m_currentFrame);
+				}
 			}
 			else if(m_currentLoop < animRange->loops)
 			{
 				m_currentFrame += m_animationSpeed;
-				if(m_currentFrame > animRange->end)
+				if(m_animationSpeed >= 0)
 				{
-					m_currentLoop++;
-					if(m_currentLoop == animRange->loops)
-						m_currentFrame = (float)animRange->end;
-					else
-						m_currentFrame = (float)animRange->start;
+					if(m_currentFrame > animRange->end)
+					{
+						m_currentLoop++;
+						if(m_currentLoop == animRange->loops)
+							m_currentFrame = (float)animRange->end;
+						else
+							m_currentFrame = (float)animRange->start + (m_currentFrame - animRange->end);
+					}
+				}
+				else // support backward animation
+				{
+					if(m_currentFrame < animRange->start)
+					{
+						m_currentLoop++;
+						if(m_currentLoop == animRange->loops)
+							m_currentFrame = (float)animRange->start;
+						else
+							m_currentFrame = (float)animRange->end - (animRange->start - m_currentFrame);
+					}
 				}
 			}
 		}
