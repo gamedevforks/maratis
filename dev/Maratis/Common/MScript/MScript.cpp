@@ -34,6 +34,23 @@
 char g_currentDirectory[256] = "";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Some frequently used macros
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define GET_OBJECT_SUBCLASS_BEGIN(type_, var_, type_enum)	\
+	MObject3d * object;	\
+	unsigned int id = (unsigned int)lua_tointeger(L, 1);	\
+	if((object = getObject3d(id)))	\
+	{	\
+		if(object->getType() == type_enum)	\
+		{	\
+			type_ * var_ = (type_*)object;
+
+#define GET_OBJECT_SUBCLASS_END()	\
+		}	\
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global Functions
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -472,6 +489,58 @@ int getCurrentAnimation(lua_State * L)
 			return 1;
 		}
 	}
+
+	return 0;
+}
+
+int setAnimationSpeed(lua_State * L)
+{
+	if(! isFunctionOk(L, "setAnimationSpeed", 2))
+		return 0;
+
+	GET_OBJECT_SUBCLASS_BEGIN(MOEntity, entity, M_OBJECT3D_ENTITY)
+			entity->setAnimationSpeed((float)lua_tonumber(L, 2));
+			return 0;
+	GET_OBJECT_SUBCLASS_END()
+
+	return 0;
+}
+
+int getAnimationSpeed(lua_State * L)
+{
+	if(! isFunctionOk(L, "getAnimationSpeed", 1))
+		return 0;
+
+	GET_OBJECT_SUBCLASS_BEGIN(MOEntity, entity, M_OBJECT3D_ENTITY)
+			lua_pushnumber(L, (lua_Number)entity->getAnimationSpeed());
+			return 1;
+	GET_OBJECT_SUBCLASS_END()
+
+	return 0;
+}
+
+int setCurrentFrame(lua_State * L)
+{
+	if(! isFunctionOk(L, "setCurrentFrame", 2))
+		return 0;
+
+	GET_OBJECT_SUBCLASS_BEGIN(MOEntity, entity, M_OBJECT3D_ENTITY)
+			entity->setCurrentFrame((float)lua_tonumber(L, 2));
+			return 0;
+	GET_OBJECT_SUBCLASS_END()
+
+	return 0;
+}
+
+int getCurrentFrame(lua_State * L)
+{
+	if(! isFunctionOk(L, "getCurrentFrame", 1))
+		return 0;
+
+	GET_OBJECT_SUBCLASS_BEGIN(MOEntity, entity, M_OBJECT3D_ENTITY)
+			lua_pushnumber(L, (lua_Number)entity->getCurrentFrame());
+			return 1;
+	GET_OBJECT_SUBCLASS_END()
 
 	return 0;
 }
@@ -1056,6 +1125,24 @@ int changeScene(lua_State * L)
 	level->changeCurrentScene(id);
 
 	return 0;
+}
+
+int getCurrentSceneId(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MLevel * level = engine->getLevel();
+
+	lua_pushinteger(L, (int)level->getCurrentSceneId());
+	return 1;
+}
+
+int getScenesNumber(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MLevel * level = engine->getLevel();
+
+	lua_pushinteger(L, level->getScenesNumber());
+	return 1;
 }
 
 int loadLevel(lua_State * L)
@@ -1883,9 +1970,13 @@ void MScript::init(void)
 	lua_register(m_state, "setBehaviorVariable", setBehaviorVariable);
 
 	// animation
-	lua_register(m_state, "getCurrentAnimation", getCurrentAnimation);
-	lua_register(m_state, "changeAnimation",	 changeAnimation);
-	lua_register(m_state, "isAnimationOver",	 isAnimationOver);
+	lua_register(m_state, "getCurrentAnimation",	getCurrentAnimation);
+	lua_register(m_state, "changeAnimation",		changeAnimation);
+	lua_register(m_state, "isAnimationOver",		isAnimationOver);
+	lua_register(m_state, "getAnimationSpeed",		getAnimationSpeed);
+	lua_register(m_state, "setAnimationSpeed",		setAnimationSpeed);
+	lua_register(m_state, "getCurrentFrame",		getCurrentFrame);
+	lua_register(m_state, "setCurrentFrame",		setCurrentFrame);
 
 	// physics
 	lua_register(m_state, "setGravity",			setGravity);
@@ -1921,8 +2012,10 @@ void MScript::init(void)
 	lua_register(m_state, "setSoundGain", setSoundGain);
 	
 	// scene/level
-	lua_register(m_state, "changeScene", changeScene);
-	lua_register(m_state, "loadLevel",	 loadLevel);
+	lua_register(m_state, "changeScene",			changeScene);
+	lua_register(m_state, "getCurrentSceneId",		getCurrentSceneId);
+	lua_register(m_state, "getScenesNumber",		getScenesNumber);
+	lua_register(m_state, "loadLevel",				loadLevel);
 
 	// light
 	lua_register(m_state, "getLightColor",	   getLightColor);
