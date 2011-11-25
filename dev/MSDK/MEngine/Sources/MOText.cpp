@@ -164,23 +164,20 @@ void MOText::updateLinesOffset(void)
 
 		//move to next character
 		xc += character->getXAdvance() * m_size;
+	}
 
-		// last char
-		if((i + 1) == size)
-		{
-			switch(m_align)
-			{
-			case M_ALIGN_LEFT:
-				m_linesOffset.push_back(0);
-				break;
-			case M_ALIGN_RIGHT:
-				m_linesOffset.push_back(-(max - min));
-				break;
-			case M_ALIGN_CENTER:
-				m_linesOffset.push_back(-(max - min)*0.5f);
-				break;
-			}
-		}
+	// last char (always should be executed!)
+	switch(m_align)
+	{
+	case M_ALIGN_LEFT:
+		m_linesOffset.push_back(0);
+		break;
+	case M_ALIGN_RIGHT:
+		m_linesOffset.push_back(-(max - min));
+		break;
+	case M_ALIGN_CENTER:
+		m_linesOffset.push_back(-(max - min)*0.5f);
+		break;
 	}
 
 	float globalOffset = boxMax->x - boxMin->x;
