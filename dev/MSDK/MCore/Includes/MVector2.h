@@ -221,7 +221,7 @@ public:
 
 	inline float getAngleBetween(const MVector2 & vec)
 	{
-		float angle = (atan2(y, x) - atan2(vec.y, vec.x))*RAD_TO_DEG;
+		float angle = (float)((atan2(y, x) - atan2(vec.y, vec.x))*RAD_TO_DEG);
 		
 		if(angle > 180)
 			angle -= 360;
