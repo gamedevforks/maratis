@@ -55,8 +55,9 @@ private:
 	vector <MDataRef *> m_clearQueue;
 
 	// scenes
-	unsigned int m_currentSceneId;
-	vector <MScene *> m_scenes;
+	unsigned int		m_currentSceneId;
+	unsigned int		m_requestedSceneId; // ID of the scene requested to be loaded (-1 for none)
+	vector <MScene *>	m_scenes;
 
 public:
 
@@ -105,7 +106,7 @@ public:
 	void clearQueueDatas(void);
 
 	// scenes
-	void changeCurrentScene(unsigned int id);
+	void changeCurrentScene(unsigned int id); // Does not change scene straight away, instead it requests to do it (will be done in the end of the logic loop)
 	void deleteScene(unsigned int id);
 	bool getSceneIndexByName(const char * name, unsigned int * index);
 	MScene * addNewScene(void);
@@ -115,6 +116,11 @@ public:
 	inline unsigned int getCurrentSceneId(void){ return m_currentSceneId; }
 	inline unsigned int getScenesNumber(void){ return m_scenes.size(); }
 	inline MScene * getSceneByIndex(unsigned int id){ return m_scenes[id]; }
+
+private:
+	void changeCurrentSceneIfRequested(); // Changes the scene, called in the end of the logic loop
+
+	friend class MGame;
 };
 
 #endif

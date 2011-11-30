@@ -1154,7 +1154,7 @@ int loadLevel(lua_State * L)
 
 	const char * filename = lua_tostring(L, 1);
 	if(filename)
-		engine->loadLevel(filename);
+		engine->requestLoadLevel(filename);
 
 	return 0;
 }

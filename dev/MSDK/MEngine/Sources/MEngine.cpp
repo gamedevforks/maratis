@@ -35,6 +35,7 @@ MEngine::MEngine(void):
 m_level(NULL),
 m_game(NULL),
 m_renderer(NULL),
+m_requestedLevelToLoad(NULL),
 m_soundContext(NULL),
 m_renderingContext(NULL),
 m_physicsContext(NULL),
@@ -120,6 +121,16 @@ bool MEngine::loadLevel(const char * filename)
 	return false;
 }
 
+void MEngine::requestLoadLevel(const char * filename)
+{
+	if(m_requestedLevelToLoad != NULL)
+		free(m_requestedLevelToLoad);
+
+	unsigned int len = strlen(filename);
+	m_requestedLevelToLoad = (char*)malloc(len + 1);
+	strcpy(m_requestedLevelToLoad, filename);
+}
+
 void MEngine::setGame(MGame * game)
 {
 	m_game = game;
@@ -128,4 +139,15 @@ void MEngine::setGame(MGame * game)
 void MEngine::setRenderer(MRenderer * renderer)
 {
 	m_renderer = renderer;
+}
+
+void MEngine::loadLevelIfRequested()
+{
+	if(m_requestedLevelToLoad == NULL)
+		return;
+
+	loadLevel(m_requestedLevelToLoad);
+
+	free(m_requestedLevelToLoad);
+	m_requestedLevelToLoad = NULL;
 }

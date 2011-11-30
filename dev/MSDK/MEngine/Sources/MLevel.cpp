@@ -34,7 +34,8 @@
 
 // level
 MLevel::MLevel(void):
-m_currentSceneId(0)
+m_currentSceneId(0),
+m_requestedSceneId(0xFFFFFFFF)
 {}
 
 MLevel::~MLevel(void)
@@ -542,28 +543,36 @@ void MLevel::setCurrentSceneId(unsigned int id)
 
 void MLevel::changeCurrentScene(unsigned int id)
 {
-	if(id == m_currentSceneId)
+	m_requestedSceneId = id;
+}
+
+void MLevel::changeCurrentSceneIfRequested()
+{
+	if(m_requestedSceneId == 0xFFFFFFFF)
 		return;
 
-	MEngine * engine = MEngine::getInstance();
-
-	if(id < getScenesNumber())
+	if(m_requestedSceneId != m_currentSceneId)
 	{
-		MScene * scene = getCurrentScene();
+		MEngine * engine = MEngine::getInstance();
 
-		// onEndScene
-		MGame * game = engine->getGame();
-		if(game)
-			game->onEndScene();
+		if(m_requestedSceneId < getScenesNumber())
+		{
+			MScene * scene = getCurrentScene();
 
-		// change scene
-		setCurrentSceneId(id);
-		scene = getCurrentScene();
+			// onEndScene
+			MGame * game = engine->getGame();
+			if(game)
+				game->onEndScene();
 
-		// onBeginScene
-		if(game)
-			game->onBeginScene();
-	}	
+			// change scene
+			setCurrentSceneId(m_requestedSceneId);
+			scene = getCurrentScene();
+
+			// onBeginScene
+			if(game)
+				game->onBeginScene();
+		}	
+	}
 }
 
 void MLevel::deleteScene(unsigned int id)

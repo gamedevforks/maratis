@@ -72,6 +72,10 @@ void MGame::update(void)
 
 	// flush input
 	engine->getInputContext()->flush();
+
+	// see if we should load requested scene or level (from lua)
+	engine->loadLevelIfRequested();
+	engine->getLevel()->changeCurrentSceneIfRequested();
 }
 
 void MGame::draw(void)
