@@ -231,6 +231,7 @@ public:
 	void setLevel(MLevel * level);
 	bool loadLevel(const char * filename); // Loads level immediately (not safe from Lua!)
 	void requestLoadLevel(const char * filename); // Will load level at the end of the logic loop (safe from Lua)
+	bool doesLevelExist(const char * filename);
 	inline MLevel * getLevel(void){ return m_level; }
 
 	// game

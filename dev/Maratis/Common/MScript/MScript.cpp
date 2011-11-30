@@ -1159,6 +1159,19 @@ int loadLevel(lua_State * L)
 	return 0;
 }
 
+int doesLevelExist(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+
+	if(! isFunctionOk(L, "doesLevelExist", 1))
+		return 0;
+
+	const char * filename = lua_tostring(L, 1);
+
+	lua_pushnumber(L, (lua_Number)engine->doesLevelExist(filename));
+	return 1;
+}
+
 int getLightColor(lua_State * L)
 {
 	if(! isFunctionOk(L, "getLightColor", 1))
@@ -2015,6 +2028,7 @@ void MScript::init(void)
 	lua_register(m_state, "changeScene",			changeScene);
 	lua_register(m_state, "getCurrentSceneId",		getCurrentSceneId);
 	lua_register(m_state, "getScenesNumber",		getScenesNumber);
+	lua_register(m_state, "doesLevelExist",			doesLevelExist);
 	lua_register(m_state, "loadLevel",				loadLevel);
 
 	// light
