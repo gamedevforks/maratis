@@ -75,7 +75,7 @@ void MGame::update(void)
 
 	// see if we should load requested scene or level (from lua)
 	engine->loadLevelIfRequested();
-	level->changeCurrentSceneIfRequested();
+  engine->getLevel()->changeCurrentSceneIfRequested();
 }
 
 void MGame::draw(void)
