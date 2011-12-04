@@ -45,7 +45,9 @@ m_systemContext(NULL)
 {}
 
 MEngine::~MEngine(void)
-{}
+{
+	SAFE_FREE(m_requestedLevelToLoad);
+}
 
 MEngine * MEngine::getInstance(void)
 {
@@ -100,12 +102,11 @@ bool MEngine::loadLevel(const char * filename)
 	getGlobalFilename(globalFilename, m_systemContext->getWorkingDirectory(), filename);
 
 	// Check if there is a level under the given name
-	FILE * file = fopen(globalFilename, "rt");
-	if(file == NULL)
+	if(! isFileExist(globalFilename))
 		return false;
-	fclose(file);
 
-	if(m_game){
+	if(m_game)
+	{
 		if(m_game->isRunning())
 		{
 			m_game->onEndScene();
@@ -130,8 +131,7 @@ bool MEngine::loadLevel(const char * filename)
 
 void MEngine::requestLoadLevel(const char * filename)
 {
-	if(m_requestedLevelToLoad != NULL)
-		free(m_requestedLevelToLoad);
+	SAFE_FREE(m_requestedLevelToLoad);
 
 	unsigned int len = strlen(filename);
 	m_requestedLevelToLoad = (char*)malloc(len + 1);
@@ -145,14 +145,7 @@ bool MEngine::doesLevelExist(const char * filename)
 
 	char globalFilename[256];
 	getGlobalFilename(globalFilename, m_systemContext->getWorkingDirectory(), filename);
-	FILE * file = fopen(globalFilename, "rt");
-	if(file != NULL)
-	{
-		fclose(file);
-		return true;
-	}
-
-	return false;
+	return isFileExist(globalFilename);
 }
 
 void MEngine::setGame(MGame * game)
@@ -171,7 +164,5 @@ void MEngine::loadLevelIfRequested()
 		return;
 
 	loadLevel(m_requestedLevelToLoad);
-
-	free(m_requestedLevelToLoad);
-	m_requestedLevelToLoad = NULL;
+	SAFE_FREE(m_requestedLevelToLoad);
 }

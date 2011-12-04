@@ -243,6 +243,7 @@ public:
 	inline MRenderer * getRenderer(void){ return m_renderer; }	
 
 private:
+
 	void loadLevelIfRequested(); // Checks if a level was requested to be loaded and loads it, called in the end of the logic loop
 
 	friend class MGame;

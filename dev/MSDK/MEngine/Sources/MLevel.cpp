@@ -573,6 +573,8 @@ void MLevel::changeCurrentSceneIfRequested()
 				game->onBeginScene();
 		}	
 	}
+
+	m_requestedSceneId = 0xFFFFFFFF; // reset requested scene
 }
 
 void MLevel::deleteScene(unsigned int id)
