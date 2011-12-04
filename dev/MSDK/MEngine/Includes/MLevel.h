@@ -118,9 +118,10 @@ public:
 	inline MScene * getSceneByIndex(unsigned int id){ return m_scenes[id]; }
 
 private:
-	void changeCurrentSceneIfRequested(); // Changes the scene, called in the end of the logic loop
 
-	friend class MGame;
+	void changeCurrentSceneIfRequested(); // Changes the scene, called in the end of the logic loop
+	
+	friend class MEngine;
 };
 
 #endif

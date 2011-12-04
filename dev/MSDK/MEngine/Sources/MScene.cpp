@@ -647,6 +647,25 @@ MOText * MScene::getTextByName(const char * name)
 	return NULL;
 }
 
+void MScene::begin(void)
+{
+	MEngine * engine = MEngine::getInstance();
+	MScriptContext * scriptContext = engine->getScriptContext();
+
+	updateObjectsMatrices();
+	playLoopSounds();
+	preparePhysics();
+
+	// run script
+	if(scriptContext)
+		scriptContext->runScript(getScriptFilename());
+}
+
+void MScene::end(void)
+{
+	stopAllSounds();
+}
+
 void MScene::updatePhysics(void)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
@@ -705,6 +724,20 @@ void MScene::updatePhysics(void)
 				entity->setRotation(rotation);
 			}
 		}
+	}
+}
+
+void MScene::updateObjectsBehaviors(void)
+{
+	unsigned int i;
+	unsigned int oSize = getObjectsNumber();
+	for(i=0; i<oSize; i++)
+	{
+		MObject3d * object = getObjectByIndex(i);
+		if(! object->isActive())
+			continue;
+			
+		object->updateBehaviors();
 	}
 }
 

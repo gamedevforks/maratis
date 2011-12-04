@@ -227,6 +227,9 @@ public:
 	// renderer manager
 	inline MRendererManager * getRendererManager(void){ return &m_rendererManager; }
 
+	// update requests
+	void updateRequests(void);
+
 	// level
 	void setLevel(MLevel * level);
 	bool loadLevel(const char * filename); // Loads level immediately (not safe from Lua!)

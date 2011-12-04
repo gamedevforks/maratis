@@ -153,7 +153,13 @@ void MOEntity::changeAnimation(unsigned int animationId)
 	{
 		m_currentLoop = 0;
 		m_animationId = animationId;
-		m_currentFrame = (float)mesh->getAnimsRanges()[m_animationId].start;
+		MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
+
+		if(m_animationSpeed >= 0)
+			m_currentFrame = (float)animRange->start;
+		else
+			m_currentFrame = (float)animRange->end;
+
 		return;
 	}
 
@@ -162,7 +168,12 @@ void MOEntity::changeAnimation(unsigned int animationId)
 	if(m_currentLoop == animRange->loops)
 	{
 		m_currentLoop = 0;
-		m_currentFrame = (float)mesh->getAnimsRanges()[m_animationId].start;
+		MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
+		
+		if(m_animationSpeed >= 0)
+			m_currentFrame = (float)animRange->start;
+		else
+			m_currentFrame = (float)animRange->end;
 	}
 }
 
@@ -238,10 +249,21 @@ bool MOEntity::isAnimationOver(void)
 		if(mesh->getAnimsRangesNumber() > 0)
 		{
 			MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
-			if(m_currentFrame >= animRange->end)
-				return true;
+
+			if(m_animationSpeed >= 0)
+			{
+				if(m_currentFrame >= animRange->end)
+					return true;
+				else
+					return false;
+			}
 			else
-				return false;
+			{
+				if(m_currentFrame <= animRange->end)
+					return true;
+				else
+					return false;
+			}
 		}
 	}
 
@@ -265,12 +287,12 @@ void MOEntity::update(void)
 				if(m_animationSpeed >= 0)
 				{
 					if(m_currentFrame > animRange->end)
-						m_currentFrame = (float)animRange->start + (m_currentFrame - animRange->end);
+						m_currentFrame = (float)animRange->start;
 				}
 				else // support backward animation
 				{
 					if(m_currentFrame < animRange->start)
-						m_currentFrame = (float)animRange->end - (animRange->start - m_currentFrame);
+						m_currentFrame = (float)animRange->end;
 				}
 			}
 			else if(m_currentLoop < animRange->loops)
@@ -284,7 +306,7 @@ void MOEntity::update(void)
 						if(m_currentLoop == animRange->loops)
 							m_currentFrame = (float)animRange->end;
 						else
-							m_currentFrame = (float)animRange->start + (m_currentFrame - animRange->end);
+							m_currentFrame = (float)animRange->start;
 					}
 				}
 				else // support backward animation
@@ -295,7 +317,7 @@ void MOEntity::update(void)
 						if(m_currentLoop == animRange->loops)
 							m_currentFrame = (float)animRange->start;
 						else
-							m_currentFrame = (float)animRange->end - (animRange->start - m_currentFrame);
+							m_currentFrame = (float)animRange->end;
 					}
 				}
 			}

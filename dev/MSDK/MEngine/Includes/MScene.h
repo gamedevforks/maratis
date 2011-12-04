@@ -148,6 +148,10 @@ public:
 	inline MOSound * getSoundByIndex(unsigned int index){ return m_sounds[index]; }
 	inline MOText * getTextByIndex(unsigned int index){ return m_texts[index]; }
 
+	// begin / end
+	void begin(void);
+	void end(void);
+
 	// physics
 	void preparePhysics(void);
 	void updatePhysics(void);
@@ -155,7 +159,8 @@ public:
 	// update
 	void update(void);
 
-	// update objects matrices
+	// update objects
+	void updateObjectsBehaviors(void);
 	void updateObjectsMatrices(void);
 
 	// draw

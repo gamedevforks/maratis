@@ -34,10 +34,11 @@
 void MGame::update(void)
 {
 	MEngine * engine = MEngine::getInstance();
+	MScriptContext * scriptContext = engine->getScriptContext();
 
-	// run script
-	if(engine->getScriptContext())
-		engine->getScriptContext()->callFunction("onSceneUpdate");
+	// update script
+	if(scriptContext)
+		scriptContext->callFunction("onSceneUpdate");
 
 	// get level
 	MLevel * level = MEngine::getInstance()->getLevel();
@@ -50,16 +51,7 @@ void MGame::update(void)
 		return;
 
 	// update behaviors
-	unsigned int i;
-	unsigned int oSize = scene->getObjectsNumber();
-	for(i=0; i<oSize; i++)
-	{
-		MObject3d * object = scene->getObjectByIndex(i);
-		if(! object->isActive())
-			continue;
-			
-		object->updateBehaviors();
-	}
+	scene->updateObjectsBehaviors();
 
 	// update scene
 	scene->update();
@@ -73,9 +65,8 @@ void MGame::update(void)
 	// flush input
 	engine->getInputContext()->flush();
 
-	// see if we should load requested scene or level (from lua)
-	engine->loadLevelIfRequested();
-  engine->getLevel()->changeCurrentSceneIfRequested();
+	// update postponed requests
+	engine->updateRequests();
 }
 
 void MGame::draw(void)
@@ -139,18 +130,8 @@ void MGame::onBeginScene(void)
 	if(! scene)
 		return;
 
-	// update objects
-	scene->updateObjectsMatrices();
-
-	// start sound
-	scene->playLoopSounds();
-
-	// prepare physics
-	scene->preparePhysics();
-
-	// run script
-	if(engine->getScriptContext())
-		engine->getScriptContext()->runScript(scene->getScriptFilename());
+	// begin scene
+	scene->begin();
 }
 
 void MGame::onEndScene(void)
@@ -168,5 +149,6 @@ void MGame::onEndScene(void)
 	if(! scene)
 		return;
 
-	scene->stopAllSounds();
+	// end scene
+	scene->end();
 }
