@@ -198,6 +198,7 @@ m_currentFrameBuffer(0)
 
 	// line
 	glLineWidth(1);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
 	// stencil
 	glClearStencil(0);
@@ -456,7 +457,7 @@ void MGLContext::texImage(unsigned int level, unsigned int width, unsigned int h
 	GLenum intFormat = format;
 	//if(type == M_FLOAT && mode == M_RGB)
 	//	intFormat = GL_RGB32F_ARB;
-
+	
 	glTexImage2D(GL_TEXTURE_2D, level, intFormat, width, height, 0, format, returnGLType(type), pixels);
 	if(level > 0)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
@@ -518,6 +519,23 @@ void MGLContext::getTexImage(unsigned int level, MImage * image)
 }
 
 // frame buffer
+void CHECK_FRAMEBUFFER_STATUS()
+{
+	GLenum status;
+	status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	
+	switch(status){
+		case GL_FRAMEBUFFER_COMPLETE:
+            break;
+          case GL_FRAMEBUFFER_UNSUPPORTED:
+			printf("couldn't find a supported config\n");
+			break;
+          default:
+            printf("error");
+	}
+}
+
+
 void MGLContext::createFrameBuffer(unsigned int * frameBufferId){
 	glGenFramebuffersEXT(1, frameBufferId);
 }
@@ -536,6 +554,8 @@ void MGLContext::attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, 
 }
 void MGLContext::attachFrameBufferRB(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int renderBufferId){
 	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, returnAttachType(attachment), GL_RENDERBUFFER_EXT, renderBufferId);
+
+	CHECK_FRAMEBUFFER_STATUS();
 }
 void MGLContext::setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size)
 {

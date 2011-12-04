@@ -867,7 +867,8 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
     [context makeCurrentContext];
 	
 	// title
-	setTitle(title);
+	if(title != NULL)
+		setTitle(title);
 	
 	// sync
 	GLint sync = 60;

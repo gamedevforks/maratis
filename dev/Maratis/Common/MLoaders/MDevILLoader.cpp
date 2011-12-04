@@ -103,18 +103,32 @@ bool M_saveImage(const char * filename, void * data, unsigned int quality, bool 
 	// bind this image name.
 	ilBindImage(ImgId);
 
+	MImage copy;
 	MImage * image = (MImage *)data;
 	unsigned int width = image->getWidth();
 	unsigned int height = image->getHeight();
 	unsigned int components = image->getComponents();
+
+	if(flip)
+	{
+		copy.create(M_UBYTE, width, height, components);
+
+		unsigned int y;
+		for(y=0; y<height; y++)
+		{
+			memcpy((char*)copy.getData() + y*width*components, (char*)image->getData() + (height - y - 1)*width*components, sizeof(char)*width*components);
+		}
+
+		image = &copy;
+	}
 
 	if(components == 3)
 		ilTexImage(width, height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, image->getData());
 	else if(components == 4)
 		ilTexImage(width, height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, image->getData());
 
-	if(flip)
-		iluFlipImage();
+	//if(flip)
+	//	iluFlipImage();
 
 	if(quality < 100)
 		ilSetInteger(IL_JPG_QUALITY, quality);

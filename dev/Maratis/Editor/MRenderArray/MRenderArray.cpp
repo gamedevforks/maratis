@@ -26,7 +26,7 @@
 #include "MRenderArray.h"
 
 
-#define M_MAX_ARRAY 30000
+#define M_MAX_ARRAY 100000
 
 static M_PRIMITIVE_TYPES g_primitiveType;
 static unsigned int g_verticesNumber;
