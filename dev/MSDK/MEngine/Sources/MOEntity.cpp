@@ -259,7 +259,7 @@ bool MOEntity::isAnimationOver(void)
 			}
 			else
 			{
-				if(m_currentFrame <= animRange->end)
+				if(m_currentFrame <= animRange->start)
 					return true;
 				else
 					return false;
