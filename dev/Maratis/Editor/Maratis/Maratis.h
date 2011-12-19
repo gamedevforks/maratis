@@ -251,6 +251,7 @@ public:
 	// selected objects
 	void activeSelection(void);
 	void selectAll(void);
+	void focusSelection(void);
 	void selectSameMesh(void);
 	void addSelectedObject(MObject3d * object);
 	bool isObjectSelected(MObject3d * object);

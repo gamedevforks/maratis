@@ -2750,6 +2750,10 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
                 if(! gui->isSomethingEditing())
                     UI->setTransformMode(M_TRANSFORM_ROTATION);
                 break;
+            case 'F':
+				if(! gui->isSomethingEditing())
+					maratis->focusSelection();
+                break;
             case MKEY_BACKSPACE:
             case MKEY_DELETE:
                 if((! gui->isSomethingEditing()) && (maratis->getSelectedObjectsNumber() > 0))
@@ -3252,7 +3256,7 @@ void MaratisUI::gameButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
                 scene->playLoopSounds();
                 
                 // hide mouse
-                MWindow::getInstance()->hideCursor();
+//                MWindow::getInstance()->hideCursor();
                 
                 // begin game
                 game->begin();

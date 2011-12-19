@@ -1714,6 +1714,54 @@ void Maratis::selectAll(void)
 	}
 }
 
+void Maratis::focusSelection(void)
+{
+	if(m_selectedObjects.empty())
+		return;
+
+	float distance = 0.0f;
+	MVector3 center(0, 0, 0);
+	for(std::vector <MObject3d *>::iterator itObj = m_selectedObjects.begin(); itObj != m_selectedObjects.end(); ++itObj)
+	{
+		MObject3d *pobj = *itObj;
+		center += pobj->getTransformedPosition();
+		switch(pobj->getType())
+		{
+			case M_OBJECT3D:
+			case M_OBJECT3D_BONE:
+			case M_OBJECT3D_CAMERA:
+			case M_OBJECT3D_LIGHT:
+			case M_OBJECT3D_SOUND:
+			case M_OBJECT3D_TEXT:
+				distance = 20.0f;
+				break;
+
+			case M_OBJECT3D_ENTITY:
+				{
+					MOEntity *pentity = (MOEntity*)pobj;
+					MBox3d *pbox = pentity->getBoundingBox();
+
+					MVector3 scale = pentity->getTransformedScale();
+					float maxScale = scale.x;
+					maxScale = MAX(maxScale, scale.y);
+					maxScale = MAX(maxScale, scale.z);
+
+					float radius = (*pbox->getMin() - *pbox->getMax()).getLength() * 1.5f * maxScale;
+					if(radius > distance)
+						distance = radius;
+				}
+				break;
+		}
+	}
+
+	center /= (float)m_selectedObjects.size();
+
+	MOCamera * camera = getPerspectiveVue();
+	MVector3 cameraAxis = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();
+	camera->setPosition(center - cameraAxis * distance);
+	camera->updateMatrix();
+}
+
 void Maratis::activeSelection(void)
 {
 	autoSave();
