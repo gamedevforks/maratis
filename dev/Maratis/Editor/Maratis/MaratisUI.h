@@ -94,10 +94,11 @@ public:
 	float m_editSize;
 	MString m_editText;
 
-	// rotation
-	MVector3 m_editPosition;
-	MVector3 m_editRotation;
-	MVector3 m_editScale;
+	// transform
+	MString		m_editParent;
+	MVector3	m_editPosition;
+	MVector3	m_editRotation;
+	MVector3	m_editScale;
 
 private:
 

@@ -682,22 +682,7 @@ void Maratis::linkSelectedObjects(void)
     
 	MObject3d * parent = m_selectedObjects[0];
 	for(i=1; i<oSize; i++)
-	{
-		MObject3d * object = m_selectedObjects[i];
-		object->linkTo(parent);
-        
-		// local matrix
-		MMatrix4x4 localMatrix = parent->getMatrix()->getInverse() * (*object->getMatrix());
-        
-		object->setPosition(localMatrix.getTranslationPart());
-		object->setEulerRotation(localMatrix.getEulerAngles());
-        
-		float xSize = localMatrix.getRotatedVector3(MVector3(1, 0, 0)).getLength();
-		float ySize = localMatrix.getRotatedVector3(MVector3(0, 1, 0)).getLength();
-		float zSize = localMatrix.getRotatedVector3(MVector3(0, 0, 1)).getLength();
-        
-		object->setScale(MVector3(xSize, ySize, zSize));
-	}
+		linkTwoObjects(parent, m_selectedObjects[i]);
 }
 
 void Maratis::unlinkSelectedObjects(void)
@@ -709,24 +694,48 @@ void Maratis::unlinkSelectedObjects(void)
 	for(i=0; i<oSize; i++)
 	{
 		MObject3d * object = m_selectedObjects[i];
-		MObject3d * parent = object->getParent();
-		if(parent)
-		{
-			object->unLink();
-            
-			// matrix
-			MMatrix4x4 * matrix = object->getMatrix();
-            
-			object->setPosition(matrix->getTranslationPart());
-			object->setEulerRotation(matrix->getEulerAngles());
-            
-			float xSize = matrix->getRotatedVector3(MVector3(1, 0, 0)).getLength();
-			float ySize = matrix->getRotatedVector3(MVector3(0, 1, 0)).getLength();
-			float zSize = matrix->getRotatedVector3(MVector3(0, 0, 1)).getLength();
-            
-			object->setScale(MVector3(xSize, ySize, zSize));
-		}
+		unlinkTwoObjects(object->getParent(), object);
 	}
+}
+
+void Maratis::linkTwoObjects(MObject3d *parent, MObject3d *child)
+{
+	if(parent == NULL || child == NULL)
+		return;
+
+	child->linkTo(parent);
+    
+	// local matrix
+	MMatrix4x4 localMatrix = parent->getMatrix()->getInverse() * (*child->getMatrix());
+    
+	child->setPosition(localMatrix.getTranslationPart());
+	child->setEulerRotation(localMatrix.getEulerAngles());
+    
+	float xSize = localMatrix.getRotatedVector3(MVector3(1, 0, 0)).getLength();
+	float ySize = localMatrix.getRotatedVector3(MVector3(0, 1, 0)).getLength();
+	float zSize = localMatrix.getRotatedVector3(MVector3(0, 0, 1)).getLength();
+    
+	child->setScale(MVector3(xSize, ySize, zSize));
+}
+
+void Maratis::unlinkTwoObjects(MObject3d *parent, MObject3d *child)
+{
+	if(parent == NULL || child == NULL)
+		return;
+
+	child->unLink();
+    
+	// matrix
+	MMatrix4x4 * matrix = child->getMatrix();
+    
+	child->setPosition(matrix->getTranslationPart());
+	child->setEulerRotation(matrix->getEulerAngles());
+    
+	float xSize = matrix->getRotatedVector3(MVector3(1, 0, 0)).getLength();
+	float ySize = matrix->getRotatedVector3(MVector3(0, 1, 0)).getLength();
+	float zSize = matrix->getRotatedVector3(MVector3(0, 0, 1)).getLength();
+    
+	child->setScale(MVector3(xSize, ySize, zSize));
 }
 
 void Maratis::deleteSelectedObjects(void)

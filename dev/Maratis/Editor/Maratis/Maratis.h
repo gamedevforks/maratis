@@ -247,6 +247,8 @@ public:
 	// link
 	void linkSelectedObjects(void);
 	void unlinkSelectedObjects(void);
+	void linkTwoObjects(MObject3d *parent, MObject3d *child);
+	void unlinkTwoObjects(MObject3d *parent, MObject3d *child);
 
 	// selected objects
 	void activeSelection(void);

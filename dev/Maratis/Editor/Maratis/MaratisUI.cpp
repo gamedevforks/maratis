@@ -532,6 +532,13 @@ void MaratisUI::editObject(MObject3d * object)
 	// transform
 	if(m_tabTransform->isPressed())
 	{
+		// parent
+		MObject3d *parent = object->getParent();
+		m_editParent = parent == NULL ? "..." : parent->getName();
+		addVariableName(m_editWin, "parent", &position);
+		addValue(m_editWin, "", M_VAR_STRING, &m_editParent, &position);
+		position += MVector2(0, ySpace);
+
 		m_editPosition = object->getPosition();
 		addVariableName(m_editWin, "position", &position);
 		addValue(m_editWin, "x", M_VAR_FLOAT, &m_editPosition.x, &position);
@@ -2239,17 +2246,35 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             
             maratis->autoSave();
             
-            // rotation
-            if(	edit->getVariablePointer() == &UI->m_editPosition.x ||
-               edit->getVariablePointer() == &UI->m_editPosition.y ||
-               edit->getVariablePointer() == &UI->m_editPosition.z)
+            // parent
+            if(edit->getVariablePointer() == &UI->m_editParent)
+            {
+				MObject3d *parent = NULL;
+				// Either reset curren object's parent to NULL or try setting a new parent
+				if(UI->m_editParent.getData()[0] == '\0' || strcmp(UI->m_editParent.getData(), "...") == 0)
+				{
+					Maratis::getInstance()->unlinkTwoObjects(object->getParent(), object);
+				}
+				else
+				{
+					MObject3d *parent = MEngine::getInstance()->getLevel()->getCurrentScene()->getObjectByName(UI->m_editParent.getData());
+					if(parent != NULL)
+						 Maratis::getInstance()->linkTwoObjects(parent, object);
+				}
+            }
+
+            // position
+			else 
+				if(edit->getVariablePointer() == &UI->m_editPosition.x ||
+				   edit->getVariablePointer() == &UI->m_editPosition.y ||
+				   edit->getVariablePointer() == &UI->m_editPosition.z)
             {
                 object->setPosition(UI->m_editPosition);
             }
             
             // rotation
             else
-                if(	edit->getVariablePointer() == &UI->m_editRotation.x ||
+                if(edit->getVariablePointer() == &UI->m_editRotation.x ||
                    edit->getVariablePointer() == &UI->m_editRotation.y ||
                    edit->getVariablePointer() == &UI->m_editRotation.z)
                 {
@@ -2258,7 +2283,7 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             
             // scale
                 else
-                    if(	edit->getVariablePointer() == &UI->m_editScale.x ||
+                    if(edit->getVariablePointer() == &UI->m_editScale.x ||
                        edit->getVariablePointer() == &UI->m_editScale.y ||
                        edit->getVariablePointer() == &UI->m_editScale.z)
                     {
