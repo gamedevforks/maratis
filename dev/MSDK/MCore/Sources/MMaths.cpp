@@ -85,6 +85,21 @@ void sortFloatList(float floatList[], int start, int end)
 		sortFloatList(floatList, start, j);
 }
 
+float loopFloat(float val, float min, float max)
+{
+	float d = max - min;
+	if(d<=0)
+		return min;
+	
+	float v = (val - min) / d;
+	v = v - (float)((int)v);
+	
+	if(v < 0)
+		return max + (d*v);
+	else
+		return min + (d*v);
+}
+
 unsigned int getNextPowerOfTwo(unsigned int x)
 {
 	if(x == 0)

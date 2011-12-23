@@ -84,7 +84,6 @@ int main(int argc, char **argv)
 {
 	setlocale(LC_NUMERIC, "C");
 
-
 	// get engine (first time call onstructor)
 	MEngine * engine = MEngine::getInstance();
 
@@ -133,7 +132,9 @@ int main(int argc, char **argv)
 	// load project
 	if(argc > 1)
     {
-		maratis->loadProject(argv[1]);
+		char filename[256];
+		getGlobalFilename(filename, window->getCurrentDirectory(), argv[1]);
+		maratis->loadProject(filename);
 	}
 
 	// time

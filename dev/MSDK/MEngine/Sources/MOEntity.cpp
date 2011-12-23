@@ -284,20 +284,12 @@ void MOEntity::update(void)
 			if(animRange->loops < 0)
 			{
 				m_currentFrame += m_animationSpeed;
-				if(m_animationSpeed >= 0)
-				{
-					if(m_currentFrame > animRange->end)
-						m_currentFrame = (float)animRange->start;
-				}
-				else // support backward animation
-				{
-					if(m_currentFrame < animRange->start)
-						m_currentFrame = (float)animRange->end;
-				}
+				m_currentFrame = loopFloat(m_currentFrame, (float)animRange->start, (float)animRange->end + 1);
 			}
 			else if(m_currentLoop < animRange->loops)
 			{
 				m_currentFrame += m_animationSpeed;
+				
 				if(m_animationSpeed >= 0)
 				{
 					if(m_currentFrame > animRange->end)
@@ -306,7 +298,7 @@ void MOEntity::update(void)
 						if(m_currentLoop == animRange->loops)
 							m_currentFrame = (float)animRange->end;
 						else
-							m_currentFrame = (float)animRange->start;
+							m_currentFrame = loopFloat(m_currentFrame, (float)animRange->start, (float)animRange->end + 1);
 					}
 				}
 				else // support backward animation
@@ -317,7 +309,7 @@ void MOEntity::update(void)
 						if(m_currentLoop == animRange->loops)
 							m_currentFrame = (float)animRange->start;
 						else
-							m_currentFrame = (float)animRange->end;
+							m_currentFrame = loopFloat(m_currentFrame, (float)animRange->start, (float)animRange->end + 1);
 					}
 				}
 			}

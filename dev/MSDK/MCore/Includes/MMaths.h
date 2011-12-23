@@ -67,6 +67,9 @@
 #define isPowerOfTwo(x)	(((x&(x - 1)) == 0) && (x != 0))
 M_CORE_EXPORT unsigned int getNextPowerOfTwo(unsigned int x);
 
+// loop
+M_CORE_EXPORT float loopFloat(float val, float min, float max);
+
 
 // structs
 struct M_CORE_EXPORT MRange
