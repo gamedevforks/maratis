@@ -1185,6 +1185,14 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 	
 	
+	// current view
+	int currentViewport[4];
+	MMatrix4x4 currentViewMatrix;
+	MMatrix4x4 currentProjMatrix;
+	render->getViewport(currentViewport);
+	render->getModelViewMatrix(&currentViewMatrix);
+	render->getProjectionMatrix(&currentProjMatrix);
+
 	// current render buffer
 	unsigned int currentFrameBuffer = 0;
 	render->getCurrentFrameBuffer(&currentFrameBuffer);
@@ -1421,10 +1429,16 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	// restore camera after shadow pass
 	if(restoreCamera)
 	{
-		int * viewport = camera->getCurrentViewport();
-		render->setViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-	
-		camera->enable();
+		render->setViewport(currentViewport[0], currentViewport[1], currentViewport[2], currentViewport[3]);
+		
+		render->setMatrixMode(M_MATRIX_PROJECTION);
+		render->loadIdentity();
+		render->multMatrix(&currentProjMatrix);
+
+		render->setMatrixMode(M_MATRIX_MODELVIEW);
+		render->loadIdentity();
+		render->multMatrix(&currentViewMatrix);
+
 		render->clear(M_BUFFER_DEPTH);
 	}
 	
