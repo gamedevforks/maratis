@@ -152,6 +152,7 @@ private:
 	MGuiButton * m_tabTransform;
 	MGuiButton * m_tabProperties;
 	MGuiButton * m_tabBehavior;
+    MGuiButton * m_tabObjects;
 
 	MGuiImage * m_sceneProperties;
 	MGuiImage * m_projProperties;
@@ -363,6 +364,10 @@ public:
 	static void tabTransformEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void tabPropertiesEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void tabBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents);
+    static void tabObjectsEvents(MGuiButton * button, MGuiEvent * guiEvents);
+    
+    // object button events
+    static void objectButtonEvents(MGuiButton * button, MGuiEvent * guiEvents);
 
 	// text
 	static void textAlignMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents);
