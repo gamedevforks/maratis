@@ -156,6 +156,7 @@ private:
 
 	MGuiImage * m_sceneProperties;
 	MGuiImage * m_projProperties;
+	MGuiImage * m_objectListImage;
 
 	// renderer
 	MGuiMenu * m_rendererMenu;

@@ -21,6 +21,8 @@
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 //
 //========================================================================
+// Object-list by Mario Pispek, 2011
+
 
 #ifdef _WIN32
 #define SCRIPT_READER "SciTe.exe"
@@ -206,101 +208,6 @@ void MaratisUI::editProject(void)
 	m_projProperties->setVisible(true);
 	m_tabText->setVisible(true);
 	
-	//m_objectEdit->setVisible(true);
-	//m_objectEdit->setText(scene->getName());
-	
-	/*
-     // script
-     {
-     // color
-     MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
-     imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
-     
-     // script
-     addVariableName(m_editWin, "script", &position);
-     position += MVector2(0, 5);
-     
-     // text
-     int textLength = 0;
-     MGuiText * text;
-     
-     const char * script = scene->getScriptFilename();
-     if(script)
-     {
-     char rep[256];
-     char name[256];
-     
-     getRepertory(rep, script);
-     getLocalFilename(name, rep, script);
-     
-     text = new MGuiText(name, MVector2(28, position.y), size, color);
-     textLength = (int)text->getScale().x + 50 + 20;
-     }
-     else
-     {
-     text = new MGuiText("none", MVector2(28, position.y), size, color);
-     textLength = (int)text->getScale().x + 50;
-     }
-     
-     // image
-     MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
-     m_editWin->addImage(image);
-     
-     image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
-     m_editWin->addImage(image);
-     
-     // add text
-     m_editWin->addText(text);
-     
-     // delete script
-     float x = textLength - 14.0f;
-     if(script)
-     {
-     MGuiButton * button = new MGuiButton(MVector2(x, position.y), MVector2(16, 16), color, deleteScriptEvents);
-     button->setHighLightColor(highLightColor);
-     button->setPressedColor(pressColor);
-     button->setNormalTexture("gui/buttonDelete.tga");
-     m_editWin->addButton(button);
-     x -= 20;
-     }
-     
-     // open script
-     MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadScriptEvents);
-     button->setHighLightColor(highLightColor);
-     button->setPressedColor(pressColor);
-     button->setNormalTexture("gui/buttonOpen.tga");
-     m_editWin->addButton(button);
-     
-     position += MVector2(0, ySpace*3);
-     }
-     
-     // dataMode
-     addVariableName(m_editWin, "data", &position);
-     
-     MGuiMenu * dataMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), dataMenuEvents);
-     
-     dataMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
-     dataMenu->setTextColor(MVector4(1, 1, 1, 1));
-     
-     dataMenu->addSimpleButton("Static", NULL);
-     dataMenu->addSimpleButton("Dynamic", NULL);
-     //dataMenu->addSimpleButton("Stream", NULL);
-     
-     dataMenu->setMenuId((unsigned int)scene->getDataMode());
-     dataMenu->getWindowMenu()->setShadow(true);
-     dataMenu->getWindowMenu()->setNormalColor(menuColor);
-     
-     m_editWin->addMenu(dataMenu);
-     position += MVector2(0, ySpace*2);
-     
-     // gravity
-     MVector3 * gravity = scene->getGravity();
-     addVariableName(m_editWin, "gravity", &position);
-     addValue(m_editWin, "x", M_VAR_FLOAT, &gravity->x, &position);
-     addValue(m_editWin, "y", M_VAR_FLOAT, &gravity->y, &position);
-     addValue(m_editWin, "z", M_VAR_FLOAT, &gravity->z, &position);
-     position += MVector2(0, ySpace);
-	 */
 	
 	m_editWin->resizeScroll();
 }
@@ -336,6 +243,7 @@ void MaratisUI::editScene(void)
 	m_editTopWin->setYScale(viewPropHeight*2);
     
 	m_editedObject = NULL;
+	m_objectListImage->setVisible(false);
 	m_tabImage->setVisible(false);
 	m_objectEdit->setVisible(false);
 	m_cameraWin->setVisible(false);
@@ -474,12 +382,13 @@ void MaratisUI::editObject(MObject3d * object)
 	MVector2 position = MVector2(15, 40);
     
 	// other properties
+	m_objectListImage->setVisible(false);
 	m_sceneProperties->setVisible(false);
 	m_projProperties->setVisible(false);
+	m_objectEdit->setVisible(false);
 	m_tabText->setVisible(false);
     
     // should always be visible
-    m_tabObjects->setVisible(true);
     m_tabImage->setVisible(true);
     
 	// NULL
@@ -491,18 +400,18 @@ void MaratisUI::editObject(MObject3d * object)
         m_tabTransform->setVisible(false);
         m_tabProperties->setVisible(false);
         m_tabBehavior->setVisible(false);
+		m_tabObjects->setVisible(false);
         
-        //m_editWin->resizeScroll();
-        //editProject();
-        m_tabObjects->unPressGroupButtons();
-        m_tabObjects->setPressed(true);
+        //m_tabObjects->unPressGroupButtons();
+        //m_tabObjects->setPressed(true);
+		m_tabText->setVisible(true);
+		m_objectListImage->setVisible(true);
         
         m_cameraWin->setVisible(false);
         m_editWin->setYPosition(headHeight + viewPropHeight*2);
         m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
         m_editTopWin->setYScale(viewPropHeight*2);
     }
-    
     else
     {
         // object properties
@@ -512,15 +421,28 @@ void MaratisUI::editObject(MObject3d * object)
             m_editedObject = object;
         }
         
-        const char * name = object->getName();
-        if(name)
-            m_objectEdit->setText(name);
+		if(m_tabObjects->isPressed())
+		{
+			// object-list title
+			m_tabText->setVisible(true);
+		}
+		else
+		{
+			// object name
+			const char * name = object->getName();
+			if(name)
+				m_objectEdit->setText(name);
         
-        m_objectEdit->setVisible(true);
+			m_objectEdit->setVisible(true);
+		}
+		
+		// tabs
         m_tabTransform->setVisible(true);
         m_tabProperties->setVisible(true);
         m_tabBehavior->setVisible(true);
+		m_tabObjects->setVisible(true);
         
+		
         if(object->getType() == M_OBJECT3D_CAMERA && !m_tabObjects->isPressed())
         {
             int previewHeight = 230;
@@ -539,714 +461,714 @@ void MaratisUI::editObject(MObject3d * object)
             m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
             m_editTopWin->setYScale(viewPropHeight*2);
         }
-    }
     
     
-	// transform
-	if(m_tabTransform->isPressed())
-	{
-		// parent
-		MObject3d *parent = object->getParent();
-		m_editParent = parent == NULL ? "..." : parent->getName();
-		addVariableName(m_editWin, "parent", &position);
-		addValue(m_editWin, "", M_VAR_STRING, &m_editParent, &position);
-		position += MVector2(0, ySpace);
-
-		m_editPosition = object->getPosition();
-		addVariableName(m_editWin, "position", &position);
-		addValue(m_editWin, "x", M_VAR_FLOAT, &m_editPosition.x, &position);
-		addValue(m_editWin, "y", M_VAR_FLOAT, &m_editPosition.y, &position);
-		addValue(m_editWin, "z", M_VAR_FLOAT, &m_editPosition.z, &position);
-		position += MVector2(0, ySpace);
-        
-		m_editRotation = object->getEulerRotation();
-		addVariableName(m_editWin, "rotation", &position);
-		addValue(m_editWin, "x", M_VAR_FLOAT, &m_editRotation.x, &position);
-		addValue(m_editWin, "y", M_VAR_FLOAT, &m_editRotation.y, &position);
-		addValue(m_editWin, "z", M_VAR_FLOAT, &m_editRotation.z, &position);
-		position += MVector2(0, ySpace);
-        
-		m_editScale = object->getScale();
-		addVariableName(m_editWin, "scale", &position);
-		addValue(m_editWin, "x", M_VAR_FLOAT, &m_editScale.x, &position);
-		addValue(m_editWin, "y", M_VAR_FLOAT, &m_editScale.y, &position);
-		addValue(m_editWin, "z", M_VAR_FLOAT, &m_editScale.z, &position);
-		position += MVector2(0, ySpace);
-        
-		m_editWin->resizeScroll();
-		return;
-	}
-    
-	if(m_tabProperties->isPressed())
-	{
-		switch(object->getType())
+		// transform
+		if(m_tabTransform->isPressed())
 		{
-            case M_OBJECT3D_ENTITY:
+			// parent
+			MObject3d *parent = object->getParent();
+			m_editParent = parent == NULL ? "..." : parent->getName();
+			addVariableName(m_editWin, "parent", &position);
+			addValue(m_editWin, "", M_VAR_STRING, &m_editParent, &position);
+			position += MVector2(0, ySpace);
+			
+			m_editPosition = object->getPosition();
+			addVariableName(m_editWin, "position", &position);
+			addValue(m_editWin, "x", M_VAR_FLOAT, &m_editPosition.x, &position);
+			addValue(m_editWin, "y", M_VAR_FLOAT, &m_editPosition.y, &position);
+			addValue(m_editWin, "z", M_VAR_FLOAT, &m_editPosition.z, &position);
+			position += MVector2(0, ySpace);
+			
+			m_editRotation = object->getEulerRotation();
+			addVariableName(m_editWin, "rotation", &position);
+			addValue(m_editWin, "x", M_VAR_FLOAT, &m_editRotation.x, &position);
+			addValue(m_editWin, "y", M_VAR_FLOAT, &m_editRotation.y, &position);
+			addValue(m_editWin, "z", M_VAR_FLOAT, &m_editRotation.z, &position);
+			position += MVector2(0, ySpace);
+			
+			m_editScale = object->getScale();
+			addVariableName(m_editWin, "scale", &position);
+			addValue(m_editWin, "x", M_VAR_FLOAT, &m_editScale.x, &position);
+			addValue(m_editWin, "y", M_VAR_FLOAT, &m_editScale.y, &position);
+			addValue(m_editWin, "z", M_VAR_FLOAT, &m_editScale.z, &position);
+			position += MVector2(0, ySpace);
+			
+			m_editWin->resizeScroll();
+			return;
+		}
+		
+		if(m_tabProperties->isPressed())
+		{
+			switch(object->getType())
 			{
-				MOEntity * entity = (MOEntity *)object;
-				MMeshRef * meshRef = entity->getMeshRef();
-				MMesh * mesh = meshRef->getMesh();
-                
-				// data ref
-				if(meshRef)
+				case M_OBJECT3D_ENTITY:
 				{
-					char rep[256];
-					char name[256];
-					getRepertory(rep, meshRef->getFilename());
-					getLocalFilename(name, rep, meshRef->getFilename());
-                    
-					addVariableName(m_editWin, "Mesh", &position);
-					addValue(m_editWin, name, M_VAR_NONE, NULL, &position);
-                    
-					position += MVector2(0, ySpace);
-				}
-                
-				// anims
-				if(mesh)
-				{
-					if(mesh->getAnimsRangesNumber() > 0)
+					MOEntity * entity = (MOEntity *)object;
+					MMeshRef * meshRef = entity->getMeshRef();
+					MMesh * mesh = meshRef->getMesh();
+					
+					// data ref
+					if(meshRef)
 					{
-						// text
-						MGuiText * text = new MGuiText("animation", position, size, variableColor);
-						m_editWin->addText(text);
+						char rep[256];
+						char name[256];
+						getRepertory(rep, meshRef->getFilename());
+						getLocalFilename(name, rep, meshRef->getFilename());
+						
+						addVariableName(m_editWin, "Mesh", &position);
+						addValue(m_editWin, name, M_VAR_NONE, NULL, &position);
+						
 						position += MVector2(0, ySpace);
-                        
-						// image
-						MGuiImage * image = new MGuiImage("gui/imgAnim.tga", MVector2(5, position.y), MVector2(128, 32), MVector4(0, 0, 0, 0.2f));
-						m_editWin->addImage(image);
-                        
-						// left button
-						MGuiButton * button = new MGuiButton(MVector2(21, position.y + 8), MVector2(16, 16), color, leftAnimIdEvents);
-						button->setHighLightColor(highLightColor);
-						button->setPressedColor(pressColor);
-						button->setNormalTexture("gui/buttonLeft.tga");
-						m_editWin->addButton(button);
-                        
-						// right button
-						button = new MGuiButton(MVector2(101, position.y + 8), MVector2(16, 16), color, rightAnimIdEvents);
-						button->setHighLightColor(highLightColor);
-						button->setPressedColor(pressColor);
-						button->setNormalTexture("gui/buttonRight.tga");
-						m_editWin->addButton(button);
-                        
-						// id
-						m_animIdText = new MGuiText("", MVector2(40, position.y + 8), size, color);
-						updateAnimIdText(entity);
-						m_editWin->addText(m_animIdText);
-                        
-						position += MVector2(0, ySpace*3);
 					}
-					else
+					
+					// anims
+					if(mesh)
 					{
-						MVector4 grayColor(0.5f, 0.5f, 0.5f, 1);
-                        
-						// text
-						MGuiText * text = new MGuiText("animation", position, size, grayColor);
-						m_editWin->addText(text);
-						position += MVector2(0, ySpace);
-                        
-						// image
-						MGuiImage * image = new MGuiImage("gui/imgAnim.tga", MVector2(5, position.y), MVector2(128, 32), MVector4(0.5f, 0.5f, 0.5f, 0.2f));
-						m_editWin->addImage(image);
-                        
-						// left button
-						image = new MGuiImage("gui/buttonLeft.tga", MVector2(21, position.y + 8), MVector2(16, 16), grayColor);
-						m_editWin->addImage(image);
-                        
-						// right button
-						image = new MGuiImage("gui/buttonRight.tga", MVector2(101, position.y + 8), MVector2(16, 16), grayColor);
-						m_editWin->addImage(image);
-                        
-						// id
-						m_animIdText = new MGuiText("0/0", MVector2(53, position.y + 8), size, grayColor);
-						m_editWin->addText(m_animIdText);
-                        
-						position += MVector2(0, ySpace*3);
+						if(mesh->getAnimsRangesNumber() > 0)
+						{
+							// text
+							MGuiText * text = new MGuiText("animation", position, size, variableColor);
+							m_editWin->addText(text);
+							position += MVector2(0, ySpace);
+							
+							// image
+							MGuiImage * image = new MGuiImage("gui/imgAnim.tga", MVector2(5, position.y), MVector2(128, 32), MVector4(0, 0, 0, 0.2f));
+							m_editWin->addImage(image);
+							
+							// left button
+							MGuiButton * button = new MGuiButton(MVector2(21, position.y + 8), MVector2(16, 16), color, leftAnimIdEvents);
+							button->setHighLightColor(highLightColor);
+							button->setPressedColor(pressColor);
+							button->setNormalTexture("gui/buttonLeft.tga");
+							m_editWin->addButton(button);
+							
+							// right button
+							button = new MGuiButton(MVector2(101, position.y + 8), MVector2(16, 16), color, rightAnimIdEvents);
+							button->setHighLightColor(highLightColor);
+							button->setPressedColor(pressColor);
+							button->setNormalTexture("gui/buttonRight.tga");
+							m_editWin->addButton(button);
+							
+							// id
+							m_animIdText = new MGuiText("", MVector2(40, position.y + 8), size, color);
+							updateAnimIdText(entity);
+							m_editWin->addText(m_animIdText);
+							
+							position += MVector2(0, ySpace*3);
+						}
+						else
+						{
+							MVector4 grayColor(0.5f, 0.5f, 0.5f, 1);
+							
+							// text
+							MGuiText * text = new MGuiText("animation", position, size, grayColor);
+							m_editWin->addText(text);
+							position += MVector2(0, ySpace);
+							
+							// image
+							MGuiImage * image = new MGuiImage("gui/imgAnim.tga", MVector2(5, position.y), MVector2(128, 32), MVector4(0.5f, 0.5f, 0.5f, 0.2f));
+							m_editWin->addImage(image);
+							
+							// left button
+							image = new MGuiImage("gui/buttonLeft.tga", MVector2(21, position.y + 8), MVector2(16, 16), grayColor);
+							m_editWin->addImage(image);
+							
+							// right button
+							image = new MGuiImage("gui/buttonRight.tga", MVector2(101, position.y + 8), MVector2(16, 16), grayColor);
+							m_editWin->addImage(image);
+							
+							// id
+							m_animIdText = new MGuiText("0/0", MVector2(53, position.y + 8), size, grayColor);
+							m_editWin->addText(m_animIdText);
+							
+							position += MVector2(0, ySpace*3);
+						}
 					}
-				}
-                
-				// invisible
-				m_editInvisible = entity->isInvisible();
-				addVariableName(m_editWin, "invisible", &position);
-				addValue(m_editWin, "", M_VAR_BOOL, &m_editInvisible, &position);
-				position += MVector2(0, ySpace);
-                
-				// physics
-				{		
-					MPhysicsProperties * phyProps = entity->getPhysicsProperties();
-                    
-					m_editPhysics = (phyProps != NULL);
-					addVariableName(m_editWin, "Physics", &position);
-					addValue(m_editWin, "", M_VAR_BOOL, &m_editPhysics, &position);
+					
+					// invisible
+					m_editInvisible = entity->isInvisible();
+					addVariableName(m_editWin, "invisible", &position);
+					addValue(m_editWin, "", M_VAR_BOOL, &m_editInvisible, &position);
 					position += MVector2(0, ySpace);
-                    
-					if(phyProps)
-					{
-						// shape
-						MGuiText * text = new MGuiText("shape", position, size, variableColor);
-						m_editWin->addText(text);
-						position += MVector2(0, ySpace);
-                        
-						MGuiMenu * menu = new MGuiMenu(MVector2(position.x+10, position.y), MVector2(10, 10), MVector4(1, 1, 1, 0), collisionShapeEvents);
-						menu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
-						menu->setTextColor(MVector4(1, 1, 1, 1));
-						menu->addSimpleButton(" Box ", NULL);
-						menu->addSimpleButton(" Sphere ", NULL);
-						menu->addSimpleButton(" Cone ", NULL);
-						menu->addSimpleButton(" Capsule ", NULL);
-						menu->addSimpleButton(" Cylinder ", NULL);
-						menu->addSimpleButton(" Convex-hull ", NULL);
-						menu->addSimpleButton(" Triangle-mesh ", NULL);
-						menu->getWindowMenu()->setShadow(true);
-						menu->getWindowMenu()->setNormalColor(menuColor);
-						m_editWin->addMenu(menu);
-                        
-						menu->setMenuId((int)phyProps->getCollisionShape());
-						position += MVector2(0, ySpace*2);
-                        
-						// ghost
-						m_editGhost = phyProps->isGhost();
-						addVariableName(m_editWin, "ghost", &position);
-						addValue(m_editWin, "", M_VAR_BOOL, &m_editGhost, &position);
+					
+					// physics
+					{		
+						MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+						
+						m_editPhysics = (phyProps != NULL);
+						addVariableName(m_editWin, "Physics", &position);
+						addValue(m_editWin, "", M_VAR_BOOL, &m_editPhysics, &position);
 						position += MVector2(0, ySpace);
 						
-						if(! m_editGhost)
+						if(phyProps)
 						{
-							m_editMass = phyProps->getMass();
-							m_editFriction = phyProps->getFriction();
-							m_editRestitution = phyProps->getRestitution();
-							
-							addVariableName(m_editWin, "properties", &position);
-							addValue(m_editWin, "mass", M_VAR_FLOAT, &m_editMass, &position);
-							addValue(m_editWin, "fric", M_VAR_FLOAT, &m_editFriction, &position);
-							addValue(m_editWin, "rest", M_VAR_FLOAT, &m_editRestitution, &position);
-							
+							// shape
+							MGuiText * text = new MGuiText("shape", position, size, variableColor);
+							m_editWin->addText(text);
 							position += MVector2(0, ySpace);
 							
-							// damping
-							m_editLinearDamping = phyProps->getLinearDamping();
-							m_editAngularDamping = phyProps->getAngularDamping();
-							addVariableName(m_editWin, "damping", &position);
-							addValue(m_editWin, "lin", M_VAR_FLOAT, &m_editLinearDamping, &position);
-							addValue(m_editWin, "ang", M_VAR_FLOAT, &m_editAngularDamping, &position);
-							position += MVector2(0, ySpace);
-                            
-							// angular factor
-							m_editAngularFactor = phyProps->getAngularFactor();
-							addVariableName(m_editWin, "angularFactor", &position);
-							addValue(m_editWin, "", M_VAR_FLOAT, &m_editAngularFactor, &position);
-							position += MVector2(0, ySpace);
-                            
-							// linear factor
-							MVector3 * linearFactor = phyProps->getLinearFactor();
-							addVariableName(m_editWin, "linearFactor", &position);
-							addValue(m_editWin, "x", M_VAR_FLOAT, &linearFactor->x, &position);
-							addValue(m_editWin, "y", M_VAR_FLOAT, &linearFactor->y, &position);
-							addValue(m_editWin, "z", M_VAR_FLOAT, &linearFactor->z, &position);
+							MGuiMenu * menu = new MGuiMenu(MVector2(position.x+10, position.y), MVector2(10, 10), MVector4(1, 1, 1, 0), collisionShapeEvents);
+							menu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
+							menu->setTextColor(MVector4(1, 1, 1, 1));
+							menu->addSimpleButton(" Box ", NULL);
+							menu->addSimpleButton(" Sphere ", NULL);
+							menu->addSimpleButton(" Cone ", NULL);
+							menu->addSimpleButton(" Capsule ", NULL);
+							menu->addSimpleButton(" Cylinder ", NULL);
+							menu->addSimpleButton(" Convex-hull ", NULL);
+							menu->addSimpleButton(" Triangle-mesh ", NULL);
+							menu->getWindowMenu()->setShadow(true);
+							menu->getWindowMenu()->setNormalColor(menuColor);
+							m_editWin->addMenu(menu);
+							
+							menu->setMenuId((int)phyProps->getCollisionShape());
+							position += MVector2(0, ySpace*2);
+							
+							// ghost
+							m_editGhost = phyProps->isGhost();
+							addVariableName(m_editWin, "ghost", &position);
+							addValue(m_editWin, "", M_VAR_BOOL, &m_editGhost, &position);
 							position += MVector2(0, ySpace);
 							
-							// constraint
+							if(! m_editGhost)
 							{
-								MPhysicsConstraint * constraint = phyProps->getConstraint();
+								m_editMass = phyProps->getMass();
+								m_editFriction = phyProps->getFriction();
+								m_editRestitution = phyProps->getRestitution();
 								
-								m_editConstraint = (constraint != NULL);
-								addVariableName(m_editWin, "Constraint", &position);
-								addValue(m_editWin, "", M_VAR_BOOL, &m_editConstraint, &position);
+								addVariableName(m_editWin, "properties", &position);
+								addValue(m_editWin, "mass", M_VAR_FLOAT, &m_editMass, &position);
+								addValue(m_editWin, "fric", M_VAR_FLOAT, &m_editFriction, &position);
+								addValue(m_editWin, "rest", M_VAR_FLOAT, &m_editRestitution, &position);
+								
 								position += MVector2(0, ySpace);
 								
-								if(constraint)
+								// damping
+								m_editLinearDamping = phyProps->getLinearDamping();
+								m_editAngularDamping = phyProps->getAngularDamping();
+								addVariableName(m_editWin, "damping", &position);
+								addValue(m_editWin, "lin", M_VAR_FLOAT, &m_editLinearDamping, &position);
+								addValue(m_editWin, "ang", M_VAR_FLOAT, &m_editAngularDamping, &position);
+								position += MVector2(0, ySpace);
+								
+								// angular factor
+								m_editAngularFactor = phyProps->getAngularFactor();
+								addVariableName(m_editWin, "angularFactor", &position);
+								addValue(m_editWin, "", M_VAR_FLOAT, &m_editAngularFactor, &position);
+								position += MVector2(0, ySpace);
+								
+								// linear factor
+								MVector3 * linearFactor = phyProps->getLinearFactor();
+								addVariableName(m_editWin, "linearFactor", &position);
+								addValue(m_editWin, "x", M_VAR_FLOAT, &linearFactor->x, &position);
+								addValue(m_editWin, "y", M_VAR_FLOAT, &linearFactor->y, &position);
+								addValue(m_editWin, "z", M_VAR_FLOAT, &linearFactor->z, &position);
+								position += MVector2(0, ySpace);
+								
+								// constraint
 								{
-									MVector3 pivot;
-									MVector3 lowerLinearLimit;
-									MVector3 upperLinearLimit;
-									MVector3 lowerAngularLimit;
-									MVector3 upperAngularLimit;
+									MPhysicsConstraint * constraint = phyProps->getConstraint();
 									
-									// parent
-									addVariableName(m_editWin, "parent", &position);
-									addValue(m_editWin, "", M_VAR_STRING, &constraint->parentName, &position);
+									m_editConstraint = (constraint != NULL);
+									addVariableName(m_editWin, "Constraint", &position);
+									addValue(m_editWin, "", M_VAR_BOOL, &m_editConstraint, &position);
 									position += MVector2(0, ySpace);
 									
-									// pivot
-									addVariableName(m_editWin, "pivot", &position);
-									addValue(m_editWin, "x", M_VAR_FLOAT, &constraint->pivot.x, &position);
-									addValue(m_editWin, "y", M_VAR_FLOAT, &constraint->pivot.y, &position);
-									addValue(m_editWin, "z", M_VAR_FLOAT, &constraint->pivot.z, &position);
-									position += MVector2(0, ySpace);
-									
-									// linearLimits
-									addVariableName(m_editWin, "linearLimits", &position);
-									addValue(m_editWin, "loX", M_VAR_FLOAT, &constraint->lowerLinearLimit.x, &position);
-									addValue(m_editWin, "loY", M_VAR_FLOAT, &constraint->lowerLinearLimit.y, &position);
-									addValue(m_editWin, "loZ", M_VAR_FLOAT, &constraint->lowerLinearLimit.z, &position);
-									addValue(m_editWin, "upX", M_VAR_FLOAT, &constraint->upperLinearLimit.x, &position);
-									addValue(m_editWin, "upY", M_VAR_FLOAT, &constraint->upperLinearLimit.y, &position);
-									addValue(m_editWin, "upZ", M_VAR_FLOAT, &constraint->upperLinearLimit.z, &position);
-									position += MVector2(0, ySpace);
-									
-									// angularLimits
-									addVariableName(m_editWin, "angularLimits", &position);
-									addValue(m_editWin, "loX", M_VAR_FLOAT, &constraint->lowerAngularLimit.x, &position);
-									addValue(m_editWin, "loY", M_VAR_FLOAT, &constraint->lowerAngularLimit.y, &position);
-									addValue(m_editWin, "loZ", M_VAR_FLOAT, &constraint->lowerAngularLimit.z, &position);
-									addValue(m_editWin, "upX", M_VAR_FLOAT, &constraint->upperAngularLimit.x, &position);
-									addValue(m_editWin, "upY", M_VAR_FLOAT, &constraint->upperAngularLimit.y, &position);
-									addValue(m_editWin, "upZ", M_VAR_FLOAT, &constraint->upperAngularLimit.z, &position);
-									position += MVector2(0, ySpace);
-									
-									// disableParentCollision
-									addVariableName(m_editWin, "disableParentCollision", &position);
-									addValue(m_editWin, "", M_VAR_BOOL, &constraint->disableParentCollision, &position);
-									position += MVector2(0, ySpace);
+									if(constraint)
+									{
+										MVector3 pivot;
+										MVector3 lowerLinearLimit;
+										MVector3 upperLinearLimit;
+										MVector3 lowerAngularLimit;
+										MVector3 upperAngularLimit;
+										
+										// parent
+										addVariableName(m_editWin, "parent", &position);
+										addValue(m_editWin, "", M_VAR_STRING, &constraint->parentName, &position);
+										position += MVector2(0, ySpace);
+										
+										// pivot
+										addVariableName(m_editWin, "pivot", &position);
+										addValue(m_editWin, "x", M_VAR_FLOAT, &constraint->pivot.x, &position);
+										addValue(m_editWin, "y", M_VAR_FLOAT, &constraint->pivot.y, &position);
+										addValue(m_editWin, "z", M_VAR_FLOAT, &constraint->pivot.z, &position);
+										position += MVector2(0, ySpace);
+										
+										// linearLimits
+										addVariableName(m_editWin, "linearLimits", &position);
+										addValue(m_editWin, "loX", M_VAR_FLOAT, &constraint->lowerLinearLimit.x, &position);
+										addValue(m_editWin, "loY", M_VAR_FLOAT, &constraint->lowerLinearLimit.y, &position);
+										addValue(m_editWin, "loZ", M_VAR_FLOAT, &constraint->lowerLinearLimit.z, &position);
+										addValue(m_editWin, "upX", M_VAR_FLOAT, &constraint->upperLinearLimit.x, &position);
+										addValue(m_editWin, "upY", M_VAR_FLOAT, &constraint->upperLinearLimit.y, &position);
+										addValue(m_editWin, "upZ", M_VAR_FLOAT, &constraint->upperLinearLimit.z, &position);
+										position += MVector2(0, ySpace);
+										
+										// angularLimits
+										addVariableName(m_editWin, "angularLimits", &position);
+										addValue(m_editWin, "loX", M_VAR_FLOAT, &constraint->lowerAngularLimit.x, &position);
+										addValue(m_editWin, "loY", M_VAR_FLOAT, &constraint->lowerAngularLimit.y, &position);
+										addValue(m_editWin, "loZ", M_VAR_FLOAT, &constraint->lowerAngularLimit.z, &position);
+										addValue(m_editWin, "upX", M_VAR_FLOAT, &constraint->upperAngularLimit.x, &position);
+										addValue(m_editWin, "upY", M_VAR_FLOAT, &constraint->upperAngularLimit.y, &position);
+										addValue(m_editWin, "upZ", M_VAR_FLOAT, &constraint->upperAngularLimit.z, &position);
+										position += MVector2(0, ySpace);
+										
+										// disableParentCollision
+										addVariableName(m_editWin, "disableParentCollision", &position);
+										addValue(m_editWin, "", M_VAR_BOOL, &constraint->disableParentCollision, &position);
+										position += MVector2(0, ySpace);
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-                break;
-            case M_OBJECT3D_LIGHT:
-			{
-				MOLight * light = (MOLight *)object;
-                
-				m_editRadius = light->getRadius();
-				addVariableName(m_editWin, "radius", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editRadius, &position);
-				position += MVector2(0, ySpace);
-                
-				addVariableName(m_editWin, "color", &position);
-				addValue(m_editWin, "r", M_VAR_FLOAT, &light->getColor()->x, &position);
-				addValue(m_editWin, "v", M_VAR_FLOAT, &light->getColor()->y, &position);
-				addValue(m_editWin, "b", M_VAR_FLOAT, &light->getColor()->z, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editIntensity = light->getIntensity();
-				addVariableName(m_editWin, "intensity", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editIntensity, &position);
-				position += MVector2(0, ySpace);
-				
-				m_editSpot = (light->getSpotAngle() >= 1.0f && light->getSpotAngle() <= 90.0f);
-				addVariableName(m_editWin, "spot", &position);
-				addValue(m_editWin, "", M_VAR_BOOL, &m_editSpot, &position);
-				position += MVector2(0, ySpace);
-				
-				if(m_editSpot)
+					break;
+				case M_OBJECT3D_LIGHT:
 				{
-					m_editSpotAngle = light->getSpotAngle();
-					addVariableName(m_editWin, "spotAngle", &position);
-					addValue(m_editWin, "", M_VAR_FLOAT, &m_editSpotAngle, &position);
-					position += MVector2(0, ySpace);
-                    
-					m_editSpotExponent = light->getSpotExponent();
-					addVariableName(m_editWin, "spotExponent", &position);
-					addValue(m_editWin, "", M_VAR_FLOAT, &m_editSpotExponent, &position);
+					MOLight * light = (MOLight *)object;
+					
+					m_editRadius = light->getRadius();
+					addVariableName(m_editWin, "radius", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editRadius, &position);
 					position += MVector2(0, ySpace);
 					
-					m_editShadow = light->isCastingShadow();
-					addVariableName(m_editWin, "shadow", &position);
-					addValue(m_editWin, "", M_VAR_BOOL, &m_editShadow, &position);
+					addVariableName(m_editWin, "color", &position);
+					addValue(m_editWin, "r", M_VAR_FLOAT, &light->getColor()->x, &position);
+					addValue(m_editWin, "v", M_VAR_FLOAT, &light->getColor()->y, &position);
+					addValue(m_editWin, "b", M_VAR_FLOAT, &light->getColor()->z, &position);
 					position += MVector2(0, ySpace);
 					
-					if(m_editShadow)
-					{
-						m_editShadowBias = light->getShadowBias();
-						addVariableName(m_editWin, "shadowBias", &position);
-						addValue(m_editWin, "", M_VAR_FLOAT, &m_editShadowBias, &position);
-						position += MVector2(0, ySpace);
-						
-						m_editShadowBlur = light->getShadowBlur();
-						addVariableName(m_editWin, "shadowBlur", &position);
-						addValue(m_editWin, "", M_VAR_FLOAT, &m_editShadowBlur, &position);
-						position += MVector2(0, ySpace);
-						
-						m_editShadowQuality = light->getShadowQuality();
-						addVariableName(m_editWin, "shadowQuality", &position);
-						addValue(m_editWin, "", M_VAR_UINT, &m_editShadowQuality, &position);
-						position += MVector2(0, ySpace);
-					}
-				}
-			}
-                break;
-            case M_OBJECT3D_CAMERA:
-			{
-				MOCamera * camera = (MOCamera *)object;
-                
-				addVariableName(m_editWin, "clearColor", &position);
-				addValue(m_editWin, "r", M_VAR_FLOAT, &camera->getClearColor()->x, &position);
-				addValue(m_editWin, "v", M_VAR_FLOAT, &camera->getClearColor()->y, &position);
-				addValue(m_editWin, "b", M_VAR_FLOAT, &camera->getClearColor()->z, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editOrtho = camera->isOrtho();
-				addVariableName(m_editWin, "ortho", &position);
-				addValue(m_editWin, "", M_VAR_BOOL, &m_editOrtho, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editFov = camera->getFov();
-				addVariableName(m_editWin, "fov", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editFov, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editClipNear = camera->getClippingNear();
-				addVariableName(m_editWin, "clippingNear", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editClipNear, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editClipFar = camera->getClippingFar();
-				addVariableName(m_editWin, "clippingFar", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editClipFar, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editFog = camera->hasFog();
-				addVariableName(m_editWin, "fog", &position);
-				addValue(m_editWin, "", M_VAR_BOOL, &m_editFog, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editFogDistance = camera->getFogDistance();
-				addVariableName(m_editWin, "fogDistance", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editFogDistance, &position);
-				position += MVector2(0, ySpace);
-			}
-                break;
-            case M_OBJECT3D_SOUND:
-			{
-				MOSound * sound = (MOSound *)object;
-				MSoundRef * soundRef = sound->getSoundRef();
-                
-				// data ref
-				if(soundRef)
-				{
-					char rep[256];
-					char name[256];
-					getRepertory(rep, soundRef->getFilename());
-					getLocalFilename(name, rep, soundRef->getFilename());
-                    
-					addVariableName(m_editWin, "Sound", &position);
-					addValue(m_editWin, name, M_VAR_NONE, NULL, &position);
-                    
+					m_editIntensity = light->getIntensity();
+					addVariableName(m_editWin, "intensity", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editIntensity, &position);
 					position += MVector2(0, ySpace);
-				}
-                
-				m_editLoop = sound->isLooping();
-				addVariableName(m_editWin, "loop", &position);
-				addValue(m_editWin, "", M_VAR_BOOL, &m_editLoop, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editPitch = sound->getPitch();
-				addVariableName(m_editWin, "pitch", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editPitch, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editGain = sound->getGain();
-				addVariableName(m_editWin, "gain", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editGain, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editSndRadius = sound->getRadius();
-				addVariableName(m_editWin, "radius", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editSndRadius, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editRolloff = sound->getRolloff();
-				addVariableName(m_editWin, "rolloff", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editRolloff, &position);
-				position += MVector2(0, ySpace);
-                
-				m_editRelative = sound->isRelative();
-				addVariableName(m_editWin, "relative", &position);
-				addValue(m_editWin, "", M_VAR_BOOL, &m_editRelative, &position);
-				position += MVector2(0, ySpace);
-			}
-                break;
-            case M_OBJECT3D_TEXT:
-			{
-				MEngine * engine = MEngine::getInstance();
-				MLevel * level = engine->getLevel();
-				MDataManager * fontManager = level->getFontManager();
-				MOText * text = (MOText *)object;
-                
-				int textLength = 0;
-				MGuiText * guiText = NULL;
-                
-				addVariableName(m_editWin, "font", &position);
-				position += MVector2(0, 4);
-                
-				// font
-				MFont * font = text->getFont();
-				if(font)
-				{
-					const char * fontFilename = NULL;
-					unsigned int r;
-					unsigned int rSize = fontManager->getRefsNumber();
-                    
-					for(r=0; r<rSize; r++)
+					
+					m_editSpot = (light->getSpotAngle() >= 1.0f && light->getSpotAngle() <= 90.0f);
+					addVariableName(m_editWin, "spot", &position);
+					addValue(m_editWin, "", M_VAR_BOOL, &m_editSpot, &position);
+					position += MVector2(0, ySpace);
+					
+					if(m_editSpot)
 					{
-						MFontRef * ref = (MFontRef*)fontManager->getRef(r);
-						if(ref->getFont() == font){
-							fontFilename = ref->getFilename();
-							break;
+						m_editSpotAngle = light->getSpotAngle();
+						addVariableName(m_editWin, "spotAngle", &position);
+						addValue(m_editWin, "", M_VAR_FLOAT, &m_editSpotAngle, &position);
+						position += MVector2(0, ySpace);
+						
+						m_editSpotExponent = light->getSpotExponent();
+						addVariableName(m_editWin, "spotExponent", &position);
+						addValue(m_editWin, "", M_VAR_FLOAT, &m_editSpotExponent, &position);
+						position += MVector2(0, ySpace);
+						
+						m_editShadow = light->isCastingShadow();
+						addVariableName(m_editWin, "shadow", &position);
+						addValue(m_editWin, "", M_VAR_BOOL, &m_editShadow, &position);
+						position += MVector2(0, ySpace);
+						
+						if(m_editShadow)
+						{
+							m_editShadowBias = light->getShadowBias();
+							addVariableName(m_editWin, "shadowBias", &position);
+							addValue(m_editWin, "", M_VAR_FLOAT, &m_editShadowBias, &position);
+							position += MVector2(0, ySpace);
+							
+							m_editShadowBlur = light->getShadowBlur();
+							addVariableName(m_editWin, "shadowBlur", &position);
+							addValue(m_editWin, "", M_VAR_FLOAT, &m_editShadowBlur, &position);
+							position += MVector2(0, ySpace);
+							
+							m_editShadowQuality = light->getShadowQuality();
+							addVariableName(m_editWin, "shadowQuality", &position);
+							addValue(m_editWin, "", M_VAR_UINT, &m_editShadowQuality, &position);
+							position += MVector2(0, ySpace);
 						}
-                        
 					}
-                    
-					if(fontFilename)
+				}
+					break;
+				case M_OBJECT3D_CAMERA:
+				{
+					MOCamera * camera = (MOCamera *)object;
+					
+					addVariableName(m_editWin, "clearColor", &position);
+					addValue(m_editWin, "r", M_VAR_FLOAT, &camera->getClearColor()->x, &position);
+					addValue(m_editWin, "v", M_VAR_FLOAT, &camera->getClearColor()->y, &position);
+					addValue(m_editWin, "b", M_VAR_FLOAT, &camera->getClearColor()->z, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editOrtho = camera->isOrtho();
+					addVariableName(m_editWin, "ortho", &position);
+					addValue(m_editWin, "", M_VAR_BOOL, &m_editOrtho, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editFov = camera->getFov();
+					addVariableName(m_editWin, "fov", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editFov, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editClipNear = camera->getClippingNear();
+					addVariableName(m_editWin, "clippingNear", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editClipNear, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editClipFar = camera->getClippingFar();
+					addVariableName(m_editWin, "clippingFar", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editClipFar, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editFog = camera->hasFog();
+					addVariableName(m_editWin, "fog", &position);
+					addValue(m_editWin, "", M_VAR_BOOL, &m_editFog, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editFogDistance = camera->getFogDistance();
+					addVariableName(m_editWin, "fogDistance", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editFogDistance, &position);
+					position += MVector2(0, ySpace);
+				}
+					break;
+				case M_OBJECT3D_SOUND:
+				{
+					MOSound * sound = (MOSound *)object;
+					MSoundRef * soundRef = sound->getSoundRef();
+					
+					// data ref
+					if(soundRef)
 					{
 						char rep[256];
 						char name[256];
-                        
-						getRepertory(rep, fontFilename);
-						getLocalFilename(name, rep, fontFilename);
+						getRepertory(rep, soundRef->getFilename());
+						getLocalFilename(name, rep, soundRef->getFilename());
 						
-						guiText = new MGuiText(name, MVector2(28, position.y), size, color);
-					}
-				}
-                
-				if(! guiText)
-					guiText = new MGuiText("none", MVector2(28, position.y), size, color);
-                
-				textLength = (int)guiText->getScale().x + 50 + 20;
-				float x = textLength - 14.0f;
-                
-				// image
-				MVector4 imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
-				MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
-				m_editWin->addImage(image);
-                
-				image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
-				m_editWin->addImage(image);
-                
-				// add text
-				m_editWin->addText(guiText);
-                
-				// open font
-				MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadFontEvents);
-				button->setHighLightColor(highLightColor);
-				button->setNormalTexture("gui/buttonOpen.tga");
-				button->setPressedColor(pressColor);
-				m_editWin->addButton(button);
-                
-				position += MVector2(0, ySpace*2);
-                
-				// size
-				m_editSize = text->getSize();
-				addVariableName(m_editWin, "size", &position);
-				addValue(m_editWin, "", M_VAR_FLOAT, &m_editSize, &position);
-				position += MVector2(0, ySpace);
-                
-				// align
-				addVariableName(m_editWin, "align", &position);
-                
-				MGuiMenu * alignMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), textAlignMenuEvents);
-                
-				alignMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
-				alignMenu->setTextColor(MVector4(1, 1, 1, 1));
-                
-				alignMenu->addSimpleButton("Left", NULL);
-				alignMenu->addSimpleButton("Right", NULL);
-				alignMenu->addSimpleButton("Center", NULL);
-                
-				alignMenu->setMenuId((unsigned int)text->getAlign());
-				alignMenu->getWindowMenu()->setShadow(true);
-				alignMenu->getWindowMenu()->setNormalColor(menuColor);
-				
-				m_editWin->addMenu(alignMenu);
-				position += MVector2(0, ySpace*2);
-                
-				// color
-				addVariableName(m_editWin, "color", &position);
-				addValue(m_editWin, "r", M_VAR_FLOAT, &text->getColor()->x, &position);
-				addValue(m_editWin, "v", M_VAR_FLOAT, &text->getColor()->y, &position);
-				addValue(m_editWin, "b", M_VAR_FLOAT, &text->getColor()->z, &position);
-				addValue(m_editWin, "a", M_VAR_FLOAT, &text->getColor()->w, &position);
-				position += MVector2(0, ySpace);
-                
-				//text
-				m_editText = text->getText();
-				addVariableName(m_editWin, "text", &position);
-                
-				//addValue(m_editWin, "", M_VAR_STRING, &m_editText, &position);
-				MGuiEditText * editText = new MGuiEditText("", position + MVector2(24, 0), size, color, editEvents);
-				editText->enableVariable(&m_editText, M_VAR_STRING);
-				m_editWin->addEditText(editText);
-				position += MVector2(0, ySpace);
-                
-				position += MVector2(0, ySpace);
-                
-			}
-                break;
-		}
-		m_editWin->resizeScroll();
-		return;
-	}
-    
-	if(m_tabBehavior->isPressed())
-	{
-		// behaviors
-		unsigned int i;
-		unsigned int bSize = object->getBehaviorsNumber();
-		for(i=0; i<bSize; i++)
-		{
-			// color
-			MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
-			if(i+1 == m_editedBehavior)
-				imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
-            
-			// behavior
-			MBehavior * behavior = object->getBehavior(i);
-            
-			// image
-			MGuiImage * image = new MGuiImage("gui/imgBehavior.tga", MVector2(0, position.y - 8), MVector2(256, 32), imgColor);
-			m_editWin->addImage(image);
-            
-			// text
-			string name("- ");
-			name += behavior->getName();
-			MGuiText * text = new MGuiText(name.c_str(), position, size, color);
-			m_editWin->addText(text);
-            
-			// current behavior
-			if(i+1 == m_editedBehavior)
-			{
-				// buttons
-				int x = 218;
-				MGuiButton * button;
-                
-				if((i + 1) != bSize)
-				{
-					button = new MGuiButton(MVector2(218, position.y + 4), MVector2(8, 8), color, downBehaviorEvents);
-					button->setHighLightColor(highLightColor);
-					button->setPressedColor(pressColor);
-					button->setNormalTexture("gui/buttonDown.tga");
-					m_editWin->addButton(button);
-					x -= 20;
-				}
-                
-				if(i != 0)
-				{
-					button = new MGuiButton(MVector2((float)x, position.y + 4), MVector2(8, 8), color, upBehaviorEvents);
-					button->setHighLightColor(highLightColor);
-					button->setPressedColor(pressColor);
-					button->setNormalTexture("gui/buttonUp.tga");
-					m_editWin->addButton(button);
-				}
-                
-				button = new MGuiButton(MVector2(233, position.y), MVector2(16, 16), color, deleteBehaviorEvents);
-				button->setHighLightColor(highLightColor);
-				button->setPressedColor(pressColor);
-				button->setNormalTexture("gui/buttonDelete.tga");
-				m_editWin->addButton(button);
-                
-				// behavior properties
-				position += MVector2(0, 30);
-                
-				unsigned int v;
-				unsigned int vSize = behavior->getVariablesNumber();
-				for(v=0; v<vSize; v++)
-				{
-					MVariable variable = behavior->getVariable(v);
-					M_VARIABLE_TYPE varType = variable.getType();
-                    
-					if(varType == M_VARIABLE_NULL)
-						continue;
-                    
-					addVariableName(m_editWin, variable.getName(), &position);
-                    
-					switch(varType)
-					{
-                        case M_VARIABLE_BOOL:
-                            addValue(m_editWin, "", M_VAR_BOOL, variable.getPointer(), &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        case M_VARIABLE_INT:
-                            addValue(m_editWin, "", M_VAR_INT, variable.getPointer(), &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        case M_VARIABLE_UINT:
-                            addValue(m_editWin, "", M_VAR_UINT, variable.getPointer(), &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        case M_VARIABLE_FLOAT:
-                            addValue(m_editWin, "", M_VAR_FLOAT, variable.getPointer(), &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        case M_VARIABLE_STRING:
-                            addValue(m_editWin, "", M_VAR_STRING, variable.getPointer(), &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        case M_VARIABLE_VEC2:
-                            addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
-                            position += MVector2(0, ySpace);
-                            addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        case M_VARIABLE_VEC3:
-                            addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->x, &position);
-                            addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->y, &position);
-                            addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->z, &position);
-                            position += MVector2(0, ySpace);
-                            break;
-                            
-                        default:
-                            break;
-					case M_VARIABLE_VEC4:
-						addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->x, &position);
-						addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->y, &position);
-						addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->z, &position);
-						addValue(m_editWin, "w", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->w, &position);
+						addVariableName(m_editWin, "Sound", &position);
+						addValue(m_editWin, name, M_VAR_NONE, NULL, &position);
+						
 						position += MVector2(0, ySpace);
-						break;
 					}
+					
+					m_editLoop = sound->isLooping();
+					addVariableName(m_editWin, "loop", &position);
+					addValue(m_editWin, "", M_VAR_BOOL, &m_editLoop, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editPitch = sound->getPitch();
+					addVariableName(m_editWin, "pitch", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editPitch, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editGain = sound->getGain();
+					addVariableName(m_editWin, "gain", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editGain, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editSndRadius = sound->getRadius();
+					addVariableName(m_editWin, "radius", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editSndRadius, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editRolloff = sound->getRolloff();
+					addVariableName(m_editWin, "rolloff", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editRolloff, &position);
+					position += MVector2(0, ySpace);
+					
+					m_editRelative = sound->isRelative();
+					addVariableName(m_editWin, "relative", &position);
+					addValue(m_editWin, "", M_VAR_BOOL, &m_editRelative, &position);
+					position += MVector2(0, ySpace);
 				}
-                
-				position += MVector2(0, 30);
+					break;
+				case M_OBJECT3D_TEXT:
+				{
+					MEngine * engine = MEngine::getInstance();
+					MLevel * level = engine->getLevel();
+					MDataManager * fontManager = level->getFontManager();
+					MOText * text = (MOText *)object;
+					
+					int textLength = 0;
+					MGuiText * guiText = NULL;
+					
+					addVariableName(m_editWin, "font", &position);
+					position += MVector2(0, 4);
+					
+					// font
+					MFont * font = text->getFont();
+					if(font)
+					{
+						const char * fontFilename = NULL;
+						unsigned int r;
+						unsigned int rSize = fontManager->getRefsNumber();
+						
+						for(r=0; r<rSize; r++)
+						{
+							MFontRef * ref = (MFontRef*)fontManager->getRef(r);
+							if(ref->getFont() == font){
+								fontFilename = ref->getFilename();
+								break;
+							}
+							
+						}
+						
+						if(fontFilename)
+						{
+							char rep[256];
+							char name[256];
+							
+							getRepertory(rep, fontFilename);
+							getLocalFilename(name, rep, fontFilename);
+							
+							guiText = new MGuiText(name, MVector2(28, position.y), size, color);
+						}
+					}
+					
+					if(! guiText)
+						guiText = new MGuiText("none", MVector2(28, position.y), size, color);
+					
+					textLength = (int)guiText->getScale().x + 50 + 20;
+					float x = textLength - 14.0f;
+					
+					// image
+					MVector4 imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
+					MGuiImage * image = new MGuiImage(NULL, MVector2(0, position.y-2), MVector2((float)textLength, 20), imgColor);
+					m_editWin->addImage(image);
+					
+					image = new MGuiImage("gui/imgCapsuleRight.tga", MVector2((float)textLength, position.y - 8), MVector2(8, 32), imgColor);
+					m_editWin->addImage(image);
+					
+					// add text
+					m_editWin->addText(guiText);
+					
+					// open font
+					MGuiButton * button = new MGuiButton(MVector2(x, position.y-2), MVector2(16, 16), color, loadFontEvents);
+					button->setHighLightColor(highLightColor);
+					button->setNormalTexture("gui/buttonOpen.tga");
+					button->setPressedColor(pressColor);
+					m_editWin->addButton(button);
+					
+					position += MVector2(0, ySpace*2);
+					
+					// size
+					m_editSize = text->getSize();
+					addVariableName(m_editWin, "size", &position);
+					addValue(m_editWin, "", M_VAR_FLOAT, &m_editSize, &position);
+					position += MVector2(0, ySpace);
+					
+					// align
+					addVariableName(m_editWin, "align", &position);
+					
+					MGuiMenu * alignMenu = new MGuiMenu(position + MVector2(28, 0), MVector2(16, 16), MVector4(1, 1, 1, 0), textAlignMenuEvents);
+					
+					alignMenu->setHighLightColor(MVector4(0.8f, 0.9f, 1, 0.2f));
+					alignMenu->setTextColor(MVector4(1, 1, 1, 1));
+					
+					alignMenu->addSimpleButton("Left", NULL);
+					alignMenu->addSimpleButton("Right", NULL);
+					alignMenu->addSimpleButton("Center", NULL);
+					
+					alignMenu->setMenuId((unsigned int)text->getAlign());
+					alignMenu->getWindowMenu()->setShadow(true);
+					alignMenu->getWindowMenu()->setNormalColor(menuColor);
+					
+					m_editWin->addMenu(alignMenu);
+					position += MVector2(0, ySpace*2);
+					
+					// color
+					addVariableName(m_editWin, "color", &position);
+					addValue(m_editWin, "r", M_VAR_FLOAT, &text->getColor()->x, &position);
+					addValue(m_editWin, "v", M_VAR_FLOAT, &text->getColor()->y, &position);
+					addValue(m_editWin, "b", M_VAR_FLOAT, &text->getColor()->z, &position);
+					addValue(m_editWin, "a", M_VAR_FLOAT, &text->getColor()->w, &position);
+					position += MVector2(0, ySpace);
+					
+					//text
+					m_editText = text->getText();
+					addVariableName(m_editWin, "text", &position);
+					
+					//addValue(m_editWin, "", M_VAR_STRING, &m_editText, &position);
+					MGuiEditText * editText = new MGuiEditText("", position + MVector2(24, 0), size, color, editEvents);
+					editText->enableVariable(&m_editText, M_VAR_STRING);
+					m_editWin->addEditText(editText);
+					position += MVector2(0, ySpace);
+					
+					position += MVector2(0, ySpace);
+					
+				}
+					break;
 			}
-			else
-			{
-				position += MVector2(0, 24);
-			}
+			m_editWin->resizeScroll();
+			return;
 		}
-        
-		// behaviors menu
-		MGuiImage * behaviorImage = new MGuiImage("gui/imgAddBehavior.tga", MVector2(0, position.y - 8), MVector2(32, 32), MVector4(0, 0, 0, 0.2f));
-        
-		MBehaviorManager * bManager = MEngine::getInstance()->getBehaviorManager();
-		MGuiMenu * behaviorMenu = new MGuiMenu(position, MVector2(16, 16), color, behaviorMenuEvents);
-        
-		behaviorMenu->setNormalTexture("gui/buttonSup.tga");
-		behaviorMenu->setDrawingText(false);
-        
-		unsigned int y = 10;
 		
-		bSize = bManager->getBehaviorsNumber();
-		for(i=0; i<bSize; i++)
+		if(m_tabBehavior->isPressed())
 		{
-			MBehaviorCreator * behavior = bManager->getBehaviorByIndex(i);
-			if((behavior->getObjectFilter() != M_OBJECT3D) && (behavior->getObjectFilter() != object->getType()))
-				continue;
-            
-			addTextButtonToMenu(behaviorMenu, behavior->getName(), MVector2(0, (float)y), NULL);
-			y += 20;
+			// behaviors
+			unsigned int i;
+			unsigned int bSize = object->getBehaviorsNumber();
+			for(i=0; i<bSize; i++)
+			{
+				// color
+				MVector4 imgColor = MVector4(0, 0, 0, 0.2f);
+				if(i+1 == m_editedBehavior)
+					imgColor = MVector4(1, 0.97f, 0.33f, 0.2f);
+				
+				// behavior
+				MBehavior * behavior = object->getBehavior(i);
+				
+				// image
+				MGuiImage * image = new MGuiImage("gui/imgBehavior.tga", MVector2(0, position.y - 8), MVector2(256, 32), imgColor);
+				m_editWin->addImage(image);
+				
+				// text
+				string name("- ");
+				name += behavior->getName();
+				MGuiText * text = new MGuiText(name.c_str(), position, size, color);
+				m_editWin->addText(text);
+				
+				// current behavior
+				if(i+1 == m_editedBehavior)
+				{
+					// buttons
+					int x = 218;
+					MGuiButton * button;
+					
+					if((i + 1) != bSize)
+					{
+						button = new MGuiButton(MVector2(218, position.y + 4), MVector2(8, 8), color, downBehaviorEvents);
+						button->setHighLightColor(highLightColor);
+						button->setPressedColor(pressColor);
+						button->setNormalTexture("gui/buttonDown.tga");
+						m_editWin->addButton(button);
+						x -= 20;
+					}
+					
+					if(i != 0)
+					{
+						button = new MGuiButton(MVector2((float)x, position.y + 4), MVector2(8, 8), color, upBehaviorEvents);
+						button->setHighLightColor(highLightColor);
+						button->setPressedColor(pressColor);
+						button->setNormalTexture("gui/buttonUp.tga");
+						m_editWin->addButton(button);
+					}
+					
+					button = new MGuiButton(MVector2(233, position.y), MVector2(16, 16), color, deleteBehaviorEvents);
+					button->setHighLightColor(highLightColor);
+					button->setPressedColor(pressColor);
+					button->setNormalTexture("gui/buttonDelete.tga");
+					m_editWin->addButton(button);
+					
+					// behavior properties
+					position += MVector2(0, 30);
+					
+					unsigned int v;
+					unsigned int vSize = behavior->getVariablesNumber();
+					for(v=0; v<vSize; v++)
+					{
+						MVariable variable = behavior->getVariable(v);
+						M_VARIABLE_TYPE varType = variable.getType();
+						
+						if(varType == M_VARIABLE_NULL)
+							continue;
+						
+						addVariableName(m_editWin, variable.getName(), &position);
+						
+						switch(varType)
+						{
+							case M_VARIABLE_BOOL:
+								addValue(m_editWin, "", M_VAR_BOOL, variable.getPointer(), &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							case M_VARIABLE_INT:
+								addValue(m_editWin, "", M_VAR_INT, variable.getPointer(), &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							case M_VARIABLE_UINT:
+								addValue(m_editWin, "", M_VAR_UINT, variable.getPointer(), &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							case M_VARIABLE_FLOAT:
+								addValue(m_editWin, "", M_VAR_FLOAT, variable.getPointer(), &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							case M_VARIABLE_STRING:
+								addValue(m_editWin, "", M_VAR_STRING, variable.getPointer(), &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							case M_VARIABLE_VEC2:
+								addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
+								position += MVector2(0, ySpace);
+								addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector2*)variable.getPointer())->x, &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							case M_VARIABLE_VEC3:
+								addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->x, &position);
+								addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->y, &position);
+								addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector3*)variable.getPointer())->z, &position);
+								position += MVector2(0, ySpace);
+								break;
+								
+							default:
+								break;
+							case M_VARIABLE_VEC4:
+								addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->x, &position);
+								addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->y, &position);
+								addValue(m_editWin, "z", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->z, &position);
+								addValue(m_editWin, "w", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->w, &position);
+								position += MVector2(0, ySpace);
+								break;
+						}
+					}
+					
+					position += MVector2(0, 30);
+				}
+				else
+				{
+					position += MVector2(0, 24);
+				}
+			}
+			
+			// behaviors menu
+			MGuiImage * behaviorImage = new MGuiImage("gui/imgAddBehavior.tga", MVector2(0, position.y - 8), MVector2(32, 32), MVector4(0, 0, 0, 0.2f));
+			
+			MBehaviorManager * bManager = MEngine::getInstance()->getBehaviorManager();
+			MGuiMenu * behaviorMenu = new MGuiMenu(position, MVector2(16, 16), color, behaviorMenuEvents);
+			
+			behaviorMenu->setNormalTexture("gui/buttonSup.tga");
+			behaviorMenu->setDrawingText(false);
+			
+			unsigned int y = 10;
+			
+			bSize = bManager->getBehaviorsNumber();
+			for(i=0; i<bSize; i++)
+			{
+				MBehaviorCreator * behavior = bManager->getBehaviorByIndex(i);
+				if((behavior->getObjectFilter() != M_OBJECT3D) && (behavior->getObjectFilter() != object->getType()))
+					continue;
+				
+				addTextButtonToMenu(behaviorMenu, behavior->getName(), MVector2(0, (float)y), NULL);
+				y += 20;
+			}
+			
+			addTextToMenu(behaviorMenu, "", MVector2(0, (float)y-10));
+			
+			behaviorMenu->setMenuId(bSize);
+			behaviorMenu->getWindowMenu()->setShadow(true);
+			behaviorMenu->getWindowMenu()->setNormalColor(menuColor);
+			
+			m_editWin->addImage(behaviorImage);
+			m_editWin->addMenu(behaviorMenu);
+			m_editWin->resizeScroll();
+			return;
 		}
-        
-		addTextToMenu(behaviorMenu, "", MVector2(0, (float)y-10));
-        
-		behaviorMenu->setMenuId(bSize);
-		behaviorMenu->getWindowMenu()->setShadow(true);
-		behaviorMenu->getWindowMenu()->setNormalColor(menuColor);
-        
-		m_editWin->addImage(behaviorImage);
-		m_editWin->addMenu(behaviorMenu);
-		m_editWin->resizeScroll();
-		return;
 	}
     
-    if(m_tabObjects->isPressed())
+    if(m_tabObjects->isPressed() || (! object))
 	{
         MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
         Maratis * maratis = Maratis::getInstance();
@@ -1280,7 +1202,7 @@ void MaratisUI::editObject(MObject3d * object)
                 else
                     objectButton->setTextColor(MVector4(1, 1, 1, 1));
                 m_editWin->addButton(objectButton);
-                buttonPosition += MVector2(0, ySpace);
+                buttonPosition += MVector2(0, ySpace+1);
             }
             position =+ MVector2(15, buttonPosition.y + ySpace);
         }
@@ -1307,7 +1229,7 @@ void MaratisUI::editObject(MObject3d * object)
                 else
                     objectButton->setTextColor(MVector4(1, 1, 1, 1));
                 m_editWin->addButton(objectButton);
-                buttonPosition += MVector2(0, ySpace);
+                buttonPosition += MVector2(0, ySpace+1);
             }
             position =+ MVector2(15, buttonPosition.y + ySpace);
         }
@@ -1334,7 +1256,7 @@ void MaratisUI::editObject(MObject3d * object)
                 else
                     objectButton->setTextColor(MVector4(1, 1, 1, 1));
                 m_editWin->addButton(objectButton);
-                buttonPosition += MVector2(0, ySpace);
+                buttonPosition += MVector2(0, ySpace+1);
             }
             position =+ MVector2(15, buttonPosition.y + ySpace);
         }
@@ -1361,7 +1283,7 @@ void MaratisUI::editObject(MObject3d * object)
                 else
                     objectButton->setTextColor(MVector4(1, 1, 1, 1));
                 m_editWin->addButton(objectButton);
-                buttonPosition += MVector2(0, ySpace);
+                buttonPosition += MVector2(0, ySpace+1);
             }
             position =+ MVector2(15, buttonPosition.y + ySpace);
         }
@@ -1388,7 +1310,7 @@ void MaratisUI::editObject(MObject3d * object)
                 else
                     objectButton->setTextColor(MVector4(1, 1, 1, 1));
                 m_editWin->addButton(objectButton);
-                buttonPosition += MVector2(0, ySpace);
+                buttonPosition += MVector2(0, ySpace+1);
             }
             position =+ MVector2(15, buttonPosition.y + ySpace);
         }
@@ -1972,16 +1894,24 @@ void MaratisUI::createGUI(void)
 	m_tabBehavior->setVisible(false);
     
     m_tabObjects = new MGuiButton(
-                                  MVector2(162, 3),
-                                  MVector2(48, 20),
+                                  MVector2(editWidth-30, 3),
+                                  MVector2(30, 20),
                                   MVector4(1, 1, 1, 1),
                                   &tabObjectsEvents);
     
-	m_tabObjects->setNormalTexture("gui/tabTransform0.tga");
-	m_tabObjects->setPressedTexture("gui/tabTransform1.tga");
+	m_tabObjects->setNormalTexture("gui/tabObjects0.tga");
+	m_tabObjects->setPressedTexture("gui/tabObjects1.tga");
 	m_tabObjects->setMode(MGUI_BUTTON_GROUP);
 	m_tabObjects->setVisible(false);
     
+	m_objectListImage = new MGuiImage(
+									  "gui/tabObjects1.tga", 
+									  MVector2(editWidth-30, 3),
+									  MVector2(30, 20),
+									  MVector4(1, 1, 1, 1));
+	m_objectListImage->setVisible(false);
+	
+	
 	m_tabImage = new MGuiImage(
                                NULL, 
                                MVector2(0, viewPropHeight), 
@@ -2012,7 +1942,7 @@ void MaratisUI::createGUI(void)
                                     &objectEditEvents);
 	
 	m_tabText = new MGuiText(
-                             "Project", MVector2(15, viewPropHeight + 4),
+                             "Objects list", MVector2(15, viewPropHeight + 4),
                              16,
                              normalColor);
 	m_tabText->setVisible(false);
@@ -2028,6 +1958,7 @@ void MaratisUI::createGUI(void)
 	m_editTopWin->addImage(m_tabImage);
 	m_editTopWin->addImage(m_sceneProperties);
 	m_editTopWin->addImage(m_projProperties);
+	m_editTopWin->addImage(m_objectListImage);
 	m_editTopWin->addEditText(m_objectEdit);
 	m_editTopWin->addText(m_tabText);
 	gui->addWindow(m_editTopWin);
@@ -4177,7 +4108,7 @@ void MaratisUI::tabObjectsEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	{
         case MGUI_EVENT_DRAW:
             if(button->isHighLight() && !button->isPressed())
-                UI->getInfoText()->setText("objects");
+                UI->getInfoText()->setText("objects list");
             break;
         case MGUI_EVENT_MOUSE_BUTTON_DOWN:
             if(button->isPressed())
@@ -4196,10 +4127,6 @@ void MaratisUI::objectButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
     
 	switch(guiEvents->type)
 	{
-//        case MGUI_EVENT_DRAW:
-//            if(button->isHighLight() && !button->isPressed())
-//                UI->getInfoText()->setText(button->getText());
-//            break;
         case MGUI_EVENT_MOUSE_BUTTON_DOWN:
             if(button->isPressed())
             {
@@ -4208,20 +4135,46 @@ void MaratisUI::objectButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
                 MKeyboard * keyboard = MKeyboard::getInstance();
                 const char * name = button->getText(); 
                 
-                if (keyboard->isKeyPressed(MKEY_LCONTROL))
-                {
-                    maratis->addSelectedObject(scene->getObjectByName(name));
-                    UI->setEditedObject(scene->getObjectByName(name));
-                }
-                else
-                {
-                    maratis->clearSelectedObjects();
-                    maratis->addSelectedObject(scene->getObjectByName(name));
-                    UI->setEditedObject(scene->getObjectByName(name));
-                }
-                UI->setNeedToUpdateEdit(true);
+				MObject3d * object = scene->getObjectByName(name);
+				if(object)
+				{
+					if (keyboard->isKeyPressed(MKEY_LCONTROL))
+					{
+						maratis->addSelectedObject(object);
+						if(maratis->isObjectSelected(object))
+						{
+							UI->setEditedObject(object);
+						}
+						else
+						{
+							unsigned int nbSel = maratis->getSelectedObjectsNumber();
+							if(nbSel > 0)
+							{
+								MObject3d * prevObject = maratis->getSelectedObjectByIndex(nbSel-1);
+								UI->setEditedObject(prevObject);
+							}
+							else
+							{
+								UI->setEditedObject(NULL);
+							}
+
+						}
+					}
+					else
+					{
+						maratis->clearSelectedObjects();
+						maratis->addSelectedObject(object);
+						UI->setEditedObject(object);
+					}
+					
+					// force object-list tab
+					UI->m_tabObjects->unPressGroupButtons();
+					UI->m_tabObjects->setPressed(true);
+					
+					// update edit
+					UI->setNeedToUpdateEdit(true);
+				}
             }
-			//UI->editObject(UI->getEditedObject());
             break;
             
         default:
