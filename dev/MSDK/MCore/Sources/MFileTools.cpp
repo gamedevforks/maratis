@@ -26,6 +26,7 @@
 //    distribution.
 //
 //========================================================================
+// jan 2012, FILE wrapper by Philipp Geyer <http://nistur.com>
 
 
 #include "../Includes/MCore.h"
@@ -39,7 +40,10 @@
 	#define rmdir _rmdir
 #else //#elif __APPLE__
 	#define mkdir(file) mkdir(file, 0777)
+        #include <stdarg.h>
 #endif
+
+static MFileOpenHook* s_fileOpenHook = 0;
 
 
 bool copyFile(const char * inFilename, const char * outFilename)
@@ -83,10 +87,10 @@ bool createDirectory(const char * filename)
 
 bool isFileExist(const char * filename)
 {
-	FILE * file = fopen(filename, "r");
+	MFile * file = M_fopen(filename, "r");
 	if(! file)
 		return false;
-	fclose(file);
+	M_fclose(file);
 	return true;
 }
 
@@ -238,4 +242,94 @@ bool readDirectory(const char * filename, vector<string> * files, bool hiddenFil
 
     closedir(pdir);
     return true;
+}
+
+void M_registerFileOpenHook(MFileOpenHook* hook)
+{		
+	s_fileOpenHook = hook;
+}
+
+MFileOpenHook* M_getFileOpenHook()
+{
+	return s_fileOpenHook;
+}
+
+MFile* M_fopen(const char* path, const char* mode)
+{
+	MFile* rtn;
+	if(s_fileOpenHook)
+		rtn = s_fileOpenHook->open(path, mode);
+	else
+		rtn = MStdFile::getNew(path, mode);
+	
+	// if all loading failed, return 0
+	if(!rtn->isOpen())
+	{
+		rtn->destroy();
+		return 0;
+	}
+	
+	return rtn;
+}
+
+int M_fclose(MFile* stream)
+{
+	int rtn = 0;
+
+	if(stream)
+	{
+		rtn = stream->close();
+		stream->destroy();
+	}
+	return rtn;
+}
+
+size_t M_fread(void* dest, size_t size, size_t count, MFile* stream)
+{
+	if(stream)
+		return stream->read(dest, size, count);
+
+	return 0;
+}
+
+size_t M_fwrite(const void* str, size_t size, size_t count, MFile* stream)
+{
+	if(stream)
+		return stream->write(str, size, count);
+
+	return 0;
+}
+
+int M_fprintf(MFile *stream, const char *format, ...)
+{
+	va_list args;
+	if(stream)
+	{
+		va_start(args, format);
+		return stream->print(format, args);
+		va_end(args);
+	}
+	return 0;
+}
+
+int M_fseek(MFile *stream, long offset, int whence)
+{
+	if(stream)
+		return stream->seek(offset, whence);
+
+	return 0;
+}
+
+long M_ftell(MFile *stream)
+{
+	if(stream)
+		return stream->tell();
+
+	return 0;
+}
+
+void M_rewind(MFile *stream)
+{
+	if(stream)
+		stream->rewind();
 }

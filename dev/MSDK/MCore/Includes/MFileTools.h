@@ -26,11 +26,13 @@
 //    distribution.
 //
 //========================================================================
+// jan 2012, FILE wrapper by Philipp Geyer <http://nistur.com>
 
 
 #ifndef _FILE_TOOLS_H
 #define _FILE_TOOLS_H
 
+// general file and directory tools
 M_CORE_EXPORT bool copyFile(const char * inFilename, const char * outFilename);
 M_CORE_EXPORT bool createDirectory(const char * filename);
 M_CORE_EXPORT bool isDirectory(const char * filename);
@@ -40,5 +42,18 @@ M_CORE_EXPORT bool removeDirectory(const char * filename);
 M_CORE_EXPORT bool isFileExist(const char * filename);
 M_CORE_EXPORT bool copyDirectory(const char * inFilename, const char * outFilename);
 M_CORE_EXPORT bool readDirectory(const char * filename, vector<string> * files, bool hiddenFiles = false);
+
+// file wrapper
+M_CORE_EXPORT void M_registerFileOpenHook(MFileOpenHook* hook);
+M_CORE_EXPORT MFileOpenHook* M_getFileOpenHook();
+
+M_CORE_EXPORT MFile* M_fopen(const char* path, const char* mode);
+M_CORE_EXPORT int	 M_fclose(MFile* stream);
+M_CORE_EXPORT size_t M_fread(void* dest, size_t size, size_t count, MFile* stream);
+M_CORE_EXPORT size_t M_fwrite(const void* str, size_t size, size_t count, MFile* stream);
+M_CORE_EXPORT int	 M_fprintf(MFile *stream, const char *format, ...);
+M_CORE_EXPORT int	 M_fseek(MFile *stream, long offset, int whence);
+M_CORE_EXPORT long	 M_ftell(MFile *stream);
+M_CORE_EXPORT void	 M_rewind(MFile *stream);
 
 #endif

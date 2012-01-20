@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MCore
-// MImage.h
+// MStdFile.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2012 Philipp Geyer <http://nistur.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,42 +28,39 @@
 //========================================================================
 
 
-#ifndef _M_IMAGE_H
-#define _M_IMAGE_H
+#ifndef _M_STD_FILE_H
+#define _M_STD_FILE_H
 
 
-class M_CORE_EXPORT MImage
+/* Base File class
+ * exposes standard file I/O functions such as open/close read/write
+ */
+class M_CORE_EXPORT MStdFile : public MFile
 {
-public:
-
-	MImage(void);
-	~MImage(void);
-
 private:
-
-	void *  m_data;
-	M_TYPES m_dataType;
-
-	unsigned int m_components;
-	unsigned int m_width;
-	unsigned int m_height;
-	unsigned int m_size;
-
-public:
-
-	void create(M_TYPES dataType, unsigned int width, unsigned int height, unsigned int components);
-	void clear(void * color);
-	void readPixel(unsigned int x, unsigned int y, void * color);
-	void writePixel(unsigned int x, unsigned int y, void * color);
 	
-	inline void * getData(void){ return m_data; }
-	M_TYPES getDataType(void){ return m_dataType; }
-
-	inline unsigned int getComponents(void){ return m_components; }
-	inline unsigned int getWidth(void){ return m_width; }
-	inline unsigned int getHeight(void){ return m_height; }
-	inline unsigned int getSize(void){ return m_size; }
+	FILE * m_file;
+	
+public:
+	
+	MStdFile();
+	MStdFile(const char* path, const char* mode);
+	~MStdFile();
+	
+	static MStdFile * getNew(const char* path, const char* mode);
+	
+	void	open(const char* path, const char* mode);
+	int		close();
+	size_t	read(void* dest, size_t size, size_t count);
+	size_t	write(const void* str, size_t size, size_t count);
+	int		print(const char* format, ...);
+	int		print(const char* format, va_list args);
+	int		seek(long offset, int whence);
+	long	tell();
+	void	rewind();
+	
+	bool 	isOpen(){ return m_file != 0; }
+	void	destroy(void);
 };
-
 
 #endif

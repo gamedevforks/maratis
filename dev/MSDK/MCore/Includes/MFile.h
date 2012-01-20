@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MCore
-// MImage.h
+// MFile.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2012 Philipp Geyer <http://nistur.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,42 +28,34 @@
 //========================================================================
 
 
-#ifndef _M_IMAGE_H
-#define _M_IMAGE_H
+#ifndef _M_FILE_H
+#define _M_FILE_H
 
 
-class M_CORE_EXPORT MImage
+// File
+class M_CORE_EXPORT MFile
 {
 public:
-
-	MImage(void);
-	~MImage(void);
-
-private:
-
-	void *  m_data;
-	M_TYPES m_dataType;
-
-	unsigned int m_components;
-	unsigned int m_width;
-	unsigned int m_height;
-	unsigned int m_size;
-
-public:
-
-	void create(M_TYPES dataType, unsigned int width, unsigned int height, unsigned int components);
-	void clear(void * color);
-	void readPixel(unsigned int x, unsigned int y, void * color);
-	void writePixel(unsigned int x, unsigned int y, void * color);
 	
-	inline void * getData(void){ return m_data; }
-	M_TYPES getDataType(void){ return m_dataType; }
-
-	inline unsigned int getComponents(void){ return m_components; }
-	inline unsigned int getWidth(void){ return m_width; }
-	inline unsigned int getHeight(void){ return m_height; }
-	inline unsigned int getSize(void){ return m_size; }
+	virtual void	open(const char* path, const char* mode) = 0;
+	virtual int		close() = 0;
+	virtual size_t	read(void* dest, size_t size, size_t count) = 0;
+	virtual size_t	write(const void* str, size_t size, size_t count) = 0;
+	virtual int		print(const char* format, ...) = 0;
+	virtual int		print(const char* format, va_list args) = 0;
+	virtual int		seek(long offset, int whence) = 0;
+	virtual long	tell() = 0;
+	virtual void	rewind() = 0;
+	
+	virtual bool 	isOpen() = 0;
+	virtual void	destroy() = 0;
 };
 
+// File Open Hook
+class M_CORE_EXPORT MFileOpenHook
+{
+public:
+	virtual MFile* open(const char* path, const char* mode) = 0;
+};
 
 #endif

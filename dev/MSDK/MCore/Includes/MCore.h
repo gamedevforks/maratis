@@ -54,6 +54,8 @@ class MSound;
 
 #include "MUtils.h"
 #include "MString.h"
+#include "MFile.h"
+#include "MStdFile.h"
 #include "MFileTools.h"
 #include "MMaths.h"
 #include "MSystemContext.h"

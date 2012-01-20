@@ -64,16 +64,6 @@ void getLocalFilename(char * out, const char * workingDirectory, const char * fi
 		// next
 		token = strtok(NULL, "\\/");
 	}
-/*
-	if(filePasses.size() == 0){
-		strcpy(out, filename);
-		return;
-	}
-
-	if(workPasses.size() == 0){
-		strcpy(out, filename);
-		return;
-	}*/
 
 	// not the same root
 	if(filePasses.size() > 0 && workPasses.size() > 0)
@@ -151,17 +141,6 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 		token = strtok(NULL, "\\/");
 	}
 
-	/*
-	if(filePasses.size() == 0){
-		strcpy(out, workingDirectory);
-		return;
-	}
-
-	if(workPasses.size() == 0){
-		strcpy(out, filename);
-		return;
-	}*/
-
 	if((strncmp(filename+1, ":", 1) == 0) || (filename[0] == '/')){ // ROOT
 		strcpy(out, filename);
 		return;
@@ -226,12 +205,6 @@ void getRepertory(char * out, const char * filename)
 
 	unsigned int i;
 	unsigned int size = filePasses.size();
-	/*
-	if(size == 0)
-	{
-		strcpy(out, "");
-		return;
-	}*/
 	
 	if(filename[0] == '/') // UNIX
 		res += "/";
@@ -246,28 +219,28 @@ void getRepertory(char * out, const char * filename)
 
 char * readTextFile(const char * filename)
 {
-	FILE * file;
+	MFile * file;
 	char * content = NULL;
 	int count = 0;
-
+	
 	if(filename != NULL)
 	{
-		file = fopen(filename, "rt");
-
+		file = M_fopen(filename, "rt");
+		
 		if(file != NULL)
 		{
-			fseek(file, 0, SEEK_END);
-    		count = ftell(file);
-    		rewind(file);
-
+			M_fseek(file, 0, SEEK_END);
+    		count = M_ftell(file);
+    		M_rewind(file);
+			
 			if(count > 0)
 			{
 				content = (char *)malloc(sizeof(char) * (count+1));
-				count = fread(content, sizeof(char), count, file);
+				count = M_fread(content, sizeof(char), count, file);
 				content[count] = '\0';
 			}
-
-			fclose(file);
+			
+			M_fclose(file);
 		}
 	}
 
