@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="MCore"
 	ProjectGUID="{ECB337A5-908A-487C-A0F2-9A29E5377521}"
 	RootNamespace="Maratis"
@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\MSDK\MCore\Includes\MFile.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\MSDK\MCore\Includes\MFileTools.h"
 				>
 			</File>
@@ -242,6 +246,10 @@
 			</File>
 			<File
 				RelativePath="..\..\MSDK\MCore\Includes\MSoundContext.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\MSDK\MCore\Includes\MStdFile.h"
 				>
 			</File>
 			<File
@@ -310,6 +318,10 @@
 			</File>
 			<File
 				RelativePath="..\..\MSDK\MCore\Sources\MSound.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\MSDK\MCore\Sources\MStdFile.cpp"
 				>
 			</File>
 			<File

@@ -33,6 +33,7 @@
 
 #include <dirent.h>
 #include <sys/stat.h>
+#include <stdarg.h>
 
 #ifdef WIN32
 	#include <direct.h>
@@ -40,7 +41,6 @@
 	#define rmdir _rmdir
 #else //#elif __APPLE__
 	#define mkdir(file) mkdir(file, 0777)
-        #include <stdarg.h>
 #endif
 
 static MFileOpenHook* s_fileOpenHook = 0;

@@ -10,7 +10,6 @@
 		E918E3E61305AAB10080ED5C /* MMaths.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C11305AAB10080ED5C /* MMaths.h */; };
 		E918E3E71305AAB10080ED5C /* MColor.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C21305AAB10080ED5C /* MColor.h */; };
 		E918E3E81305AAB10080ED5C /* MImage.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C31305AAB10080ED5C /* MImage.h */; };
-		E918E3E91305AAB10080ED5C /* MRenderingcontext.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C41305AAB10080ED5C /* MRenderingcontext.h */; };
 		E918E3EA1305AAB10080ED5C /* MVector2.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C51305AAB10080ED5C /* MVector2.h */; };
 		E918E3EB1305AAB10080ED5C /* MVector3.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C61305AAB10080ED5C /* MVector3.h */; };
 		E918E3EC1305AAB10080ED5C /* MQuaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = E918E3C71305AAB10080ED5C /* MQuaternion.h */; };
@@ -43,6 +42,10 @@
 		E918E4071305AAB10080ED5C /* MColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E3E31305AAB10080ED5C /* MColor.cpp */; };
 		E918E4081305AAB10080ED5C /* MDataLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E3E41305AAB10080ED5C /* MDataLoader.cpp */; };
 		E918E4091305AAB10080ED5C /* MFileTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E3E51305AAB10080ED5C /* MFileTools.cpp */; };
+		E926627E14C9B12500348B31 /* MFile.h in Headers */ = {isa = PBXBuildFile; fileRef = E926627D14C9B12500348B31 /* MFile.h */; };
+		E926628114C9B13400348B31 /* MRenderingContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E926628014C9B13400348B31 /* MRenderingContext.h */; };
+		E926632A14C9C86F00348B31 /* MStdFile.h in Headers */ = {isa = PBXBuildFile; fileRef = E926632914C9C86F00348B31 /* MStdFile.h */; };
+		E926632C14C9C87900348B31 /* MStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E926632B14C9C87900348B31 /* MStdFile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,7 +53,6 @@
 		E918E3C11305AAB10080ED5C /* MMaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMaths.h; path = ../../MSDK/MCore/Includes/MMaths.h; sourceTree = SOURCE_ROOT; };
 		E918E3C21305AAB10080ED5C /* MColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MColor.h; path = ../../MSDK/MCore/Includes/MColor.h; sourceTree = SOURCE_ROOT; };
 		E918E3C31305AAB10080ED5C /* MImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MImage.h; path = ../../MSDK/MCore/Includes/MImage.h; sourceTree = SOURCE_ROOT; };
-		E918E3C41305AAB10080ED5C /* MRenderingcontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRenderingcontext.h; path = ../../MSDK/MCore/Includes/MRenderingcontext.h; sourceTree = SOURCE_ROOT; };
 		E918E3C51305AAB10080ED5C /* MVector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MVector2.h; path = ../../MSDK/MCore/Includes/MVector2.h; sourceTree = SOURCE_ROOT; };
 		E918E3C61305AAB10080ED5C /* MVector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MVector3.h; path = ../../MSDK/MCore/Includes/MVector3.h; sourceTree = SOURCE_ROOT; };
 		E918E3C71305AAB10080ED5C /* MQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MQuaternion.h; path = ../../MSDK/MCore/Includes/MQuaternion.h; sourceTree = SOURCE_ROOT; };
@@ -83,6 +85,10 @@
 		E918E3E31305AAB10080ED5C /* MColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MColor.cpp; path = ../../MSDK/MCore/Sources/MColor.cpp; sourceTree = SOURCE_ROOT; };
 		E918E3E41305AAB10080ED5C /* MDataLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MDataLoader.cpp; path = ../../MSDK/MCore/Sources/MDataLoader.cpp; sourceTree = SOURCE_ROOT; };
 		E918E3E51305AAB10080ED5C /* MFileTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MFileTools.cpp; path = ../../MSDK/MCore/Sources/MFileTools.cpp; sourceTree = SOURCE_ROOT; };
+		E926627D14C9B12500348B31 /* MFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MFile.h; path = ../../MSDK/MCore/Includes/MFile.h; sourceTree = SOURCE_ROOT; };
+		E926628014C9B13400348B31 /* MRenderingContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRenderingContext.h; path = ../../MSDK/MCore/Includes/MRenderingContext.h; sourceTree = SOURCE_ROOT; };
+		E926632914C9C86F00348B31 /* MStdFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MStdFile.h; path = ../../MSDK/MCore/Includes/MStdFile.h; sourceTree = SOURCE_ROOT; };
+		E926632B14C9C87900348B31 /* MStdFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MStdFile.cpp; path = ../../MSDK/MCore/Sources/MStdFile.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,10 +139,12 @@
 		E918E3C01305AAB10080ED5C /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				E926632914C9C86F00348B31 /* MStdFile.h */,
+				E926628014C9B13400348B31 /* MRenderingContext.h */,
+				E926627D14C9B12500348B31 /* MFile.h */,
 				E918E3C11305AAB10080ED5C /* MMaths.h */,
 				E918E3C21305AAB10080ED5C /* MColor.h */,
 				E918E3C31305AAB10080ED5C /* MImage.h */,
-				E918E3C41305AAB10080ED5C /* MRenderingcontext.h */,
 				E918E3C51305AAB10080ED5C /* MVector2.h */,
 				E918E3C61305AAB10080ED5C /* MVector3.h */,
 				E918E3C71305AAB10080ED5C /* MQuaternion.h */,
@@ -163,6 +171,7 @@
 		E918E3D71305AAB10080ED5C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E926632B14C9C87900348B31 /* MStdFile.cpp */,
 				E918E3D81305AAB10080ED5C /* MImage.cpp */,
 				E918E3D91305AAB10080ED5C /* MDataManager.cpp */,
 				E918E3DA1305AAB10080ED5C /* MMatrix4x4.cpp */,
@@ -192,7 +201,6 @@
 				E918E3E61305AAB10080ED5C /* MMaths.h in Headers */,
 				E918E3E71305AAB10080ED5C /* MColor.h in Headers */,
 				E918E3E81305AAB10080ED5C /* MImage.h in Headers */,
-				E918E3E91305AAB10080ED5C /* MRenderingcontext.h in Headers */,
 				E918E3EA1305AAB10080ED5C /* MVector2.h in Headers */,
 				E918E3EB1305AAB10080ED5C /* MVector3.h in Headers */,
 				E918E3EC1305AAB10080ED5C /* MQuaternion.h in Headers */,
@@ -211,6 +219,9 @@
 				E918E3F91305AAB10080ED5C /* MDataManager.h in Headers */,
 				E918E3FA1305AAB10080ED5C /* MString.h in Headers */,
 				E918E3FB1305AAB10080ED5C /* MScriptContext.h in Headers */,
+				E926627E14C9B12500348B31 /* MFile.h in Headers */,
+				E926628114C9B13400348B31 /* MRenderingContext.h in Headers */,
+				E926632A14C9C86F00348B31 /* MStdFile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +289,7 @@
 				E918E4071305AAB10080ED5C /* MColor.cpp in Sources */,
 				E918E4081305AAB10080ED5C /* MDataLoader.cpp in Sources */,
 				E918E4091305AAB10080ED5C /* MFileTools.cpp in Sources */,
+				E926632C14C9C87900348B31 /* MStdFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -29,6 +29,7 @@
 
 
 #include "../Includes/MCore.h"
+#include <stdarg.h>
 
 
 const void frewind(FILE * file){ rewind(file); }
