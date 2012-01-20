@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MCore
+// MaratisCommon
 // MSndFileLoader.h
 //
 // SndFile Sound loader
@@ -32,8 +32,6 @@
 
 #ifndef _M_SOUND_LOADER_H
 #define _M_SOUND_LOADER_H
-
-#include <MCore.h>
 
 bool M_loadSound(const char * filename, void * data);
 

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MCore
+// MaratisCommon
 // MDevILLoader.cpp
 //
 // Devil image loader
@@ -28,6 +28,7 @@
 //    distribution.
 //
 //========================================================================
+//jan 2012 - Philipp Geyer <philipp@geyer.co.uk> - Changed sound loading to use MFile
 
 
 #include <IL/il.h>
@@ -37,7 +38,7 @@
 #include "MDevILLoader.h"
 
 
-void DevILInit(void)
+static void DevILInit(void)
 {
 	ilInit();
 	ilEnable(IL_CONV_PAL);
@@ -45,45 +46,140 @@ void DevILInit(void)
 	ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
 }
 
-void DevILShutDown(void)
+static void DevILShutDown(void)
 {
 	ilShutDown();
+}
+
+static ILenum getILFormat(M_TYPES dataType)
+{
+	ILenum format;
+	switch(dataType)
+	{
+		default:
+		case M_UBYTE:
+			format = IL_UNSIGNED_BYTE;
+			break;
+			
+		case M_USHORT:
+			format = IL_UNSIGNED_SHORT;
+			break;
+			
+		case M_INT:
+			format = IL_INT;
+			break;
+			
+		case M_FLOAT:
+			format = IL_FLOAT;
+			break;
+	}
+	
+	return format;
+}
+
+static void flipImage(MImage * source, MImage * result)
+{
+	unsigned int y;
+	M_TYPES dataType = source->getDataType();
+	unsigned int width = source->getWidth();
+	unsigned int height = source->getHeight();
+	unsigned int components = source->getComponents();
+	void * data = source->getData();
+	
+	result->create(dataType, width, height, components);
+	void * resultData = result->getData();
+	
+	switch(dataType)
+	{
+		case M_UBYTE:
+		{
+			for(y=0; y<height; y++)
+				memcpy((char*)resultData + y*width*components, (char*)data + (height - y - 1)*width*components, sizeof(char)*width*components);
+			break;
+		}
+		case M_USHORT:
+		{
+			for(y=0; y<height; y++)
+				memcpy((short*)resultData + y*width*components, (short*)data + (height - y - 1)*width*components, sizeof(short)*width*components);
+			break;
+		}
+		case M_INT:
+		{
+			for(y=0; y<height; y++)
+				memcpy((int*)resultData + y*width*components, (int*)data + (height - y - 1)*width*components, sizeof(int)*width*components);
+			break;
+		}
+		case M_FLOAT:
+		{
+			for(y=0; y<height; y++)
+				memcpy((float*)resultData + y*width*components, (float*)data + (height - y - 1)*width*components, sizeof(float)*width*components);
+			break;
+		}
+	}
 }
 
 bool M_loadImage(const char * filename, void * data)
 {
 	DevILInit();
-
+	
 	// gen image
 	ILuint ImgId = 0;
 	ilGenImages(1, &ImgId);
-
+	
 	// bind image
 	ilBindImage(ImgId);
-
-	// load image
-	if(! ilLoadImage(filename))
+	
+	MFile* fp = M_fopen(filename, "rb");
+	if(!fp)
 	{
 		ilDeleteImages(1, &ImgId);
 		DevILShutDown();
+		printf("Error : can't read file %s\n", filename);
 		return false;
 	}
-
+	
+	M_fseek(fp, 0, SEEK_END);
+	int filesize = M_ftell(fp);
+	M_rewind(fp);
+	
+	char* buffer = new char[filesize];
+	if(filesize != M_fread(buffer, sizeof(char), filesize, fp))
+	{
+		ilDeleteImages(1, &ImgId);
+		DevILShutDown();
+		M_fclose(fp);
+		delete [] buffer;
+		return false;
+	}
+	
+	M_fclose(fp);
+	
+	// load image
+	if(! ilLoadL(IL_TYPE_UNKNOWN, buffer, filesize))
+	{
+		ilDeleteImages(1, &ImgId);
+		DevILShutDown();
+		delete [] buffer;
+		return false;
+	}
+	
+	delete [] buffer;
+	
 	// get properties
 	int bytePerPix = ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
-
+	
 	int width  = ilGetInteger(IL_IMAGE_WIDTH);
 	int height = ilGetInteger(IL_IMAGE_HEIGHT);
-
+	
 	if(bytePerPix == 4)
 		ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 	else
 		ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
-
+	
 	// create image
 	MImage * image = (MImage *)data;
 	image->create(M_UBYTE, (unsigned int)width, (unsigned int)height, (unsigned int)bytePerPix);
-
+	
 	// copy data
 	unsigned int size = image->getSize();
 	memcpy(image->getData(), ilGetData(), size);
@@ -105,30 +201,28 @@ bool M_saveImage(const char * filename, void * data, unsigned int quality, bool 
 
 	MImage copy;
 	MImage * image = (MImage *)data;
+	M_TYPES dataType = image->getDataType();
 	unsigned int width = image->getWidth();
 	unsigned int height = image->getHeight();
 	unsigned int components = image->getComponents();
 
 	if(flip)
 	{
-		copy.create(M_UBYTE, width, height, components);
-
-		unsigned int y;
-		for(y=0; y<height; y++)
-		{
-			memcpy((char*)copy.getData() + y*width*components, (char*)image->getData() + (height - y - 1)*width*components, sizeof(char)*width*components);
-		}
-
+		flipImage(image, &copy);
 		image = &copy;
 	}
 
+	ILenum format = getILFormat(dataType);
+	
+	if(components == 1)
+		ilTexImage(width, height, 1, 1, IL_ALPHA, format, image->getData());
 	if(components == 3)
-		ilTexImage(width, height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, image->getData());
+		ilTexImage(width, height, 1, 3, IL_RGB, format, image->getData());
 	else if(components == 4)
-		ilTexImage(width, height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, image->getData());
-
+		ilTexImage(width, height, 1, 4, IL_RGBA, format, image->getData());
+	
 	//if(flip)
-	//	iluFlipImage();
+	//	iluFlipImage(); // bugged
 
 	if(quality < 100)
 		ilSetInteger(IL_JPG_QUALITY, quality);

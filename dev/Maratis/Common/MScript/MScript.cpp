@@ -2106,7 +2106,6 @@ void MScript::runScript(const char * filename)
 		init();
 	}
 
-	// run script
 	if(! filename)
 	{
 		m_isRunning = false;
@@ -2119,16 +2118,27 @@ void MScript::runScript(const char * filename)
 		return;
 	}
 
-	getRepertory(g_currentDirectory, filename);
-	if(luaL_dofile(m_state, filename) != 0)
+	// read file
+	char * text = readTextFile(filename);
+	if(! text)
 	{
-		// print errors
-		printf("ERROR lua script :\n %s\n", lua_tostring(m_state, -1));
+		printf("ERROR lua script : unable to read file %s\n", filename);
 		m_isRunning = false;
 		return;
 	}
-
+	
+	if(luaL_dostring(m_state, text) != 0)
+	{
+		printf("ERROR lua script :\n %s\n", lua_tostring(m_state, -1));
+		m_isRunning = false;
+		SAFE_FREE(text);
+		return;
+	}
+	
+	// finish
+	SAFE_FREE(text);
 	m_isRunning = true;
+	getRepertory(g_currentDirectory, filename);
 }
 
 void MScript::callFunction(const char * name)

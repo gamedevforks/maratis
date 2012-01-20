@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MCore
+// MaratisCommon
 // MFreetypeLoader.cpp
 //
 // Freetype font loader
@@ -38,7 +38,7 @@
 #include "MFreetypeLoader.h"
 
 
-void drawBitmap(MImage * image, FT_Bitmap * bitmap, int left, int top)
+static void drawBitmap(MImage * image, FT_Bitmap * bitmap, int left, int top)
 {
 	int x, y;
 	int width = bitmap->width;
@@ -77,6 +77,8 @@ bool M_loadFont(const char * filename, void * data)
 	FT_GlyphSlot slot;
 	FT_Library library;
 	FT_Face face;
+	FT_Byte * file_base;
+	FT_Long file_size;
 
 
 	// init
@@ -85,11 +87,39 @@ bool M_loadFont(const char * filename, void * data)
 		printf("ERROR Load Font : unable to init FreeType\n");
 		return false;
 	}
-
+	
+	
+	// open file
+	MFile * file = M_fopen(filename, "rb");
+	if(! file)
+	{
+		FT_Done_FreeType(library);
+		printf("ERROR Load Font : can't read file %s\n", filename);
+		return false;
+	}
+	
+	M_fseek(file, 0, SEEK_END);
+	file_size = M_ftell(file);
+	M_rewind(file);
+	
+	file_base = new FT_Byte[file_size];
+	if(file_size != M_fread(file_base, sizeof(FT_Byte), file_size, file))
+	{
+		M_fclose(file);
+		FT_Done_FreeType(library);
+		delete [] file_base;
+		return false;
+	}
+	
+	
 	// read font
-	error = FT_New_Face(library, filename, 0, &face); 
+	error = FT_New_Memory_Face(library, file_base, file_size, 0, &face);
+	
+	M_fclose(file);
+	delete [] file_base;
+	
 	if(error){
-		//printf("ERROR Load Font : unable to read font %s\n", filename);
+		FT_Done_FreeType(library);
 		return false;
 	}
 
@@ -97,6 +127,7 @@ bool M_loadFont(const char * filename, void * data)
 	error = FT_Set_Pixel_Sizes(face, 0, size);
 	if(error){
 		printf("ERROR Load Font : unable to size font\n");
+		FT_Done_FreeType(library);
 		return false;
 	}
 
@@ -127,6 +158,7 @@ bool M_loadFont(const char * filename, void * data)
 
 	if(height == 0){
 		printf("ERROR Load Font : unable to create font texture\n");
+		FT_Done_FreeType(library);
 		return false;
 	}
 
