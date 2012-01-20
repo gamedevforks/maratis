@@ -51,7 +51,9 @@ void MFXManager::clear(void)
 	m_FXRefs.clear();
 }
 
-void MFXManager::addFXRef(unsigned int FXId, MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef)
+MFXRef * MFXManager::addFXRef(unsigned int FXId, MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef)
 {
-	m_FXRefs.push_back(new MFXRef(FXId, vertexShaderRef, pixelShaderRef));
+	MFXRef * fxRef = new MFXRef(FXId, vertexShaderRef, pixelShaderRef);
+	m_FXRefs.push_back(fxRef);
+	return fxRef;
 }

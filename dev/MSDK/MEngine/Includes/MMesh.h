@@ -144,7 +144,7 @@ public:
 	void clearTexCoords(void);
 	void clearColors(void);
 
-	void allocIndices(unsigned int size, M_TYPES type);
+	void * allocIndices(unsigned int size, M_TYPES type);
 	MColor * allocColors(unsigned int size);
 	MVector3 * allocVertices(unsigned int size);
 	MVector3 * allocNormals(unsigned int size);
@@ -154,7 +154,7 @@ public:
 	inline unsigned int getIndicesSize(void){ return m_indicesSize; }
 	inline unsigned int getVerticesSize(void){ return m_verticesSize; }
 	inline unsigned int getNormalsSize(void){ return m_normalsSize; }
-	inline unsigned int getTangentsSize(void){ return m_normalsSize; }
+	inline unsigned int getTangentsSize(void){ return m_tangentsSize; }
 	inline unsigned int getTexCoordsSize(void){ return m_texCoordsSize; }
 	inline unsigned int getColorsSize(void){ return m_colorsSize; }
 
@@ -172,7 +172,8 @@ public:
 	void setMapChannelOffset(unsigned int channel, unsigned int offset);
 	bool isMapChannelExist(unsigned int channel);
 	unsigned int getMapChannelOffset(unsigned int channel);
-
+	map<unsigned int, unsigned int> * getMapChannelOffsets(void){ return &m_mapChannelsOffset; }
+	
 	// displays
 	void allocDisplays(unsigned int size);
 	void clearDisplays(void);

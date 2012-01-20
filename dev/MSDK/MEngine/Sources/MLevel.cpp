@@ -318,23 +318,22 @@ MShaderRef * MLevel::loadShader(const char * filename, M_SHADER_TYPES type)
 	return ref;
 }
 
-void MLevel::createFX(MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef, unsigned int * FXId)
+MFXRef * MLevel::createFX(MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
 	unsigned int i;
 	unsigned int size = m_FXManager.getFXRefsNumber();
 	for(i=0; i<size; i++)
 	{
 		MFXRef * FXRef = (MFXRef *)m_FXManager.getFXRef(i);
 		if((FXRef->getVertexShaderRef() == vertexShaderRef) && (FXRef->getPixelShaderRef() == pixelShaderRef))
-		{
-			*FXId = FXRef->getFXId();
-			return;
-		}
+			return FXRef;
 	}
 
-	render->createFX(FXId, vertexShaderRef->getShaderId(), pixelShaderRef->getShaderId());
-	m_FXManager.addFXRef(*FXId, vertexShaderRef, pixelShaderRef);
+	unsigned int FXId;
+	render->createFX(&FXId, vertexShaderRef->getShaderId(), pixelShaderRef->getShaderId());
+	return m_FXManager.addFXRef(FXId, vertexShaderRef, pixelShaderRef);
 }
 
 void MLevel::sendToUpdateQueue(MDataRef * ref)

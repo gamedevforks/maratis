@@ -95,6 +95,7 @@
 		E918E4D01305AC0F0080ED5C /* MMeshTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E4791305AC0F0080ED5C /* MMeshTools.cpp */; };
 		E918E4D11305AC0F0080ED5C /* MBehaviorCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E47A1305AC0F0080ED5C /* MBehaviorCreator.cpp */; };
 		E918E4D21305AC0F0080ED5C /* MArmature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E47B1305AC0F0080ED5C /* MArmature.cpp */; };
+		E9B1033814C9E83200344202 /* MPackageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E9B1033714C9E83200344202 /* MPackageManager.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -187,6 +188,7 @@
 		E918E4791305AC0F0080ED5C /* MMeshTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MMeshTools.cpp; path = ../../MSDK/MEngine/Sources/MMeshTools.cpp; sourceTree = SOURCE_ROOT; };
 		E918E47A1305AC0F0080ED5C /* MBehaviorCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBehaviorCreator.cpp; path = ../../MSDK/MEngine/Sources/MBehaviorCreator.cpp; sourceTree = SOURCE_ROOT; };
 		E918E47B1305AC0F0080ED5C /* MArmature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MArmature.cpp; path = ../../MSDK/MEngine/Sources/MArmature.cpp; sourceTree = SOURCE_ROOT; };
+		E9B1033714C9E83200344202 /* MPackageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPackageManager.h; path = ../../MSDK/MEngine/Includes/MPackageManager.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,6 +241,7 @@
 		E918E4231305AC0E0080ED5C /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				E9B1033714C9E83200344202 /* MPackageManager.h */,
 				E918E4241305AC0E0080ED5C /* MMorphingData.h */,
 				E918E4251305AC0E0080ED5C /* MBox3d.h */,
 				E918E4261305AC0E0080ED5C /* MArmatureAnimRef.h */,
@@ -390,6 +393,7 @@
 				E918E4A51305AC0F0080ED5C /* MOSound.h in Headers */,
 				E918E4A61305AC0F0080ED5C /* MLevel.h in Headers */,
 				E918E4A71305AC0F0080ED5C /* MFXManager.h in Headers */,
+				E9B1033814C9E83200344202 /* MPackageManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

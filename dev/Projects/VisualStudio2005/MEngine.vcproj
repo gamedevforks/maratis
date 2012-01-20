@@ -318,6 +318,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\MSDK\MEngine\Includes\MPackageManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\MSDK\MEngine\Includes\MRenderer.h"
 				>
 			</File>

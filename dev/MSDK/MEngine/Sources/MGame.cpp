@@ -118,8 +118,6 @@ void MGame::draw(void)
 
 void MGame::onBeginScene(void)
 {
-	MEngine * engine = MEngine::getInstance();
-
 	// get level
 	MLevel * level = MEngine::getInstance()->getLevel();
 	if(! level)

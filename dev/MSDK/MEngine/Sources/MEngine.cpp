@@ -41,7 +41,8 @@ m_renderingContext(NULL),
 m_physicsContext(NULL),
 m_scriptContext(NULL),
 m_inputContext(NULL),
-m_systemContext(NULL)
+m_systemContext(NULL),
+m_packageManager(NULL)
 {}
 
 MEngine::~MEngine(void)
@@ -83,6 +84,11 @@ void MEngine::setInputContext(MInputContext * inputContext)
 void MEngine::setSystemContext(MSystemContext * systemContext)
 {
 	m_systemContext = systemContext;
+}
+
+void MEngine::setPackageManager(MPackageManager * packageManager)
+{
+	m_packageManager = packageManager;
 }
 
 void MEngine::setLevel(MLevel * level)

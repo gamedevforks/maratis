@@ -871,7 +871,7 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 		setTitle(title);
 	
 	// sync
-	GLint sync = 60;
+	//GLint sync = 60;
     //[context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
 	
 	// window scale

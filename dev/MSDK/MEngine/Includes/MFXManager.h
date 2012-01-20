@@ -78,7 +78,7 @@ public:
 	virtual void clear(void);
 
 	// fx refs
-	void addFXRef(unsigned int FXId, MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef);
+	MFXRef * addFXRef(unsigned int FXId, MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef);
 	inline MFXRef * getFXRef(unsigned int id){ return m_FXRefs[id]; }
 	inline unsigned int getFXRefsNumber(void){ return m_FXRefs.size(); }
 };

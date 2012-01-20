@@ -28,14 +28,13 @@
 //========================================================================
 
 
-#include <string.h>
 #include "../Includes/MEngine.h"
 
 
 MMaterial::MMaterial(void):
 m_type(0),
-m_FXId(0),
-m_ZFXId(0),
+m_FXRef(NULL),
+m_ZFXRef(NULL),
 m_blendMode(M_BLENDING_NONE),
 m_opacity(1),
 m_shininess(0),
@@ -50,8 +49,8 @@ m_texturesPass(NULL)
 
 MMaterial::MMaterial(const MMaterial & material):
 m_type(material.m_type),
-m_FXId(material.m_FXId),
-m_ZFXId(material.m_FXId),
+m_FXRef(material.m_FXRef),
+m_ZFXRef(material.m_ZFXRef),
 m_blendMode(material.m_blendMode),
 m_opacity(material.m_opacity),
 m_shininess(material.m_shininess),

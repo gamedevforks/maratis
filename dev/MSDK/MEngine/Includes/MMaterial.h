@@ -88,8 +88,8 @@ private:
 	int m_type;
 	
 	// FX
-	unsigned int m_FXId;
-	unsigned int m_ZFXId;
+	MFXRef * m_FXRef;
+	MFXRef * m_ZFXRef;
 
 	// blend mode
 	M_BLENDING_MODES m_blendMode;
@@ -114,10 +114,10 @@ public:
 	inline int getType(void){ return m_type; }
 	
 	// FX
-	inline void setFXId(unsigned int FXId){ m_FXId = FXId; }
-	inline unsigned int getFXId(void){ return m_FXId; }
-	inline void setZFXId(unsigned int ZFXId){ m_ZFXId = ZFXId; }
-	inline unsigned int getZFXId(void){ return m_ZFXId; }
+	inline void setFXRef(MFXRef * FXRef){ m_FXRef = FXRef; }
+	inline void setZFXRef(MFXRef * ZFXRef){ m_ZFXRef = ZFXRef; }
+	inline MFXRef * getFXRef(void){ return m_FXRef; }
+	inline MFXRef * getZFXRef(void){ return m_ZFXRef; }
 
 	// blend mode
 	inline void setBlendMode(M_BLENDING_MODES blendMode){ m_blendMode = blendMode; }
@@ -146,7 +146,6 @@ public:
 	void addTexturePass(MTexture * texture, M_TEX_COMBINE_MODES combineMode, unsigned int mapChannel);
 	inline unsigned int getTexturesPassNumber(void){ return m_texturesPassNumber; }
 	inline MTexturePass * getTexturePass(unsigned int id){ return m_texturesPass[id]; }
-
 };
 
 #endif

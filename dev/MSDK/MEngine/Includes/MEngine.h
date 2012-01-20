@@ -93,6 +93,8 @@ class MMaterialsAnimRef;
 
 #include <MCore.h>
 
+#include "MPackageManager.h"
+
 #include "MKey.h"
 #include "MObject3dAnim.h"
 #include "MTextureAnim.h"
@@ -181,6 +183,9 @@ private:
 	// renderer manager
 	MRendererManager m_rendererManager;
 
+	// package manager
+	MPackageManager * m_packageManager;
+	
 	// level
 	MLevel * m_level;
 
@@ -226,6 +231,10 @@ public:
 
 	// renderer manager
 	inline MRendererManager * getRendererManager(void){ return &m_rendererManager; }
+
+	// package manager
+	void setPackageManager(MPackageManager * packageManager);
+	inline MPackageManager * getPackageManager(void){ return m_packageManager; }
 
 	// update requests
 	void updateRequests(void);

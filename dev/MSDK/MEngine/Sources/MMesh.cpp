@@ -181,25 +181,28 @@ void MSubMesh::clearColors(void)
 	SAFE_DELETE_ARRAY(m_colors);
 }
 
-void MSubMesh::allocIndices(unsigned int size, M_TYPES type)
+void * MSubMesh::allocIndices(unsigned int size, M_TYPES type)
 {
 	clearIndices();
 	if(size == 0)
-		return;
+		return NULL;
 
-	m_indicesType = type;
 	m_indicesSize = size;
 
 	switch(type)
 	{
 	default:
 	case M_UINT:
+		m_indicesType = M_UINT;
 		m_indices = malloc(sizeof(unsigned int)*size);
 		break;
 	case M_USHORT:
+		m_indicesType = M_USHORT;
 		m_indices = malloc(sizeof(unsigned short)*size);
 		break;
 	}
+	
+	return m_indices;
 }
 
 MVector3 * MSubMesh::allocVertices(unsigned int size)

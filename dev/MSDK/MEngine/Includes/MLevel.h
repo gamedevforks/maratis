@@ -78,7 +78,7 @@ public:
 
 	// FX manager
 	inline MFXManager * getFXManager(void){ return &m_FXManager; }
-	void createFX(MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef, unsigned int * FXId);
+	MFXRef * createFX(MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef);
 
 	// data managers
 	inline MDataManager * getFontManager(void){ return &m_fontManager; }
