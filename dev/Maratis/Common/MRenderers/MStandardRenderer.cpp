@@ -204,7 +204,6 @@ void MStandardRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
 		
 		// data
 		MVector3 * vertices = subMesh->getVertices();
-		MVector3 * normals = subMesh->getNormals();
 		
 		if(! vertices)
 			continue;
@@ -239,8 +238,6 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		// data
 		M_TYPES indicesType = subMesh->getIndicesType();
 		void * indices = subMesh->getIndices();
-		unsigned int texCoordsSize = subMesh->getTexCoordsSize();
-		unsigned int verticesSize = subMesh->getVerticesSize();
 		MVector2 * texCoords = subMesh->getTexCoords();
 
 		// begin / size
@@ -293,7 +290,13 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		unsigned int texturesPassNumber = MIN(8, material->getTexturesPassNumber());
 		
 		// FX
-		unsigned int fxId = material->getFXId();
+		unsigned int fxId = 0;
+		MFXRef * FXRef = material->getFXRef();
+		MFXRef * ZFXRef = material->getZFXRef();
+		
+		if(FXRef)
+			fxId = FXRef->getFXId();
+		
 		bool basicFX = false;
 		
 		// force NoFX
@@ -321,9 +324,9 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				
 				basicFX = true;
 			}
-			else if(material->getZFXId() != 0)
+			else if(ZFXRef)
 			{
-				fxId = material->getZFXId();
+				fxId = ZFXRef->getFXId();
 			}
 		}
 		

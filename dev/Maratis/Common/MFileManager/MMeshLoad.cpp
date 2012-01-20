@@ -964,9 +964,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 					MShaderRef * pixShad = level->loadShader(fragShadPath, M_SHADER_PIXEL);
 					if(vertShad && pixShad)
 					{
-						unsigned int FXId = 0;
-						level->createFX(vertShad, pixShad, &FXId);
-						material->setFXId(FXId);
+						MFXRef * FXRef = level->createFX(vertShad, pixShad);
+						material->setFXRef(FXRef);
 					}
 				}
 			}
@@ -997,9 +996,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 					MShaderRef * pixShad = level->loadShader(fragShadPath, M_SHADER_PIXEL);
 					if(vertShad && pixShad)
 					{
-						unsigned int ZFXId = 0;
-						level->createFX(vertShad, pixShad, &ZFXId);
-						material->setZFXId(ZFXId);
+						MFXRef * ZFXRef = level->createFX(vertShad, pixShad);
+						material->setZFXRef(ZFXRef);
 					}
 				}
 			}
@@ -1013,15 +1011,23 @@ bool xmlMeshLoad(const char * filename, void * data)
 	{
 		MArmature * armature = mesh->createArmature();
 
-		unsigned int numBones = 0;
+		unsigned int b, numBones = 0;
 		bonesNode->QueryUIntAttribute("num", &numBones);
 		armature->allocBones(numBones);
 
+		// add bones
+		for(b=0; b<numBones; b++)
+			armature->addNewBone();
+		b = 0;
+		
 		// Bone
 		TiXmlElement * boneNode = bonesNode->FirstChildElement("Bone");
 		for(boneNode; boneNode; boneNode=boneNode->NextSiblingElement("Bone"))
 		{
-			MOBone * bone = armature->addNewBone();
+			if(b >= armature->getBonesNumber())
+				break;
+			
+			MOBone * bone = armature->getBone(b);
 
 			const char * name = boneNode->Attribute("name");
 			if(name)
@@ -1065,6 +1071,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 				scaleNode->QueryFloatAttribute("z", &scale.z);
 				bone->setScale(scale);
 			}
+			
+			b++;
 		}
 
 		// construct bones inverse pose matrix
