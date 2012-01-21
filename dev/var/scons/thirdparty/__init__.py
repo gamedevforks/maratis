@@ -13,5 +13,7 @@ import opengl
 import cocoa
 import windows
 import dirent
+import npk
+import npk_dev
 
 __all__ = ['']

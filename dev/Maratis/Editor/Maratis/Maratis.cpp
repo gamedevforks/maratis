@@ -45,6 +45,7 @@
 #include <MLoaders/MSndFileLoader.h>
 #include <MLoaders/MFreetypeLoader.h>
 #include <MLoaders/MBinFontLoader.h>
+#include <MLoaders/MBinMeshLoader.h>
 
 // MaratisCore
 #include <MFileManager/MLevelLoad.h>
@@ -61,6 +62,7 @@
 
 // Bins
 #include "../MBins/MFontBin.h"
+#include "../MBins/MMeshBin.h"
 
 
 
@@ -420,10 +422,14 @@ void Maratis::start(void)
 		
 		// mesh loader
 		engine->getMeshLoader()->addLoader(xmlMeshLoad);
+		engine->getMeshLoader()->addLoader(M_loadBinMesh);
 		engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
+		engine->getArmatureAnimLoader()->addLoader(M_loadBinArmatureAnim);
 		engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
+		engine->getTexturesAnimLoader()->addLoader(M_loadBinTexturesAnim);
 		engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
-        
+        engine->getMaterialsAnimLoader()->addLoader(M_loadBinMaterialsAnim);
+		
 		// level
 		engine->setLevel(m_level);
 		MScene * scene = m_level->addNewScene();
@@ -891,20 +897,6 @@ void Maratis::okAddFont(const char * filename)
 			maratis->addSelectedObject(text);
 			UI->setTransformMode(M_TRANSFORM_POSITION);
 			UI->editObject(text);
-            
-            
-			// check for bin font
-			int extId = strlen(filename) - 5;
-			if(extId < 0)
-				extId = 0;
-            
-			// if not font, create font
-			if(strncmp(filename + extId, ".font", 5) != 0)
-			{
-				char file[256];
-				sprintf(file, "%s.font", filename);
-				exportFontBin(file, fontRef->getFont());
-			}
 		}
 	}
 }

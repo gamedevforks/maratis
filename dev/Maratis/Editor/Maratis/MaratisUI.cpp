@@ -177,8 +177,6 @@ void MaratisUI::editProject(void)
 	float headHeight = m_headWin->getScale().y;
 	float viewPropHeight = m_viewProp->getScale().y;
 	
-	float size = 16;
-	float ySpace = 15;
 	MVector4 color(1, 1, 1, 1);
 	MVector4 variableColor(0.66f, 0.76f, 0.87f, 1.0f);
 	MVector4 highLightColor(0.8f, 0.9f, 1, 1);
@@ -2355,7 +2353,6 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             // parent
             if(edit->getVariablePointer() == &UI->m_editParent)
             {
-				MObject3d *parent = NULL;
 				// Either reset curren object's parent to NULL or try setting a new parent
 				if(UI->m_editParent.getData()[0] == '\0' || strcmp(UI->m_editParent.getData(), "...") == 0)
 				{

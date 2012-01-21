@@ -90,9 +90,11 @@
 		E918E95D1305B3420080ED5C /* lzio.c in Sources */ = {isa = PBXBuildFile; fileRef = E918E9391305B3420080ED5C /* lzio.c */; };
 		E918E95E1305B3420080ED5C /* print.c in Sources */ = {isa = PBXBuildFile; fileRef = E918E93B1305B3420080ED5C /* print.c */; };
 		E91B7C76144EDF5600DD634A /* MGuiFileBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E91B7C75144EDF5600DD634A /* MGuiFileBrowser.cpp */; };
+		E9204BFC14C328DC004F4A11 /* MMeshBin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9204BFA14C328DC004F4A11 /* MMeshBin.cpp */; };
 		E9496DF0128EC67000639F42 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9496DEF128EC67000639F42 /* OpenAL.framework */; };
 		E99D52F3136AADE200EC8924 /* libSndFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
 		E99D52F4136AADF300EC8924 /* libSndFile.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
+		E9CCB8D214C8668C00B36819 /* MBinMeshLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */; };
 		E9D7A8051369DB1200B81096 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D7A8041369DB1200B81096 /* libfreetype.a */; };
 		E9D7A80C1369DBCC00B81096 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D7A80B1369DBCC00B81096 /* libjpeg.a */; };
 		E9D7A80E1369DBFC00B81096 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D7A80D1369DBFC00B81096 /* libpng.a */; };
@@ -395,9 +397,13 @@
 		E918E93B1305B3420080ED5C /* print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = print.c; path = ../../../../3rdparty/lua/print.c; sourceTree = SOURCE_ROOT; };
 		E91B7C75144EDF5600DD634A /* MGuiFileBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MGuiFileBrowser.cpp; path = ../../MSDK/MGui/Sources/MGuiFileBrowser.cpp; sourceTree = SOURCE_ROOT; };
 		E91B7C77144EDF5F00DD634A /* MGuiFileBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGuiFileBrowser.h; path = ../../MSDK/MGui/Includes/MGuiFileBrowser.h; sourceTree = SOURCE_ROOT; };
+		E9204BFA14C328DC004F4A11 /* MMeshBin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MMeshBin.cpp; path = ../../Maratis/Editor/MBins/MMeshBin.cpp; sourceTree = SOURCE_ROOT; };
+		E9204BFB14C328DC004F4A11 /* MMeshBin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMeshBin.h; path = ../../Maratis/Editor/MBins/MMeshBin.h; sourceTree = SOURCE_ROOT; };
 		E9496D58128EC2BD00639F42 /* Maratis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Maratis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9496DEF128EC67000639F42 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		E99D52F2136AADE200EC8924 /* libSndFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSndFile.dylib; path = ../../../../3rdparty/libsndfile/osx/libSndFile.dylib; sourceTree = SOURCE_ROOT; };
+		E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBinMeshLoader.cpp; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.cpp; sourceTree = SOURCE_ROOT; };
+		E9CCB8D114C8668C00B36819 /* MBinMeshLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinMeshLoader.h; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.h; sourceTree = SOURCE_ROOT; };
 		E9D7A8041369DB1200B81096 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../3rdparty/freetype/osx/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		E9D7A80B1369DBCC00B81096 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../../../3rdparty/libjpeg/osx/libjpeg.a; sourceTree = SOURCE_ROOT; };
 		E9D7A80D1369DBFC00B81096 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../../../../3rdparty/libpng/osx/libpng.a; sourceTree = SOURCE_ROOT; };
@@ -968,6 +974,8 @@
 		E918E6C01305B2410080ED5C /* MLoaders */ = {
 			isa = PBXGroup;
 			children = (
+				E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */,
+				E9CCB8D114C8668C00B36819 /* MBinMeshLoader.h */,
 				E918E6C11305B2410080ED5C /* MBinFontLoader.cpp */,
 				E918E6C21305B2410080ED5C /* MDevILLoader.cpp */,
 				E918E6C31305B2410080ED5C /* MFreetypeLoader.cpp */,
@@ -1066,6 +1074,8 @@
 		E918E6FB1305B25F0080ED5C /* MBins */ = {
 			isa = PBXGroup;
 			children = (
+				E9204BFA14C328DC004F4A11 /* MMeshBin.cpp */,
+				E9204BFB14C328DC004F4A11 /* MMeshBin.h */,
 				E918E6FC1305B25F0080ED5C /* MFontBin.h */,
 				E918E6FD1305B25F0080ED5C /* MFontBin.cpp */,
 			);
@@ -1914,6 +1924,8 @@
 				E9E078A4148BADDF00EB0657 /* btGeometryUtil.cpp in Sources */,
 				E9E078A5148BADDF00EB0657 /* btQuickprof.cpp in Sources */,
 				E9E078A6148BADDF00EB0657 /* btSerializer.cpp in Sources */,
+				E9204BFC14C328DC004F4A11 /* MMeshBin.cpp in Sources */,
+				E9CCB8D214C8668C00B36819 /* MBinMeshLoader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

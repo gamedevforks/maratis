@@ -90,11 +90,3 @@ SConscript( 'Examples/SConscript',
             variant_dir = os.path.join(builddir,'Examples'),
             duplicate=False,
             exports='env' )
-
-# build temp
-SConscript( 'temp/SConscript',
-            variant_dir = os.path.join(builddir,'temp'),
-            duplicate=False,
-            exports='env' )
-
-

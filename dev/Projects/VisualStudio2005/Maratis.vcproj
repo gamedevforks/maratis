@@ -226,6 +226,14 @@
 					RelativePath="..\..\Maratis\Editor\MBins\MFontBin.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\Maratis\Editor\MBins\MMeshBin.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Editor\MBins\MMeshBin.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="MFilesUpdate"
@@ -576,6 +584,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Maratis\Common\MLoaders\MBinFontLoader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Common\MLoaders\MBinMeshLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Common\MLoaders\MBinMeshLoader.h"
 					>
 				</File>
 				<File
@@ -1943,15 +1959,11 @@
 				Name="VectorMath"
 				>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\boolInVec.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\boolInVec.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\floatInVec.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\boolInVec.h"
 					>
 				</File>
 				<File
@@ -1959,11 +1971,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\mat_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\floatInVec.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\mat_aos.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\mat_aos.h"
 					>
 				</File>
 				<File
@@ -1975,11 +1991,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vec_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vec_aos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vec_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vec_aos.h"
 					>
 				</File>
 				<File
@@ -1987,11 +2003,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vectormath_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vectormath_aos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vectormath_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vectormath_aos.h"
 					>
 				</File>
 				<File

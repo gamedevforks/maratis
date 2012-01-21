@@ -414,9 +414,9 @@ float CatmullRomInterpolation(float y0, float y1, float y2, float y3, float mu)
 	
 	mu2 = mu*mu;
 	
-	a0 = -0.5*y0 + 1.5*y1 - 1.5*y2 + 0.5*y3;
-	a1 = y0 - 2.5*y1 + 2.0*y2 - 0.5*y3;
-	a2 = -0.5*y0 + 0.5*y2;
+	a0 = -0.5f*y0 + 1.5f*y1 - 1.5f*y2 + 0.5f*y3;
+	a1 = y0 - 2.5f*y1 + 2.0f*y2 - 0.5f*y3;
+	a2 = -0.5f*y0 + 0.5f*y2;
 	a3 = y1;
 	
 	return (a0*mu*mu2+a1*mu2+a2*mu+a3);
@@ -508,7 +508,7 @@ MVector3 HSVToRGB(MVector3 HSVColor)
 	}
 	
 	h /= 60;
-	i = floor(h);
+	i = (int)floor(h);
 	f = h - i;
 	p = v * (1 - s);
 	q = v * (1 - s * f);

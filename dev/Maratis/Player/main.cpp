@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
 	unsigned int width = 1024;
 	unsigned int height = 768;
-	int fullscreen = true;
+	int fullscreen = false;
 
 	if(argc > 2)
 		sscanf(argv[2], "%d", &width);

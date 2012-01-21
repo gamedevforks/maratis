@@ -37,4 +37,3 @@ def customizeEnvironment(env):
     elif sys.platform=='win32':
         customizeMSVCLinker(env)
         embedMSVCManifest(env)
-

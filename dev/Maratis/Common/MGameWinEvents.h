@@ -91,7 +91,6 @@ void gameWinEvents(MWinEvent * windowEvents)
 	MWindow * window = MWindow::getInstance();
 	MInputContext * input = MEngine::getInstance()->getInputContext();
 	MMouse * mouse = MMouse::getInstance();
-	MKeyboard * keyboard = MKeyboard::getInstance();
 
 	switch(windowEvents->type)
 	{
