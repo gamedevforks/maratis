@@ -261,6 +261,7 @@
 		E9C9987E13291E6B002A3F21 /* MTextureRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9C9985313291E6B002A3F21 /* MTextureRef.cpp */; };
 		E9C9987F13291E6B002A3F21 /* MMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9C9985413291E6B002A3F21 /* MMaterial.cpp */; };
 		E9C9988013291E6B002A3F21 /* MScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9C9985513291E6B002A3F21 /* MScene.cpp */; };
+		E9F8B2BB14CACF5D00AB7CF4 /* MStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9F8B2BA14CACF5D00AB7CF4 /* MStdFile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -720,7 +721,6 @@
 		E9C90FE713291B9600FDD872 /* MMaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMaths.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MMaths.h; sourceTree = SOURCE_ROOT; };
 		E9C90FE813291B9600FDD872 /* MColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MColor.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MColor.h; sourceTree = SOURCE_ROOT; };
 		E9C90FE913291B9600FDD872 /* MImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MImage.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MImage.h; sourceTree = SOURCE_ROOT; };
-		E9C90FEA13291B9600FDD872 /* MRenderingcontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRenderingcontext.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MRenderingcontext.h; sourceTree = SOURCE_ROOT; };
 		E9C90FEB13291B9600FDD872 /* MVector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MVector2.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MVector2.h; sourceTree = SOURCE_ROOT; };
 		E9C90FEC13291B9600FDD872 /* MVector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MVector3.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MVector3.h; sourceTree = SOURCE_ROOT; };
 		E9C90FED13291B9600FDD872 /* MQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MQuaternion.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MQuaternion.h; sourceTree = SOURCE_ROOT; };
@@ -840,6 +840,11 @@
 		E9C9985313291E6B002A3F21 /* MTextureRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MTextureRef.cpp; path = ../../../trunk/dev/MSDK/MEngine/Sources/MTextureRef.cpp; sourceTree = SOURCE_ROOT; };
 		E9C9985413291E6B002A3F21 /* MMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MMaterial.cpp; path = ../../../trunk/dev/MSDK/MEngine/Sources/MMaterial.cpp; sourceTree = SOURCE_ROOT; };
 		E9C9985513291E6B002A3F21 /* MScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MScene.cpp; path = ../../../trunk/dev/MSDK/MEngine/Sources/MScene.cpp; sourceTree = SOURCE_ROOT; };
+		E9F8B2B714CACF5100AB7CF4 /* MFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MFile.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MFile.h; sourceTree = SOURCE_ROOT; };
+		E9F8B2B814CACF5100AB7CF4 /* MRenderingContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRenderingContext.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MRenderingContext.h; sourceTree = SOURCE_ROOT; };
+		E9F8B2B914CACF5100AB7CF4 /* MStdFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MStdFile.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MStdFile.h; sourceTree = SOURCE_ROOT; };
+		E9F8B2BA14CACF5D00AB7CF4 /* MStdFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MStdFile.cpp; path = ../../../trunk/dev/MSDK/MCore/Sources/MStdFile.cpp; sourceTree = SOURCE_ROOT; };
+		E9F8B2BC14CACF6C00AB7CF4 /* MPackageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPackageManager.h; path = ../../../trunk/dev/MSDK/MEngine/Includes/MPackageManager.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1576,10 +1581,12 @@
 		E9C90FE613291B9600FDD872 /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				E9F8B2B714CACF5100AB7CF4 /* MFile.h */,
+				E9F8B2B814CACF5100AB7CF4 /* MRenderingContext.h */,
+				E9F8B2B914CACF5100AB7CF4 /* MStdFile.h */,
 				E9C90FE713291B9600FDD872 /* MMaths.h */,
 				E9C90FE813291B9600FDD872 /* MColor.h */,
 				E9C90FE913291B9600FDD872 /* MImage.h */,
-				E9C90FEA13291B9600FDD872 /* MRenderingcontext.h */,
 				E9C90FEB13291B9600FDD872 /* MVector2.h */,
 				E9C90FEC13291B9600FDD872 /* MVector3.h */,
 				E9C90FED13291B9600FDD872 /* MQuaternion.h */,
@@ -1606,6 +1613,7 @@
 		E9C90FFD13291B9600FDD872 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E9F8B2BA14CACF5D00AB7CF4 /* MStdFile.cpp */,
 				E9C90FFE13291B9600FDD872 /* MImage.cpp */,
 				E9C90FFF13291B9600FDD872 /* MDataManager.cpp */,
 				E9C9100013291B9600FDD872 /* MMatrix4x4.cpp */,
@@ -1637,6 +1645,7 @@
 		E9C997FD13291E6B002A3F21 /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				E9F8B2BC14CACF6C00AB7CF4 /* MPackageManager.h */,
 				E9C997FE13291E6B002A3F21 /* MMorphingData.h */,
 				E9C997FF13291E6B002A3F21 /* MBox3d.h */,
 				E9C9980013291E6B002A3F21 /* MArmatureAnimRef.h */,
@@ -2093,6 +2102,7 @@
 				E9738167148BB10C000F7FC0 /* btGeometryUtil.cpp in Sources */,
 				E9738168148BB10C000F7FC0 /* btQuickprof.cpp in Sources */,
 				E9738169148BB10C000F7FC0 /* btSerializer.cpp in Sources */,
+				E9F8B2BB14CACF5D00AB7CF4 /* MStdFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

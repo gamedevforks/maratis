@@ -289,7 +289,13 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		unsigned int texturesPassNumber = MIN(8, material->getTexturesPassNumber());
 		
 		// FX
-		unsigned int fxId = material->getFXId();
+		unsigned int fxId = 0;
+		MFXRef * FXRef = material->getFXRef();
+		MFXRef * ZFXRef = material->getZFXRef();
+		
+		if(FXRef)
+			fxId = FXRef->getFXId();
+		
 		bool basicFX = false;
 		
 		// force NoFX
@@ -317,9 +323,9 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				
 				basicFX = true;
 			}
-			else if(material->getZFXId() != 0)
+			else if(ZFXRef)
 			{
-				fxId = material->getZFXId();
+				fxId = ZFXRef->getFXId();
 			}
 		}
 		
