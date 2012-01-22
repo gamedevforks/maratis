@@ -92,6 +92,14 @@
 		E91B7C76144EDF5600DD634A /* MGuiFileBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E91B7C75144EDF5600DD634A /* MGuiFileBrowser.cpp */; };
 		E9204BFC14C328DC004F4A11 /* MMeshBin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9204BFA14C328DC004F4A11 /* MMeshBin.cpp */; };
 		E9496DF0128EC67000639F42 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9496DEF128EC67000639F42 /* OpenAL.framework */; };
+		E94D8B5414CB4934008D70D7 /* MPackageManagerNPK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B5214CB4934008D70D7 /* MPackageManagerNPK.cpp */; };
+		E94D8B9114CB4CE3008D70D7 /* tea.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B8014CB4CE3008D70D7 /* tea.c */; };
+		E94D8B9214CB4CE3008D70D7 /* tea_dev.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B8214CB4CE3008D70D7 /* tea_dev.c */; };
+		E94D8B9314CB4CE3008D70D7 /* xxtea.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B8414CB4CE3008D70D7 /* xxtea.c */; };
+		E94D8B9414CB4CE3008D70D7 /* xxtea_dev.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B8614CB4CE3008D70D7 /* xxtea_dev.c */; };
+		E94D8B9514CB4CE3008D70D7 /* npk.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B8E14CB4CE3008D70D7 /* npk.c */; };
+		E94D8B9614CB4CE3008D70D7 /* npk_common.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B8F14CB4CE3008D70D7 /* npk_common.c */; };
+		E94D8B9714CB4CE3008D70D7 /* npk_dev.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B9014CB4CE3008D70D7 /* npk_dev.c */; };
 		E99D52F3136AADE200EC8924 /* libSndFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
 		E99D52F4136AADF300EC8924 /* libSndFile.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
 		E9CCB8D214C8668C00B36819 /* MBinMeshLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */; };
@@ -401,6 +409,22 @@
 		E9204BFB14C328DC004F4A11 /* MMeshBin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMeshBin.h; path = ../../Maratis/Editor/MBins/MMeshBin.h; sourceTree = SOURCE_ROOT; };
 		E9496D58128EC2BD00639F42 /* Maratis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Maratis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9496DEF128EC67000639F42 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		E94D8B5214CB4934008D70D7 /* MPackageManagerNPK.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MPackageManagerNPK.cpp; path = ../../Maratis/Common/MFileManager/MPackageManagerNPK.cpp; sourceTree = SOURCE_ROOT; };
+		E94D8B5314CB4934008D70D7 /* MPackageManagerNPK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPackageManagerNPK.h; path = ../../Maratis/Common/MFileManager/MPackageManagerNPK.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8014CB4CE3008D70D7 /* tea.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tea.c; path = ../../../../3rdparty/npk/external/tea/tea.c; sourceTree = SOURCE_ROOT; };
+		E94D8B8114CB4CE3008D70D7 /* tea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tea.h; path = ../../../../3rdparty/npk/external/tea/tea.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8214CB4CE3008D70D7 /* tea_dev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tea_dev.c; path = ../../../../3rdparty/npk/external/tea/tea_dev.c; sourceTree = SOURCE_ROOT; };
+		E94D8B8414CB4CE3008D70D7 /* xxtea.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xxtea.c; path = ../../../../3rdparty/npk/external/xxtea/xxtea.c; sourceTree = SOURCE_ROOT; };
+		E94D8B8514CB4CE3008D70D7 /* xxtea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xxtea.h; path = ../../../../3rdparty/npk/external/xxtea/xxtea.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8614CB4CE3008D70D7 /* xxtea_dev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xxtea_dev.c; path = ../../../../3rdparty/npk/external/xxtea/xxtea_dev.c; sourceTree = SOURCE_ROOT; };
+		E94D8B8814CB4CE3008D70D7 /* npk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = npk.h; path = ../../../../3rdparty/npk/include/npk.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8914CB4CE3008D70D7 /* npk_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = npk_base.h; path = ../../../../3rdparty/npk/include/npk_base.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8A14CB4CE3008D70D7 /* npk_conf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = npk_conf.h; path = ../../../../3rdparty/npk/include/npk_conf.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8B14CB4CE3008D70D7 /* npk_dev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = npk_dev.h; path = ../../../../3rdparty/npk/include/npk_dev.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8C14CB4CE3008D70D7 /* npk_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = npk_error.h; path = ../../../../3rdparty/npk/include/npk_error.h; sourceTree = SOURCE_ROOT; };
+		E94D8B8E14CB4CE3008D70D7 /* npk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk.c; path = ../../../../3rdparty/npk/src/npk.c; sourceTree = SOURCE_ROOT; };
+		E94D8B8F14CB4CE3008D70D7 /* npk_common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk_common.c; path = ../../../../3rdparty/npk/src/npk_common.c; sourceTree = SOURCE_ROOT; };
+		E94D8B9014CB4CE3008D70D7 /* npk_dev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk_dev.c; path = ../../../../3rdparty/npk/src/npk_dev.c; sourceTree = SOURCE_ROOT; };
 		E99D52F2136AADE200EC8924 /* libSndFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSndFile.dylib; path = ../../../../3rdparty/libsndfile/osx/libSndFile.dylib; sourceTree = SOURCE_ROOT; };
 		E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBinMeshLoader.cpp; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.cpp; sourceTree = SOURCE_ROOT; };
 		E9CCB8D114C8668C00B36819 /* MBinMeshLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinMeshLoader.h; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.h; sourceTree = SOURCE_ROOT; };
@@ -1005,6 +1029,8 @@
 		E918E6CF1305B2410080ED5C /* MFileManager */ = {
 			isa = PBXGroup;
 			children = (
+				E94D8B5214CB4934008D70D7 /* MPackageManagerNPK.cpp */,
+				E94D8B5314CB4934008D70D7 /* MPackageManagerNPK.h */,
 				E918E6D01305B2410080ED5C /* MMeshLoad.h */,
 				E918E6D11305B2410080ED5C /* MLevelSave.cpp */,
 				E918E6D21305B2410080ED5C /* MLevelLoad.cpp */,
@@ -1185,9 +1211,76 @@
 			path = ../../../../3rdparty/lua;
 			sourceTree = SOURCE_ROOT;
 		};
+		E94D8B7D14CB4CC2008D70D7 /* npk */ = {
+			isa = PBXGroup;
+			children = (
+				E94D8B7E14CB4CE3008D70D7 /* external */,
+				E94D8B8714CB4CE3008D70D7 /* include */,
+				E94D8B8D14CB4CE3008D70D7 /* src */,
+			);
+			name = npk;
+			sourceTree = "<group>";
+		};
+		E94D8B7E14CB4CE3008D70D7 /* external */ = {
+			isa = PBXGroup;
+			children = (
+				E94D8B7F14CB4CE3008D70D7 /* tea */,
+				E94D8B8314CB4CE3008D70D7 /* xxtea */,
+			);
+			name = external;
+			path = ../../../../3rdparty/npk/external;
+			sourceTree = SOURCE_ROOT;
+		};
+		E94D8B7F14CB4CE3008D70D7 /* tea */ = {
+			isa = PBXGroup;
+			children = (
+				E94D8B8014CB4CE3008D70D7 /* tea.c */,
+				E94D8B8114CB4CE3008D70D7 /* tea.h */,
+				E94D8B8214CB4CE3008D70D7 /* tea_dev.c */,
+			);
+			name = tea;
+			path = ../../../../3rdparty/npk/external/tea;
+			sourceTree = SOURCE_ROOT;
+		};
+		E94D8B8314CB4CE3008D70D7 /* xxtea */ = {
+			isa = PBXGroup;
+			children = (
+				E94D8B8414CB4CE3008D70D7 /* xxtea.c */,
+				E94D8B8514CB4CE3008D70D7 /* xxtea.h */,
+				E94D8B8614CB4CE3008D70D7 /* xxtea_dev.c */,
+			);
+			name = xxtea;
+			path = ../../../../3rdparty/npk/external/xxtea;
+			sourceTree = SOURCE_ROOT;
+		};
+		E94D8B8714CB4CE3008D70D7 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				E94D8B8814CB4CE3008D70D7 /* npk.h */,
+				E94D8B8914CB4CE3008D70D7 /* npk_base.h */,
+				E94D8B8A14CB4CE3008D70D7 /* npk_conf.h */,
+				E94D8B8B14CB4CE3008D70D7 /* npk_dev.h */,
+				E94D8B8C14CB4CE3008D70D7 /* npk_error.h */,
+			);
+			name = include;
+			path = ../../../../3rdparty/npk/include;
+			sourceTree = SOURCE_ROOT;
+		};
+		E94D8B8D14CB4CE3008D70D7 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E94D8B8E14CB4CE3008D70D7 /* npk.c */,
+				E94D8B8F14CB4CE3008D70D7 /* npk_common.c */,
+				E94D8B9014CB4CE3008D70D7 /* npk_dev.c */,
+			);
+			name = src;
+			path = ../../../../3rdparty/npk/src;
+			sourceTree = SOURCE_ROOT;
+		};
 		E9AC62B4127F451E00EC0BB7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E94D8B7D14CB4CC2008D70D7 /* npk */,
 				E918E9051305B3420080ED5C /* lua */,
 				E918E71D1305B29E0080ED5C /* bullet */,
 				E918E70C1305B2840080ED5C /* tinyxml */,
@@ -1926,6 +2019,14 @@
 				E9E078A6148BADDF00EB0657 /* btSerializer.cpp in Sources */,
 				E9204BFC14C328DC004F4A11 /* MMeshBin.cpp in Sources */,
 				E9CCB8D214C8668C00B36819 /* MBinMeshLoader.cpp in Sources */,
+				E94D8B5414CB4934008D70D7 /* MPackageManagerNPK.cpp in Sources */,
+				E94D8B9114CB4CE3008D70D7 /* tea.c in Sources */,
+				E94D8B9214CB4CE3008D70D7 /* tea_dev.c in Sources */,
+				E94D8B9314CB4CE3008D70D7 /* xxtea.c in Sources */,
+				E94D8B9414CB4CE3008D70D7 /* xxtea_dev.c in Sources */,
+				E94D8B9514CB4CE3008D70D7 /* npk.c in Sources */,
+				E94D8B9614CB4CE3008D70D7 /* npk_common.c in Sources */,
+				E94D8B9714CB4CE3008D70D7 /* npk_dev.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1957,6 +2058,7 @@
 					../../../../3rdparty/libsndfile/include,
 					../../../../3rdparty/freetype/include,
 					../../../../3rdparty/zlib,
+					../../../../3rdparty/npk/include,
 				);
 				INSTALL_PATH = "(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
@@ -2000,6 +2102,7 @@
 					../../../../3rdparty/libsndfile/include,
 					../../../../3rdparty/freetype/include,
 					../../../../3rdparty/zlib,
+					../../../../3rdparty/npk/include,
 				);
 				INSTALL_PATH = "(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
@@ -2046,6 +2149,7 @@
 					../../../../3rdparty/libsndfile/include,
 					../../../../3rdparty/freetype/include,
 					../../../../3rdparty/zlib,
+					../../../../3rdparty/npk/include,
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
@@ -2086,6 +2190,7 @@
 					../../../../3rdparty/libsndfile/include,
 					../../../../3rdparty/freetype/include,
 					../../../../3rdparty/zlib,
+					../../../../3rdparty/npk/include,
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";

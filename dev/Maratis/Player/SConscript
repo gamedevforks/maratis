@@ -38,6 +38,7 @@ if sys.platform=='linux2' or sys.platform=='linux3':
                                    'Xxf86vm'] )
 
 # add 3rdparty libraries parameters
+thirdparty.npk_dev.addNPKDevToEnv(env_local)
 thirdparty.lua.addLuaToEnv(env_local)
 thirdparty.bullet.addBulletToEnv(env_local)
 thirdparty.openal.addOpenALToEnv(env_local)
