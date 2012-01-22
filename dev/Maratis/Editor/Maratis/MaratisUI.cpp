@@ -1643,13 +1643,14 @@ void MaratisUI::createGUI(void)
 	addTextButtonToMenu(fileMenu, " Open Level", MVector2(0, 80), openLevelEvents);
 	addTextButtonToMenu(fileMenu, " Save", MVector2(0, 110), saveEvents);
 	addTextButtonToMenu(fileMenu, " Save as", MVector2(0, 130), saveAsEvents);
-    
-	addTextButtonToMenu(fileMenu, " Quit", MVector2(0, 160), quitEvents);
+    addTextButtonToMenu(fileMenu, " Publish Project", MVector2(0, 160), publishEvents);
+	
+	addTextButtonToMenu(fileMenu, " Quit", MVector2(0, 190), quitEvents);
     
 	addTextToMenu(fileMenu, "Ctrl O ", MVector2(120, 80));
 	addTextToMenu(fileMenu, "Ctrl S ", MVector2(120, 110));
-	addTextToMenu(fileMenu, "Ctrl Q ", MVector2(120, 160));
-	addTextToMenu(fileMenu, "", MVector2(0, 170));
+	addTextToMenu(fileMenu, "Ctrl Q ", MVector2(120, 190));
+	addTextToMenu(fileMenu, "", MVector2(0, 200));
     
 	fileMenu->getWindowMenu()->setShadow(true);
 	fileMenu->getWindowMenu()->setNormalColor(menuColor);
@@ -3878,6 +3879,22 @@ void MaratisUI::saveAsEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
             maratis->saveAs();
+            break;
+            
+        default:
+            break;
+	}
+}
+
+// publish
+void MaratisUI::publishEvents(MGuiButton * button, MGuiEvent * guiEvents)
+{
+	Maratis * maratis = Maratis::getInstance();
+    
+	switch(guiEvents->type)
+	{
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->publish();
             break;
             
         default:

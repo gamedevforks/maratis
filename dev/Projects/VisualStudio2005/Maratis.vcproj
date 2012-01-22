@@ -40,8 +40,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\..\MSDK\MCore\Includes;..\..\MSDK\MEngine\Includes;..\..\MSDK\MGui\Includes;..\..\Maratis\Common;..\..\..\..\3rdparty\tinyxml;..\..\..\..\3rdparty\lua;..\..\..\..\3rdparty\openal\include;..\..\..\..\3rdparty\devil;..\..\..\..\3rdparty\glee;..\..\..\..\3rdparty\libsndfile\include;..\..\..\..\3rdparty\bullet;..\..\..\..\3rdparty\freetype\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE;TIXML_USE_STL"
+				AdditionalIncludeDirectories="..\..\MSDK\MCore\Includes;..\..\MSDK\MEngine\Includes;..\..\MSDK\MGui\Includes;..\..\Maratis\Common;..\..\..\..\3rdparty\tinyxml;..\..\..\..\3rdparty\lua;..\..\..\..\3rdparty\openal\include;..\..\..\..\3rdparty\devil;..\..\..\..\3rdparty\glee;..\..\..\..\3rdparty\libsndfile\include;..\..\..\..\3rdparty\bullet;..\..\..\..\3rdparty\freetype\include;..\..\..\..\3rdparty\npk\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE;TIXML_USE_STL;M_PACKAGE_WRITABLE"
 				IgnoreStandardIncludePath="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -130,8 +130,8 @@
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\MSDK\MCore\Includes;..\..\MSDK\MEngine\Includes;..\..\MSDK\MGui\Includes;..\..\Maratis\Common;..\..\..\..\3rdparty\tinyxml;..\..\..\..\3rdparty\lua;..\..\..\..\3rdparty\openal\include;..\..\..\..\3rdparty\devil;..\..\..\..\3rdparty\glee;..\..\..\..\3rdparty\libsndfile\include;..\..\..\..\3rdparty\bullet;..\..\..\..\3rdparty\freetype\include"
-				PreprocessorDefinitions="WIN32;TIXML_USE_STL;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="..\..\MSDK\MCore\Includes;..\..\MSDK\MEngine\Includes;..\..\MSDK\MGui\Includes;..\..\Maratis\Common;..\..\..\..\3rdparty\tinyxml;..\..\..\..\3rdparty\lua;..\..\..\..\3rdparty\openal\include;..\..\..\..\3rdparty\devil;..\..\..\..\3rdparty\glee;..\..\..\..\3rdparty\libsndfile\include;..\..\..\..\3rdparty\bullet;..\..\..\..\3rdparty\freetype\include;..\..\..\..\3rdparty\npk\include;..\..\..\..\3rdparty\zlib"
+				PreprocessorDefinitions="WIN32;TIXML_USE_STL;_CRT_SECURE_NO_DEPRECATE;M_PACKAGE_WRITABLE"
 				RuntimeLibrary="2"
 				ObjectFile="$(IntDir)\$(ProjectName)\"
 				ProgramDataBaseFileName="$(IntDir)\$(ProjectName)\vc80.pdb"
@@ -256,6 +256,26 @@
 				</File>
 				<File
 					RelativePath="..\..\Maratis\Editor\MRenderArray\MRenderArray.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="MPublish"
+				>
+				<File
+					RelativePath="..\..\Maratis\Editor\MPublish\MPublisher.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Editor\MPublish\MPublisher.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Editor\MPublish\MPublishEvent.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Editor\MPublish\MPublishEvent.h"
 					>
 				</File>
 			</Filter>
@@ -560,6 +580,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Maratis\Common\MFileManager\MMeshLoad.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Common\MFileManager\MPackageManagerNPK.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Common\MFileManager\MPackageManagerNPK.h"
 					>
 				</File>
 			</Filter>
@@ -1959,15 +1987,11 @@
 				Name="VectorMath"
 				>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\boolInVec.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\boolInVec.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\floatInVec.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\boolInVec.h"
 					>
 				</File>
 				<File
@@ -1975,11 +1999,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\mat_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\floatInVec.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\mat_aos.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\mat_aos.h"
 					>
 				</File>
 				<File
@@ -1991,11 +2019,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vec_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vec_aos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vec_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vec_aos.h"
 					>
 				</File>
 				<File
@@ -2003,11 +2031,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vectormath_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vectormath_aos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vectormath_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vectormath_aos.h"
 					>
 				</File>
 				<File
@@ -2015,6 +2043,178 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="npk"
+			>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\src\npk.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\include\npk.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\include\npk_base.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\src\npk_common.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\include\npk_conf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\src\npk_dev.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\include\npk_dev.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\npk\include\npk_error.h"
+				>
+			</File>
+			<Filter
+				Name="external"
+				>
+				<File
+					RelativePath="..\..\..\..\3rdparty\npk\external\tea\tea.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\npk\external\tea\tea.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\npk\external\tea\tea_dev.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\npk\external\xxtea\xxtea.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\npk\external\xxtea\xxtea.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\npk\external\xxtea\xxtea_dev.c"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="zlib"
+			>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\adler32.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\compress.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\crc32.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\crc32.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\deflate.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\deflate.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\gzclose.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\gzguts.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\gzlib.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\gzread.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\gzwrite.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\infback.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inffast.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inffast.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inffixed.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inflate.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inflate.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inftrees.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\inftrees.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\trees.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\trees.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\uncompr.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\zconf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\zlib.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\zutil.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\3rdparty\zlib\zutil.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

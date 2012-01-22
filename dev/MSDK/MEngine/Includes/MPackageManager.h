@@ -38,6 +38,9 @@ class M_ENGINE_EXPORT MPackageManager
 {
 public:
 	
+	// destructor
+	virtual ~MPackageManager(void){}
+	
 	virtual void init() = 0;
 	virtual void cleanup() = 0;
 	

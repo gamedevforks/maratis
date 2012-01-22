@@ -28,8 +28,8 @@
 
 #include <vector>
 #include <MEngine.h>
-#include "../MRenderArray/MRenderArray.h"
 #include <MPlugin/MPlugin.h>
+#include "../MRenderArray/MRenderArray.h"
 
 
 enum M_AXIS
@@ -83,7 +83,8 @@ private:
 	MGame * m_game;
 	MLevel * m_level;
 	MRenderer * m_renderer;
-
+	MPackageManager * m_packageManager;
+	
 	// temp dir
 	char m_tempDir[256];
 
@@ -303,6 +304,9 @@ public:
 	// selection
 	void selectObjectsInMainView(MScene * scene);
 
+	// publish
+	void publish(void);
+	
 	// main loops
 	static void logicLoop(void);
 	static void graphicLoop(void);

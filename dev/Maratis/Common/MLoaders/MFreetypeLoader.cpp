@@ -114,20 +114,23 @@ bool M_loadFont(const char * filename, void * data)
 	
 	// read font
 	error = FT_New_Memory_Face(library, file_base, file_size, 0, &face);
-	
 	M_fclose(file);
-	delete [] file_base;
 	
-	if(error){
+	if(error)
+	{
+		printf("ERROR Load Font : unable to read data %s\n", filename);
 		FT_Done_FreeType(library);
+		delete [] file_base;
 		return false;
 	}
 
 	// set font size
 	error = FT_Set_Pixel_Sizes(face, 0, size);
-	if(error){
+	if(error)
+	{
 		printf("ERROR Load Font : unable to size font\n");
 		FT_Done_FreeType(library);
+		delete [] file_base;
 		return false;
 	}
 
@@ -156,9 +159,11 @@ bool M_loadFont(const char * filename, void * data)
 		pen_x += slot->bitmap.width + space; 
 	}
 
-	if(height == 0){
+	if(height == 0)
+	{
 		printf("ERROR Load Font : unable to create font texture\n");
 		FT_Done_FreeType(library);
+		delete [] file_base;
 		return false;
 	}
 
@@ -234,5 +239,6 @@ bool M_loadFont(const char * filename, void * data)
 
 	// finish
 	FT_Done_FreeType(library);
+	delete [] file_base;
 	return true;
 }

@@ -102,6 +102,8 @@
 		E94D8B9714CB4CE3008D70D7 /* npk_dev.c in Sources */ = {isa = PBXBuildFile; fileRef = E94D8B9014CB4CE3008D70D7 /* npk_dev.c */; };
 		E99D52F3136AADE200EC8924 /* libSndFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
 		E99D52F4136AADF300EC8924 /* libSndFile.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = E99D52F2136AADE200EC8924 /* libSndFile.dylib */; };
+		E9C37EE114CC57C000D4F0D6 /* MPublisher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9C37EDD14CC57C000D4F0D6 /* MPublisher.cpp */; };
+		E9C37EE214CC57C000D4F0D6 /* MPublishEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9C37EDF14CC57C000D4F0D6 /* MPublishEvent.cpp */; };
 		E9CCB8D214C8668C00B36819 /* MBinMeshLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */; };
 		E9D7A8051369DB1200B81096 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D7A8041369DB1200B81096 /* libfreetype.a */; };
 		E9D7A80C1369DBCC00B81096 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9D7A80B1369DBCC00B81096 /* libjpeg.a */; };
@@ -426,6 +428,10 @@
 		E94D8B8F14CB4CE3008D70D7 /* npk_common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk_common.c; path = ../../../../3rdparty/npk/src/npk_common.c; sourceTree = SOURCE_ROOT; };
 		E94D8B9014CB4CE3008D70D7 /* npk_dev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk_dev.c; path = ../../../../3rdparty/npk/src/npk_dev.c; sourceTree = SOURCE_ROOT; };
 		E99D52F2136AADE200EC8924 /* libSndFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSndFile.dylib; path = ../../../../3rdparty/libsndfile/osx/libSndFile.dylib; sourceTree = SOURCE_ROOT; };
+		E9C37EDD14CC57C000D4F0D6 /* MPublisher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MPublisher.cpp; path = ../../Maratis/Editor/MPublish/MPublisher.cpp; sourceTree = SOURCE_ROOT; };
+		E9C37EDE14CC57C000D4F0D6 /* MPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPublisher.h; path = ../../Maratis/Editor/MPublish/MPublisher.h; sourceTree = SOURCE_ROOT; };
+		E9C37EDF14CC57C000D4F0D6 /* MPublishEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MPublishEvent.cpp; path = ../../Maratis/Editor/MPublish/MPublishEvent.cpp; sourceTree = SOURCE_ROOT; };
+		E9C37EE014CC57C000D4F0D6 /* MPublishEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPublishEvent.h; path = ../../Maratis/Editor/MPublish/MPublishEvent.h; sourceTree = SOURCE_ROOT; };
 		E9CCB8D014C8668C00B36819 /* MBinMeshLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBinMeshLoader.cpp; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.cpp; sourceTree = SOURCE_ROOT; };
 		E9CCB8D114C8668C00B36819 /* MBinMeshLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinMeshLoader.h; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.h; sourceTree = SOURCE_ROOT; };
 		E9D7A8041369DB1200B81096 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../3rdparty/freetype/osx/libfreetype.a; sourceTree = SOURCE_ROOT; };
@@ -1065,6 +1071,7 @@
 		E918E6F21305B25F0080ED5C /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				E9C37EDB14CC57AF00D4F0D6 /* MPublish */,
 				E918E6F31305B25F0080ED5C /* Maratis */,
 				E918E6F81305B25F0080ED5C /* MFilesUpdate */,
 				E918E6FB1305B25F0080ED5C /* MBins */,
@@ -1289,6 +1296,17 @@
 				E918E6721305B1D40080ED5C /* MGui */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		E9C37EDB14CC57AF00D4F0D6 /* MPublish */ = {
+			isa = PBXGroup;
+			children = (
+				E9C37EDD14CC57C000D4F0D6 /* MPublisher.cpp */,
+				E9C37EDE14CC57C000D4F0D6 /* MPublisher.h */,
+				E9C37EDF14CC57C000D4F0D6 /* MPublishEvent.cpp */,
+				E9C37EE014CC57C000D4F0D6 /* MPublishEvent.h */,
+			);
+			name = MPublish;
 			sourceTree = "<group>";
 		};
 		E9E076BD148BADDE00EB0657 /* BulletCollision */ = {
@@ -2027,6 +2045,8 @@
 				E94D8B9514CB4CE3008D70D7 /* npk.c in Sources */,
 				E94D8B9614CB4CE3008D70D7 /* npk_common.c in Sources */,
 				E94D8B9714CB4CE3008D70D7 /* npk_dev.c in Sources */,
+				E9C37EE114CC57C000D4F0D6 /* MPublisher.cpp in Sources */,
+				E9C37EE214CC57C000D4F0D6 /* MPublishEvent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2043,7 +2063,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = M_PACKAGE_WRITABLE;
 				HEADER_SEARCH_PATHS = (
 					../../MSDK/MCore/Includes,
 					../../MSDK/MEngine/Includes,
@@ -2087,7 +2107,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = M_PACKAGE_WRITABLE;
 				HEADER_SEARCH_PATHS = (
 					../../MSDK/MCore/Includes,
 					../../MSDK/MEngine/Includes,
@@ -2132,7 +2152,7 @@
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_SYMBOL_SEPARATION = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = M_PACKAGE_WRITABLE;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -2173,7 +2193,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = M_PACKAGE_WRITABLE;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -2203,6 +2223,7 @@
 					../../../../3rdparty/zlib/osx,
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 			};

@@ -33,6 +33,9 @@
 
 #include "MProject.h"
 
+const char* s_embedded_game_name  = "[EMBEDDED MPROJECT GAME NAME HERE]                             ";
+const char* s_embedded_level_name = "[EMBEDDED MPROJECT LEVEL NAME HERE]                            ";
+const char* s_embedded_renderer   = "[EMBEDDED MPROJECT RENDERER]                                   ";
 
 bool MProject::loadXML(const char * filename)
 {
@@ -85,12 +88,13 @@ bool MProject::loadXML(const char * filename)
 	{
 		const char * file = startNode->Attribute("file");
 		if(file)
-		{
+		{		
 			char levelFilename[256];
 			getGlobalFilename(levelFilename, rep, file);
 			startLevel = levelFilename;
 		}
 	}
+
 
 	return true;
 }

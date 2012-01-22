@@ -21,6 +21,7 @@
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 //
 //========================================================================
+//jan 2012 - Philipp Geyer <philipp@geyer.co.uk> - embedded project/package manager
 
 
 #include <MEngine.h>
@@ -101,7 +102,7 @@ int main(int argc, char **argv)
 	char rep[256];
 	getRepertory(rep, argv[0]);
 	window->setCurrentDirectory(rep);
-
+	
 	// get Maratis (first time call onstructor)
 	MaratisPlayer * maratis = MaratisPlayer::getInstance();
 
@@ -109,14 +110,62 @@ int main(int argc, char **argv)
 	window->setPointerEvent(windowEvents);
 
 	// load project
+	bool projectFound = false;
 	if(argc > 1)
     {
 		char filename[256];
 		getGlobalFilename(filename, window->getCurrentDirectory(), argv[1]);
-		maratis->loadProject(filename);
-		engine->getGame()->begin();
+		if(maratis->loadProject(filename))
+		{
+			engine->getGame()->begin();
+			projectFound = true;
+		}
+	}
+	
+	if(! projectFound)
+	{
+		// if we've found, and written the embedded sections, then use that data
+		if((strstr(s_embedded_level_name, "[EMBEDDED") != s_embedded_level_name) &&
+		   (strstr(s_embedded_renderer, "[EMBEDDED") != s_embedded_renderer))
+		{
+			MProject embeddedProj;
+			embeddedProj.renderer = s_embedded_renderer;
+			
+			char levelName[256];
+			getGlobalFilename(levelName, window->getCurrentDirectory(), s_embedded_level_name);
+			char projName[256];
+			getGlobalFilename(projName, window->getCurrentDirectory(), s_embedded_game_name);
+			
+			embeddedProj.startLevel = levelName;
+			maratis->loadProject(&embeddedProj, projName);
+			engine->getGame()->begin();
+			projectFound = true;
+		}
+		else
+		{
+			// look for an mproj in the current directory
+			std::vector<std::string> files;
+			readDirectory(".", &files);
+			
+			for(int i = 0; i < files.size(); ++i)
+			{
+				if(strstr(files[i].c_str(), ".mproj"))
+				{
+					char filename[256];
+					getGlobalFilename(filename, window->getCurrentDirectory(), files[i].c_str());
+					
+					if(maratis->loadProject(filename))
+					{
+						engine->getGame()->begin();
+						projectFound = true;
+						break;
+					}
+				}
+			}
+		}
 	}
 
+	
 	// time
 	unsigned int frequency = 60;
 	unsigned long previousFrame = 0;

@@ -36,7 +36,7 @@
 
 #include "MaratisUI.h"
 
-//MCore_Implements
+// MaratisCore
 #include <MContexts/MGLContext.h>
 #include <MContexts/MALContext.h>
 #include <MContexts/MBulletContext.h>
@@ -47,7 +47,6 @@
 #include <MLoaders/MBinFontLoader.h>
 #include <MLoaders/MBinMeshLoader.h>
 
-// MaratisCore
 #include <MFileManager/MLevelLoad.h>
 #include <MBehaviors/MBLookAt.h>
 #include <MBehaviors/MBFollow.h>
@@ -56,6 +55,7 @@
 #include <MFileManager/MLevelSave.h>
 #include <MFileManager/MMeshLoad.h>
 #include <MFileManager/MLevelLoad.h>
+#include <MFileManager/MPackageManagerNPK.h>
 #include <MProject/MProject.h>
 #include <MRenderers/MStandardRenderer.h>
 #include <MRenderers/MFixedRenderer.h>
@@ -64,6 +64,8 @@
 #include "../MBins/MFontBin.h"
 #include "../MBins/MMeshBin.h"
 
+// publisher
+#include "../MPublish/MPublisher.h"
 
 
 // add ext if not
@@ -202,6 +204,7 @@ m_renderer(NULL)
 		m_system = new MWinContext();		
 		m_level = new MLevel();
 		m_game = new MGame();
+		m_packageManager = new MPackageManagerNPK();
 	}
     
 	// start
@@ -232,6 +235,13 @@ Maratis::~Maratis(void)
 	SAFE_DELETE(m_script);
 	SAFE_DELETE(m_input);
 	SAFE_DELETE(m_system);
+	SAFE_DELETE(m_packageManager);
+}
+
+void Maratis::publish(void)
+{
+	MPublisher * publisher = MPublisher::getInstance();
+	publisher->publish(m_currentProject);
 }
 
 void Maratis::changeRenderer(const char * name)
@@ -398,13 +408,19 @@ void Maratis::start(void)
 	{
 		MEngine * engine = MEngine::getInstance();
         
+		// package manager
+		engine->setPackageManager(m_packageManager);
+		m_packageManager->init();
+		
+		// contexts
 		engine->setSoundContext(m_soundContext); // sound context
 		engine->setRenderingContext(m_render); // rendering context
 		engine->setPhysicsContext(m_physics); // physics context
 		engine->setScriptContext(m_script); // script context
 		engine->setInputContext(m_input); // input context
 		engine->setSystemContext(m_system); // system context
-        
+		
+		// loaders
 		engine->getImageLoader()->addLoader(M_loadImage); // image loader
 		engine->getSoundLoader()->addLoader(M_loadSound); // sound loader
 		engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader
@@ -420,7 +436,7 @@ void Maratis::start(void)
 			engine->getRendererManager()->addRenderer(MStandardRenderer::getStaticName(), MStandardRenderer::getNew);
 		engine->getRendererManager()->addRenderer(MFixedRenderer::getStaticName(), MFixedRenderer::getNew);
 		
-		// mesh loader
+		// mesh loaders
 		engine->getMeshLoader()->addLoader(xmlMeshLoad);
 		engine->getMeshLoader()->addLoader(M_loadBinMesh);
 		engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);

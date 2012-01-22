@@ -26,7 +26,7 @@
 #include "MaratisPlayer.h"
 #include <MWindow.h>
 
-//MCore_Implements
+// MaratisCore
 #include <MContexts/MGLContext.h>
 #include <MContexts/MALContext.h>
 #include <MContexts/MBulletContext.h>
@@ -36,7 +36,6 @@
 #include <MLoaders/MFreetypeLoader.h>
 #include <MLoaders/MBinFontLoader.h>
 
-// MaratisCore
 #include <MFileManager/MLevelLoad.h>
 #include <MBehaviors/MBLookAt.h>
 #include <MBehaviors/MBFollow.h>
@@ -44,7 +43,7 @@
 #include <MInput/MInput.h>
 #include <MFileManager/MMeshLoad.h>
 #include <MFileManager/MLevelLoad.h>
-#include <MProject/MProject.h>
+#include <MFileManager/MPackageManagerNPK.h>
 #include <MRenderers/MStandardRenderer.h>
 #include <MRenderers/MFixedRenderer.h>
 
@@ -63,6 +62,7 @@ m_renderer(NULL)
 		m_system = new MWinContext();
 		m_level = new MLevel();
 		m_game = new MGame();
+		m_packageManager = new MPackageManagerNPK();
 	}
 
 	// start
@@ -82,6 +82,7 @@ MaratisPlayer::~MaratisPlayer(void)
 	SAFE_DELETE(m_script);
 	SAFE_DELETE(m_input);
 	SAFE_DELETE(m_system);
+	SAFE_DELETE(m_packageManager);
 }
 
 void MaratisPlayer::changeRenderer(const char * name)
@@ -105,6 +106,11 @@ void MaratisPlayer::start(void)
 	{
 		MEngine * engine = MEngine::getInstance();
 
+		// package manager
+		engine->setPackageManager(m_packageManager);
+		m_packageManager->init();
+		
+		// contexts
 		engine->setSoundContext(m_soundContext); // sound context
 		engine->setRenderingContext(m_render); // rendering context
 		engine->setPhysicsContext(m_physics); // physics context
@@ -112,6 +118,7 @@ void MaratisPlayer::start(void)
 		engine->setInputContext(m_input); // input context
 		engine->setSystemContext(m_system); // system context
 
+		// loaders
 		engine->getImageLoader()->addLoader(M_loadImage); // image loader
 		engine->getSoundLoader()->addLoader(M_loadSound); // sound loader
 		engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader
@@ -213,33 +220,56 @@ void MaratisPlayer::loadGamePlugin(void)
 	m_gamePlugin->load(gameFile);
 }
 
-void MaratisPlayer::loadProject(const char * filename)
+bool MaratisPlayer::loadProject(const char * filename)
 {
-	MWindow * window = MWindow::getInstance();
-	MEngine * engine = MEngine::getInstance();
-
 	if(! filename)
-		return;
-
+		return false;
+	
 	// load project file
 	MProject proj;
 	if(proj.loadXML(filename))
 	{
-		// update
-		char workingDir[256];
-		getRepertory(workingDir, filename);
-		window->setWorkingDirectory(workingDir);
-
-		// game plugin
-		restart();
-		loadGamePlugin();
-
-		// renderer
-		changeRenderer(proj.renderer.c_str());
-		
-		// load start level
-		engine->loadLevel(proj.startLevel.c_str());
+		loadProject(&proj, filename);
+		return true;
 	}
+	
+	return false;
+}
+
+void MaratisPlayer::loadProject(MProject* proj, const char * filename)
+{
+	MWindow * window = MWindow::getInstance();
+	MEngine * engine = MEngine::getInstance();
+	
+	
+	// working directory
+	char workingDir[256];
+	getRepertory(workingDir, filename);
+	window->setWorkingDirectory(workingDir);
+	
+	// restart
+	restart();
+	loadGamePlugin();
+	
+	// renderer
+	changeRenderer(proj->renderer.c_str());
+	
+	// if we have a package manager, try to load the package
+	if(MPackageManager* pPackMan = MEngine::getInstance()->getPackageManager())
+	{
+		char projName[256];
+		getLocalFilename(projName, workingDir, filename);
+		if(char* ext = strstr(projName, ".mproj"))
+		{
+			sprintf(ext, ".npk");
+			char packageFile[256];
+			getGlobalFilename(packageFile, workingDir, projName);
+			pPackMan->loadPackage(packageFile);
+		}
+	}
+	
+	// load start level
+	engine->loadLevel(proj->startLevel.c_str());
 }
 
 void MaratisPlayer::logicLoop(void)
@@ -272,5 +302,13 @@ void MaratisPlayer::graphicLoop(void)
 			render->setViewport(0, 0, window->getWidth(), window->getHeight());
 			game->draw();
 		}
+		else
+		{
+			render->clear(M_BUFFER_COLOR);
+		}
+	}
+	else
+	{
+		render->clear(M_BUFFER_COLOR);
 	}
 }

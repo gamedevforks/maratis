@@ -160,13 +160,14 @@ void MPackageManagerNPK::init()
 	if(! m_fileOpenHook)
 	{
 		m_fileOpenHook = new MPackageFileOpenHook;
-		M_registerFileOpenHook(m_fileOpenHook);
 		
 		MPackageNPK** packages = new MPackageNPK*[M_MAX_PACKAGES];
 		m_packages = (MPackage*)packages;
 		for(int i = 0; i < M_MAX_PACKAGES; ++i)
 			m_packages[i] = 0;
 	}
+	
+	M_registerFileOpenHook(m_fileOpenHook);
 }
 
 void MPackageManagerNPK::cleanup()

@@ -398,6 +398,7 @@ public:
 	static void saveAsEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void newProjectEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void openProjectEvents(MGuiButton * button, MGuiEvent * guiEvents);
+	static void publishEvents(MGuiButton * button, MGuiEvent * guiEvents);
 
 	// edit menu buttons
 	static void activeEvents(MGuiButton * button, MGuiEvent * guiEvents);

@@ -31,6 +31,9 @@
 #ifndef _M_PROJECT_H
 #define _M_PROJECT_H
 
+extern const char* s_embedded_game_name;
+extern const char* s_embedded_level_name;
+extern const char* s_embedded_renderer;
 
 class MProject
 {

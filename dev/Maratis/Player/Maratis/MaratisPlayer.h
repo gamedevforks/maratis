@@ -28,6 +28,7 @@
 
 #include <MEngine.h>
 #include <MPlugin/MPlugin.h>
+#include <MProject/MProject.h>
 
 
 class MaratisPlayer
@@ -57,6 +58,7 @@ private:
 	MGame * m_game;
 	MLevel * m_level;
 	MRenderer * m_renderer;
+	MPackageManager * m_packageManager;
 
 	// plugins
 	std::vector <MPlugin *> m_plugins;
@@ -83,9 +85,10 @@ public:
 	// clear
 	void clear(void);
 
-	// project load/save
-	void loadProject(const char * filename);
-
+	// project load
+	bool loadProject(const char * filename);
+	void loadProject(MProject * proj, const char * filename);
+	
 	// main loops
 	static void logicLoop(void);
 	static void graphicLoop(void);

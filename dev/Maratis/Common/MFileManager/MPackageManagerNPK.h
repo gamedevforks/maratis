@@ -50,23 +50,23 @@ public:
 	MPackageManagerNPK();
 	~MPackageManagerNPK();
 
-	virtual void init();
-	virtual void cleanup();
+	void init();
+	void cleanup();
 	
-	virtual MPackage	loadPackage(const char* packageName);
-	virtual MPackageEnt findEntity(const char* name);
-	virtual void		unloadPackage(MPackage package);
+	MPackage	loadPackage(const char* packageName);
+	MPackageEnt findEntity(const char* name);
+	void		unloadPackage(MPackage package);
 	// for now this will just call unloadPackage
 	// in future it should keep the package in a state
 	// where it can be searched (store a list of the files?)
 	// and then only reloaded when files are requested
-	virtual void		offlinePackage(MPackage package);
+	void		offlinePackage(MPackage package);
 
 	// publishing
-	virtual MPackage	openPackage(const char* packageName);
-	virtual void		closePackage(MPackage package);
-	virtual MPackageEnt addFileToPackage(const char* filename, MPackage package);
-	virtual MPackage	mountPackage(MPackage package);
+	MPackage	openPackage(const char* packageName);
+	void		closePackage(MPackage package);
+	MPackageEnt addFileToPackage(const char* filename, MPackage package);
+	MPackage	mountPackage(MPackage package);
 };
 
 #endif

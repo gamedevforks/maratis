@@ -37,6 +37,9 @@ class M_CORE_EXPORT MFile
 {
 public:
 	
+	// destructor
+	virtual ~MFile(void){}
+	
 	virtual void	open(const char* path, const char* mode) = 0;
 	virtual int		close() = 0;
 	virtual size_t	read(void* dest, size_t size, size_t count) = 0;
@@ -55,6 +58,7 @@ public:
 class M_CORE_EXPORT MFileOpenHook
 {
 public:
+	virtual ~MFileOpenHook(void){}
 	virtual MFile* open(const char* path, const char* mode) = 0;
 };
 
