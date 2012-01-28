@@ -37,13 +37,19 @@ public:
 	MFile* open(const char* path, const char* mode);
 };
 
-
+/*--------------------------------------------------------------------------------
+ * MPackageManagerNPK
+ * Package manager with NPK backend
+ * <http://npk.googlecode.com/>
+ *-------------------------------------------------------------------------------*/
 class MPackageManagerNPK : public MPackageManager
 {
 private:
 	
 	MPackage* m_packages;
 	MPackageFileOpenHook* m_fileOpenHook;
+
+	MPackage m_writable;
 	
 public:
 
@@ -67,6 +73,10 @@ public:
 	void		closePackage(MPackage package);
 	MPackageEnt addFileToPackage(const char* filename, MPackage package);
 	MPackage	mountPackage(MPackage package);
+	void		setPackageWritable(MPackage package);
+	void		writeToPackage(const char* filename, void* buffer, size_t size);
+
+	bool		isWritable();
 };
 
 #endif

@@ -30,72 +30,74 @@ static char M_AA_HEADER[8] = {'M', 'A', 'A', NULL, NULL, NULL, NULL, NULL}; // a
 static char M_MA_HEADER[8] = {'M', 'M', 'A', NULL, NULL, NULL, NULL, NULL}; // materials anim
 static char M_TA_HEADER[8] = {'M', 'T', 'A', NULL, NULL, NULL, NULL, NULL}; // textures anim
 
+#include "MFileTools.h"
+
 
 // tools
-static void writeString(FILE * file, const char * str)
+static void writeString(MFile * file, const char * str)
 {
 	unsigned int l = strlen(str) + 1;
 	
-	fwrite(&l, sizeof(int), 1, file);
+	M_fwrite(&l, sizeof(int), 1, file);
 	if(l > 1)
-		fwrite(str, sizeof(char), l, file);
+		M_fwrite(str, sizeof(char), l, file);
 }
 
-static void writeKey(FILE * file, MKey * key, M_VARIABLE_TYPE type)
+static void writeKey(MFile * file, MKey * key, M_VARIABLE_TYPE type)
 {
 	int t = key->getT();
-	fwrite(&t, sizeof(int), 1, file);
+	M_fwrite(&t, sizeof(int), 1, file);
 	
 	switch(type)
 	{
 		case M_VARIABLE_FLOAT:
 		{
 			float * data = (float *)key->getData();
-			fwrite(data, sizeof(float), 1, file);
+			M_fwrite(data, sizeof(float), 1, file);
 			break;
 		}
 		case M_VARIABLE_VEC2:
 		{
 			MVector2 * data = (MVector2 *)key->getData();
-			fwrite(data, sizeof(MVector2), 1, file);
+			M_fwrite(data, sizeof(MVector2), 1, file);
 			break;
 		}
 		case M_VARIABLE_VEC3:
 		{
 			MVector3 * data = (MVector3 *)key->getData();
-			fwrite(data, sizeof(MVector3), 1, file);
+			M_fwrite(data, sizeof(MVector3), 1, file);
 			break;
 		}
 		case M_VARIABLE_VEC4:
 		{
 			MVector4 * data = (MVector4 *)key->getData();
-			fwrite(data, sizeof(MVector4), 1, file);
+			M_fwrite(data, sizeof(MVector4), 1, file);
 			break;
 		}
 		case M_VARIABLE_QUAT:
 		{
 			MQuaternion * data = (MQuaternion *)key->getData();
-			fwrite(data, sizeof(MQuaternion), 1, file);
+			M_fwrite(data, sizeof(MQuaternion), 1, file);
 			break;
 		}
 	}
 }
 
-static void writeKeys(FILE * file, MKey * keys, M_VARIABLE_TYPE type, unsigned int keysNumber)
+static void writeKeys(MFile * file, MKey * keys, M_VARIABLE_TYPE type, unsigned int keysNumber)
 {
 	unsigned int k;
 	
-	fwrite(&keysNumber, sizeof(int), 1, file);
+	M_fwrite(&keysNumber, sizeof(int), 1, file);
 	for(k=0; k<keysNumber; k++)
 		writeKey(file, &(keys[k]), type);
 }
 
-static void writeDataRef(FILE * file, MDataRef * dataRef, const char * rep)
+static void writeDataRef(MFile * file, MDataRef * dataRef, const char * rep)
 {
 	char localFile[256];
 	
 	bool state = dataRef != NULL;
-	fwrite(&state, sizeof(bool), 1, file);
+	M_fwrite(&state, sizeof(bool), 1, file);
 	if(dataRef)
 	{
 		getLocalFilename(localFile, rep, dataRef->getFilename());
@@ -137,7 +139,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 	
 	
 	// create file
-	FILE * file = fopen(filename, "wb");
+	MFile * file = M_fopen(filename, "wb");
 	if(! file)
 	{
 		printf("Error : can't create file %s\n", filename);
@@ -150,10 +152,10 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 	
 	
 	// header
-	fwrite(M_MESH_HEADER, sizeof(char), 8, file);
+	M_fwrite(M_MESH_HEADER, sizeof(char), 8, file);
 
 	// version
-	fwrite(&version, sizeof(int), 1, file);
+	M_fwrite(&version, sizeof(int), 1, file);
 
 
 	// Animation
@@ -176,16 +178,16 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 		unsigned int animsRangesNumber = mesh->getAnimsRangesNumber();
 		MAnimRange * animsRanges = mesh->getAnimsRanges();
 		
-		fwrite(&animsRangesNumber, sizeof(int), 1, file);
+		M_fwrite(&animsRangesNumber, sizeof(int), 1, file);
 		if(animsRangesNumber > 0)
-			fwrite(animsRanges, sizeof(MAnimRange), animsRangesNumber, file);
+			M_fwrite(animsRanges, sizeof(MAnimRange), animsRangesNumber, file);
 	}
 	
 	
 	// Textures
 	{
 		unsigned int t, texturesNumber = mesh->getTexturesNumber();
-		fwrite(&texturesNumber, sizeof(int), 1, file);
+		M_fwrite(&texturesNumber, sizeof(int), 1, file);
 		for(t=0; t<texturesNumber; t++)
 		{
 			MTexture * texture = mesh->getTexture(t);
@@ -202,12 +204,12 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			writeDataRef(file, textureRef, rep);
 			
 			// data
-			fwrite(&genMode, sizeof(M_TEX_GEN_MODES), 1, file);
-			fwrite(&UWrapMode, sizeof(M_WRAP_MODES), 1, file);
-			fwrite(&VWrapMode, sizeof(M_WRAP_MODES), 1, file);
-			fwrite(texTranslate, sizeof(MVector2), 1, file);
-			fwrite(texScale, sizeof(MVector2), 1, file);
-			fwrite(&texRotate, sizeof(float), 1, file);
+			M_fwrite(&genMode, sizeof(M_TEX_GEN_MODES), 1, file);
+			M_fwrite(&UWrapMode, sizeof(M_WRAP_MODES), 1, file);
+			M_fwrite(&VWrapMode, sizeof(M_WRAP_MODES), 1, file);
+			M_fwrite(texTranslate, sizeof(MVector2), 1, file);
+			M_fwrite(texScale, sizeof(MVector2), 1, file);
+			M_fwrite(&texRotate, sizeof(float), 1, file);
 		}
 	}
 	
@@ -215,7 +217,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 	// Materials
 	{
 		unsigned int m, materialsNumber = mesh->getMaterialsNumber();
-		fwrite(&materialsNumber, sizeof(int), 1, file);
+		M_fwrite(&materialsNumber, sizeof(int), 1, file);
 		for(m=0; m<materialsNumber; m++)
 		{
 			MMaterial * material = mesh->getMaterial(m);
@@ -234,7 +236,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			
 			// FX ref
 			state = FXRef != NULL;
-			fwrite(&state, sizeof(bool), 1, file);
+			M_fwrite(&state, sizeof(bool), 1, file);
 			if(FXRef)
 			{
 				MShaderRef * vertShadRef = FXRef->getVertexShaderRef();
@@ -246,7 +248,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			
 			// Z FX ref
 			state = ZFXRef != NULL;
-			fwrite(&state, sizeof(bool), 1, file);
+			M_fwrite(&state, sizeof(bool), 1, file);
 			if(ZFXRef)
 			{
 				MShaderRef * vertShadRef = ZFXRef->getVertexShaderRef();
@@ -257,20 +259,20 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			}
 			
 			// data
-			fwrite(&type, sizeof(int), 1, file);
-			fwrite(&opacity, sizeof(float), 1, file);
-			fwrite(&shininess, sizeof(float), 1, file);
-			fwrite(&customValue, sizeof(float), 1, file);
-			fwrite(&blendMode, sizeof(M_BLENDING_MODES), 1, file);
-			fwrite(emit, sizeof(MVector3), 1, file);
-			fwrite(diffuse, sizeof(MVector3), 1, file);
-			fwrite(specular, sizeof(MVector3), 1, file);
-			fwrite(customColor, sizeof(MVector3), 1, file);
+			M_fwrite(&type, sizeof(int), 1, file);
+			M_fwrite(&opacity, sizeof(float), 1, file);
+			M_fwrite(&shininess, sizeof(float), 1, file);
+			M_fwrite(&customValue, sizeof(float), 1, file);
+			M_fwrite(&blendMode, sizeof(M_BLENDING_MODES), 1, file);
+			M_fwrite(emit, sizeof(MVector3), 1, file);
+			M_fwrite(diffuse, sizeof(MVector3), 1, file);
+			M_fwrite(specular, sizeof(MVector3), 1, file);
+			M_fwrite(customColor, sizeof(MVector3), 1, file);
 			
 			// textures pass
 			unsigned int t, texturesPassNumber = material->getTexturesPassNumber();
 			
-			fwrite(&texturesPassNumber, sizeof(int), 1, file);
+			M_fwrite(&texturesPassNumber, sizeof(int), 1, file);
 			for(t=0; t<texturesPassNumber; t++)
 			{
 				MTexturePass * texturePass = material->getTexturePass(t);
@@ -281,11 +283,11 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 				
 				// texture id
 				int textureId = getTextureId(mesh, texture);
-				fwrite(&textureId, sizeof(int), 1, file);
+				M_fwrite(&textureId, sizeof(int), 1, file);
 				
 				// data
-				fwrite(&mapChannel, sizeof(int), 1, file);
-				fwrite(&combineMode, sizeof(M_TEX_COMBINE_MODES), 1, file);
+				M_fwrite(&mapChannel, sizeof(int), 1, file);
+				M_fwrite(&combineMode, sizeof(M_TEX_COMBINE_MODES), 1, file);
 			}
 		}
 	}
@@ -296,11 +298,11 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 		MArmature * armature = mesh->getArmature();
 		
 		state = armature != NULL;
-		fwrite(&state, sizeof(bool), 1, file);
+		M_fwrite(&state, sizeof(bool), 1, file);
 		if(armature)
 		{
 			unsigned int b, bonesNumber = armature->getBonesNumber();
-			fwrite(&bonesNumber, sizeof(int), 1, file);
+			M_fwrite(&bonesNumber, sizeof(int), 1, file);
 			for(b=0; b<bonesNumber; b++)
 			{
 				MOBone * bone = armature->getBone(b);
@@ -322,12 +324,12 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 						parentId = (int)id;
 				}
 				
-				fwrite(&parentId, sizeof(int), 1, file);
+				M_fwrite(&parentId, sizeof(int), 1, file);
 				
 				// position / rotation / scale
-				fwrite(&position, sizeof(MVector3), 1, file);
-				fwrite(&rotation, sizeof(MQuaternion), 1, file);
-				fwrite(&scale, sizeof(MVector3), 1, file);
+				M_fwrite(&position, sizeof(MVector3), 1, file);
+				M_fwrite(&rotation, sizeof(MQuaternion), 1, file);
+				M_fwrite(&scale, sizeof(MVector3), 1, file);
 			}
 		}
 	}
@@ -336,7 +338,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 	// BoundingBox
 	{
 		MBox3d * box = mesh->getBoundingBox();
-		fwrite(box, sizeof(MBox3d), 1, file);
+		M_fwrite(box, sizeof(MBox3d), 1, file);
 	}
 	
 	
@@ -345,7 +347,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 		unsigned int s, subMeshsNumber = mesh->getSubMeshsNumber();
 		MSubMesh * subMeshs = mesh->getSubMeshs();
 		
-		fwrite(&subMeshsNumber, sizeof(int), 1, file);
+		M_fwrite(&subMeshsNumber, sizeof(int), 1, file);
 		for(s=0; s<subMeshsNumber; s++)
 		{
 			MSubMesh * subMesh = &(subMeshs[s]);
@@ -372,54 +374,54 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			
 			
 			// BoundingBox
-			fwrite(box, sizeof(MBox3d), 1, file);
+			M_fwrite(box, sizeof(MBox3d), 1, file);
 			
 			// indices
-			fwrite(&indicesSize, sizeof(int), 1, file);
+			M_fwrite(&indicesSize, sizeof(int), 1, file);
 			if(indicesSize > 0)
 			{
 				// indice type
-				fwrite(&indicesType, sizeof(M_TYPES), 1, file);
+				M_fwrite(&indicesType, sizeof(M_TYPES), 1, file);
 				switch(indicesType)
 				{
 					case M_USHORT:
-						fwrite(indices, sizeof(short), indicesSize, file);
+						M_fwrite(indices, sizeof(short), indicesSize, file);
 						break;
 					case M_UINT:
-						fwrite(indices, sizeof(int), indicesSize, file);
+						M_fwrite(indices, sizeof(int), indicesSize, file);
 						break;
 				}
 			}
 			
 			// vertices
-			fwrite(&verticesSize, sizeof(int), 1, file);
+			M_fwrite(&verticesSize, sizeof(int), 1, file);
 			if(verticesSize > 0)
-				fwrite(vertices, sizeof(MVector3), verticesSize, file);
+				M_fwrite(vertices, sizeof(MVector3), verticesSize, file);
 			
 			// normals
-			fwrite(&normalsSize, sizeof(int), 1, file);
+			M_fwrite(&normalsSize, sizeof(int), 1, file);
 			if(normalsSize > 0)
-				fwrite(normals, sizeof(MVector3), normalsSize, file);
+				M_fwrite(normals, sizeof(MVector3), normalsSize, file);
 			
 			// tangents
-			fwrite(&tangentsSize, sizeof(int), 1, file);
+			M_fwrite(&tangentsSize, sizeof(int), 1, file);
 			if(tangentsSize > 0)
-				fwrite(tangents, sizeof(MVector3), tangentsSize, file);
+				M_fwrite(tangents, sizeof(MVector3), tangentsSize, file);
 			
 			// texCoords
-			fwrite(&texCoordsSize, sizeof(int), 1, file);
+			M_fwrite(&texCoordsSize, sizeof(int), 1, file);
 			if(texCoordsSize > 0)
-				fwrite(texCoords, sizeof(MVector2), texCoordsSize, file);
+				M_fwrite(texCoords, sizeof(MVector2), texCoordsSize, file);
 			
 			// colors
-			fwrite(&colorsSize, sizeof(int), 1, file);
+			M_fwrite(&colorsSize, sizeof(int), 1, file);
 			if(colorsSize > 0)
-				fwrite(colors, sizeof(MColor), colorsSize, file);
+				M_fwrite(colors, sizeof(MColor), colorsSize, file);
 			
 			// mapChannels
 			{
 				unsigned int size = mapChannelOffsets->size();
-				fwrite(&size, sizeof(int), 1, file);
+				M_fwrite(&size, sizeof(int), 1, file);
 				
 				map<unsigned int, unsigned int>::iterator
 				mit (mapChannelOffsets->begin()),
@@ -427,20 +429,20 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 				
 				for(;mit!=mend;++mit)
 				{
-					fwrite(&mit->first, sizeof(int), 1, file);
-					fwrite(&mit->second, sizeof(int), 1, file);
+					M_fwrite(&mit->first, sizeof(int), 1, file);
+					M_fwrite(&mit->second, sizeof(int), 1, file);
 				}
 			}
 			
 			
 			// Skins
 			state = skin != NULL;
-			fwrite(&state, sizeof(bool), 1, file);
+			M_fwrite(&state, sizeof(bool), 1, file);
 			if(skin)
 			{
 				// skin point
 				unsigned int p, pointsNumber = skin->getPointsNumber();
-				fwrite(&pointsNumber, sizeof(int), 1, file);
+				M_fwrite(&pointsNumber, sizeof(int), 1, file);
 				for(p=0; p<pointsNumber; p++)
 				{
 					MSkinPoint * skinPoint = skin->getPoint(p);
@@ -451,12 +453,12 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 					float * bonesWeights = skinPoint->getBonesWeights();
 					
 					// data
-					fwrite(&vertexId, sizeof(int), 1, file);
-					fwrite(&bonesNumber, sizeof(int), 1, file);
+					M_fwrite(&vertexId, sizeof(int), 1, file);
+					M_fwrite(&bonesNumber, sizeof(int), 1, file);
 					if(bonesNumber > 0)
 					{
-						fwrite(bonesIds, sizeof(short), bonesNumber, file);
-						fwrite(bonesWeights, sizeof(float), bonesNumber, file);
+						M_fwrite(bonesIds, sizeof(short), bonesNumber, file);
+						M_fwrite(bonesWeights, sizeof(float), bonesNumber, file);
 					}
 				}
 			}
@@ -464,7 +466,7 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			
 			// Displays
 			unsigned int d, displaysNumber = subMesh->getDisplaysNumber();
-			fwrite(&displaysNumber, sizeof(int), 1, file);
+			M_fwrite(&displaysNumber, sizeof(int), 1, file);
 			for(d=0; d<displaysNumber; d++)
 			{
 				MDisplay * display = subMesh->getDisplay(d);
@@ -478,17 +480,17 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 				int materialId = getMaterialId(mesh, material);
 				
 				// data
-				fwrite(&primitiveType, sizeof(M_PRIMITIVE_TYPES), 1, file);
-				fwrite(&begin, sizeof(int), 1, file);
-				fwrite(&size, sizeof(int), 1, file);
-				fwrite(&materialId, sizeof(int), 1, file);
-				fwrite(&cullMode, sizeof(M_CULL_MODES), 1, file);
+				M_fwrite(&primitiveType, sizeof(M_PRIMITIVE_TYPES), 1, file);
+				M_fwrite(&begin, sizeof(int), 1, file);
+				M_fwrite(&size, sizeof(int), 1, file);
+				M_fwrite(&materialId, sizeof(int), 1, file);
+				M_fwrite(&cullMode, sizeof(M_CULL_MODES), 1, file);
 			}
 		}
 	}
 	
 
-	fclose(file);
+	M_fclose(file);
 	return true;
 }
 
@@ -500,7 +502,7 @@ bool exportArmatureAnimBin(const char * filename, MArmatureAnim * anim)
 	
 	
 	// create file
-	FILE * file = fopen(filename, "wb");
+	MFile * file = M_fopen(filename, "wb");
 	if(! file)
 	{
 		printf("Error : can't create file %s\n", filename);
@@ -509,17 +511,17 @@ bool exportArmatureAnimBin(const char * filename, MArmatureAnim * anim)
 	
 	
 	// header
-	fwrite(M_AA_HEADER, sizeof(char), 8, file);
+	M_fwrite(M_AA_HEADER, sizeof(char), 8, file);
 	
 	// version
-	fwrite(&version, sizeof(int), 1, file);
+	M_fwrite(&version, sizeof(int), 1, file);
 	
 	
 	// bones
 	unsigned int b, bonesAnimNumber = anim->getBonesAnimNumber();
 	MObject3dAnim * bonesAnim = anim->getBonesAnim();
 	
-	fwrite(&bonesAnimNumber, sizeof(int), 1, file);
+	M_fwrite(&bonesAnimNumber, sizeof(int), 1, file);
 	for(b=0; b<bonesAnimNumber; b++)
 	{
 		MObject3dAnim * objAnim = &(bonesAnim[b]);
@@ -538,7 +540,7 @@ bool exportArmatureAnimBin(const char * filename, MArmatureAnim * anim)
 	}
 	
 	
-	fclose(file);
+	M_fclose(file);
 	return true;
 }
 
@@ -550,7 +552,7 @@ bool exportTexturesAnimBin(const char * filename, MTexturesAnim * anim)
 	
 	
 	// create file
-	FILE * file = fopen(filename, "wb");
+	MFile * file = M_fopen(filename, "wb");
 	if(! file)
 	{
 		printf("Error : can't create file %s\n", filename);
@@ -559,17 +561,17 @@ bool exportTexturesAnimBin(const char * filename, MTexturesAnim * anim)
 	
 	
 	// header
-	fwrite(M_TA_HEADER, sizeof(char), 8, file);
+	M_fwrite(M_TA_HEADER, sizeof(char), 8, file);
 	
 	// version
-	fwrite(&version, sizeof(int), 1, file);
+	M_fwrite(&version, sizeof(int), 1, file);
 	
 	
 	// textures
 	unsigned int t, texturesAnimNumber = anim->getTexturesAnimNumber();
 	MTextureAnim * texturesAnim = anim->getTexturesAnim();
 	
-	fwrite(&texturesAnimNumber, sizeof(int), 1, file);
+	M_fwrite(&texturesAnimNumber, sizeof(int), 1, file);
 	for(t=0; t<texturesAnimNumber; t++)
 	{
 		MTextureAnim * texAnim = &(texturesAnim[t]);
@@ -588,7 +590,7 @@ bool exportTexturesAnimBin(const char * filename, MTexturesAnim * anim)
 	}
 	
 	
-	fclose(file);
+	M_fclose(file);
 	return true;	
 }
 
@@ -600,7 +602,7 @@ bool exportMaterialsAnimBin(const char * filename, MMaterialsAnim * anim)
 	
 	
 	// create file
-	FILE * file = fopen(filename, "wb");
+	MFile * file = M_fopen(filename, "wb");
 	if(! file)
 	{
 		printf("Error : can't create file %s\n", filename);
@@ -609,17 +611,17 @@ bool exportMaterialsAnimBin(const char * filename, MMaterialsAnim * anim)
 	
 	
 	// header
-	fwrite(M_MA_HEADER, sizeof(char), 8, file);
+	M_fwrite(M_MA_HEADER, sizeof(char), 8, file);
 	
 	// version
-	fwrite(&version, sizeof(int), 1, file);
+	M_fwrite(&version, sizeof(int), 1, file);
 	
 	
 	// materials
 	unsigned int m, materialsAnimNumber = anim->getMaterialsAnimNumber();
 	MMaterialAnim * materialsAnim = anim->getMaterialsAnim();
 	
-	fwrite(&materialsAnimNumber, sizeof(int), 1, file);
+	M_fwrite(&materialsAnimNumber, sizeof(int), 1, file);
 	for(m=0; m<materialsAnimNumber; m++)
 	{
 		MMaterialAnim * matAnim = &(materialsAnim[m]);
@@ -650,7 +652,7 @@ bool exportMaterialsAnimBin(const char * filename, MMaterialsAnim * anim)
 	}
 	
 	
-	fclose(file);
+	M_fclose(file);
 	return true;	
 }
 

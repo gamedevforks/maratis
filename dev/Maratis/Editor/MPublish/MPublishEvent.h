@@ -25,14 +25,30 @@
 #ifndef __M_PUBLISH_EVENT_H__
 #define __M_PUBLISH_EVENT_H__
 
+/*--------------------------------------------------------------------------------
+ * MPublishEvent
+ * Base class for publish events
+ * Can be ordered in priority, but no guarantee as to order within
+ * each priority.
+ *-------------------------------------------------------------------------------*/
 // base command class for publish events.
 class MPublishEvent
 {
 public:
+	/* execute
+	 * Run the publish event
+	 * projName: global path of the mproj file to be
+	 *           exported
+	 */
 	virtual void	execute(const char* projName) = 0;
+
+	/* getPriority
+	 * Which priority queue to put thie event in
+	 */
 	virtual int		getPriority() = 0;
 };
 
+// Macro for automatic adding to the publish event queue
 #define M_PUBLISH_EVENT_IMPLEMENT(eventName) \
 class eventName##AutoAdd \
 { \

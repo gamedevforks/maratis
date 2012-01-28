@@ -30,10 +30,14 @@
 #ifndef _M_PACKAGE_MANAGER_H
 #define _M_PACKAGE_MANAGER_H
 
-
 typedef void* MPackageEnt;
 typedef void* MPackage;
 
+/*--------------------------------------------------------------------------------
+ * MPackageManager
+ * Interface for adding package managers. Can be used for any file I/O managers
+ * such as package file, or network streams
+ *-------------------------------------------------------------------------------*/
 class M_ENGINE_EXPORT MPackageManager
 {
 public:
@@ -59,6 +63,12 @@ public:
 	virtual void		closePackage(MPackage package) = 0;
 	virtual MPackageEnt addFileToPackage(const char* filename, MPackage package) = 0;
 	virtual MPackage	mountPackage(MPackage package) = 0;
+	
+	// if we're wanting to write directly to the package, we need to flag one to write to
+	virtual void		setPackageWritable(MPackage package) = 0;
+	virtual void		writeToPackage(const char* filename, void* buffer, size_t size) = 0;
+
+	virtual bool		isWritable() = 0;
 };
 
 #endif

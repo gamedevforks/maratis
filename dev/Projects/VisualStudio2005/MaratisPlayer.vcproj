@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="MaratisPlayer"
 	ProjectGUID="{BAA98203-E8F8-4358-A103-87261B91A272}"
 	RootNamespace="Maratis"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib MCoreDebug.lib MEngineDebug.lib lua.lib opengl32.lib glu32.lib DevIL.lib ILU.lib OpenAL32.lib libsndfile-1.lib freetype.lib"
+				AdditionalDependencies="winmm.lib User32.lib Comdlg32.lib Shell32.lib Gdi32.lib MCoreDebug.lib MEngineDebug.lib lua.lib opengl32.lib glu32.lib DevIL.lib ILU.lib OpenAL32.lib libsndfile-1.lib freetype.lib"
 				OutputFile="build\$(ProjectName)Debug.exe"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="build;..\..\..\..\3rdparty\lua\win32;..\..\..\..\3rdparty\devil\win32;..\..\..\..\3rdparty\openal\win32;..\..\..\..\3rdparty\libsndfile\win32;..\..\..\..\3rdparty\freetype\win32;..\..\..\..\3rdparty\bullet\win32"
@@ -451,6 +451,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Maratis\Common\MLoaders\MBinFontLoader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Common\MLoaders\MBinMeshLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Maratis\Common\MLoaders\MBinMeshLoader.h"
 					>
 				</File>
 				<File

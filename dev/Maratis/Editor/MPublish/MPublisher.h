@@ -28,7 +28,11 @@
 #include "MPublishEvent.h"
 #include <vector>
 
-
+/*--------------------------------------------------------------------------------
+ * MPublisher
+ * Editor singleton to handle publishing of a Maratis project
+ * By default the publisher has 10 different priority levels
+ *-------------------------------------------------------------------------------*/
 class MPublisher
 {
 private:

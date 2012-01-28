@@ -31,6 +31,9 @@
 #ifndef _M_PROJECT_H
 #define _M_PROJECT_H
 
+/*--------------------------------------------------------------------------------
+ * These values will be overridden in MaratisPlayer during export
+ *-------------------------------------------------------------------------------*/
 extern const char* s_embedded_game_name;
 extern const char* s_embedded_level_name;
 extern const char* s_embedded_renderer;

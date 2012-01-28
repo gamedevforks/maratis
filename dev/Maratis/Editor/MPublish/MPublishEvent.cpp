@@ -29,6 +29,8 @@
 #include "MPublisher.h"
 #include "MPublishEvent.h"
 
+#include "../MBins/MMeshBin.h"
+
 #include <sys/stat.h>
 
 #ifdef linux
@@ -78,9 +80,10 @@ MPackage openProjectPackage(const char* projName)
 	return package;
 }
 
-/* MPublishEventClearDirectory
+/*--------------------------------------------------------------------------------
+ * MPublishEventClearDirectory
  * Will clear the directory before publishing to it.
- */
+ *-------------------------------------------------------------------------------*/
 class MPublishEventClearDirectory : public MPublishEvent
 {
 	void	execute(const char* projName)
@@ -93,7 +96,11 @@ class MPublishEventClearDirectory : public MPublishEvent
 
 M_PUBLISH_EVENT_IMPLEMENT(MPublishEventClearDirectory);
 
-// Simple publishing. Will just package the whole directory
+/*--------------------------------------------------------------------------------
+ * M_PUBLISH_PACKAGE_DIR
+ * Simple packaging. Will just package the whole directory using the registered
+ * Package manager
+ *-------------------------------------------------------------------------------*/
 #define M_PUBLISH_PACKAGE_DIR(dir) \
 class MPublishEvent##dir##Package : public MPublishEvent \
 { \
@@ -117,6 +124,11 @@ class MPublishEvent##dir##Package : public MPublishEvent \
 }; \
 M_PUBLISH_EVENT_IMPLEMENT(MPublishEvent##dir##Package);
 
+/*--------------------------------------------------------------------------------
+ * M_PUBLISH_DIR
+ * Publishing without packaging. Will simply copy an entire directory into
+ * the published directory
+ *-------------------------------------------------------------------------------*/
 #define M_PUBLISH_DIR(dir) \
 class MPublishEvent##dir : public MPublishEvent \
 { \
@@ -139,11 +151,82 @@ M_PUBLISH_PACKAGE_DIR(scripts)
 M_PUBLISH_PACKAGE_DIR(sounds)
 M_PUBLISH_PACKAGE_DIR(shaders)
 M_PUBLISH_PACKAGE_DIR(fonts)
-M_PUBLISH_DIR(meshs)
 M_PUBLISH_DIR(levels)
 M_PUBLISH_DIR(plugins)
 
+// This _should_ write binary mesh files
+// however for some reason it doesn't work on the Demos example
+// also binary mesh files seem to be broken somehow.
+#ifdef M_SHOULD_PUBLISH_BIN_MESH
+class MPublishEventMeshsPackage : public MPublishEvent
+{
+	void execute(const char* projName)
+	{
+		MEngine* engine = MEngine::getInstance(); 
+		MSystemContext* system = engine->getSystemContext(); 
+		char directory[256]; 
+		getGlobalFilename(directory, system->getWorkingDirectory(), "meshs"); 
+		std::vector<std::string> files; 
+		readDirectory(directory, &files, 1, 1); 
+		MPackage package = openProjectPackage(projName); 
+		MPackageManager* packageManager = engine->getPackageManager();
+		if(packageManager)
+		{
+			packageManager->setPackageWritable(package);
+		}
+		
+		MLevel* currentLevel = engine->getLevel();
+		MLevel* tempLevel = new MLevel();
+		engine->setLevel(tempLevel);
+		MMesh* mesh = MMesh::getNew();
+		MArmatureAnim* armAnim = MArmatureAnim::getNew();
+		MTexturesAnim* texAnim = MTexturesAnim::getNew();
+		MMaterialsAnim* matAnim = MMaterialsAnim::getNew();
+		
+		for(int i = 0; i < files.size(); ++i) 
+		{ 
+			if(strstr(files[i].c_str(), ".mesh") != 0)
+			{
+				mesh->clear();
+				if(engine->getMeshLoader()->loadData(files[i].c_str(), mesh))
+					exportMeshBin(files[i].c_str(), mesh);
+			}
+			else if (strstr(files[i].c_str(), ".maa") != 0)
+			{
+				if(engine->getArmatureAnimLoader()->loadData(files[i].c_str(), armAnim))
+					exportArmatureAnimBin(files[i].c_str(), armAnim);
+			}
+			else if (strstr(files[i].c_str(), ".mma") != 0)
+			{
+				if(engine->getMaterialsAnimLoader()->loadData(files[i].c_str(), matAnim))
+					exportMaterialsAnimBin(files[i].c_str(), matAnim);
+			}
+			else if (strstr(files[i].c_str(), ".mta") != 0)
+			{
+				if(engine->getTexturesAnimLoader()->loadData(files[i].c_str(), texAnim))
+					exportTexturesAnimBin(files[i].c_str(), texAnim);
+			}
+			tempLevel->clear();
+		} 
+		packageManager->closePackage(package); 
 
+		engine->setLevel(currentLevel);
+		SAFE_DELETE(tempLevel);
+	}
+	int getPriority() { return 5; }
+};
+M_PUBLISH_EVENT_IMPLEMENT(MPublishEventMeshsPackage);
+#else
+// just copy the contents of the directory instead of writing
+// binaries into the package
+M_PUBLISH_DIR(meshs)
+#endif
+
+/*--------------------------------------------------------------------------------
+ * embedProject
+ * Opens the player executable and writes the project data into the
+ * static data.
+ *-------------------------------------------------------------------------------*/
 static void embedProject(const char * src, const char * dest, const char * game, const char * level, const char * renderer)
 {
 	FILE* fp = 0;
@@ -163,6 +246,7 @@ static void embedProject(const char * src, const char * dest, const char * game,
 	}
 	fclose(fp);
 	
+	// look for the embedded data and replace it
 	for(char* pChar = buff; pChar != buff+size; ++pChar)
 	{
 		if(*pChar == '[')
@@ -202,7 +286,10 @@ static void copyDirFiles(const char * src, const char * dest, const char * filte
 	}
 }
 
-
+/*--------------------------------------------------------------------------------
+ * copySysWindows/copySysOSX/copySysLinux
+ * Copy Maratis system files to the published directory
+ *-------------------------------------------------------------------------------*/
 #ifdef WIN32
 void copySysWindows(const char* projName)
 {
@@ -226,9 +313,16 @@ void copySysWindows(const char* projName)
 			strcpy(ext, ".exe");
 			char destName[256];
 			getGlobalFilename(destName, getPubDir(), filename);
+
+			char level[256];
+			getLocalFilename(level, system->getWorkingDirectory(), proj.startLevel.c_str());
 			
+			// we need the project "filename" to still be a .mproj for MaratisPlayer to behave
+			// correctly
+			strcpy(ext, ".mproj");
+
 			ext = 0;
-			embedProject(appName, destName, filename, proj.startLevel.c_str(), proj.renderer.c_str());
+			embedProject(appName, destName, filename, level, proj.renderer.c_str());
 		
 			// find all dynamic libraries
 			copyDirFiles(".", getPubDir(), ".dll");
@@ -236,7 +330,6 @@ void copySysWindows(const char* projName)
 	}
 }
 #endif
-
 
 #ifdef __APPLE__
 void copySysOSX(const char* projName)
@@ -288,7 +381,6 @@ void copySysOSX(const char* projName)
 }
 #endif
 
-
 #ifdef linux
 void copySysLinux(const char* projName)
 {
@@ -325,7 +417,11 @@ void copySysLinux(const char* projName)
 #endif
 
 
-// copy Maratis system files, Player executable and DLLs
+/*--------------------------------------------------------------------------------
+ * MPublishEventCopySys
+ * TODO: Check if there's a custom "player" executable and load that, rather than
+ * MaratisPlayer
+ *-------------------------------------------------------------------------------*/
 class MPublishEventCopySys : public MPublishEvent
 {
 	void	execute(const char* projName)
@@ -347,7 +443,10 @@ class MPublishEventCopySys : public MPublishEvent
 };
 M_PUBLISH_EVENT_IMPLEMENT(MPublishEventCopySys);
 
-// copy Game plugin, if one exists
+/*--------------------------------------------------------------------------------
+ * MPublishEventCopyGame
+ * copy Game plugin, if one exists
+ *-------------------------------------------------------------------------------*/
 class MPublishEventCopyGame : public MPublishEvent
 {
 	void	execute(const char* projName)

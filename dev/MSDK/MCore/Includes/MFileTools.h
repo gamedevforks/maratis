@@ -34,7 +34,7 @@
 
 // general file and directory tools
 M_CORE_EXPORT bool copyFile(const char * inFilename, const char * outFilename);
-M_CORE_EXPORT bool createDirectory(const char * filename);
+M_CORE_EXPORT bool createDirectory(const char * filename, bool recursive = false);
 M_CORE_EXPORT bool isDirectory(const char * filename);
 M_CORE_EXPORT bool isEmptyDirectory(const char * filename);
 M_CORE_EXPORT bool clearDirectory(const char * filename);

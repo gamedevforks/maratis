@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Maratis"
 	ProjectGUID="{66AE1018-3E0D-485D-B116-54B9DA374D82}"
 	RootNamespace="Maratis"
@@ -40,7 +40,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\..\MSDK\MCore\Includes;..\..\MSDK\MEngine\Includes;..\..\MSDK\MGui\Includes;..\..\Maratis\Common;..\..\..\..\3rdparty\tinyxml;..\..\..\..\3rdparty\lua;..\..\..\..\3rdparty\openal\include;..\..\..\..\3rdparty\devil;..\..\..\..\3rdparty\glee;..\..\..\..\3rdparty\libsndfile\include;..\..\..\..\3rdparty\bullet;..\..\..\..\3rdparty\freetype\include;..\..\..\..\3rdparty\npk\include"
+				AdditionalIncludeDirectories="..\..\MSDK\MCore\Includes;..\..\MSDK\MEngine\Includes;..\..\MSDK\MGui\Includes;..\..\Maratis\Common;..\..\..\..\3rdparty\tinyxml;..\..\..\..\3rdparty\lua;..\..\..\..\3rdparty\openal\include;..\..\..\..\3rdparty\devil;..\..\..\..\3rdparty\glee;..\..\..\..\3rdparty\libsndfile\include;..\..\..\..\3rdparty\bullet;..\..\..\..\3rdparty\freetype\include;..\..\..\..\3rdparty\npk\include;..\..\..\..\3rdparty\zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE;TIXML_USE_STL;M_PACKAGE_WRITABLE"
 				IgnoreStandardIncludePath="false"
 				BasicRuntimeChecks="0"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib MCoreDebug.lib MEngineDebug.lib lua.lib opengl32.lib glu32.lib DevIL.lib ILU.lib OpenAL32.lib libsndfile-1.lib freetype.lib"
+				AdditionalDependencies="winmm.lib Shell32.lib User32.lib Comdlg32.lib Gdi32.lib MCoreDebug.lib MEngineDebug.lib lua.lib opengl32.lib glu32.lib DevIL.lib ILU.lib OpenAL32.lib libsndfile-1.lib freetype.lib"
 				OutputFile="build\$(ProjectName)Debug.exe"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="build;..\..\..\..\3rdparty\lua\win32;..\..\..\..\3rdparty\devil\win32;..\..\..\..\3rdparty\openal\win32;..\..\..\..\3rdparty\libsndfile\win32;..\..\..\..\3rdparty\freetype\win32;..\..\..\..\3rdparty\bullet\win32"
@@ -98,7 +98,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;..\..\..\..\3rdparty\openal\win32\OpenAL32.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\openal\win32\wrap_oal.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\libsndfile\win32\libsndfile-1.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\DevIL.dll&quot; &quot;build&quot;&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\ILU.dll&quot; &quot;build&quot;&#x0D;&#x0A;mkdir &quot;build\font&quot;&#x0D;&#x0A;mkdir &quot;build\gui&quot;&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\font&quot; &quot;build\font&quot; /E&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\gui&quot; &quot;build\gui&quot; /E&#x0D;&#x0A;"
+				CommandLine="copy &quot;..\..\..\..\3rdparty\openal\win32\OpenAL32.dll&quot; &quot;build&quot; /Y&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\openal\win32\wrap_oal.dll&quot; &quot;build&quot; /Y&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\libsndfile\win32\libsndfile-1.dll&quot; &quot;build&quot; /Y&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\DevIL.dll&quot; &quot;build&quot; /Y&#x0D;&#x0A;copy &quot;..\..\..\..\3rdparty\devil\win32\ILU.dll&quot; &quot;build&quot; /Y&#x0D;&#x0A;mkdir &quot;build\font&quot;&#x0D;&#x0A;mkdir &quot;build\gui&quot;&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\font&quot; &quot;build\font&quot; /E /Y&#x0D;&#x0A;xcopy &quot;..\..\Data\Editor\gui&quot; &quot;build\gui&quot; /E /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -1987,15 +1987,11 @@
 				Name="VectorMath"
 				>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\boolInVec.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\boolInVec.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\floatInVec.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\boolInVec.h"
 					>
 				</File>
 				<File
@@ -2003,11 +1999,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\mat_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\floatInVec.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\mat_aos.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\mat_aos.h"
 					>
 				</File>
 				<File
@@ -2019,11 +2019,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vec_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vec_aos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vec_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vec_aos.h"
 					>
 				</File>
 				<File
@@ -2031,11 +2031,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vectormath_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vectormath_aos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\scalar\vectormath_aos.h"
+					RelativePath="..\..\..\..\3rdparty\bullet\vectormath\sse\vectormath_aos.h"
 					>
 				</File>
 				<File

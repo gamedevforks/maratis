@@ -77,12 +77,39 @@ bool copyFile(const char * inFilename, const char * outFilename)
 	return true;
 }
 
-bool createDirectory(const char * filename)
+bool createDirectoryInternal(const char* filename)
 {
 	if(mkdir(filename) != -1)
 		return true;
 	else
 		return false;
+}
+
+bool createDirectory(const char * filename, bool recursive)
+{
+	if(!recursive)
+		return createDirectoryInternal(filename);
+
+    char* pp;
+    char* sp;
+    bool status = false;
+    char copypath[256];
+	sprintf(copypath, filename);
+
+    pp = copypath;
+    while (!status && (sp = strchr(pp, '/')) != 0)
+    {
+        if (sp != pp)
+        {
+            /* Neither root nor double slash in path */
+            *sp = '\0';
+            status = createDirectoryInternal(copypath);
+            *sp = '/';
+        }
+        pp = sp + 1;
+    }
+    return createDirectoryInternal(filename);
+
 }
 
 bool isFileExist(const char * filename)

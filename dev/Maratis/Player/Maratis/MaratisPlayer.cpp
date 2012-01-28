@@ -35,6 +35,7 @@
 #include <MLoaders/MSndFileLoader.h>
 #include <MLoaders/MFreetypeLoader.h>
 #include <MLoaders/MBinFontLoader.h>
+#include <MLoaders/MBinMeshLoader.h>
 
 #include <MFileManager/MLevelLoad.h>
 #include <MBehaviors/MBLookAt.h>
@@ -135,9 +136,13 @@ void MaratisPlayer::start(void)
 		
 		// mesh loader
 		engine->getMeshLoader()->addLoader(xmlMeshLoad);
+		engine->getMeshLoader()->addLoader(M_loadBinMesh);
 		engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
+		engine->getArmatureAnimLoader()->addLoader(M_loadBinArmatureAnim);
 		engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
+		engine->getTexturesAnimLoader()->addLoader(M_loadBinTexturesAnim);
 		engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
+        engine->getMaterialsAnimLoader()->addLoader(M_loadBinMaterialsAnim);
 
 		// level
 		engine->setLevel(m_level);
