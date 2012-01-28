@@ -38,6 +38,7 @@
 
 sf_count_t M_SFGetFileLen(void* user_data)
 {
+	if(user_data == 0) return 0;  
 	MFile* File = (MFile*)user_data;
 	
 	long pos = File->tell();
@@ -51,21 +52,25 @@ sf_count_t M_SFGetFileLen(void* user_data)
 
 sf_count_t M_SFSeek(sf_count_t offset, int whence, void *user_data)
 {
+	if(user_data == 0) return 0;
 	return ((MFile*)user_data)->seek(offset, whence);
 }
 
 sf_count_t M_SFRead(void *ptr, sf_count_t count, void *user_data)
 {
+	if(user_data == 0) return 0;
 	return ((MFile*)user_data)->read(ptr, sizeof(char), count);
 }
 
 sf_count_t M_SFWrite(const void *ptr, sf_count_t count, void *user_data)
 {
+	if(user_data == 0) return 0;
 	return ((MFile*)user_data)->write(ptr, sizeof(char), count);
 }
 
 sf_count_t M_SFTell(void *user_data)
 {
+	if(user_data == 0) return 0;
 	return ((MFile*)user_data)->tell();
 }
 
