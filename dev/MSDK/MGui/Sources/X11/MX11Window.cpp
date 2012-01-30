@@ -132,8 +132,8 @@ static int translateKey(int keycode)
         case XK_Meta_R:
         case XK_ISO_Level3_Shift: // AltGr on at least some machines
         case XK_Alt_R:        return MKEY_RALT;
-        //case XK_Super_L:      return MKEY_LSUPER;
-        //case XK_Super_R:      return MKEY_RSUPER;
+        case XK_Super_L:      return MKEY_LSUPER;
+        case XK_Super_R:      return MKEY_RSUPER;
         case XK_Menu:         return MKEY_MENU;
         case XK_Num_Lock:     return MKEY_NUMLOCK;
         //case XK_Caps_Lock:    return MKEY_CAPS_LOCK;

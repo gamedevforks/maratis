@@ -38,6 +38,7 @@
 
 #include <MFileManager/MLevelSave.h>
 #include <MFileManager/MLevelLoad.h>
+#include "tinyxml.h"
 
 
 MaratisUI::MaratisUI(void):
@@ -55,7 +56,8 @@ m_specialEvent(0),
 m_guiColor(0.2f, 0.3f, 0.4f),
 m_fileBrowser(NULL)
 {
-	createGUI();
+    loadSettings();
+    createGUI();
 	m_text = new MGuiText("", MVector2(), 16, MVector4(1, 1, 1, 0.5f));
 	m_infoText = new MGuiText("", MVector2(), 16, MVector4(1, 1, 1, 0.8f));
 	m_positionImage = new MGuiImage("gui/buttonPosition.tga", MVector2(), MVector2(10, 10), MVector4(1, 1, 1, 0.5f));
@@ -2698,11 +2700,12 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
 {
 	MEngine * engine = MEngine::getInstance();
 	MMouse * mouse = MMouse::getInstance();
-	MKeyboard * keyboard = MKeyboard::getInstance();
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
     
-	// game
+    UI->m_lastInput = windowEvents->data[0];
+	
+    // game
 	MGame * game = MEngine::getInstance()->getGame();
 	if(game)
 	{
@@ -2782,13 +2785,12 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
             
 			if(UI->getView()->isScrolled() && mouse->isMiddleButtonPushed())
 			{
-				if(keyboard->isKeyPressed(MKEY_CONTROL))
+				if(UI->isShortcutEngaged(&UI->m_scPanView, false))
 				{
 					maratis->panCurrentVue();
 					break;
 				}
-                
-				maratis->rotateCurrentVue();
+                maratis->rotateCurrentVue();
 			}
 		}
             break;
@@ -2805,100 +2807,115 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
             break;
             
         case MWIN_EVENT_KEY_DOWN:
-            switch(windowEvents->data[0])
-		{
-            case 'S':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                    maratis->save();
-                else
-                {
-                    if(! gui->isSomethingEditing())
-                        UI->setTransformMode(M_TRANSFORM_SCALE);
-                }
+            if(UI->isShortcutEngaged(&UI->m_scSave))
+            {
+                maratis->save();
                 break;
-                
-            case 'Z':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                    maratis->undo();
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scUndo))
+            {
+                maratis->undo();
                 break;
-            case 'Y':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                    maratis->redo();
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scRedo))
+            {
+                maratis->redo();
                 break;
-                
-            case 'O':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                    maratis->loadLevel();
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scLoadLevel))
+            {
+                maratis->loadLevel();
                 break;
-            case 'Q':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                    UI->setPopupButton(" Ok To Quit ", okQuitEvents);
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scQuit))
+            {
+                UI->setPopupButton(" Ok To Quit ", okQuitEvents);
                 break;
-            case 'D':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                    maratis->duplicateSelectedObjects();
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scDuplicate))
+            {
+                maratis->duplicateSelectedObjects();
                 break;
-            case 'A':
-                if(keyboard->isKeyPressed(MKEY_CONTROL))
-                {
-                    maratis->selectAll();
-                    UI->editObject(UI->getEditedObject());
-                }
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scSelectAll))
+            {
+                maratis->selectAll();
+                UI->editObject(UI->getEditedObject());
                 break;
-		}
-            break;
+            }
             
         case MWIN_EVENT_KEY_UP:
-            switch(windowEvents->data[0])
-		{
-            case MKEY_KP5:
+            if(UI->isShortcutEngaged(&UI->m_scOrthogonalView))
+            {
                 if(! gui->isSomethingEditing())
                     maratis->switchCurrentVueMode();
                 break;
-            case MKEY_KP1:
+            }
+            if(UI->isShortcutEngaged(&UI->m_scFaceView))
+            {
                 if(! gui->isSomethingEditing())
                     maratis->changeCurrentVue(1);
                 break;
-            case MKEY_KP3:
+            }
+            if(UI->isShortcutEngaged(&UI->m_scRightView))
+            {
                 if(! gui->isSomethingEditing())
                     maratis->changeCurrentVue(3);
                 break;
-            case MKEY_KP7:
+            }
+            if(UI->isShortcutEngaged(&UI->m_scTopView))
+            {
                 if(! gui->isSomethingEditing())
                     maratis->changeCurrentVue(7);
                 break;
-            case MKEY_KP9:
+            }
+            if(UI->isShortcutEngaged(&UI->m_scBottomView))
+            {
                 if(! gui->isSomethingEditing())
                     maratis->changeCurrentVue(9);
                 break;
-            case 'M':
+            }
+            if(UI->isShortcutEngaged(&UI->m_scTransformMouse))
+            {
                 if(! gui->isSomethingEditing())
                     UI->setTransformMode(M_TRANSFORM_MOUSE);
                 break;
-            case 'T':
+            }
+            if(UI->isShortcutEngaged(&UI->m_scTransformPosition))
+            {
                 if(! gui->isSomethingEditing())
                     UI->setTransformMode(M_TRANSFORM_POSITION);
                 break;
-            case 'R':
+            }
+            if(UI->isShortcutEngaged(&UI->m_scTransformRotation))
+            {
                 if(! gui->isSomethingEditing())
                     UI->setTransformMode(M_TRANSFORM_ROTATION);
                 break;
-            case 'F':
-				if(! gui->isSomethingEditing())
-					maratis->focusSelection();
+            }
+            if(UI->isShortcutEngaged(&UI->m_scTransformScale))
+            {
+                if(! gui->isSomethingEditing())
+                    UI->setTransformMode(M_TRANSFORM_SCALE);
                 break;
-            case MKEY_BACKSPACE:
-            case MKEY_DELETE:
+            }            
+            if(UI->isShortcutEngaged(&UI->m_scFocusSelection))
+            {
+                if(! gui->isSomethingEditing())
+                    maratis->focusSelection();
+                break;
+            }
+            if(UI->isShortcutEngaged(&UI->m_scDelete) || UI->isShortcutEngaged(&UI->m_scDelete))
+            {
                 if((! gui->isSomethingEditing()) && (maratis->getSelectedObjectsNumber() > 0))
                     UI->setPopupButton(" Ok To Delete ", okDeleteObjectsEvents);
                 break;
-		}
-            break;
+            }
             
             /*case MWIN_EVENT_WINDOW_CLOSE:
              MWindow::getInstance()->setActive(false);
              break;*/
-	}
+    }
     
 	gui->onEvent(windowEvents);
 }
@@ -4146,13 +4163,12 @@ void MaratisUI::objectButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
             {
                 MScene * scene = MEngine::getInstance()->getLevel()->getCurrentScene();
                 Maratis * maratis = Maratis::getInstance();
-                MKeyboard * keyboard = MKeyboard::getInstance();
                 const char * name = button->getText(); 
                 
 				MObject3d * object = scene->getObjectByName(name);
 				if(object)
 				{
-					if (keyboard->isKeyPressed(MKEY_LCONTROL))
+					if (UI->isShortcutEngaged(&UI->m_scMultipleSelection, false))
 					{
 						maratis->addSelectedObject(object);
 						if(maratis->isObjectSelected(object))
@@ -4724,4 +4740,284 @@ void MaratisUI::rendererMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
 	}
 }
 
+void MaratisUI::loadSettings()
+{    
+    MKeyboard * keyboard = MKeyboard::getInstance();
+    keyboard->onKeyDown(MKEY_DUMMY);
+    
+    //assign default values
+    m_keys["A"] = 'A';
+    m_keys["B"] = 'B';
+    m_keys["C"] = 'C';
+    m_keys["D"] = 'D';
+    m_keys["E"] = 'E';
+    m_keys["F"] = 'F';
+    m_keys["G"] = 'G';
+    m_keys["H"] = 'H';
+    m_keys["I"] = 'I';
+    m_keys["J"] = 'J';
+    m_keys["K"] = 'K';
+    m_keys["L"] = 'L';
+    m_keys["M"] = 'M';
+    m_keys["N"] = 'N';
+    m_keys["O"] = 'O';
+    m_keys["P"] = 'P';
+    m_keys["Q"] = 'Q';
+    m_keys["R"] = 'R';
+    m_keys["S"] = 'S';
+    m_keys["T"] = 'T';
+    m_keys["U"] = 'U';
+    m_keys["V"] = 'V';
+    m_keys["W"] = 'W';
+    m_keys["X"] = 'X';
+    m_keys["Y"] = 'Y';
+    m_keys["Z"] = 'Z';
+    m_keys["1"] = '1';
+    m_keys["2"] = '2';
+    m_keys["3"] = '3';
+    m_keys["4"] = '4';
+    m_keys["5"] = '5';
+    m_keys["6"] = '6';
+    m_keys["7"] = '7';
+    m_keys["8"] = '8';
+    m_keys["9"] = '9';
+    m_keys["0"] = '0';
+    m_keys["-"] = '-';
+    m_keys["="] = '=';
+    m_keys["/"] = '/';
+    m_keys["."] = '.';
+    m_keys[","] = ',';
+    m_keys["\\"] = '\\';
+    m_keys["["] = '[';
+    m_keys["]"] = ']';
+    m_keys[";"] = ';';
+    m_keys["'"] = '\'';
+    m_keys["`"] = '`';
+    m_keys["Escape"] = MKEY_ESCAPE;
+    m_keys["Enter"] = MKEY_RETURN;
+    m_keys["Num Enter"] = MKEY_KP_ENTER;
+    m_keys["Tab"] = MKEY_TAB;
+    m_keys["Backspace"] = MKEY_BACKSPACE;
+    m_keys["Space"] = MKEY_SPACE;
+    m_keys["Right Control"] = MKEY_RCONTROL;
+    m_keys["Left Control"] = MKEY_LCONTROL;
+    m_keys["Right Super"] = MKEY_RSUPER;
+    m_keys["Left Super"] = MKEY_LSUPER;
+    m_keys["Right Alt"] = MKEY_RALT;
+    m_keys["Left Alt"] = MKEY_LALT;
+    m_keys["Right Shift"] = MKEY_RSHIFT;
+    m_keys["Left Shift"] = MKEY_LSHIFT;
+    m_keys["Right Super"] = MKEY_RSUPER;
+    m_keys["Left Super"] = MKEY_LSUPER;
+    m_keys["F1"] = MKEY_F1;
+    m_keys["F2"] = MKEY_F2;
+    m_keys["F3"] = MKEY_F3;
+    m_keys["F4"] = MKEY_F4;
+    m_keys["F5"] = MKEY_F5;
+    m_keys["F6"] = MKEY_F6;
+    m_keys["F7"] = MKEY_F7;
+    m_keys["F8"] = MKEY_F8;
+    m_keys["F9"] = MKEY_F9;
+    m_keys["F10"] = MKEY_F10;
+    m_keys["F11"] = MKEY_F11;
+    m_keys["F12"] = MKEY_F12;
+    m_keys["Print Screen"] = MKEY_PRINT;
+    m_keys["Pause"] = MKEY_PAUSE;
+    m_keys["Help"] = MKEY_HELP;
+    m_keys["Insert"] = MKEY_INSERT;
+    m_keys["Home"] = MKEY_HOME;
+    m_keys["Page Up"] = MKEY_PAGEUP;
+    m_keys["Page Down"] = MKEY_PAGEDOWN;
+    m_keys["End"] = MKEY_END;
+    m_keys["Delete"] = MKEY_DELETE;
+    m_keys["Num Lock"] = MKEY_NUMLOCK;
+    m_keys["Num 1"] = MKEY_KP1;
+    m_keys["Num 2"] = MKEY_KP2;
+    m_keys["Num 3"] = MKEY_KP3;
+    m_keys["Num 4"] = MKEY_KP4;
+    m_keys["Num 5"] = MKEY_KP5;
+    m_keys["Num 6"] = MKEY_KP6;
+    m_keys["Num 7"] = MKEY_KP7;
+    m_keys["Num 8"] = MKEY_KP8;
+    m_keys["Num 9"] = MKEY_KP9;
+    m_keys["Num 0"] = MKEY_KP0;
+    m_keys["Left"] = MKEY_LEFT;
+    m_keys["Right"] = MKEY_RIGHT;
+    m_keys["Down"] = MKEY_DOWN;
+    m_keys["Up"] = MKEY_UP;
+    m_keys["None"] = MKEY_DUMMY;
 
+    
+    m_scSave.key1 = m_keys["S"];
+    m_scSave.key2 = m_keys["Left Control"];
+    m_scSave.key3 = m_keys["None"];
+    m_shortcuts["Save"] = &m_scSave;
+    
+    m_scUndo.key1 = m_keys["Z"];
+    m_scUndo.key2 = m_keys["Left Control"];
+    m_scUndo.key3 = m_keys["None"];
+    m_shortcuts["Undo"] = &m_scUndo;
+    
+    m_scRedo.key1 = m_keys["Y"];
+    m_scRedo.key2 = m_keys["Left Control"];
+    m_scRedo.key3 = m_keys["None"];
+    m_shortcuts["Redo"] = &m_scRedo;
+    
+    m_scLoadLevel.key1 = m_keys["O"];
+    m_scLoadLevel.key2 = m_keys["Left Control"];
+    m_scLoadLevel.key3 = m_keys["None"];
+    m_shortcuts["Load Level"] = &m_scLoadLevel;
+    
+    m_scQuit.key1 = m_keys["Q"];
+    m_scQuit.key2 = m_keys["Left Control"];
+    m_scQuit.key3 = m_keys["None"];
+    m_shortcuts["Quit"] = &m_scQuit;
+    
+    m_scDuplicate.key1 = m_keys["D"];
+    m_scDuplicate.key2 = m_keys["Left Control"];
+    m_scDuplicate.key3 = m_keys["None"];
+    m_shortcuts["Duplicate"] = &m_scDuplicate;
+    
+    m_scSelectAll.key1 = m_keys["A"];
+    m_scSelectAll.key2 = m_keys["Left Control"];
+    m_scSelectAll.key3 = m_keys["None"];
+    m_shortcuts["Select All"] = &m_scSelectAll;
+    
+    m_scOrthogonalView.key1 = m_keys["Num 5"];
+    m_scOrthogonalView.key2 = m_keys["None"];
+    m_scOrthogonalView.key3 = m_keys["None"];
+    m_shortcuts["Orthogonal View"] = &m_scOrthogonalView;
+    
+    m_scFaceView.key1 = m_keys["Num 1"];
+    m_scFaceView.key2 = m_keys["None"];
+    m_scFaceView.key3 = m_keys["None"];
+    m_shortcuts["Face View"] = &m_scFaceView;
+    
+    m_scRightView.key1 = m_keys["Num 3"];
+    m_scRightView.key2 = m_keys["None"];
+    m_scRightView.key3 = m_keys["None"];
+    m_shortcuts["Right View"] = &m_scRightView;
+    
+    m_scTopView.key1 = m_keys["Num 7"];
+    m_scTopView.key2 = m_keys["None"];
+    m_scTopView.key3 = m_keys["None"];
+    m_shortcuts["Top View"] = &m_scTopView;
+    
+    m_scBottomView.key1 = m_keys["Num 9"];
+    m_scBottomView.key2 = m_keys["None"];
+    m_scBottomView.key3 = m_keys["None"];
+    m_shortcuts["Bottom View"] = &m_scBottomView;
+    
+    m_scTransformMouse.key1 = m_keys["M"];
+    m_scTransformMouse.key2 = m_keys["None"];
+    m_scTransformMouse.key3 = m_keys["None"];
+    m_shortcuts["Transform Mouse"] = &m_scTransformMouse;
+    
+    m_scTransformPosition.key1 = m_keys["T"];
+    m_scTransformPosition.key2 = m_keys["None"];
+    m_scTransformPosition.key3 = m_keys["None"];
+    m_shortcuts["Transform Position"] = &m_scTransformPosition;
+    
+    m_scTransformRotation.key1 = m_keys["R"];
+    m_scTransformRotation.key2 = m_keys["None"];
+    m_scTransformRotation.key3 = m_keys["None"];
+    m_shortcuts["Transform Rotation"] = &m_scTransformRotation;
+
+    m_scTransformScale.key1 = m_keys["S"];
+    m_scTransformScale.key2 = m_keys["None"];
+    m_scTransformScale.key3 = m_keys["None"];
+    m_shortcuts["Transform Scale"] = &m_scTransformScale;
+    
+    m_scMultipleSelection.key1 = m_keys["Left Control"];
+    m_scMultipleSelection.key2 = m_keys["None"];
+    m_scMultipleSelection.key3 = m_keys["None"];
+    m_shortcuts["Multiple Selection"] = &m_scMultipleSelection;
+    
+    m_scFocusSelection.key1 = m_keys["F"];
+    m_scFocusSelection.key2 = m_keys["None"];
+    m_scFocusSelection.key3 = m_keys["None"];
+    m_shortcuts["Focus Selection"] = &m_scFocusSelection;
+    
+    m_scDelete.key1 = m_keys["Backspace"];
+    m_scDelete.key2 = m_keys["None"];
+    m_scDelete.key3 = m_keys["None"];
+    m_shortcuts["Delete"] = &m_scDelete;
+    
+    m_scDelete2.key1 = m_keys["Delete"];
+    m_scDelete2.key2 = m_keys["None"];
+    m_scDelete2.key3 = m_keys["None"];
+    m_shortcuts["Delete2"] = &m_scDelete2;
+    
+    m_scPanView.key1 = m_keys["Left Control"];
+    m_scPanView.key2 = m_keys["None"];
+    m_scPanView.key3 = m_keys["None"];
+    m_shortcuts["Pan View"] = &m_scPanView;
+    
+    // read preferences file
+    const char * filename = "preferences.xml";
+	TiXmlDocument doc(filename);
+	if(! doc.LoadFile())
+        return;
+    TiXmlHandle hDoc(&doc);
+	TiXmlElement * rootNode;
+	TiXmlHandle hRoot(0);
+    
+	// maratis
+	rootNode = hDoc.FirstChildElement().Element();
+	if(! rootNode)
+		return;
+    
+	if(strcmp(rootNode->Value(), "Maratis") != 0)
+		return;
+    
+	hRoot = TiXmlHandle(rootNode);
+    
+	// preferences
+	TiXmlElement * preferencesNode = rootNode->FirstChildElement("Preferences");
+	if(! preferencesNode)
+		return;
+    
+	// check keyboard node
+	TiXmlElement * keyboardNode = preferencesNode->FirstChildElement("Keyboard");
+	if(! keyboardNode)
+		return;
+	
+	// check first shortcut
+	TiXmlElement * shortcutNode = keyboardNode->FirstChildElement("Shortcut");
+	if(! shortcutNode)
+        return;
+
+    do {
+        string name = shortcutNode->Attribute("name");
+        string key1 = shortcutNode->Attribute("key1");
+        string key2 = shortcutNode->Attribute("key2");
+        string key3 = shortcutNode->Attribute("key3");
+        
+        m_shortcuts[name]->key1 = m_keys[key1];
+        m_shortcuts[name]->key2 = m_keys[key2];
+        m_shortcuts[name]->key3 = m_keys[key3];
+        
+    } while ((shortcutNode = shortcutNode->NextSiblingElement()));
+}
+
+bool MaratisUI::isShortcutEngaged(struct Shortcut * sc, bool checkLastInput)
+{
+	MKeyboard * keyboard = MKeyboard::getInstance();
+	MaratisUI * UI = MaratisUI::getInstance();
+    
+    unsigned int key1 = sc->key1;
+    unsigned int key2 = sc->key2;
+    unsigned int key3 = sc->key3;
+
+    if (checkLastInput) 
+    {
+        int lastInput = UI->m_lastInput;
+
+        if (! (lastInput == key1 || lastInput == key2 || lastInput == key3))
+            return false;
+    }
+    if(keyboard->isKeyPressed(key1) && keyboard->isKeyPressed(key2) && keyboard->isKeyPressed(key3))
+        return true;
+    else
+        return false;
+}

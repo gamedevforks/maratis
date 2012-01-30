@@ -214,8 +214,8 @@ static const unsigned int MAC_KEYCODE_MAPPING[128] =
     /* 33 */ MKEY_BACKSPACE,
     /* 34 */ -1,
     /* 35 */ MKEY_ESCAPE,
-    /* 36 */ -1, // RSUPER
-    /* 37 */ -1, // LSUPER
+    /* 36 */ MKEY_RSUPER, // RSUPER
+    /* 37 */ MKEY_LSUPER, // LSUPER
     /* 38 */ MKEY_LSHIFT,
     /* 39 */ -1, // CAPS_LOCK
     /* 3a */ MKEY_LALT,

@@ -194,5 +194,8 @@ public:
 #define MKEY_HELP		178
 #define MKEY_PRINT		179
 #define MKEY_MENU		180
+#define MKEY_RSUPER		181
+#define MKEY_LSUPER		182
+#define MKEY_DUMMY		255
 
 #endif

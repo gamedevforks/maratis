@@ -99,6 +99,41 @@ public:
 	MVector3	m_editPosition;
 	MVector3	m_editRotation;
 	MVector3	m_editScale;
+    
+    //shortcuts
+    struct Shortcut
+    {
+        unsigned int key1;
+        unsigned int key2;
+        unsigned int key3;
+    };
+    
+    Shortcut m_scSave;
+    Shortcut m_scUndo;
+    Shortcut m_scRedo;
+    Shortcut m_scLoadLevel;
+    Shortcut m_scQuit;
+    Shortcut m_scDuplicate;
+    Shortcut m_scSelectAll;
+    Shortcut m_scOrthogonalView;
+    Shortcut m_scFaceView;
+    Shortcut m_scRightView;
+    Shortcut m_scTopView;
+    Shortcut m_scBottomView;
+    Shortcut m_scTransformMouse;
+    Shortcut m_scTransformPosition;
+    Shortcut m_scTransformRotation;
+    Shortcut m_scTransformScale;
+    Shortcut m_scMultipleSelection;
+    Shortcut m_scFocusSelection;
+    Shortcut m_scDelete;
+    Shortcut m_scDelete2;
+    Shortcut m_scPanView;
+    
+    map<string, unsigned int> m_keys;
+    map<string, struct Shortcut*> m_shortcuts;
+    
+    int m_lastInput;
 
 private:
 
@@ -209,6 +244,9 @@ private:
 	void addTextButtonToMenu(MGuiMenu * menu, const char * text, MVector2 position, void (* buttonPointerEvent)(MGuiButton * button, MGuiEvent * guiEvents));
 	void addTextToMenu(MGuiMenu * menu, const char * text, MVector2 position);
 	MGuiButton * addButtonToWindow(MGuiWindow * window, const char * texture, MVector2 position, void (* buttonPointerEvent)(MGuiButton * button, MGuiEvent * guiEvents));
+    
+    //load settings
+    void loadSettings(void);
 
 	// clear
 	void clear(void);
@@ -220,7 +258,10 @@ public:
 
 	void openFileBrowser(const char * startPath, const char * startFile, const char * okName, void (* functionPointer)(const char * filename));
 	
-	// is playing
+    //check shortcut
+    bool isShortcutEngaged(struct Shortcut * sc, bool checkLastInput = true);
+    
+    // is playing
 	inline bool isPlaying(void){ return m_play; }
 
 	// special events

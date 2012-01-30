@@ -1840,7 +1840,6 @@ void Maratis::selectObjectsInMainView(MScene * scene)
 {
 	// get window
 	MWindow * window = MWindow::getInstance();
-	MKeyboard * keyboard = MKeyboard::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
     
 	// is mouse over
@@ -1874,7 +1873,7 @@ void Maratis::selectObjectsInMainView(MScene * scene)
 	rayD = rayO + ((rayD - rayO).getNormalized() * (camera->getClippingFar() - camera->getClippingNear()));
     
 	// transform
-	if((! keyboard->isKeyPressed(MKEY_CONTROL)) && (getSelectedObjectsNumber() > 0) && (getTransformMode() != M_TRANSFORM_MOUSE))
+	if((! UI->isShortcutEngaged(&UI->m_scMultipleSelection, false)) && (getSelectedObjectsNumber() > 0) && (getTransformMode() != M_TRANSFORM_MOUSE))
 	{
 		float radius;
 		MVector3 position;
@@ -1917,7 +1916,7 @@ void Maratis::selectObjectsInMainView(MScene * scene)
 	}
     
 	// clear selection
-	if(! keyboard->isKeyPressed(MKEY_CONTROL))
+	if(! UI->isShortcutEngaged(&UI->m_scMultipleSelection, false))
 		clearSelectedObjects();
     
 	MObject3d * nearestObject = getNearestObject(scene, rayO, rayD);
