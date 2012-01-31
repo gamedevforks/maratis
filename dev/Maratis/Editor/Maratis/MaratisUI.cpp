@@ -38,7 +38,7 @@
 
 #include <MFileManager/MLevelSave.h>
 #include <MFileManager/MLevelLoad.h>
-#include "tinyxml.h"
+#include <tinyxml.h>
 
 
 MaratisUI::MaratisUI(void):

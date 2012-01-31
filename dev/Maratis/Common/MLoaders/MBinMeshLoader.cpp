@@ -45,31 +45,31 @@ static void readKey(MFile * file, MKey * key, M_VARIABLE_TYPE type)
 	{
 		case M_VARIABLE_FLOAT:
 		{
-			float * data = (float *)key->getData();
+			float * data = key->createFloatData();
 			M_fread(data, sizeof(float), 1, file);
 			break;
 		}
 		case M_VARIABLE_VEC2:
 		{
-			MVector2 * data = (MVector2 *)key->getData();
+			MVector2 * data = key->createVector2Data();
 			M_fread(data, sizeof(MVector2), 1, file);
 			break;
 		}
 		case M_VARIABLE_VEC3:
 		{
-			MVector3 * data = (MVector3 *)key->getData();
+			MVector3 * data = key->createVector3Data();
 			M_fread(data, sizeof(MVector3), 1, file);
 			break;
 		}
 		case M_VARIABLE_VEC4:
 		{
-			MVector4 * data = (MVector4 *)key->getData();
+			MVector4 * data = key->createVector4Data();
 			M_fread(data, sizeof(MVector4), 1, file);
 			break;
 		}
 		case M_VARIABLE_QUAT:
 		{
-			MQuaternion * data = (MQuaternion *)key->getData();
+			MQuaternion * data = key->createQuaternionData();
 			M_fread(data, sizeof(MQuaternion), 1, file);
 			break;
 		}

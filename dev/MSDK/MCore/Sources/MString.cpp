@@ -65,11 +65,20 @@ void MString::set(const char * data)
 {
 	if(data)
 	{
-		SAFE_DELETE_ARRAY(m_data);
-		m_data = new char[strlen(data)+1];
-		strcpy(m_data, data);
+		int len = strlen(data);
+		if(len > 0)
+		{
+			SAFE_DELETE_ARRAY(m_data);
+			m_data = new char[len+1];
+			strcpy(m_data, data);
+		}
+		else
+		{
+			m_data[0] = NULL;
+		}
 	}
-	else{
-		clear();
+	else
+	{
+		m_data[0] = NULL;
 	}
 }

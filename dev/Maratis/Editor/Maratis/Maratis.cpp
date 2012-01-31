@@ -1055,6 +1055,23 @@ void Maratis::loadProject(const char * filename)
 		// renderer
 		changeRenderer(proj.renderer.c_str());
 		
+		
+		// test pack
+		// if we have a package manager, try to load the package
+		if(MPackageManager* pPackMan = MEngine::getInstance()->getPackageManager())
+		{
+			char projName[256];
+			getLocalFilename(projName, workingDir, filename);
+			if(char* ext = strstr(projName, ".mproj"))
+			{
+				sprintf(ext, ".npk");
+				char packageFile[256];
+				getGlobalFilename(packageFile, workingDir, projName);
+				pPackMan->loadPackage(packageFile);
+			}
+		}
+		
+		
 		// load start level
 		if(! loadLevel(proj.startLevel.c_str()))
 		{
@@ -1071,9 +1088,6 @@ void Maratis::newLevel(void)
 	// init maratis
 	initVue();
     
-	// clear windows
-	UI->editObject(NULL);
-    
 	// clear level
 	MLevel * level = engine->getLevel();
 	level->clear();
@@ -1086,6 +1100,9 @@ void Maratis::newLevel(void)
 	MGuiEditText * sceneEdit = UI->getSceneEdit();
 	sceneEdit->setText(scene->getName());
     
+	// clear windows
+	UI->editObject(NULL);
+	
 	// update scene menu
 	UI->updateSceneMenu();
 	UI->updateViewMenu();

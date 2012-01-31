@@ -71,12 +71,8 @@ public:
 	// publishing
 	MPackage	openPackage(const char* packageName);
 	void		closePackage(MPackage package);
-	MPackageEnt addFileToPackage(const char* filename, MPackage package);
+	MPackageEnt addFileToPackage(const char* filename, MPackage package, const char* entityName);
 	MPackage	mountPackage(MPackage package);
-	void		setPackageWritable(MPackage package);
-	void		writeToPackage(const char* filename, void* buffer, size_t size);
-
-	bool		isWritable();
 };
 
 #endif

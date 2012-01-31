@@ -40,6 +40,7 @@
 
 // some helper functions for repetitive packaging work
 static std::string s_pubDir;
+static std::string s_dataDir;
 
 const char* getPubDir()
 {
@@ -56,6 +57,14 @@ const char* getPubDir()
 	return s_pubDir.c_str();
 }
 
+const char* getDataDir()
+{
+	if(s_dataDir.empty())
+		return getPubDir();
+	
+	return s_dataDir.c_str();
+}
+
 MPackage openProjectPackage(const char* projName)
 {
 	MEngine* engine = MEngine::getInstance();
@@ -70,10 +79,10 @@ MPackage openProjectPackage(const char* projName)
 	}
 		
 	sprintf(ext, ".npk");
-	createDirectory(getPubDir());
 	char packFile[256];
-	getGlobalFilename(packFile, getPubDir(), projFile);
-
+	
+	getGlobalFilename(packFile, getDataDir(), projFile);
+	
 	MPackageManager* packageManager = engine->getPackageManager();
 	MPackage package = packageManager->openPackage(packFile);
 
@@ -88,7 +97,8 @@ class MPublishEventClearDirectory : public MPublishEvent
 {
 	void	execute(const char* projName)
 	{
-		clearDirectory(getPubDir());
+		removeDirectory(getPubDir());
+		createDirectory(getPubDir());
 	}
 
 	int		getPriority() { return 0; }
@@ -108,7 +118,7 @@ class MPublishEvent##dir##Package : public MPublishEvent \
 	{ \
 		MEngine* engine = MEngine::getInstance(); \
 		MSystemContext* system = engine->getSystemContext(); \
-		char directory[256]; \
+		char directory[256], localFilename[256]; \
 		getGlobalFilename(directory, system->getWorkingDirectory(), #dir); \
 		std::vector<std::string> files; \
 		readDirectory(directory, &files, 1, 1); \
@@ -116,7 +126,8 @@ class MPublishEvent##dir##Package : public MPublishEvent \
 		MPackageManager* packageManager = engine->getPackageManager();\
 		for(int i = 0; i < files.size(); ++i) \
 		{ \
-			packageManager->addFileToPackage(files[i].c_str(), package); \
+			getLocalFilename(localFilename, system->getWorkingDirectory(), files[i].c_str()); \
+			packageManager->addFileToPackage(files[i].c_str(), package, localFilename); \
 		} \
 		packageManager->closePackage(package); \
 	} \
@@ -139,7 +150,7 @@ class MPublishEvent##dir : public MPublishEvent \
 		char directory[256]; \
 		getGlobalFilename(directory, system->getWorkingDirectory(), #dir); \
 		char destDirectory[256]; \
-		getGlobalFilename(destDirectory, getPubDir(), #dir); \
+		getGlobalFilename(destDirectory, getDataDir(), #dir); \
 		copyDirectory(directory, destDirectory); \
 	} \
 	int		getPriority() { return 5; } \
@@ -154,73 +165,83 @@ M_PUBLISH_PACKAGE_DIR(fonts)
 M_PUBLISH_DIR(levels)
 M_PUBLISH_DIR(plugins)
 
-// This _should_ write binary mesh files
-// however for some reason it doesn't work on the Demos example
-// also binary mesh files seem to be broken somehow.
-#ifdef M_SHOULD_PUBLISH_BIN_MESH
+
+// write and pack binary mesh files
 class MPublishEventMeshsPackage : public MPublishEvent
 {
 	void execute(const char* projName)
 	{
-		MEngine* engine = MEngine::getInstance(); 
-		MSystemContext* system = engine->getSystemContext(); 
-		char directory[256]; 
+		MEngine* engine = MEngine::getInstance();
+		MSystemContext* system = engine->getSystemContext();
+		MPackageManager* packageManager = engine->getPackageManager();
+		
+		char directory[256], localFilename[256]; 
 		getGlobalFilename(directory, system->getWorkingDirectory(), "meshs"); 
 		std::vector<std::string> files; 
-		readDirectory(directory, &files, 1, 1); 
-		MPackage package = openProjectPackage(projName); 
-		MPackageManager* packageManager = engine->getPackageManager();
-		if(packageManager)
-		{
-			packageManager->setPackageWritable(package);
-		}
+		readDirectory(directory, &files, 1, 1);
 		
 		MLevel* currentLevel = engine->getLevel();
 		MLevel* tempLevel = new MLevel();
 		engine->setLevel(tempLevel);
+		
 		MMesh* mesh = MMesh::getNew();
 		MArmatureAnim* armAnim = MArmatureAnim::getNew();
 		MTexturesAnim* texAnim = MTexturesAnim::getNew();
 		MMaterialsAnim* matAnim = MMaterialsAnim::getNew();
 		
+		// open package and scan meshes
+		MPackage package = openProjectPackage(projName);
 		for(int i = 0; i < files.size(); ++i) 
-		{ 
+		{
+			// export bin
 			if(strstr(files[i].c_str(), ".mesh") != 0)
 			{
 				mesh->clear();
 				if(engine->getMeshLoader()->loadData(files[i].c_str(), mesh))
-					exportMeshBin(files[i].c_str(), mesh);
+					exportMeshBin((files[i] + ".bin").c_str(), mesh);
 			}
 			else if (strstr(files[i].c_str(), ".maa") != 0)
 			{
 				if(engine->getArmatureAnimLoader()->loadData(files[i].c_str(), armAnim))
-					exportArmatureAnimBin(files[i].c_str(), armAnim);
+					exportArmatureAnimBin((files[i] + ".bin").c_str(), armAnim);
 			}
 			else if (strstr(files[i].c_str(), ".mma") != 0)
 			{
 				if(engine->getMaterialsAnimLoader()->loadData(files[i].c_str(), matAnim))
-					exportMaterialsAnimBin(files[i].c_str(), matAnim);
+					exportMaterialsAnimBin((files[i] + ".bin").c_str(), matAnim);
 			}
 			else if (strstr(files[i].c_str(), ".mta") != 0)
 			{
 				if(engine->getTexturesAnimLoader()->loadData(files[i].c_str(), texAnim))
-					exportTexturesAnimBin(files[i].c_str(), texAnim);
+					exportTexturesAnimBin((files[i] + ".bin").c_str(), texAnim);
 			}
+			
 			tempLevel->clear();
-		} 
-		packageManager->closePackage(package); 
-
+			
+			// pack file
+			getLocalFilename(localFilename, system->getWorkingDirectory(), files[i].c_str());
+			packageManager->addFileToPackage((files[i] + ".bin").c_str(), package, localFilename);
+		}
+		packageManager->closePackage(package);
+		
+		// clear mesh
+		mesh->destroy();
+		armAnim->destroy();
+		texAnim->destroy();
+		matAnim->destroy();
+		
+		// remove bin
+		for(int i = 0; i < files.size(); ++i) 
+			remove((files[i] + ".bin").c_str());
+		
+		// restore level
 		engine->setLevel(currentLevel);
 		SAFE_DELETE(tempLevel);
 	}
 	int getPriority() { return 5; }
 };
 M_PUBLISH_EVENT_IMPLEMENT(MPublishEventMeshsPackage);
-#else
-// just copy the contents of the directory instead of writing
-// binaries into the package
-M_PUBLISH_DIR(meshs)
-#endif
+
 
 /*--------------------------------------------------------------------------------
  * embedProject
@@ -229,6 +250,10 @@ M_PUBLISH_DIR(meshs)
  *-------------------------------------------------------------------------------*/
 static void embedProject(const char * src, const char * dest, const char * game, const char * level, const char * renderer)
 {
+	printf("%s\n", game);
+	printf("%s\n", level);
+	printf("%s\n", renderer);
+	
 	FILE* fp = 0;
 	fp = fopen(src, "rb");
 	if(! fp)
@@ -320,8 +345,6 @@ void copySysWindows(const char* projName)
 			// we need the project "filename" to still be a .mproj for MaratisPlayer to behave
 			// correctly
 			strcpy(ext, ".mproj");
-
-			ext = 0;
 			embedProject(appName, destName, filename, level, proj.renderer.c_str());
 		
 			// find all dynamic libraries
@@ -357,25 +380,28 @@ void copySysOSX(const char* projName)
 			char path[256];
 			char srcName[256];
 			char destName[256];
+			char appPath[256];
+			char level[256];
 			
-			getGlobalFilename(destName, getPubDir(), filename);
+			getLocalFilename(level, system->getWorkingDirectory(), proj.startLevel.c_str());
+			getGlobalFilename(appPath, getPubDir(), filename);
 			
 			sprintf(path, "../../../%s.app", appName);
 			getGlobalFilename(srcName, window->getCurrentDirectory(), path);
-			copyDirectory(srcName, destName);
+			copyDirectory(srcName, appPath);
 			
 			strcpy(ext, "");
-			sprintf(srcName, "%s/Contents/MacOS/%s", destName, appName);
-			sprintf(destName, "%s/Contents/MacOS/%s", destName, filename);
+			sprintf(srcName, "%s/Contents/MacOS/%s", appPath, appName);
+			sprintf(destName, "%s/Contents/MacOS/%s", appPath, filename);
 			rename(srcName, destName);
 			
-			embedProject(destName, destName, filename, proj.startLevel.c_str(), proj.renderer.c_str());
+			strcpy(ext, ".mproj");
+			embedProject(destName, destName, filename, level, proj.renderer.c_str());
 			chmod(destName, 0777);
 			
-			// find all dynamic libraries
-			//copyDirFiles(".", getPubDir(), ".dylib"); // in fact there are already in the app
-			
-			// we could put all data (and Game.dylib) in app/Contents/Resources/
+			// we need to put all data in app/Contents/Resources/
+			sprintf(destName, "%s/Contents/Resources", appPath);
+			s_dataDir = destName;
 		}
 	}
 }
@@ -406,7 +432,11 @@ void copySysLinux(const char* projName)
 			char destName[256];
 			getGlobalFilename(destName, getPubDir(), filename);
 			
-			embedProject(appName, destName, filename, proj.startLevel.c_str(), proj.renderer.c_str());
+			char level[256];
+			getLocalFilename(level, system->getWorkingDirectory(), proj.startLevel.c_str());
+			
+			strcpy(ext, ".mproj");
+			embedProject(appName, destName, filename, level, proj.renderer.c_str());
 			chmod(destName, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 			
 			// find all dynamic libraries
@@ -439,7 +469,7 @@ class MPublishEventCopySys : public MPublishEvent
 #endif
 	}
 
-	int		getPriority() { return 7; }
+	int		getPriority() { return 1; }
 };
 M_PUBLISH_EVENT_IMPLEMENT(MPublishEventCopySys);
 
@@ -466,7 +496,7 @@ class MPublishEventCopyGame : public MPublishEvent
 #endif
 
 		getGlobalFilename(filename, system->getWorkingDirectory(), pluginName);
-		getGlobalFilename(destFilename, getPubDir(), pluginName);
+		getGlobalFilename(destFilename, getDataDir(), pluginName);
 
 		if(isFileExist(filename))
 		{

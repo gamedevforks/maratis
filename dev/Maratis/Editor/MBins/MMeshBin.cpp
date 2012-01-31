@@ -30,7 +30,6 @@ static char M_AA_HEADER[8] = {'M', 'A', 'A', NULL, NULL, NULL, NULL, NULL}; // a
 static char M_MA_HEADER[8] = {'M', 'M', 'A', NULL, NULL, NULL, NULL, NULL}; // materials anim
 static char M_TA_HEADER[8] = {'M', 'T', 'A', NULL, NULL, NULL, NULL, NULL}; // textures anim
 
-#include "MFileTools.h"
 
 
 // tools
@@ -96,9 +95,16 @@ static void writeDataRef(MFile * file, MDataRef * dataRef, const char * rep)
 {
 	char localFile[256];
 	
-	bool state = dataRef != NULL;
-	M_fwrite(&state, sizeof(bool), 1, file);
+	bool state = false;
 	if(dataRef)
+	{
+		const char * filename = dataRef->getFilename();
+		if(filename != NULL)
+			state = true;
+	}
+	
+	M_fwrite(&state, sizeof(bool), 1, file);
+	if(state)
 	{
 		getLocalFilename(localFile, rep, dataRef->getFilename());
 		writeString(file, localFile);
@@ -655,4 +661,3 @@ bool exportMaterialsAnimBin(const char * filename, MMaterialsAnim * anim)
 	M_fclose(file);
 	return true;	
 }
-

@@ -61,14 +61,8 @@ public:
 	// handling these packages will be your own task
 	virtual MPackage	openPackage(const char* packageName) = 0;
 	virtual void		closePackage(MPackage package) = 0;
-	virtual MPackageEnt addFileToPackage(const char* filename, MPackage package) = 0;
+	virtual MPackageEnt addFileToPackage(const char* filename, MPackage package, const char* entityName) = 0;
 	virtual MPackage	mountPackage(MPackage package) = 0;
-	
-	// if we're wanting to write directly to the package, we need to flag one to write to
-	virtual void		setPackageWritable(MPackage package) = 0;
-	virtual void		writeToPackage(const char* filename, void* buffer, size_t size) = 0;
-
-	virtual bool		isWritable() = 0;
 };
 
 #endif

@@ -110,60 +110,63 @@ void MOText::updateLinesOffset(void)
 	// clear lines
 	m_linesOffset.clear();
 
-	unsigned int i;
-	unsigned int size = strlen(text);
-	for(i=0; i<size; i++)
+	if(text)
 	{
-		if(text[i] == '\n') // return
+		unsigned int i;
+		unsigned int size = strlen(text);
+		for(i=0; i<size; i++)
 		{
-			switch(m_align)
+			if(text[i] == '\n') // return
 			{
-			case M_ALIGN_LEFT:
-				m_linesOffset.push_back(0);
-				break;
-			case M_ALIGN_RIGHT:
-				m_linesOffset.push_back(-(max - min));
-				break;
-			case M_ALIGN_CENTER:
-				m_linesOffset.push_back(-(max - min)*0.5f);
-				break;
+				switch(m_align)
+				{
+					case M_ALIGN_LEFT:
+						m_linesOffset.push_back(0);
+						break;
+					case M_ALIGN_RIGHT:
+						m_linesOffset.push_back(-(max - min));
+						break;
+					case M_ALIGN_CENTER:
+						m_linesOffset.push_back(-(max - min)*0.5f);
+						break;
+				}
+				
+				min = 0;
+				max = 0;
+				xc = 0;
+				continue;
 			}
-
-			min = 0;
-			max = 0;
-			xc = 0;
-			continue;
+			
+			if(text[i] == '\t') // tab
+			{
+				int tab = (int)(xc / tabSize) + 1;
+				xc = tab*tabSize;
+				continue;
+			}
+			
+			// get character
+			unsigned int charCode = (unsigned int)((unsigned char)text[i]);
+			MCharacter * character = font->getCharacter(charCode);
+			if(! character)
+				continue;
+			
+			MVector2 scale = character->getScale();
+			MVector2 offset = character->getOffset() * m_size;
+			
+			float width = scale.x * widthFactor * m_size;
+			
+			float charMin = xc + offset.x;
+			float charMax = charMin + width;
+			
+			if(charMin < min)
+				min = charMin;
+			
+			if(charMax > max)
+				max = charMax;
+			
+			//move to next character
+			xc += character->getXAdvance() * m_size;
 		}
-
-		if(text[i] == '\t') // tab
-		{
-			int tab = (int)(xc / tabSize) + 1;
-			xc = tab*tabSize;
-			continue;
-		}
-
-		// get character
-		unsigned int charCode = (unsigned int)((unsigned char)text[i]);
-		MCharacter * character = font->getCharacter(charCode);
-		if(! character)
-			continue;
-
-		MVector2 scale = character->getScale();
-		MVector2 offset = character->getOffset() * m_size;
-
-		float width = scale.x * widthFactor * m_size;
-
-		float charMin = xc + offset.x;
-		float charMax = charMin + width;
-
-		if(charMin < min)
-			min = charMin;
-
-		if(charMax > max)
-			max = charMax;
-
-		//move to next character
-		xc += character->getXAdvance() * m_size;
 	}
 
 	// last char (always should be executed!)
@@ -199,7 +202,12 @@ void MOText::prepare(void)
 {
 	MFont * font = getFont();
 	const char * text = m_text.getData();
-
+	if(! text)
+	{
+		m_boundingBox = MBox3d();
+		return;
+	}
+	
 	if(! (strlen(text) > 0 && font)){
 		m_boundingBox = MBox3d();
 		return;
@@ -270,7 +278,9 @@ void MOText::draw(void)
 {
 	MFont * font = getFont();
 	const char * text = m_text.getData();
-
+	if(! text)
+		return;
+	
 	if(! (strlen(text) > 0 && font))
 		return;
 

@@ -354,6 +354,10 @@ void MMesh::clear(void)
 	clearMaterials();
 	clearSubMeshs();
 	clearAnimsRanges();
+	
+	m_armatureAnimRef = NULL;
+	m_texturesAnimRef = NULL;
+	m_materialsAnimRef = NULL;
 }
 
 void MMesh::clearAnimsRanges(void)

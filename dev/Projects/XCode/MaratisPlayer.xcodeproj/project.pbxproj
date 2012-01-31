@@ -222,6 +222,7 @@
 		E9C37E0914CC4AF100D4F0D6 /* npk.c in Sources */ = {isa = PBXBuildFile; fileRef = E9C37E0214CC4AF100D4F0D6 /* npk.c */; };
 		E9C37E0A14CC4AF100D4F0D6 /* npk_common.c in Sources */ = {isa = PBXBuildFile; fileRef = E9C37E0314CC4AF100D4F0D6 /* npk_common.c */; };
 		E9C37E0B14CC4AF100D4F0D6 /* npk_dev.c in Sources */ = {isa = PBXBuildFile; fileRef = E9C37E0414CC4AF100D4F0D6 /* npk_dev.c */; };
+		E9DAAA2014D800BA00EE60EA /* MBinMeshLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9DAAA1E14D800BA00EE60EA /* MBinMeshLoader.cpp */; };
 		E9EA9709127D8CB800CEA357 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9EA9708127D8CB800CEA357 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
@@ -733,6 +734,8 @@
 		E9C37E0214CC4AF100D4F0D6 /* npk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk.c; path = ../../../../3rdparty/npk/src/npk.c; sourceTree = SOURCE_ROOT; };
 		E9C37E0314CC4AF100D4F0D6 /* npk_common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk_common.c; path = ../../../../3rdparty/npk/src/npk_common.c; sourceTree = SOURCE_ROOT; };
 		E9C37E0414CC4AF100D4F0D6 /* npk_dev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = npk_dev.c; path = ../../../../3rdparty/npk/src/npk_dev.c; sourceTree = SOURCE_ROOT; };
+		E9DAAA1E14D800BA00EE60EA /* MBinMeshLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBinMeshLoader.cpp; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.cpp; sourceTree = SOURCE_ROOT; };
+		E9DAAA1F14D800BA00EE60EA /* MBinMeshLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinMeshLoader.h; path = ../../Maratis/Common/MLoaders/MBinMeshLoader.h; sourceTree = SOURCE_ROOT; };
 		E9EA9708127D8CB800CEA357 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -965,6 +968,8 @@
 		E918E6C01305B2410080ED5C /* MLoaders */ = {
 			isa = PBXGroup;
 			children = (
+				E9DAAA1E14D800BA00EE60EA /* MBinMeshLoader.cpp */,
+				E9DAAA1F14D800BA00EE60EA /* MBinMeshLoader.h */,
 				E918E6C11305B2410080ED5C /* MBinFontLoader.cpp */,
 				E918E6C21305B2410080ED5C /* MDevILLoader.cpp */,
 				E918E6C31305B2410080ED5C /* MFreetypeLoader.cpp */,
@@ -1946,6 +1951,7 @@
 				E9C37E0914CC4AF100D4F0D6 /* npk.c in Sources */,
 				E9C37E0A14CC4AF100D4F0D6 /* npk_common.c in Sources */,
 				E9C37E0B14CC4AF100D4F0D6 /* npk_dev.c in Sources */,
+				E9DAAA2014D800BA00EE60EA /* MBinMeshLoader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

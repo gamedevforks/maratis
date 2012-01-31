@@ -130,83 +130,6 @@ public:
 };
 
 
-#ifdef M_PACKAGE_WRITABLE
-//--------------------------------------
-// I don't know how to do this in a nicer way right now
-// so for now, we just allocate a 10MB buffer for any
-// file we're writing to. Will be cleaned up after
-// every file is written
-#define WRITABLE_BUFFER_SIZE 10485760
-//--------------------------------------
-
-/*--------------------------------------------------------------------------------
- * MWritablePackageFile
- * Packaged file - Read/write
- * Should only be available in Maratis Editor
- *-------------------------------------------------------------------------------*/
-class MWritablePackageFile  : public MPackageFile
-{
-private:
-	char m_name[64];
-public:
-
-	MWritablePackageFile(const char* path) : MPackageFile(0)
-	{
-		sprintf(m_name, path);
-		m_size = 0;
-		m_buffer = new char[WRITABLE_BUFFER_SIZE];
-		m_pos = m_buffer;
-	}
-	
-	void destroy(void){ delete this; }
-
-	int close()
-	{
-		MEngine* engine = MEngine::getInstance();
-
-		MPackageManager* package = engine->getPackageManager();
-
-		if(m_size>0)
-			package->writeToPackage(m_name, m_buffer, m_size);
-
-		return MPackageFile::close();
-
-	}
-
-	static MWritablePackageFile * getNew(const char* path)
-	{
-		return new MWritablePackageFile(path);
-	}
-
-	size_t write(const void* str, size_t size, size_t count)
-	{
-		size_t sizeLeft = (WRITABLE_BUFFER_SIZE - m_size);
-		size_t requested = (size * count);
-		size_t amountToWrite = requested > sizeLeft ? sizeLeft : requested;
-
-		memcpy(m_pos, str, amountToWrite);
-
-		m_size += amountToWrite;
-		m_pos += amountToWrite;
-
-		return amountToWrite;
-	}
-
-	int print(const char* format, ...)
-	{
-		return 0; // for now, I don't think we need this
-	}
-
-	int print(const char* format, va_list args)
-	{
-		return 0; // for now, I don't think we need this
-	}
-
-	bool isOpen() { return true; }
-};
-
-#endif /*M_PACKAGE_WRITABLE*/
-
 /*--------------------------------------------------------------------------------
  * MPackageFileOpenHook::open
  * File open callback
@@ -219,16 +142,10 @@ MFile* MPackageFileOpenHook::open(const char* path, const char* mode)
 	char localFilename[256];
 	getLocalFilename(localFilename, system->getWorkingDirectory(), path);
 	
-	MPackageManager* packageManager = engine->getPackageManager();
-
-#ifdef M_PACKAGE_WRITABLE
-	// if we are able to write, and have requested a writable file
-	// return a new file which will write directly to the open
-	// package
-	if(packageManager->isWritable() && strstr(mode, "w") != 0)
-		return MWritablePackageFile::getNew(path);
-#endif M_PACKAGE_WRITABLE
-
+	
+	if(strstr(mode, "w") != 0)
+		return MStdFile::getNew(path, mode);
+	
 	// look within the package for a file with the requested name
 	if(MPackageEnt ent = engine->getPackageManager()->findEntity(localFilename))
 		return MPackageFile::getNew(ent);
@@ -287,11 +204,6 @@ void MPackageManagerNPK::cleanup()
 		SAFE_DELETE(m_fileOpenHook);
 	}
 	
-	// unsafe
-	//if(M_getFileOpenHook())
-	//	delete M_getFileOpenHook();
-	//M_registerFileOpenHook(0);
-	
 	if(m_packages)
 	{
 		for(int i = 0; i < M_MAX_PACKAGES; ++i)
@@ -307,7 +219,6 @@ void MPackageManagerNPK::cleanup()
 		}
 		
 		SAFE_DELETE_ARRAY(m_packages);
-		//delete [] m_packages;
 	}
 }
 
@@ -404,23 +315,18 @@ void MPackageManagerNPK::closePackage(MPackage package)
 		MPackageNPK* pack = (MPackageNPK*)package;
 		npk_package_save(pack->package, pack->filename.getData(), true);
 		npk_package_close(pack->package);
-		delete package;
+		delete pack;
 	}
 #endif
 }
 
-MPackageEnt MPackageManagerNPK::addFileToPackage(const char* filename, MPackage package)
+MPackageEnt MPackageManagerNPK::addFileToPackage(const char* filename, MPackage package, const char* entityName)
 {
 #ifdef M_PACKAGE_WRITABLE
 	NPK_ENTITY entity = 0;
-	if(filename && package)
+	if(filename && package && entityName)
 	{
-		MEngine* engine = MEngine::getInstance();
-		MSystemContext * system = engine->getSystemContext();
-
-		char localFilename[256];
-		getLocalFilename(localFilename, system->getWorkingDirectory(), filename);
-		npk_package_add_file(((MPackageNPK*)package)->package, filename, localFilename, &entity);
+		npk_package_add_file(((MPackageNPK*)package)->package, filename, entityName, &entity);
 	}
 
 	return entity;
@@ -444,59 +350,4 @@ MPackage MPackageManagerNPK::mountPackage(MPackage package)
 	// loaded the package, now save it for later access
 	m_packages[pkgNum] = pack;
 	return pack;
-}
-
-void MPackageManagerNPK::setPackageWritable(MPackage package)
-{
-#ifdef M_PACKAGE_WRITABLE
-	m_writable = package;
-#endif
-}
-void MPackageManagerNPK::writeToPackage(const char* filename, void* buffer, size_t size)
-{
-#ifdef M_PACKAGE_WRITABLE
-	if(!isWritable())
-		return;
-
-	MEngine* engine = MEngine::getInstance();
-	MSystemContext* system = engine->getSystemContext();
-
-	// Gah, this is not very nicely done at all
-	// I'm not sure what else I can do.
-	// basically, writing to npk files is deferred until
-	// it is saved, as I'm not sure we want to save after every file
-	// (we might, need to think about it) instead, save the files first
-	// to a sub directory, then write them to the package file
-	char localFilename[256];
-	getLocalFilename(localFilename, system->getWorkingDirectory(), filename);
-	
-	char tmpDir[256];
-	getGlobalFilename(tmpDir, system->getWorkingDirectory(), "npk");
-
-	char tmpFilename[256];
-	getGlobalFilename(tmpFilename, tmpDir, localFilename);
-
-	char dir[256];
-	getRepertory(dir, tmpFilename);
-
-	if(!isDirectory(dir))
-		createDirectory(dir, true);
-
-	if(FILE* fp = fopen(tmpFilename, "w+"))
-	{
-		fwrite(buffer, 1, size, fp);
-		fclose(fp);
-	
-		NPK_ENTITY entity = 0;
-		if(filename && m_writable)
-		{
-			npk_package_add_file(((MPackageNPK*)m_writable)->package, tmpFilename, localFilename, &entity);
-		}
-	}
-#endif
-}
-
-bool MPackageManagerNPK::isWritable()
-{
-	return m_writable != 0;
 }

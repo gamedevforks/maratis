@@ -39,7 +39,7 @@
 	#include <direct.h>
 	#define mkdir _mkdir
 	#define rmdir _rmdir
-#else //#elif __APPLE__
+#else
 	#define mkdir(file) mkdir(file, 0777)
 #endif
 
@@ -94,7 +94,7 @@ bool createDirectory(const char * filename, bool recursive)
     char* sp;
     bool status = false;
     char copypath[256];
-	sprintf(copypath, filename);
+	strcpy(copypath, filename);
 
     pp = copypath;
     while (!status && (sp = strchr(pp, '/')) != 0)

@@ -31,7 +31,6 @@
 #ifndef _M_FILE_H
 #define _M_FILE_H
 
-#include "MCore.h"
 
 // File
 class M_CORE_EXPORT MFile
