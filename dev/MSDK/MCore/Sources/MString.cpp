@@ -40,12 +40,14 @@ m_data(NULL)
 MString::MString(const char * data):
 m_data(NULL)
 {
+	clear();
 	set(data);
 }
 
 MString::MString(const MString & string):
 m_data(NULL)
 {
+	clear();
 	set(string.m_data);
 }
 		
@@ -57,7 +59,7 @@ MString::~MString(void)
 void MString::clear(void)
 {
 	SAFE_DELETE_ARRAY(m_data);
-	m_data = new char[1];
+	m_data = new char[8];
 	m_data[0] = NULL;
 }
 
@@ -68,17 +70,15 @@ void MString::set(const char * data)
 		int len = strlen(data);
 		if(len > 0)
 		{
-			SAFE_DELETE_ARRAY(m_data);
-			m_data = new char[len+1];
+			if(len > 7)
+			{
+				SAFE_DELETE_ARRAY(m_data);
+				m_data = new char[len+1];
+			}
 			strcpy(m_data, data);
-		}
-		else
-		{
-			m_data[0] = NULL;
+			return;
 		}
 	}
-	else
-	{
-		m_data[0] = NULL;
-	}
+	
+	m_data[0] = NULL;
 }
