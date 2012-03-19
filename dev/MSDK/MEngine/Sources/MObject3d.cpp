@@ -90,6 +90,14 @@ void MObject3d::updateBehaviors(void)
 		m_behaviors[i]->update();
 }
 
+void MObject3d::drawBehaviors(void)
+{
+	unsigned int i;
+	unsigned int bSize = m_behaviors.size();
+	for(i=0; i<bSize; i++)
+		m_behaviors[i]->draw();
+}
+
 void MObject3d::deleteBehavior(unsigned int id)
 {
 	SAFE_DELETE(m_behaviors[id]);

@@ -114,6 +114,9 @@ void MGame::draw(void)
 		camera->updateListener();
 		scene->draw(camera);
 	}
+	
+	// draw behaviors
+	scene->drawObjectsBehaviors();
 }
 
 void MGame::onBeginScene(void)

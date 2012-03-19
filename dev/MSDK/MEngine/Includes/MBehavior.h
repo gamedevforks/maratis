@@ -60,7 +60,8 @@ public:
 
 	// events
 	virtual void update(void) = 0;
-	virtual void runEvent(int param) = 0;
+	virtual void draw(void){}
+	virtual void runEvent(int param){}
 
 	// variables
 	virtual unsigned int getVariablesNumber(void) = 0;

@@ -159,8 +159,11 @@ public:
 	// update
 	void update(void);
 
-	// update objects
+	// behaviors
 	void updateObjectsBehaviors(void);
+	void drawObjectsBehaviors(void);
+	
+	// update objects
 	void updateObjectsMatrices(void);
 
 	// draw

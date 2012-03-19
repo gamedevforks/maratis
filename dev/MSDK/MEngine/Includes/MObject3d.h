@@ -129,6 +129,7 @@ public:
 
 	// behaviors
 	void updateBehaviors(void);
+	void drawBehaviors(void);
 	void deleteBehavior(unsigned int id);
 	void invertBehavior(unsigned int idA, unsigned int idB);
 	void changeBehavior(unsigned int id, MBehavior * behavior);

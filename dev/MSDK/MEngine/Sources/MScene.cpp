@@ -741,6 +741,20 @@ void MScene::updateObjectsBehaviors(void)
 	}
 }
 
+void MScene::drawObjectsBehaviors(void)
+{
+	unsigned int i;
+	unsigned int oSize = getObjectsNumber();
+	for(i=0; i<oSize; i++)
+	{
+		MObject3d * object = getObjectByIndex(i);
+		if(! object->isActive())
+			continue;
+		
+		object->drawBehaviors();
+	}
+}
+
 void MScene::updateObjectsMatrices(void)
 {
 	unsigned int i;
