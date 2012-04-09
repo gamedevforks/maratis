@@ -31,6 +31,8 @@
 #include <MEngine.h>
 #include "MLevelSave.h"
 
+static char rep[256];
+
 
 void openNode(FILE * file, const char * name, unsigned int tab)
 {
@@ -535,6 +537,18 @@ void writeBehavior(FILE * file, MBehavior * behavior)
 		case M_VARIABLE_VEC4:
 			writeFloatValues(file, name, *((MVector4*)variable.getPointer()), 4);
 			break;
+		case M_VARIABLE_TEXTURE_REF:
+			{
+				MTextureRef * textureRef = *(MTextureRef **)variable.getPointer();
+				if(textureRef)
+				{
+					char filename[256];
+					getLocalFilename(filename, rep, textureRef->getFilename());
+					writeString(file, name, filename);
+				}
+				
+				break;
+			}
 		}
 
 		if((i+1) < size)
@@ -565,7 +579,6 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 	if(! file)
 		return false;
 
-	char rep[256];
 	char localFile[256];
 
 	// get rep

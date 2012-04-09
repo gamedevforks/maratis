@@ -232,6 +232,7 @@ private:
 	void (* m_fileBrowserFuncPointer)(const char * filename);
 	
 	static void okLoadFont(const char * filename);
+	static void okLoadTexture(const char * filename);
 	static void okLoadScript(const char * filename);
 	
 private:
@@ -349,7 +350,10 @@ public:
 	static void viewEvents(MGuiWindow * window, MGuiEvent * guiEvents);
 
 	static void popupWinEvents(MGuiWindow * window, MGuiEvent * guiEvents);
-
+	
+	static void loadTextureEvents(MGuiButton * button, MGuiEvent * guiEvents);
+	
+	
 	// view props
 	static void viewMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents);
 
@@ -420,7 +424,7 @@ public:
 	static void downBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void deleteBehaviorEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void behaviorMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents);
-
+	
 	// scene
 	static void newSceneEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void sceneNameEvents(MGuiEditText * edit, MGuiEvent * guiEvents);

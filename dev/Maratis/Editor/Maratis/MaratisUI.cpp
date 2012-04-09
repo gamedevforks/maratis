@@ -1074,6 +1074,9 @@ void MaratisUI::editObject(MObject3d * object)
 						
 						switch(varType)
 						{
+							default:
+								break;
+								
 							case M_VARIABLE_BOOL:
 								addValue(m_editWin, "", M_VAR_BOOL, variable.getPointer(), &position);
 								position += MVector2(0, ySpace);
@@ -1113,8 +1116,6 @@ void MaratisUI::editObject(MObject3d * object)
 								position += MVector2(0, ySpace);
 								break;
 								
-							default:
-								break;
 							case M_VARIABLE_VEC4:
 								addValue(m_editWin, "x", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->x, &position);
 								addValue(m_editWin, "y", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->y, &position);
@@ -1122,6 +1123,36 @@ void MaratisUI::editObject(MObject3d * object)
 								addValue(m_editWin, "w", M_VAR_FLOAT, &((MVector4*)variable.getPointer())->w, &position);
 								position += MVector2(0, ySpace);
 								break;
+								
+							case M_VARIABLE_TEXTURE_REF:
+							{
+								MTextureRef** textureRef = (MTextureRef**)variable.getPointer();
+								
+								button = new MGuiButton(position + MVector2(17, 4), MVector2(16, 16), MVector4(1), loadTextureEvents);
+								button->setNormalTexture("gui/buttonOpen.tga");
+								button->setHighLightColor(highLightColor);
+								button->enableVariable(variable.getPointer(), M_VAR_NONE);
+								m_editWin->addButton(button);
+								
+								if(*textureRef)
+								{
+									char path[256] = "";
+									char name[64] = "";
+									
+									const char * filename = (*textureRef)->getFilename();
+									getRepertory(path, filename);
+									getLocalFilename(name, path, filename);
+									
+									// texture file
+									MVector2 pos = position + MVector2(40, 5);
+									text = new MGuiText(name, pos, 16, MVector4(1, 1, 0, 1));
+									m_editWin->addText(text);
+								}
+								
+								position += MVector2(0, 24);
+								position += MVector2(0, ySpace);
+								break;
+							}
 						}
 					}
 					
@@ -4737,6 +4768,43 @@ void MaratisUI::rendererMenuEvents(MGuiMenu * menu, MGuiEvent * guiEvents)
             
         default:
             break;
+	}
+}
+
+// load texture events
+static MTextureRef** loadTextureRefPtr;
+
+void MaratisUI::okLoadTexture(const char * filename)
+{
+	if(! filename)
+		return;
+	
+	MaratisUI * UI = MaratisUI::getInstance();
+	MLevel * level = MEngine::getInstance()->getLevel();
+	(*loadTextureRefPtr) = level->loadTexture(filename);
+	UI->m_needToUpdateEdit = true;
+}
+
+void MaratisUI::loadTextureEvents(MGuiButton * button, MGuiEvent * guiEvent)
+{
+	MWindow * window = MWindow::getInstance();
+	MaratisUI * UI = MaratisUI::getInstance();
+	
+	switch(guiEvent->type)
+	{
+		case MGUI_EVENT_MOUSE_BUTTON_UP:
+		{
+			MTextureRef** textureRef = (MTextureRef**)button->getVariablePointer();
+			if(textureRef)
+			{
+				loadTextureRefPtr = textureRef;
+				
+				char startPath[256];
+                getGlobalFilename(startPath, window->getWorkingDirectory(), "maps");
+				UI->openFileBrowser(startPath, "", "load texture", okLoadTexture);
+			}
+			break;
+		}
 	}
 }
 

@@ -33,6 +33,8 @@
 
 #include "MLevelLoad.h"
 
+static char rep[256];
+static MLevel * level;
 
 struct LinkTo
 {
@@ -424,6 +426,20 @@ void readBehaviorProperties(TiXmlElement * node, MBehavior * behavior)
 		case M_VARIABLE_VEC4:
 			readFloatValues(node, name, *((MVector4*)variable.getPointer()), 4);
 			break;
+		case M_VARIABLE_TEXTURE_REF:
+			{
+				MTextureRef** textureRef = (MTextureRef**)variable.getPointer();
+				
+				const char * str = node->Attribute(name);
+				if(str)
+				{
+					char filename[256];
+					getGlobalFilename(filename, rep, str);
+					*textureRef = level->loadTexture(filename);
+				}
+				
+				break;
+			}
 		}
 	}
 }
@@ -472,7 +488,6 @@ bool xmlLevelLoad(const char * filename, void * data){
 
 bool M_loadLevel(const char * filename, void * data, const bool clearData)
 {
-	char rep[256];
 	char scriptFilename[256];
 	char soundFilename[256];
 	char meshFilename[256];
@@ -483,9 +498,25 @@ bool M_loadLevel(const char * filename, void * data, const bool clearData)
 
 	// read document
 	TiXmlDocument doc(filename);
-	if(! doc.LoadFile())
-		return false;
+	//if(! doc.LoadFile())
+	//	return false;
 	
+	// load xml file
+	{
+		char * buf = readTextFile(filename);
+		if(! buf)
+			return false;
+			
+		if(! doc.LoadBuffer(buf, strlen(buf)))
+		{
+			SAFE_FREE(buf);
+			return false;
+		}
+		
+		SAFE_FREE(buf);
+	}
+	
+	// xml handle
 	TiXmlHandle hDoc(&doc);
 	TiXmlElement * rootNode;
 	TiXmlHandle hRoot(0);
@@ -515,7 +546,7 @@ bool M_loadLevel(const char * filename, void * data, const bool clearData)
 	MLevel * oldLevel = engine->getLevel();
 
 	// create new level
-	MLevel * level = (MLevel *)data;
+	level = (MLevel *)data;
 	if(clearData)
 		level->clear();
 	else
