@@ -47,6 +47,7 @@
 static MFileOpenHook* s_fileOpenHook = 0;
 
 
+
 bool copyFile(const char * inFilename, const char * outFilename)
 {
 	FILE * in = fopen(inFilename, "rb");
@@ -281,6 +282,8 @@ bool readDirectory(const char * filename, vector<string> * files, bool hiddenFil
 		}
     }
 
+	sort(files->begin(), files->end());
+	
     closedir(pdir);
     return true;
 }
