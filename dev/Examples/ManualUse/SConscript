@@ -30,7 +30,8 @@ env_local.AppendUnique(LIBS = ['MaratisCommon',
 
 if sys.platform=='linux2' or sys.platform=='linux3':
     env_local.AppendUnique(LIBS = ['GL',
-                                   'Xxf86vm'] )
+                                   'Xxf86vm', 'X11',
+                                   'dl'] )
 
 # add 3rdparty libraries parameters
 thirdparty.lua.addLuaToEnv(env_local)

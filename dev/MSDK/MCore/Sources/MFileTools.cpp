@@ -41,6 +41,7 @@
 	#define rmdir _rmdir
 #else
 	#define mkdir(file) mkdir(file, 0777)
+        #include <unistd.h>
 #endif
 
 static MFileOpenHook* s_fileOpenHook = 0;

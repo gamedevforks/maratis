@@ -40,6 +40,9 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 
+#ifndef WIN32
+        #include <unistd.h>
+#endif
 
 
 // start time
