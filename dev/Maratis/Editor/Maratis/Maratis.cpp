@@ -3620,6 +3620,7 @@ void Maratis::drawCamera(MScene * scene, MOCamera * camera)
 	// draw scene
 	camera->enable();
 	scene->draw(camera);
+	scene->drawObjectsBehaviors();
 }
 
 void Maratis::drawTriangles(MMesh * mesh)
@@ -3776,6 +3777,7 @@ void Maratis::drawMainView(MScene * scene)
     
 	render->enableDepthTest();
 	scene->draw(camera);
+	scene->drawObjectsBehaviors();
     
 	// draw extra (box, triggers...)
 	render->disableLighting();

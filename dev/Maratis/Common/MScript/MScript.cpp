@@ -907,6 +907,58 @@ int isCollisionBetween(lua_State * L)
 	return 0;
 }
 
+int rayHit(lua_State * L)
+{
+	if(! isFunctionOk(L, "rayHit", 2))
+		return 0;
+	
+	int nbArguments = lua_gettop(L);
+	
+	MVector3 start, end;
+	if(getVector3(L, 1, &start) && getVector3(L, 2, &end))
+	{
+		MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+		
+		unsigned int collisionObjId;
+		MVector3 point;
+		
+		// ray test
+		if(physics->isRayHit(start, end, &collisionObjId, &point))
+		{
+			if(nbArguments == 3)
+			{
+				bool hit = false;
+				
+				MObject3d * object;
+				unsigned int id = (unsigned int)lua_tointeger(L, 3);
+				if((object = getObject3d(id)))
+				{
+					if(object->getType() == M_OBJECT3D_ENTITY)
+					{
+						MOEntity * entity = (MOEntity*)object;
+						MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+						if(phyProps)
+						{
+							if(phyProps->getCollisionObjectId() == collisionObjId)
+							{
+								pushFloatArray(L, point, 3);
+								return 1;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				pushFloatArray(L, point, 3);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
 int isKeyPressed(lua_State * L)
 {
 	MInputContext * input = MEngine::getInstance()->getInputContext();
@@ -2004,6 +2056,7 @@ void MScript::init(void)
 	lua_register(m_state, "isCollisionBetween", isCollisionBetween);
 	lua_register(m_state, "clearForces",		clearForces);
 	lua_register(m_state, "getNumCollisions",	getNumCollisions);
+	lua_register(m_state, "rayHit",				rayHit);
 
 	// input
 	lua_register(m_state, "isKeyPressed", isKeyPressed);

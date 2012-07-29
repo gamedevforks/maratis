@@ -153,6 +153,9 @@ void MBulletContext::createRigidBody(unsigned int * objectId, unsigned int shape
 	rigidBody->setSleepingThresholds(0.2f, 0.2f); // default : 0.8f, 1.0f
 
 	m_dynamicsWorld->addRigidBody(rigidBody);
+	
+	// add collision object
+	rigidBody->setUserPointer((void *)*objectId);
 	m_collisionObjects.push_back(rigidBody);
 }
 
@@ -445,6 +448,39 @@ bool MBulletContext::isObjectsCollision(unsigned int object1Id, unsigned int obj
 		}
 	}
 
+	return false;
+}
+
+bool MBulletContext::isRayHit(const MVector3 & start, const MVector3 & end, unsigned int * objectId, MVector3 * point, MVector3 * normal)
+{
+	btVector3 bstart(start.x, start.y, start.z);
+	btVector3 bend(end.x, end.y, end.z);
+	
+	btCollisionWorld::ClosestRayResultCallback rayCallback(bstart, bend);
+	m_dynamicsWorld->rayTest(bstart, bend, rayCallback);
+	
+	if(rayCallback.hasHit())
+	{
+		if(objectId)
+			*objectId = (unsigned int)(unsigned long)rayCallback.m_collisionObject->getUserPointer();
+		
+		if(point)
+		{
+			point->x = rayCallback.m_hitPointWorld.getX();
+			point->y = rayCallback.m_hitPointWorld.getY();
+			point->z = rayCallback.m_hitPointWorld.getZ();
+		}
+		
+		if(normal)
+		{
+			normal->x = rayCallback.m_hitNormalWorld.getX();
+			normal->y = rayCallback.m_hitNormalWorld.getY();
+			normal->z = rayCallback.m_hitNormalWorld.getZ();
+		}
+		
+		return true;
+    }
+	
 	return false;
 }
 

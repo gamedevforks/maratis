@@ -103,7 +103,8 @@ public:
 	// objects collision
 	int isObjectInCollision(unsigned int objectId);
 	bool isObjectsCollision(unsigned int objectId, unsigned int object2Id);
-
+	bool isRayHit(const MVector3 & start, const MVector3 & end, unsigned int * objectId = NULL, MVector3 * point = NULL, MVector3 * normal = NULL);
+	
 	// create shape
 	void createMultiShape(unsigned int * shapeId);
 
