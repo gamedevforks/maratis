@@ -34,6 +34,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdarg.h>
+#include <algorithm>
 
 #ifdef WIN32
 	#include <direct.h>
