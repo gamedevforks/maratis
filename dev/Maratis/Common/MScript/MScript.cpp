@@ -1211,6 +1211,13 @@ int loadLevel(lua_State * L)
 	return 0;
 }
 
+int quit(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	engine->setActive(false);
+	return 0;
+}
+
 int doesLevelExist(lua_State * L)
 {
 	MEngine * engine = MEngine::getInstance();
@@ -2121,6 +2128,10 @@ void MScript::init(void)
 	// dofile
 	lua_register(m_state, "dofile", doFile);
 
+	// quit
+	lua_register(m_state, "quit", quit);
+	
+	
 	// register functions
 	map<string, int (*)(void)>::iterator
 		mit (m_functions.begin()),
