@@ -76,6 +76,10 @@ public:
 	void createGhost(unsigned int * objectId, unsigned int shapeId, const MVector3 & position, const MQuaternion & rotation);
 	void createRigidBody(unsigned int * objectId, unsigned int shapeId, const MVector3 & position, const MQuaternion & rotation, float mass);
 
+	// activate / deactivate
+	void activateObject(unsigned int objectId);
+	void deactivateObject(unsigned int objectId);
+	
 	// delete object
 	void deleteObject(unsigned int * objectId);
 

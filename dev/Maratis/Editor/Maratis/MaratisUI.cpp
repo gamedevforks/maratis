@@ -3449,9 +3449,6 @@ void MaratisUI::gameButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
                 
                 // begin game
                 game->begin();
-                
-                // run script
-                scriptContext->runScript(engine->getLevel()->getCurrentScene()->getScriptFilename());
             }
             break;
         case MGUI_EVENT_DRAW:

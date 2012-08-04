@@ -55,12 +55,18 @@ void MBulletContext::init(const MVector3 & worldMin, const MVector3 & worldMax)
 {
 	clear();
 
+	// create NULL id 0
+	m_collisionShapes.push_back(NULL);
+	m_collisionObjects.push_back(NULL);
+	m_constraints.push_back(NULL);
+	
+	// init
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
 
 	//int	maxProxies = 1024;
-	btVector3 worldAabbMin(worldMin.x, worldMin.y, worldMin.z);
-	btVector3 worldAabbMax(worldMax.x, worldMax.y, worldMax.z);
+	//btVector3 worldAabbMin(worldMin.x, worldMin.y, worldMin.z);
+	//btVector3 worldAabbMax(worldMax.x, worldMax.y, worldMax.z);
 	//m_overlappingPairCache = new btAxisSweep3(worldAabbMin, worldAabbMax, maxProxies);
 	m_overlappingPairCache = new btDbvtBroadphase();
 	
@@ -102,11 +108,6 @@ void MBulletContext::clear(void)
 	SAFE_DELETE(m_overlappingPairCache);
 	SAFE_DELETE(m_dispatcher);
 	SAFE_DELETE(m_collisionConfiguration);
-
-	// create NULL id 0
-	m_collisionShapes.push_back(NULL);
-	m_collisionObjects.push_back(NULL);
-	m_constraints.push_back(NULL);
 }
 
 // update simulation
@@ -159,6 +160,32 @@ void MBulletContext::createRigidBody(unsigned int * objectId, unsigned int shape
 	m_collisionObjects.push_back(rigidBody);
 }
 
+// activate / deactivate
+void MBulletContext::activateObject(unsigned int objectId)
+{
+	btCollisionObject * object = m_collisionObjects[objectId];
+	if(object)
+	{
+		if(object->getInternalType() == btCollisionObject::CO_RIGID_BODY)
+		{
+			btRigidBody * rigidBody = btRigidBody::upcast(object);
+			m_dynamicsWorld->addRigidBody(rigidBody);
+		}
+			
+		object->activate();
+		clearForces(objectId);
+	}
+}
+
+void MBulletContext::deactivateObject(unsigned int objectId)
+{
+	btCollisionObject * object = m_collisionObjects[objectId];
+	if(object)
+	{
+		m_dynamicsWorld->removeCollisionObject(object);
+	}
+}
+
 // delete object
 void MBulletContext::deleteObject(unsigned int * objectId)
 {
@@ -187,9 +214,7 @@ void MBulletContext::enableObjectKinematic(unsigned int objectId)
 	object->setCollisionFlags(object->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 }
 
-void MBulletContext::disableObjectKinematic(unsigned int objectId){
-
-}
+void MBulletContext::disableObjectKinematic(unsigned int objectId){}
 
 void MBulletContext::setObjectShape(unsigned int objectId, unsigned int shapeId)
 {

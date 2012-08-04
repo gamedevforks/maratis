@@ -55,6 +55,10 @@ public:
 	virtual void createGhost(unsigned int * objectId, unsigned int shapeId, const MVector3 & position, const MQuaternion & rotation) = 0;
 	virtual void createRigidBody(unsigned int * objectId, unsigned int shapeId, const MVector3 & position, const MQuaternion & rotation, float mass) = 0;
 
+	// activate / deactivate
+	virtual void activateObject(unsigned int objectId) = 0;
+	virtual void deactivateObject(unsigned int objectId) = 0;
+	
 	// delete object
 	virtual void deleteObject(unsigned int * objectId) = 0;
 
