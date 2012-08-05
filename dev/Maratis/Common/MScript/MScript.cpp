@@ -1799,6 +1799,49 @@ int isCameraFogEnabled(lua_State * L)
 	return 0;
 }
 
+int enableCameraLayer(lua_State * L)
+{
+	if(! isFunctionOk(L, "enableCameraLayer", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_CAMERA)
+		{
+			unsigned int sceneId = (unsigned int)lua_tointeger(L, 2);
+			MOCamera * camera = (MOCamera*)object;
+			camera->setSceneLayer(sceneId+1);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int disableCameraLayer(lua_State * L)
+{
+	if(! isFunctionOk(L, "disableCameraLayer", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_CAMERA)
+		{
+			MOCamera * camera = (MOCamera*)object;
+			camera->setSceneLayer(0);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
 int getBehaviorVariable(lua_State * L)
 {
 	if(! isFunctionOk(L, "getBehaviorVariable", 3))
@@ -2210,6 +2253,8 @@ void MScript::init(void)
 	lua_register(m_state, "setCameraFogDistance", setCameraFogDistance);
 	lua_register(m_state, "enableCameraOrtho",    enableCameraOrtho);
 	lua_register(m_state, "enableCameraFog",	  enableCameraFog);
+	lua_register(m_state, "enableCameraLayer",    enableCameraLayer);
+	lua_register(m_state, "disableCameraLayer",	  disableCameraLayer);
 
 	// text
 	lua_register(m_state, "getText", getText);
