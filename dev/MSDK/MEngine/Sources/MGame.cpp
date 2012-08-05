@@ -31,6 +31,21 @@
 #include "../Includes/MEngine.h"
 
 
+static MOCamera * getCurrentCamera(MScene * scene)
+{
+	if(scene->getCamerasNumber() > 0)
+	{
+		unsigned int currentCamera = scene->getCurrentCamera();
+		if(currentCamera < scene->getCamerasNumber())
+			return scene->getCameraByIndex(currentCamera);
+		else
+			return scene->getCameraByIndex(0);
+	}
+	
+	return NULL;
+}
+
+
 void MGame::update(void)
 {
 	MEngine * engine = MEngine::getInstance();
@@ -62,6 +77,21 @@ void MGame::update(void)
 	// update objects matrices
 	scene->updateObjectsMatrices();
 
+	// update scene layer
+	MOCamera * camera = getCurrentCamera(scene);
+	if(camera)
+	{
+		unsigned int sceneLayerId = camera->getSceneLayer();
+		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
+		{
+			MScene * sceneLayer = level->getSceneByIndex(sceneLayerId-1);
+			
+			sceneLayer->updateObjectsBehaviors();
+			sceneLayer->update();
+			sceneLayer->updateObjectsMatrices();
+		}
+	}
+	
 	// flush input
 	engine->getInputContext()->flush();
 
@@ -97,15 +127,11 @@ void MGame::draw(void)
 		camera.enable();
 		camera.updateListener();
 		scene->draw(&camera);
+		scene->drawObjectsBehaviors();
 	}
 	else
 	{
-		MOCamera * camera = NULL;
-		unsigned int currentCamera = scene->getCurrentCamera();
-		if(currentCamera < scene->getCamerasNumber())
-			camera = scene->getCameraByIndex(currentCamera);
-		else
-			camera = scene->getCameraByIndex(0);
+		MOCamera * camera = getCurrentCamera(scene);
 		
 		render->setClearColor(*camera->getClearColor());
 		render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
@@ -113,10 +139,26 @@ void MGame::draw(void)
 		camera->enable();
 		camera->updateListener();
 		scene->draw(camera);
+		scene->drawObjectsBehaviors();
+		
+		// scene layer
+		unsigned int sceneLayerId = camera->getSceneLayer();
+		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
+		{
+			MScene * sceneLayer = level->getSceneByIndex(sceneLayerId-1);
+			MOCamera * layerCamera = getCurrentCamera(sceneLayer);
+			if(layerCamera)
+			{
+				layerCamera->enable();
+				camera = layerCamera;
+			}
+			
+			// draw on top
+			render->clear(M_BUFFER_DEPTH);
+			sceneLayer->draw(camera);
+			sceneLayer->drawObjectsBehaviors();
+		}
 	}
-	
-	// draw behaviors
-	scene->drawObjectsBehaviors();
 }
 
 void MGame::onBeginScene(void)

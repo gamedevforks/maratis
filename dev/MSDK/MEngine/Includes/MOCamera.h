@@ -54,6 +54,9 @@ private:
 
 	// frustum (camera volume for elimination)
 	MFrustum m_frustum;
+	
+	// scene layer (used for GUI etc)
+	unsigned int m_sceneLayer;
 
 public:
 
@@ -101,6 +104,10 @@ public:
 	// frustum
 	inline MFrustum * getFrustum(void){ return &m_frustum; }
 
+	// scene layer
+	inline void setSceneLayer(unsigned int sceneLayer){ m_sceneLayer = sceneLayer; }
+	inline unsigned int getSceneLayer(void){ return m_sceneLayer; }
+	
 	// listener
 	void updateListener(void);
 

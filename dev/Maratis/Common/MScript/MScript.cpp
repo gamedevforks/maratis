@@ -627,8 +627,12 @@ int getCurrentFrame(lua_State * L)
 int getGravity(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene = level->getCurrentScene();
-
+	MScene * scene;
+	if(g_parsingScene)
+		scene = g_parsingScene;
+	else
+		scene = level->getCurrentScene();
+	
 	pushFloatArray(L, *scene->getGravity(), 3);
 
 	return 1;
@@ -637,8 +641,12 @@ int getGravity(lua_State * L)
 int setGravity(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene = level->getCurrentScene();
-
+	MScene * scene;
+	if(g_parsingScene)
+		scene = g_parsingScene;
+	else
+		scene = level->getCurrentScene();
+	
 	if(! isFunctionOk(L, "setGravity", 1))
 		return 0;
 
@@ -652,7 +660,11 @@ int setGravity(lua_State * L)
 int changeCurrentCamera(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene = level->getCurrentScene();
+	MScene * scene;
+	if(g_parsingScene)
+		scene = g_parsingScene;
+	else
+		scene = level->getCurrentScene();
 	
 	if(! isFunctionOk(L, "changeCurrentCamera", 1))
 		return 0;
@@ -2287,6 +2299,10 @@ void MScript::runScript(const char * filename)
 		return;
 	}
 	
+	// current directory
+	getRepertory(g_currentDirectory, filename);
+	
+	// do string
 	if(luaL_dostring(m_state, text) != 0)
 	{
 		printf("ERROR lua script :\n %s\n", lua_tostring(m_state, -1));
@@ -2298,7 +2314,6 @@ void MScript::runScript(const char * filename)
 	// finish
 	SAFE_FREE(text);
 	m_isRunning = true;
-	getRepertory(g_currentDirectory, filename);
 }
 
 void MScript::callFunction(const char * name, int numArgs)
