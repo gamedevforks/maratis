@@ -58,6 +58,10 @@ private:
 	// scene layer (used for GUI etc)
 	unsigned int m_sceneLayer;
 
+	// render to texture
+	MTextureRef * m_renderColorTexture;
+	MTextureRef * m_renderDepthTexture;
+	
 public:
 
 	// constructor
@@ -107,6 +111,12 @@ public:
 	// scene layer
 	inline void setSceneLayer(unsigned int sceneLayer){ m_sceneLayer = sceneLayer; }
 	inline unsigned int getSceneLayer(void){ return m_sceneLayer; }
+	
+	// render to texture
+	inline void setRenderColorTexture(MTextureRef * renderColorTexture){ m_renderColorTexture = renderColorTexture; }
+	inline void setRenderDepthTexture(MTextureRef * renderDepthTexture){ m_renderDepthTexture = renderDepthTexture; }
+	inline MTextureRef * getRenderColorTexture(void){ return m_renderColorTexture; }
+	inline MTextureRef * getRenderDepthTexture(void){ return m_renderDepthTexture; }
 	
 	// listener
 	void updateListener(void);

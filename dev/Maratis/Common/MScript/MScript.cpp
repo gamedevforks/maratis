@@ -1842,6 +1842,101 @@ int disableCameraLayer(lua_State * L)
 	return 0;
 }
 
+int enableRenderToTexture(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	MRenderingContext * render = engine->getRenderingContext();
+	MLevel * level = engine->getLevel();
+	
+	if(! isFunctionOk(L, "enableRenderToTexture", 4))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_CAMERA)
+		{
+			const char * name = lua_tostring(L, 2);
+			if(name)
+			{
+				MOCamera * camera = (MOCamera *)object;
+				
+				unsigned int width = (unsigned int)lua_tointeger(L, 3);
+				unsigned int height = (unsigned int)lua_tointeger(L, 4);
+				
+				char globalFilename[256];
+				getGlobalFilename(globalFilename, system->getWorkingDirectory(), name);
+				
+				MTextureRef * colorTexture = level->loadTexture(globalFilename, 0, 0);
+				MTextureRef * depthTexture = level->loadTexture(object->getName(), 0, 0);
+				
+				colorTexture->clear();
+				depthTexture->clear();
+				
+				camera->setRenderColorTexture(colorTexture);
+				camera->setRenderDepthTexture(depthTexture);
+				
+				unsigned int m_colorTextureId, m_depthTextureId;
+				
+				render->createTexture(&m_colorTextureId);
+				render->bindTexture(m_colorTextureId);
+				render->setTextureFilterMode(M_TEX_FILTER_LINEAR, M_TEX_FILTER_LINEAR);
+				render->setTextureUWrapMode(M_WRAP_CLAMP);
+				render->setTextureVWrapMode(M_WRAP_CLAMP);
+				render->texImage(0, width, height, M_UBYTE, M_RGB, 0);
+				
+				render->createTexture(&m_depthTextureId);
+				render->bindTexture(m_depthTextureId);
+				render->setTextureFilterMode(M_TEX_FILTER_NEAREST, M_TEX_FILTER_NEAREST);
+				render->texImage(0, width, height, M_UBYTE, M_DEPTH, 0);
+				
+				colorTexture->setTextureId(m_colorTextureId);
+				colorTexture->setWidth(width);
+				colorTexture->setHeight(height);
+				depthTexture->setTextureId(m_depthTextureId);
+				depthTexture->setWidth(width);
+				depthTexture->setHeight(height);
+				
+			}
+			
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int disableRenderToTexture(lua_State * L)
+{
+	if(! isFunctionOk(L, "disableRenderToTexture", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_CAMERA)
+		{
+			MOCamera * camera = (MOCamera *)object;
+				
+			MTextureRef * depthTexture = camera->getRenderDepthTexture();
+			if(depthTexture)
+				depthTexture->clear();
+				
+			camera->setRenderColorTexture(NULL);
+			camera->setRenderDepthTexture(NULL);
+			
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
 int getBehaviorVariable(lua_State * L)
 {
 	if(! isFunctionOk(L, "getBehaviorVariable", 3))
@@ -2238,23 +2333,25 @@ void MScript::init(void)
 	lua_register(m_state, "setLightIntensity", setLightIntensity);
 
 	// camera
-	lua_register(m_state, "changeCurrentCamera",  changeCurrentCamera);
-	lua_register(m_state, "getCameraClearColor",  getCameraClearColor);
-	lua_register(m_state, "getCameraFov",		  getCameraFov);
-	lua_register(m_state, "getCameraNear",		  getCameraNear);
-	lua_register(m_state, "getCameraFar",		  getCameraFar);
-	lua_register(m_state, "getCameraFogDistance", getCameraFogDistance);
-	lua_register(m_state, "isCameraOrtho",		  isCameraOrtho);
-	lua_register(m_state, "isCameraFogEnabled",	  isCameraFogEnabled);
-	lua_register(m_state, "setCameraClearColor",  setCameraClearColor);
-	lua_register(m_state, "setCameraFov",		  setCameraFov);
-	lua_register(m_state, "setCameraNear",	      setCameraNear);
-	lua_register(m_state, "setCameraFar",	      setCameraFar);
-	lua_register(m_state, "setCameraFogDistance", setCameraFogDistance);
-	lua_register(m_state, "enableCameraOrtho",    enableCameraOrtho);
-	lua_register(m_state, "enableCameraFog",	  enableCameraFog);
-	lua_register(m_state, "enableCameraLayer",    enableCameraLayer);
-	lua_register(m_state, "disableCameraLayer",	  disableCameraLayer);
+	lua_register(m_state, "changeCurrentCamera",    changeCurrentCamera);
+	lua_register(m_state, "getCameraClearColor",    getCameraClearColor);
+	lua_register(m_state, "getCameraFov",		    getCameraFov);
+	lua_register(m_state, "getCameraNear",		    getCameraNear);
+	lua_register(m_state, "getCameraFar",		    getCameraFar);
+	lua_register(m_state, "getCameraFogDistance",   getCameraFogDistance);
+	lua_register(m_state, "isCameraOrtho",		    isCameraOrtho);
+	lua_register(m_state, "isCameraFogEnabled",	    isCameraFogEnabled);
+	lua_register(m_state, "setCameraClearColor",    setCameraClearColor);
+	lua_register(m_state, "setCameraFov",		    setCameraFov);
+	lua_register(m_state, "setCameraNear",	        setCameraNear);
+	lua_register(m_state, "setCameraFar",	        setCameraFar);
+	lua_register(m_state, "setCameraFogDistance",   setCameraFogDistance);
+	lua_register(m_state, "enableCameraOrtho",      enableCameraOrtho);
+	lua_register(m_state, "enableCameraFog",	    enableCameraFog);
+	lua_register(m_state, "enableCameraLayer",      enableCameraLayer);
+	lua_register(m_state, "disableCameraLayer",	    disableCameraLayer);
+	lua_register(m_state, "enableRenderToTexture",  enableRenderToTexture);
+	lua_register(m_state, "disableRenderToTexture", disableRenderToTexture);
 
 	// text
 	lua_register(m_state, "getText", getText);

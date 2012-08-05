@@ -31,7 +31,22 @@
 #include "../Includes/MEngine.h"
 
 
-static MOCamera * getCurrentCamera(MScene * scene)
+static unsigned int s_renderBufferId = 0;
+
+
+MGame::MGame(void):
+m_isRunning(false)
+{}
+
+MGame::~MGame(void)
+{
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
+	// delete frame buffer
+	render->deleteFrameBuffer(&s_renderBufferId);
+}
+
+MOCamera * MGame::getCurrentCamera(MScene * scene)
 {
 	if(scene->getCamerasNumber() > 0)
 	{
@@ -44,7 +59,6 @@ static MOCamera * getCurrentCamera(MScene * scene)
 	
 	return NULL;
 }
-
 
 void MGame::update(void)
 {
@@ -112,10 +126,66 @@ void MGame::draw(void)
 	MScene * scene = level->getCurrentScene();
 	if(! scene)
 		return;
+	
+	
+	// render to texture
+	{
+		int viewport[4];
+		bool recoverViewport = false;
+		
+		unsigned int c, cSize = scene->getCamerasNumber();
+		for(c=0; c<cSize; c++)
+		{
+			MOCamera * camera = scene->getCameraByIndex(c);
+			if(camera->isActive() && camera->getRenderColorTexture())
+			{
+				if(! recoverViewport)
+				{
+					render->getViewport(viewport);
+					recoverViewport = true;
+				}
+				
+				// render buffer
+				if(s_renderBufferId == 0)
+					render->createFrameBuffer(&s_renderBufferId);
+				
+				MTextureRef * colorTexture = camera->getRenderColorTexture();
+				MTextureRef * depthTexture = camera->getRenderDepthTexture();
+				
+				unsigned int width = colorTexture->getWidth();
+				unsigned int height = colorTexture->getHeight();
+				
+				render->bindFrameBuffer(s_renderBufferId);
+				
+				render->enableDepthTest();
+				
+				render->attachFrameBufferTexture(M_ATTACH_COLOR0, colorTexture->getTextureId());
+				if(depthTexture)
+					render->attachFrameBufferTexture(M_ATTACH_DEPTH, depthTexture->getTextureId());
+				
+				render->setViewport(0, 0, width, height);
+				render->setClearColor(*camera->getClearColor());
+				render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
+				
+				// draw the scene
+				camera->enable();
+				scene->draw(camera);
+				
+				// finish render to texture
+				render->bindFrameBuffer(0);
+			}
+		}
+		
+		// recover viewport
+		if(recoverViewport)
+			render->setViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+	}
 
-	// clear buffer
+	
+	// depth test
 	render->enableDepthTest();
-
+	
+	// render scene
 	if(scene->getCamerasNumber() == 0)
 	{
 		// draw scene with default camera
