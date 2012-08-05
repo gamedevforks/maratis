@@ -32,7 +32,6 @@
 
 
 char g_currentDirectory[256] = "";
-MScene * g_parsingScene = NULL;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,47 +158,45 @@ bool getVector4(lua_State * L, int index, MVector4 * vector)
 	return false;
 }
 
-int parseScene(lua_State * L)
+int getScene(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
 	
-	
-	if(! isFunctionOk(L, "parseScene", 1))
-	{
-		lua_pushinteger(L, (lua_Integer)-1);
-		return 1;
-	}
+	if(! isFunctionOk(L, "getScene", 1))
+		return 0;
 	
 	const char * name = lua_tostring(L, 1);
 	if(name)
 	{
-		g_parsingScene = level->getSceneByName(name);
-		if(g_parsingScene)
-		   return 1;
+		unsigned int sceneIndex;
+		if(level->getSceneIndexByName(name, &sceneIndex))
+		{
+			lua_pushinteger(L, (lua_Integer)sceneIndex);
+			return 1;
+		}
 	}
 	
 	printf("ERROR script : scene \"%s\" doesn't exit\n", name);
-	lua_pushinteger(L, (lua_Integer)-1);
-	return 1;
+	return 0;
 }
 
 int getObject(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene;
-	if(g_parsingScene)
-		scene = g_parsingScene;
-	else
-		scene = level->getCurrentScene();
+	MScene * scene = level->getCurrentScene();
 	
 
 	if(! isFunctionOk(L, "getObject", 1))
-	{
-		lua_pushinteger(L, (lua_Integer)-1);
-		return 1;
-	}
+		return 0;
 
-	const char * name = lua_tostring(L, 1);
+	int nbArguments = lua_gettop(L);
+	if(nbArguments == 2)
+	{
+		unsigned int sceneId = lua_tointeger(L, 1);
+		scene = level->getSceneByIndex(sceneId);
+	}
+	
+	const char * name = lua_tostring(L, nbArguments);
 	if(name)
 	{
 		MObject3d * object = scene->getObjectByName(name);
@@ -211,28 +208,27 @@ int getObject(lua_State * L)
 	}
 
 	printf("ERROR script : object \"%s\" doesn't exit\n", name);
-	lua_pushinteger(L, (lua_Integer)-1);
-	return 1;
+	return 0;
 }
 
 int getClone(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene;
-	if(g_parsingScene)
-		scene = g_parsingScene;
-	else
-		scene = level->getCurrentScene();
+	MScene * scene = level->getCurrentScene();
 	
 	
 	if(! isFunctionOk(L, "getClone", 1))
+		return 0;
+	
+	int nbArguments = lua_gettop(L);
+	if(nbArguments == 2)
 	{
-		lua_pushinteger(L, (lua_Integer)-1);
-		return 1;
+		unsigned int sceneId = lua_tointeger(L, 1);
+		scene = level->getSceneByIndex(sceneId);
 	}
 	
 	MObject3d * object;
-	lua_Integer id = lua_tointeger(L, 1);
+	lua_Integer id = lua_tointeger(L, nbArguments);
 	
 	if((object = getObject3d(id)))
 	{
@@ -262,8 +258,7 @@ int getClone(lua_State * L)
 		return 1;
 	}
 	
-	lua_pushinteger(L, (lua_Integer)-1);
-	return 1;
+	return 0;
 }
 
 int rotate(lua_State * L)
@@ -627,11 +622,14 @@ int getCurrentFrame(lua_State * L)
 int getGravity(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene;
-	if(g_parsingScene)
-		scene = g_parsingScene;
-	else
-		scene = level->getCurrentScene();
+	MScene * scene = level->getCurrentScene();
+	
+	int nbArguments = lua_gettop(L);
+	if(nbArguments == 1)
+	{
+		unsigned int sceneId = lua_tointeger(L, 1);
+		scene = level->getSceneByIndex(sceneId);
+	}
 	
 	pushFloatArray(L, *scene->getGravity(), 3);
 
@@ -641,17 +639,20 @@ int getGravity(lua_State * L)
 int setGravity(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene;
-	if(g_parsingScene)
-		scene = g_parsingScene;
-	else
-		scene = level->getCurrentScene();
+	MScene * scene = level->getCurrentScene();
 	
 	if(! isFunctionOk(L, "setGravity", 1))
 		return 0;
 
+	int nbArguments = lua_gettop(L);
+	if(nbArguments == 2)
+	{
+		unsigned int sceneId = lua_tointeger(L, 1);
+		scene = level->getSceneByIndex(sceneId);
+	}
+	
 	MVector3 gravity;
-	if(getVector3(L, 1, &gravity))
+	if(getVector3(L, nbArguments, &gravity))
 		scene->setGravity(gravity);
 
 	return 0;
@@ -660,16 +661,19 @@ int setGravity(lua_State * L)
 int changeCurrentCamera(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
-	MScene * scene;
-	if(g_parsingScene)
-		scene = g_parsingScene;
-	else
-		scene = level->getCurrentScene();
+	MScene * scene = level->getCurrentScene();
 	
 	if(! isFunctionOk(L, "changeCurrentCamera", 1))
 		return 0;
 
-	lua_Integer id = lua_tointeger(L, 1);
+	int nbArguments = lua_gettop(L);
+	if(nbArguments == 2)
+	{
+		unsigned int sceneId = lua_tointeger(L, 1);
+		scene = level->getSceneByIndex(sceneId);
+	}
+	
+	lua_Integer id = lua_tointeger(L, nbArguments);
 	MObject3d * object = getObject3d(id);
 	if(object)
 	{
@@ -1262,23 +1266,8 @@ int changeScene(lua_State * L)
 	if(! isFunctionOk(L, "changeScene", 1))
 		return 0;
 
-	if(lua_isnumber(L, 1))
-	{
-		lua_Integer id = lua_tointeger(L, 1);
-		level->changeCurrentScene(id);
-	}
-	else
-	{
-		const char * name = lua_tostring(L, 1);
-		if(name)
-		{
-			unsigned int id;
-			if(level->getSceneIndexByName(name, &id))
-				level->changeCurrentScene(id);
-			else
-				printf("ERROR script : scene \"%s\" doesn't exit\n", name);
-		}
-	}
+	lua_Integer id = lua_tointeger(L, 1);
+	level->changeCurrentScene(id);
 	
 	return 0;
 }
@@ -2128,7 +2117,7 @@ void MScript::init(void)
 	luaopen_math(m_state);
 
 	// load custom functions
-	lua_register(m_state, "parseScene",	 parseScene);
+	lua_register(m_state, "getScene",	 getScene);
 	lua_register(m_state, "getObject",	 getObject);
 	lua_register(m_state, "getClone",	 getClone);
 	lua_register(m_state, "rotate",		 rotate);
@@ -2270,8 +2259,6 @@ int MScript::function(lua_State * L)
 
 void MScript::runScript(const char * filename)
 {
-	g_parsingScene = NULL;
-	
 	if(m_isRunning)
 	{
 		clear();
