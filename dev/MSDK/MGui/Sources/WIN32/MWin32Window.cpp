@@ -842,6 +842,29 @@ void MWindow::execute(const char * path, const char * args)
 	ShellExecute(NULL, "open", path, args, NULL, SW_SHOWNORMAL);
 }
 
+void MWindow::sleep(double time)
+{
+	DWORD t;
+	
+    if( time == 0.0 )
+    {
+		t = 0;
+    }
+    else if( time < 0.001 )
+    {
+        t = 1;
+    }
+    else if( time > 2147483647.0 )
+    {
+        t = 2147483647;
+    }
+    else
+    {
+        t = (DWORD)(time*1000.0 + 0.5);
+    }
+    Sleep( t );
+}
+
 bool MWindow::getOpenMultipleFiles(const char * title, const char * filter, string * repertory, list <string> * filesList)
 {
 	const char * currentDir = getCurrentDirectory();
