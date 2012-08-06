@@ -2515,6 +2515,10 @@ float MScript::getFloat(unsigned int arg){
 	return (float)lua_tonumber(m_state, arg+1);
 }
 
+void* MScript::getPointer(unsigned int arg){
+	return (void*)lua_tointeger(m_state, arg+1);
+}
+
 void MScript::pushIntArray(const int * values, unsigned int valuesNumber)
 {
 	lua_newtable(m_state);
@@ -2551,4 +2555,8 @@ void MScript::pushInteger(int value){
 
 void MScript::pushFloat(float value){
 	lua_pushnumber(m_state, (lua_Number)value);
+}
+
+void MScript::pushPointer(void* value){
+	lua_pushnumber(m_state, (lua_Integer)value);
 }

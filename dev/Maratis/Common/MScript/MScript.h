@@ -75,6 +75,7 @@ public:
 	const char * getString(unsigned int arg);
 	int getInteger(unsigned int arg);
 	float getFloat(unsigned int arg);
+	void* getPointer(unsigned int arg);
 
 	void pushIntArray(const int * values, unsigned int valuesNumber);
 	void pushFloatArray(const float * values, unsigned int valuesNumber);
@@ -82,6 +83,7 @@ public:
 	void pushBoolean(bool value);
 	void pushInteger(int value);
 	void pushFloat(float value);
+	void pushPointer(void* value);
 };
 
 #endif
