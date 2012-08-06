@@ -2558,5 +2558,5 @@ void MScript::pushFloat(float value){
 }
 
 void MScript::pushPointer(void* value){
-	lua_pushnumber(m_state, (lua_Integer)value);
+	lua_pushinteger(m_state, (lua_Integer)value);
 }
