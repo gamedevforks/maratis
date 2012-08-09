@@ -170,6 +170,13 @@ int main(int argc, char **argv)
 	// on events
 	while(window->isActive())
 	{
+		// quit
+		if(! engine->isActive())
+		{
+			engine->getGame()->end();
+			break;
+		}
+		
 		// on events
 		if(window->onEvents())
 		{
@@ -213,14 +220,7 @@ int main(int argc, char **argv)
 			}
 		}
 		
-		// quit
-		if(! engine->isActive())
-		{
-			engine->getGame()->end();
-			break;
-		}
-		
-		window->sleep(0.001);
+		//window->sleep(0.001); // 1 mili sec seems to slow down on some machines...
 	}
 
 	maratis->clear();

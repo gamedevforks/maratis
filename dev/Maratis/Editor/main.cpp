@@ -149,6 +149,12 @@ int main(int argc, char **argv)
 	// on events
 	while(window->isActive())
 	{
+		if(! engine->isActive())
+		{
+			UI->endGame();
+			engine->setActive(true);
+		}
+		
 		// on events
 		if(window->onEvents())
 		{
@@ -212,13 +218,7 @@ int main(int argc, char **argv)
 			}
 		}
 		
-		if(! engine->isActive())
-		{
-			UI->endGame();
-			engine->setActive(true);
-		}
-		
-		window->sleep(0.001);
+		//window->sleep(0.001); // 1 mili sec seems to slow down on some machines...
 	}
 
 	gui->clear();
