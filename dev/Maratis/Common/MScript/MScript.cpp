@@ -2445,24 +2445,36 @@ void MScript::runScript(const char * filename)
 	m_isRunning = true;
 }
 
-void MScript::callFunction(const char * name, int numArgs)
+bool MScript::startCallFunction(const char* name)
 {
 	if(m_isRunning)
 	{
 		lua_getglobal(m_state, name);
-		if(lua_isfunction(m_state, -1))
-		{
-			if(lua_pcall(m_state, numArgs, 0, 0) != 0)
-			{
-				printf("ERROR lua script :\n %s\n", lua_tostring(m_state, -1));
-				m_isRunning = false;
-			}
-		}
-		else
+		if(!lua_isfunction(m_state, -1))
 		{
 			lua_pop(m_state, 1);
+			return false;
 		}
+		return true;
 	}
+	return false;
+}
+
+bool MScript::endCallFunction(int numArgs)
+{
+	if(lua_pcall(m_state, numArgs, 0, 0) != 0)
+	{
+		printf("ERROR lua script :\n %s\n", lua_tostring(m_state, -1));
+		m_isRunning = false;
+		return false;
+	}
+	return true;
+}
+
+void MScript::callFunction(const char * name)
+{
+	if(startCallFunction(name))
+		endCallFunction();
 }
 
 void MScript::addFunction(const char * name, int (*function)(void)){
