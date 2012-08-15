@@ -23,7 +23,7 @@ class CompilationFlags:
             # compilation flags for c++
             self.CppCommonFlags  = '-arch i386 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.6.sdk'
             self.CppDebugFlags   = '-g'
-            self.CppReleaseFlags = ''
+            self.CppReleaseFlags = '-Os'
             # preprocessor definitions
             self.CppCommonDefines  = 'OSX'
             self.CppDebugDefines   = '__Debug__'
@@ -32,7 +32,7 @@ class CompilationFlags:
             # compilation flags for c++
             self.CppCommonFlags  = '-fPIC'
             self.CppDebugFlags   = '-g'
-            self.CppReleaseFlags = ''
+            self.CppReleaseFlags = '-Os'
             # preprocessor definitions
             self.CppCommonDefines  = 'LINUX'
             self.CppDebugDefines   = '__Debug__'
