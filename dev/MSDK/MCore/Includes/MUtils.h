@@ -39,6 +39,7 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 // delete
 #define SAFE_DELETE(p)			{ if(p) { delete   (p); (p)=NULL; } }
