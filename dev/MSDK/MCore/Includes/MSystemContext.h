@@ -43,7 +43,9 @@ public:
 	virtual void getScreenSize(unsigned int * width, unsigned int * height) = 0;
 
 	// cursor
-	virtual void setCursorPosition(int x, int y) = 0;
+	virtual void setCursorPosition(int x, int y){};
+	virtual void hideCursor(void){};
+	virtual void showCursor(void){};
 	
 	// working directory
 	virtual const char * getWorkingDirectory(void) = 0;

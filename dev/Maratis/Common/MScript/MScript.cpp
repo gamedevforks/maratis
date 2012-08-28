@@ -2115,6 +2115,26 @@ int centerCursor(lua_State * L)
 	return 0;
 }
 
+int hideCursor(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	
+	system->hideCursor();
+	
+	return 0;
+}
+
+int showCursor(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	
+	system->showCursor();
+	
+	return 0;
+}
+
 int getText(lua_State * L)
 {
 	if(! isFunctionOk(L, "getText", 1))
@@ -2360,6 +2380,8 @@ void MScript::init(void)
 
 	// cursor
 	lua_register(m_state, "centerCursor", centerCursor);
+	lua_register(m_state, "hideCursor", hideCursor);
+	lua_register(m_state, "showCursor", showCursor);
 
 	// dofile
 	lua_register(m_state, "dofile", doFile);

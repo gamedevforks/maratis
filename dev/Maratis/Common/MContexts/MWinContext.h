@@ -45,6 +45,8 @@ public:
 
 	// cursor
 	void setCursorPosition(int x, int y);
+	void hideCursor(void);
+	void showCursor(void);
 	
 	// working directory
 	const char * getWorkingDirectory(void);

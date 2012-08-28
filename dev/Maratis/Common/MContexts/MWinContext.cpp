@@ -47,6 +47,18 @@ void MWinContext::setCursorPosition(int x, int y)
 	window->setCursorPos(window->getXPosition() + x, window->getYPosition() + y);
 }
 
+void MWinContext::hideCursor(void)
+{
+	MWindow * window = MWindow::getInstance();
+	window->hideCursor();
+}
+
+void MWinContext::showCursor(void)
+{
+	MWindow * window = MWindow::getInstance();
+	window->showCursor();
+}
+
 // working directory
 const char * MWinContext::getWorkingDirectory(void)
 {
