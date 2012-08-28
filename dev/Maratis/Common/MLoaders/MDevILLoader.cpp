@@ -118,7 +118,45 @@ static void flipImage(MImage * source, MImage * result)
 	}
 }
 
-bool M_loadImage(const char * filename, void * data)
+static void flipImage(MImage * source)
+{
+	M_TYPES dataType = source->getDataType();
+	unsigned int width = source->getWidth();
+	unsigned int height = source->getHeight();
+	unsigned int components = source->getComponents();
+	void * data = source->getData();
+	
+	MImage copy;
+	copy.create(dataType, width, height, components);
+	
+	switch(dataType)
+	{
+		case M_UBYTE:
+		{
+			memcpy(copy.getData(), source->getData(), sizeof(char)*source->getSize());
+			break;
+		}
+		case M_USHORT:
+		{
+			memcpy(copy.getData(), source->getData(), sizeof(short)*source->getSize());
+			break;
+		}
+		case M_INT:
+		{
+			memcpy(copy.getData(), source->getData(), sizeof(int)*source->getSize());
+			break;
+		}
+		case M_FLOAT:
+		{
+			memcpy(copy.getData(), source->getData(), sizeof(float)*source->getSize());
+			break;
+		}
+	}
+	
+	flipImage(&copy, source);
+}
+
+bool M_loadImageFlip(const char * filename, void * data, bool flip)
 {
 	DevILInit();
 	
@@ -177,6 +215,7 @@ bool M_loadImage(const char * filename, void * data)
 		ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
 	
 	// create image
+	MImage copy;
 	MImage * image = (MImage *)data;
 	image->create(M_UBYTE, (unsigned int)width, (unsigned int)height, (unsigned int)bytePerPix);
 	
@@ -184,9 +223,19 @@ bool M_loadImage(const char * filename, void * data)
 	unsigned int size = image->getSize();
 	memcpy(image->getData(), ilGetData(), size);
 
+	if(flip)
+	{
+		flipImage(image);
+	}
+	
 	ilDeleteImages(1, &ImgId);
 	DevILShutDown();
 	return true;
+}
+
+bool M_loadImage(const char * filename, void * data)
+{
+	return M_loadImageFlip(filename, data);
 }
 
 bool M_saveImage(const char * filename, void * data, unsigned int quality, bool flip)
@@ -221,9 +270,6 @@ bool M_saveImage(const char * filename, void * data, unsigned int quality, bool 
 	else if(components == 4)
 		ilTexImage(width, height, 1, 4, IL_RGBA, format, image->getData());
 	
-	//if(flip)
-	//	iluFlipImage(); // bugged
-
 	if(quality < 100)
 		ilSetInteger(IL_JPG_QUALITY, quality);
 

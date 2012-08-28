@@ -34,6 +34,7 @@
 #define _M_DEVIL_IMAGE_LOADER_H
 
 bool M_loadImage(const char * filename, void * data);
+bool M_loadImageFlip(const char * filename, void * data, bool flip = false);
 bool M_saveImage(const char * filename, void * data, unsigned int quality = 100, bool flip = true);
 
 #endif

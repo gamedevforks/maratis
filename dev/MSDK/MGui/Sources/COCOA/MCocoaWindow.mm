@@ -444,7 +444,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
         {
             //if( !_glfwWin.sysKeysDisabled )
             {
-                [super keyDown:event];
+              //  [super keyDown:event];
             }
         }
         else
@@ -897,6 +897,10 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	{
 		[window center];
 	}
+	
+	
+
+	
 	
 	return true;
 }

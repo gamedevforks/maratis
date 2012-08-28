@@ -2234,10 +2234,9 @@ int doFile(lua_State * L)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MScript::MScript(void):
+m_state(NULL),
 m_isRunning(false)
-{
-	init();
-}
+{}
 
 MScript::~MScript(void)
 {
@@ -2369,7 +2368,7 @@ void MScript::init(void)
 	lua_register(m_state, "quit", quit);
 	
 	
-	// register functions
+	// register custom functions
 	map<string, int (*)(void)>::iterator
 		mit (m_functions.begin()),
 		mend(m_functions.end());
@@ -2380,7 +2379,11 @@ void MScript::init(void)
 
 void MScript::clear(void)
 {
-	lua_close(m_state);
+	if(m_state)
+	{
+		lua_close(m_state);
+		m_state = NULL;
+	}
 	m_isRunning = false;
 }
 
@@ -2401,11 +2404,7 @@ int MScript::function(lua_State * L)
 
 void MScript::runScript(const char * filename)
 {
-	if(m_isRunning)
-	{
-		clear();
-		init();
-	}
+	clear();
 
 	if(! filename)
 	{
@@ -2419,6 +2418,9 @@ void MScript::runScript(const char * filename)
 		return;
 	}
 
+	// current directory
+	getRepertory(g_currentDirectory, filename);
+	
 	// read file
 	char * text = readTextFile(filename);
 	if(! text)
@@ -2428,8 +2430,7 @@ void MScript::runScript(const char * filename)
 		return;
 	}
 	
-	// current directory
-	getRepertory(g_currentDirectory, filename);
+	init();
 	
 	// do string
 	if(luaL_dostring(m_state, text) != 0)

@@ -394,6 +394,11 @@ MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b, const MVector
 	return vec0.crossProduct(vec1).getNormalized();
 }
 
+float linearInterpolation(float y1, float y2, float mu)
+{
+	return (y1 + (y2 - y1)*mu);
+}
+
 float cubicInterpolation(float y0, float y1, float y2, float y3, float mu)
 {
 	float a0,a1,a2,a3,mu2;

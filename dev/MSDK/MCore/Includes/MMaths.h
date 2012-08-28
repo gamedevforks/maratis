@@ -108,6 +108,7 @@ M_CORE_EXPORT MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b,
 
 M_CORE_EXPORT void simplifyDP(float tol, MVector3 * v, int j, int k, int * mk);
 
+M_CORE_EXPORT float linearInterpolation(float y1, float y2, float mu);
 M_CORE_EXPORT float cubicInterpolation(float y0, float y1, float y2, float y3, float mu);
 M_CORE_EXPORT float CatmullRomInterpolation(float y0, float y1, float y2, float y3, float mu);
 M_CORE_EXPORT float HermiteInterpolation(float y0, float y1, float y2, float y3, float mu, float tension, float bias, bool begin = false, bool end = false);
