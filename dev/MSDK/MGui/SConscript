@@ -29,7 +29,7 @@ if sys.platform=='win32':
     files.append(Glob('./Sources/WIN32/*.c*',source=True))
 if sys.platform=='darwin':
     files.append(Glob('./Sources/COCOA/*.m*',source=True))
-if sys.platform=='linux2' or sys.platform=='linux3':
+if sys.platform=='linux2' or sys.platform=='linux3' or sys.platform=='cygwin':
     files.append(Glob('./Sources/X11/*.c*',source=True))
 
 # build library

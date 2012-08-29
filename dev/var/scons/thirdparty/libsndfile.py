@@ -41,6 +41,12 @@ def getLibSndFileParameters():
         params['libs'].append('sndfile')
         params['installLibs'].append('libsndfile.so')
         pass
+    elif sys.platform=='cygwin':
+		# settings for cygwin : very close to linux
+		params['libPath'].append('libsndfile/linux')
+		params['libs'].append('sndfile')
+		params['installLibs'].append('libsndfile.dll')
+		pass
     else:
         raise Exception('Unknown platform')
     

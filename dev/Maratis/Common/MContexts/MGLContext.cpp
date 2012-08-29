@@ -32,14 +32,10 @@
 
 #include <stdio.h>
 
-#ifdef _WIN32
-	#include <GLee.h>
-	//#include <GL/glu.h>
-#elif __APPLE__
+#ifdef __APPLE__
 	#include <OpenGL/OpenGL.h>
-#elif linux
+#else
 	#include <GLee.h>
-	//#include <GL/glu.h>
 #endif
 
 #include "MGLContext.h"

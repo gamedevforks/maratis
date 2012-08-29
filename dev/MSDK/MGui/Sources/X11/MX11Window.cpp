@@ -36,13 +36,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
-#include <X11/extensions/xf86vmode.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
+#include <unistd.h>
 
-#ifndef WIN32
-        #include <unistd.h>
+#ifndef __CYGWIN__
+	#include <X11/extensions/xf86vmode.h>
 #endif
+
 
 
 // start time
@@ -54,10 +55,12 @@ static GLXContext context;
 static Window window;
 static Window rootWindow;
 static int screen;
-static XF86VidModeModeInfo desktopMode;
 static Cursor nullCursor;
 static Atom wmDelete;
 
+#ifndef __CYGWIN__
+	static XF86VidModeModeInfo desktopMode;
+#endif
 
 
 static Cursor createNULLCursor(Display * display, Window root)
@@ -233,8 +236,10 @@ MWindow::~MWindow(void)
 
         if(m_fullscreen)
         {
-            XF86VidModeSwitchToMode(display, screen, &desktopMode);
-            XF86VidModeSetViewPort(display, screen, 0, 0);
+			#ifndef __CYGWIN__
+				XF86VidModeSwitchToMode(display, screen, &desktopMode);
+				XF86VidModeSetViewPort(display, screen, 0, 0);
+			#endif
         }
 
         XCloseDisplay(display);
@@ -545,6 +550,9 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	display = XOpenDisplay(NULL);
 
 	// fullscreen
+	
+#ifndef __CYGWIN__
+	
 	int vmMajor, vmMinor;
 	if(XF86VidModeQueryVersion(display, &vmMajor, &vmMinor) && fullscreen)
 	{
@@ -597,9 +605,12 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 			return false;
 		}
 	}
-
-	// window
+	
 	else
+		
+#endif
+		
+	// window
 	{
 		m_fullscreen = false;
 
