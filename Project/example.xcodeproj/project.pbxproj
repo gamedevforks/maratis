@@ -18,17 +18,17 @@
 		6BE2BB6A1367754800C3BB17 /* MES1Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2BB681367754800C3BB17 /* MES1Context.cpp */; };
 		AEB652441373D8B5007EAB33 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEB652431373D8B5007EAB33 /* CoreMotion.framework */; };
 		AEFF8FCC1364FA9300195AEF /* exampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AEFF8FCB1364FA9300195AEF /* exampleViewController.m */; };
+		E90A8B5015EF6A1C00003359 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B3515EF6A1C00003359 /* fonts */; };
+		E90A8B5115EF6A1C00003359 /* levels in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B3715EF6A1C00003359 /* levels */; };
+		E90A8B5215EF6A1C00003359 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B3A15EF6A1C00003359 /* maps */; };
+		E90A8B5315EF6A1C00003359 /* meshs in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B3F15EF6A1C00003359 /* meshs */; };
+		E90A8B5415EF6A1C00003359 /* renderToTexture.mproj in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B4515EF6A1C00003359 /* renderToTexture.mproj */; };
+		E90A8B5515EF6A1C00003359 /* scripts in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B4615EF6A1C00003359 /* scripts */; };
+		E90A8B5615EF6A1C00003359 /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B4915EF6A1C00003359 /* shaders */; };
+		E90A8B5715EF6A1C00003359 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = E90A8B4E15EF6A1C00003359 /* sounds */; };
 		E93607B913A24D5600ED816C /* MiOSStandardRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */; };
 		E936082413A2540100ED816C /* MBinFontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082213A2540100ED816C /* MBinFontLoader.cpp */; };
 		E936082713A2542000ED816C /* MWavSoundLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082513A2542000ED816C /* MWavSoundLoader.cpp */; };
-		E942A8E4132A3E3900B6E793 /* Demos.mproj in Resources */ = {isa = PBXBuildFile; fileRef = E942A897132A3E3800B6E793 /* Demos.mproj */; };
-		E942A8E5132A3E3900B6E793 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = E942A898132A3E3800B6E793 /* fonts */; };
-		E942A8E6132A3E3900B6E793 /* levels in Resources */ = {isa = PBXBuildFile; fileRef = E942A89F132A3E3800B6E793 /* levels */; };
-		E942A8E7132A3E3900B6E793 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = E942A8AA132A3E3800B6E793 /* maps */; };
-		E942A8E8132A3E3900B6E793 /* meshs in Resources */ = {isa = PBXBuildFile; fileRef = E942A8BB132A3E3800B6E793 /* meshs */; };
-		E942A8E9132A3E3900B6E793 /* scripts in Resources */ = {isa = PBXBuildFile; fileRef = E942A8D3132A3E3900B6E793 /* scripts */; };
-		E942A8EA132A3E3900B6E793 /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = E942A8DC132A3E3900B6E793 /* shaders */; };
-		E942A8EB132A3E3900B6E793 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = E942A8E2132A3E3900B6E793 /* sounds */; };
 		E97380E4148BB10C000F7FC0 /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9737F82148BB10B000F7FC0 /* btAxisSweep3.cpp */; };
 		E97380E5148BB10C000F7FC0 /* btBroadphaseProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9737F85148BB10B000F7FC0 /* btBroadphaseProxy.cpp */; };
 		E97380E6148BB10C000F7FC0 /* btCollisionAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9737F87148BB10B000F7FC0 /* btCollisionAlgorithm.cpp */; };
@@ -286,6 +286,14 @@
 		AEB652431373D8B5007EAB33 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		AEFF8FCA1364FA9300195AEF /* exampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exampleViewController.h; sourceTree = "<group>"; };
 		AEFF8FCB1364FA9300195AEF /* exampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = exampleViewController.m; sourceTree = "<group>"; };
+		E90A8B3515EF6A1C00003359 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = "../Examples/render-to-texture/fonts"; sourceTree = SOURCE_ROOT; };
+		E90A8B3715EF6A1C00003359 /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = "../Examples/render-to-texture/levels"; sourceTree = SOURCE_ROOT; };
+		E90A8B3A15EF6A1C00003359 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = "../Examples/render-to-texture/maps"; sourceTree = SOURCE_ROOT; };
+		E90A8B3F15EF6A1C00003359 /* meshs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = meshs; path = "../Examples/render-to-texture/meshs"; sourceTree = SOURCE_ROOT; };
+		E90A8B4515EF6A1C00003359 /* renderToTexture.mproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = renderToTexture.mproj; path = "../Examples/render-to-texture/renderToTexture.mproj"; sourceTree = SOURCE_ROOT; };
+		E90A8B4615EF6A1C00003359 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = "../Examples/render-to-texture/scripts"; sourceTree = SOURCE_ROOT; };
+		E90A8B4915EF6A1C00003359 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = "../Examples/render-to-texture/shaders"; sourceTree = SOURCE_ROOT; };
+		E90A8B4E15EF6A1C00003359 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = "../Examples/render-to-texture/sounds"; sourceTree = SOURCE_ROOT; };
 		E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MiOSStandardRenderer.cpp; path = ../Common/MRenderers/MiOSStandardRenderer.cpp; sourceTree = SOURCE_ROOT; };
 		E93607B713A24D5600ED816C /* MiOSStandardRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSStandardRenderer.h; path = ../Common/MRenderers/MiOSStandardRenderer.h; sourceTree = SOURCE_ROOT; };
 		E93607B813A24D5600ED816C /* MiOSStandardShaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSStandardShaders.h; path = ../Common/MRenderers/MiOSStandardShaders.h; sourceTree = SOURCE_ROOT; };
@@ -293,14 +301,6 @@
 		E936082313A2540100ED816C /* MBinFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinFontLoader.h; path = ../../../trunk/dev/Maratis/Common/MLoaders/MBinFontLoader.h; sourceTree = SOURCE_ROOT; };
 		E936082513A2542000ED816C /* MWavSoundLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MWavSoundLoader.cpp; path = ../../../trunk/dev/Additional/MLoaders/MWavSoundLoader.cpp; sourceTree = SOURCE_ROOT; };
 		E936082613A2542000ED816C /* MWavSoundLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MWavSoundLoader.h; path = ../../../trunk/dev/Additional/MLoaders/MWavSoundLoader.h; sourceTree = SOURCE_ROOT; };
-		E942A897132A3E3800B6E793 /* Demos.mproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Demos.mproj; path = ../examples/Demos/Demos.mproj; sourceTree = SOURCE_ROOT; };
-		E942A898132A3E3800B6E793 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../examples/Demos/fonts; sourceTree = SOURCE_ROOT; };
-		E942A89F132A3E3800B6E793 /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../examples/Demos/levels; sourceTree = SOURCE_ROOT; };
-		E942A8AA132A3E3800B6E793 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = ../examples/Demos/maps; sourceTree = SOURCE_ROOT; };
-		E942A8BB132A3E3800B6E793 /* meshs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = meshs; path = ../examples/Demos/meshs; sourceTree = SOURCE_ROOT; };
-		E942A8D3132A3E3900B6E793 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../examples/Demos/scripts; sourceTree = SOURCE_ROOT; };
-		E942A8DC132A3E3900B6E793 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = ../examples/Demos/shaders; sourceTree = SOURCE_ROOT; };
-		E942A8E2132A3E3900B6E793 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../examples/Demos/sounds; sourceTree = SOURCE_ROOT; };
 		E9737F7D148BB10B000F7FC0 /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = ../../../3rdparty/bullet/btBulletCollisionCommon.h; sourceTree = SOURCE_ROOT; };
 		E9737F7E148BB10B000F7FC0 /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = ../../../3rdparty/bullet/btBulletDynamicsCommon.h; sourceTree = SOURCE_ROOT; };
 		E9737F7F148BB10B000F7FC0 /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "../../../3rdparty/bullet/Bullet-C-Api.h"; sourceTree = SOURCE_ROOT; };
@@ -916,14 +916,14 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E942A897132A3E3800B6E793 /* Demos.mproj */,
-				E942A898132A3E3800B6E793 /* fonts */,
-				E942A89F132A3E3800B6E793 /* levels */,
-				E942A8AA132A3E3800B6E793 /* maps */,
-				E942A8BB132A3E3800B6E793 /* meshs */,
-				E942A8D3132A3E3900B6E793 /* scripts */,
-				E942A8DC132A3E3900B6E793 /* shaders */,
-				E942A8E2132A3E3900B6E793 /* sounds */,
+				E90A8B3515EF6A1C00003359 /* fonts */,
+				E90A8B3715EF6A1C00003359 /* levels */,
+				E90A8B3A15EF6A1C00003359 /* maps */,
+				E90A8B3F15EF6A1C00003359 /* meshs */,
+				E90A8B4515EF6A1C00003359 /* renderToTexture.mproj */,
+				E90A8B4615EF6A1C00003359 /* scripts */,
+				E90A8B4915EF6A1C00003359 /* shaders */,
+				E90A8B4E15EF6A1C00003359 /* sounds */,
 				8D1107310486CEB800E47090 /* example-Info.plist */,
 			);
 			name = Resources;
@@ -1845,14 +1845,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E942A8E4132A3E3900B6E793 /* Demos.mproj in Resources */,
-				E942A8E5132A3E3900B6E793 /* fonts in Resources */,
-				E942A8E6132A3E3900B6E793 /* levels in Resources */,
-				E942A8E7132A3E3900B6E793 /* maps in Resources */,
-				E942A8E8132A3E3900B6E793 /* meshs in Resources */,
-				E942A8E9132A3E3900B6E793 /* scripts in Resources */,
-				E942A8EA132A3E3900B6E793 /* shaders in Resources */,
-				E942A8EB132A3E3900B6E793 /* sounds in Resources */,
+				E90A8B5015EF6A1C00003359 /* fonts in Resources */,
+				E90A8B5115EF6A1C00003359 /* levels in Resources */,
+				E90A8B5215EF6A1C00003359 /* maps in Resources */,
+				E90A8B5315EF6A1C00003359 /* meshs in Resources */,
+				E90A8B5415EF6A1C00003359 /* renderToTexture.mproj in Resources */,
+				E90A8B5515EF6A1C00003359 /* scripts in Resources */,
+				E90A8B5615EF6A1C00003359 /* shaders in Resources */,
+				E90A8B5715EF6A1C00003359 /* sounds in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

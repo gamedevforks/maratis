@@ -1094,6 +1094,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	
 	
 	// lights
+	bool lightShadows = false;
 	unsigned int l;
 	unsigned int lSize = scene->getLightsNumber();
 	
@@ -1107,12 +1108,17 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 	{
 		MOLight * light = scene->getLightByIndex(l);
 		if(light->isActive())
+		{
 			light->updateVisibility(camera);
+			
+			if(light->isVisible() && light->isCastingShadow())
+				lightShadows = true;
+		}
 	}
 	
 	
-	// create frame buffer (TODO: only if minimum one shadow light)
-	if(m_fboId == 0)
+	// create frame buffer
+	if(lightShadows && m_fboId == 0)
 	{
 		render->createFrameBuffer(&m_fboId);
 		render->bindFrameBuffer(m_fboId);

@@ -266,7 +266,7 @@ public:
         [self configureMobileInput];
         
         char filename[256];
-        getGlobalFilename(filename, msystem->getWorkingDirectory(), "Demos.mproj");
+        getGlobalFilename(filename, msystem->getWorkingDirectory(), "renderToTexture.mproj");
 		[self loadMaratisProject:filename];
         
 		if(! renderer)

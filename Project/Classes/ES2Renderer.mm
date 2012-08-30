@@ -9,27 +9,6 @@
 #include <MEngine.h>
 #import "ES2Renderer.h"
 
-/*
-// uniform index
-enum {
-    UNIFORM_TRANSLATE,
-    NUM_UNIFORMS
-};
-GLint uniforms[NUM_UNIFORMS];
-
-// attribute index
-enum {
-    ATTRIB_VERTEX,
-    ATTRIB_COLOR,
-    NUM_ATTRIBUTES
-};
-
-@interface ES2Renderer (PrivateMethods)
-- (BOOL) loadShaders;
-- (BOOL) compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
-- (BOOL) linkProgram:(GLuint)prog;
-- (BOOL) validateProgram:(GLuint)prog;
-@end*/
 
 // time
 static unsigned int frequency = 60;
@@ -130,144 +109,6 @@ static unsigned long startTick;
     [context presentRenderbuffer:GL_RENDERBUFFER];	
 	
 }
-/*
-- (BOOL) compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
-{
-	GLint status;
-	const GLchar *source;
-	
-	source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
-	if (!source)
-	{
-		NSLog(@"Failed to load vertex shader");
-		return FALSE;
-	}
-	
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-	
-#if defined(DEBUG)
-	GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0)
-    {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
-    if (status == 0)
-	{
-		glDeleteShader(*shader);
-		return FALSE;
-	}
-	
-	return TRUE;
-}
-
-- (BOOL) linkProgram:(GLuint)prog
-{
-	GLint status;
-	
-	glLinkProgram(prog);
-
-#if defined(DEBUG)
-	GLint logLength;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0)
-    {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program link log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetProgramiv(prog, GL_LINK_STATUS, &status);
-    if (status == 0)
-		return FALSE;
-	
-	return TRUE;
-}
-
-- (BOOL) validateProgram:(GLuint)prog
-{
-	GLint logLength, status;
-	
-	glValidateProgram(prog);
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0)
-    {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program validate log:\n%s", log);
-        free(log);
-    }
-    
-    glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
-    if (status == 0)
-		return FALSE;
-	
-	return TRUE;
-}
-
-- (BOOL) loadShaders
-{
-    GLuint vertShader, fragShader;
-	NSString *vertShaderPathname, *fragShaderPathname;
-    
-    // create shader program
-    program = glCreateProgram();
-	
-    // create and compile vertex shader
-	vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
-	if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname])
-	{
-		NSLog(@"Failed to compile vertex shader");
-		return FALSE;
-	}
-	
-    // create and compile fragment shader
-	fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
-	if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname])
-	{
-		NSLog(@"Failed to compile fragment shader");
-		return FALSE;
-	}
-    
-    // attach vertex shader to program
-    glAttachShader(program, vertShader);
-    
-    // attach fragment shader to program
-    glAttachShader(program, fragShader);
-    
-    // bind attribute locations
-    // this needs to be done prior to linking
-    glBindAttribLocation(program, ATTRIB_VERTEX, "position");
-    glBindAttribLocation(program, ATTRIB_COLOR, "color");
-    
-    // link program
-	if (![self linkProgram:program])
-	{
-		NSLog(@"Failed to link program: %d", program);
-		return FALSE;
-	}
-    
-    // get uniform locations
-    uniforms[UNIFORM_TRANSLATE] = glGetUniformLocation(program, "translate");
-    
-    // release vertex and fragment shaders
-    if (vertShader)
-		glDeleteShader(vertShader);
-    if (fragShader)
-		glDeleteShader(fragShader);
-	
-	return TRUE;
-}*/
 
 - (BOOL) resizeFromLayer:(CAEAGLLayer *)layer
 {
@@ -310,12 +151,6 @@ static unsigned long startTick;
 		glDeleteRenderbuffers(1, &depthRenderbuffer);
 		depthRenderbuffer = 0;
 	}
-	/*
-	if (program)
-	{
-		glDeleteProgram(program);
-		program = 0;
-	}*/
 	
 	// Tear down context
 	if ([EAGLContext currentContext] == context)
