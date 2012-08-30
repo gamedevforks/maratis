@@ -155,8 +155,10 @@ static GLenum returnAttachType(M_FRAME_BUFFER_ATTACHMENT type)
 {
 	if(type == M_ATTACH_DEPTH)
 		return GL_DEPTH_ATTACHMENT_OES;
+	else if(type == M_ATTACH_STENCIL)
+		return GL_STENCIL_ATTACHMENT_OES;
 	else
-		return GL_COLOR_ATTACHMENT0_OES + ((int)type - 1);
+		return GL_COLOR_ATTACHMENT0_OES + ((int)type - 2);
 }
 
 MES1Context::MES1Context(void):

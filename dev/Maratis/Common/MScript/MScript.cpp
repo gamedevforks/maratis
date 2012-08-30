@@ -1886,12 +1886,15 @@ int enableRenderToTexture(lua_State * L)
 				render->setTextureFilterMode(M_TEX_FILTER_LINEAR, M_TEX_FILTER_LINEAR);
 				render->setTextureUWrapMode(M_WRAP_CLAMP);
 				render->setTextureVWrapMode(M_WRAP_CLAMP);
-				render->texImage(0, width, height, M_UBYTE, M_RGB, 0);
+				render->texImage(0, width, height, M_UBYTE, M_RGBA, 0);
 				
 				render->createTexture(&m_depthTextureId);
 				render->bindTexture(m_depthTextureId);
-				render->setTextureFilterMode(M_TEX_FILTER_NEAREST, M_TEX_FILTER_NEAREST);
+				render->setTextureFilterMode(M_TEX_FILTER_LINEAR, M_TEX_FILTER_LINEAR);
+				render->setTextureUWrapMode(M_WRAP_CLAMP);
+				render->setTextureVWrapMode(M_WRAP_CLAMP);
 				render->texImage(0, width, height, M_UBYTE, M_DEPTH, 0);
+				render->bindTexture(0);
 				
 				colorTexture->setTextureId(m_colorTextureId);
 				colorTexture->setWidth(width);
@@ -1899,7 +1902,6 @@ int enableRenderToTexture(lua_State * L)
 				depthTexture->setTextureId(m_depthTextureId);
 				depthTexture->setWidth(width);
 				depthTexture->setHeight(height);
-				
 			}
 			
 			return 0;

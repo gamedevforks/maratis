@@ -27,7 +27,6 @@
 //
 //========================================================================
 
-
 #include "../Includes/MEngine.h"
 
 
@@ -43,7 +42,8 @@ MGame::~MGame(void)
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 	
 	// delete frame buffer
-	render->deleteFrameBuffer(&s_renderBufferId);
+	if(s_renderBufferId != 0)
+		render->deleteFrameBuffer(&s_renderBufferId);
 }
 
 MOCamera * MGame::getCurrentCamera(MScene * scene)
@@ -130,6 +130,9 @@ void MGame::draw(void)
 	
 	// render to texture
 	{
+		unsigned int currentFrameBuffer = 0;
+		render->getCurrentFrameBuffer(&currentFrameBuffer);
+
 		int viewport[4];
 		bool recoverViewport = false;
 		
@@ -145,15 +148,15 @@ void MGame::draw(void)
 					recoverViewport = true;
 				}
 				
-				// render buffer
-				if(s_renderBufferId == 0)
-					render->createFrameBuffer(&s_renderBufferId);
-				
 				MTextureRef * colorTexture = camera->getRenderColorTexture();
 				MTextureRef * depthTexture = camera->getRenderDepthTexture();
 				
 				unsigned int width = colorTexture->getWidth();
 				unsigned int height = colorTexture->getHeight();
+				
+				// render buffer
+				if(s_renderBufferId == 0)
+					render->createFrameBuffer(&s_renderBufferId);
 				
 				render->bindFrameBuffer(s_renderBufferId);
 				
@@ -172,7 +175,7 @@ void MGame::draw(void)
 				scene->draw(camera);
 				
 				// finish render to texture
-				render->bindFrameBuffer(0);
+				render->bindFrameBuffer(currentFrameBuffer);
 			}
 		}
 		
