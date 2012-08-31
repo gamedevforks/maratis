@@ -25,11 +25,11 @@ if sys.platform=='linux2' or sys.platform=='linux3':
 
 # get list of files 
 files = Glob('./Sources/*.c*',source=True)
-if sys.platform=='win32':
+if sys.platform=='win32' or sys.platform=='cygwin':
     files.append(Glob('./Sources/WIN32/*.c*',source=True))
 if sys.platform=='darwin':
     files.append(Glob('./Sources/COCOA/*.m*',source=True))
-if sys.platform=='linux2' or sys.platform=='linux3' or sys.platform=='cygwin':
+if sys.platform=='linux2' or sys.platform=='linux3':
     files.append(Glob('./Sources/X11/*.c*',source=True))
 
 # build library

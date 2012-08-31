@@ -31,6 +31,10 @@
 #ifndef _M_WIN32_WINDOW_H
 #define _M_WIN32_WINDOW_H
 
+#ifdef __CYGWIN__
+#include <w32api.h>
+#endif
+
 #include <MCore.h>
 #include <windows.h>
 #include <list>

@@ -42,8 +42,6 @@
 	#include "COCOA/MCocoaWindow.h"
 #elif linux
 	#include "X11/MX11Window.h"
-#elif __CYGWIN__
-	#include "X11/MX11Window.h"
 #endif
 
 #endif
