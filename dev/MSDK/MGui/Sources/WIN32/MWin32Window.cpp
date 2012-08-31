@@ -35,7 +35,12 @@
 #define _WIN32_WINNT 0x0500
 #include <MWindow.h>
 
+#if defined(__MINGW32__) || defined(__CYGWIN__)
+#include <unistd.h>
+#else
 #include <direct.h>
+#endif
+
 #include <zmouse.h>
 #include <mmsystem.h>
 #include <Shlobj.h>
@@ -104,7 +109,7 @@ const char * MWindow::getTempDirectory(void)
 const char * MWindow::getCurrentDirectory(void)
 {
 	static char currentDirectory[256];
-	_getcwd(currentDirectory, 256);
+	getcwd(currentDirectory, 256);
 	return currentDirectory;
 }
 
