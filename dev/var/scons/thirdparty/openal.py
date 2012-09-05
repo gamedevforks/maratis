@@ -39,7 +39,9 @@ def getOpenALParameters():
         params['libPath'].append('openal/linux')
         params['libs'].append('openal')
         pass
-    
+    elif sys.platform=='cygwin':
+        params['libs'].append('openal')
+        pass
     return params
 
 

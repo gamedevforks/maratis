@@ -28,6 +28,16 @@ class CompilationFlags:
             self.CppCommonDefines  = 'OSX'
             self.CppDebugDefines   = '__Debug__'
             self.CppReleaseDefines = ''
+        elif (sys.platform=='cygwin'):
+		    # compilation flags for c++ (g++)
+            self.CppCommonFlags  = '-mwin32' # -mno-cygwin : The -mno-cygwin flag has been removed; use a mingw-targeted cross-compiler to build for mingw.
+            self.CppDebugFlags   = '-g'
+            self.CppReleaseFlags = '-Os'
+            # preprocessor definitions
+			# choose here between a WIN32 build or a POSIX LINUX build (both compile but POSIX build have still perhaps some link errors to be fixed)
+            self.CppCommonDefines  = 'WIN32'
+            self.CppDebugDefines   = '_DEBUG __Debug__'
+            self.CppReleaseDefines = 'NDEBUG'
         else:
             # compilation flags for c++
             self.CppCommonFlags  = '-fPIC'

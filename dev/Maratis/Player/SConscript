@@ -43,7 +43,6 @@ thirdparty.npk_dev.addNPKDevToEnv(env_local)
 thirdparty.lua.addLuaToEnv(env_local)
 thirdparty.bullet.addBulletToEnv(env_local)
 thirdparty.openal.addOpenALToEnv(env_local)
-thirdparty.opengl.addOpenGLToEnv(env_local)
 thirdparty.glee.addGleeToEnv(env_local)
 thirdparty.devil.addDevilToEnv(env_local)
 thirdparty.tinyxml.addTinyXmlToEnv(env_local)
@@ -52,10 +51,14 @@ thirdparty.libjpeg.addLibJpegToEnv(env_local)
 thirdparty.zlib.addZlibToEnv(env_local)
 thirdparty.freetype.addFreetypeToEnv(env_local)
 thirdparty.libsndfile.addLibSndFileToEnv(env_local)
+thirdparty.opengl.addOpenGLToEnv(env_local) # must be after glee
+
 if sys.platform=='darwin':
     thirdparty.cocoa.addCocoaToEnv(env_local)
-if sys.platform=='win32':
+if sys.platform=='win32' or sys.platform == 'cygwin':
     thirdparty.windows.addWindowsToEnv(env_local)
+
+#    env_local.AppendUnique(LIBS = ['winmm', 'wininet', 'User32', 'Shell32', 'Gdi32', 'Comdlg32', 'glaux']) # WIN32 (libopengl32.a, libwinmm.a...)
 
 # get list of files (recursive)
 files = pyutils.getFilesRecursive(Dir('.').srcnode().abspath,'*.c*')

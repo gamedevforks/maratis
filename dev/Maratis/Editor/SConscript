@@ -38,12 +38,11 @@ if sys.platform=='linux2' or sys.platform=='linux3':
                                    'dl'] )
 
 # add 3rdparty libraries parameters
+thirdparty.npk_dev.addNPKDevToEnv(env_local) # must added be before zlib in order to link on CYGWIN WIN32
 thirdparty.lua.addLuaToEnv(env_local)
-thirdparty.npk_dev.addNPKDevToEnv(env_local)
 thirdparty.bullet.addBulletToEnv(env_local)
 thirdparty.openal.addOpenALToEnv(env_local)
-thirdparty.opengl.addOpenGLToEnv(env_local)
-thirdparty.glee.addGleeToEnv(env_local)
+thirdparty.glee.addGleeToEnv(env_local) # must be added before openGL
 thirdparty.devil.addDevilToEnv(env_local)
 thirdparty.tinyxml.addTinyXmlToEnv(env_local)
 thirdparty.libpng.addLibPngToEnv(env_local)
@@ -51,9 +50,11 @@ thirdparty.libjpeg.addLibJpegToEnv(env_local)
 thirdparty.freetype.addFreetypeToEnv(env_local)
 thirdparty.libsndfile.addLibSndFileToEnv(env_local)
 thirdparty.zlib.addZlibToEnv(env_local)
+thirdparty.opengl.addOpenGLToEnv(env_local)
+
 if sys.platform=='darwin':
     thirdparty.cocoa.addCocoaToEnv(env_local)
-if sys.platform=='win32':
+if sys.platform=='win32' or sys.platform == 'cygwin':
     thirdparty.windows.addWindowsToEnv(env_local)
 
 # get list of files (recursive)

@@ -31,6 +31,7 @@
 #ifndef _M_FILE_H
 #define _M_FILE_H
 
+#include <stdarg.h>	// needed for va_list
 
 // File
 class M_CORE_EXPORT MFile

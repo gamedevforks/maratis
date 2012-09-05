@@ -37,8 +37,8 @@ if sys.platform=='linux2' or sys.platform=='linux3':
 thirdparty.lua.addLuaToEnv(env_local)
 thirdparty.bullet.addBulletToEnv(env_local)
 thirdparty.openal.addOpenALToEnv(env_local)
+thirdparty.glee.addGleeToEnv(env_local) # glee must be before opengl
 thirdparty.opengl.addOpenGLToEnv(env_local)
-thirdparty.glee.addGleeToEnv(env_local)
 thirdparty.devil.addDevilToEnv(env_local)
 thirdparty.tinyxml.addTinyXmlToEnv(env_local)
 thirdparty.libpng.addLibPngToEnv(env_local)
@@ -46,9 +46,13 @@ thirdparty.libjpeg.addLibJpegToEnv(env_local)
 thirdparty.zlib.addZlibToEnv(env_local)
 thirdparty.freetype.addFreetypeToEnv(env_local)
 thirdparty.libsndfile.addLibSndFileToEnv(env_local)
+
 if sys.platform=='darwin':
     thirdparty.cocoa.addCocoaToEnv(env_local)
-if sys.platform=='win32':
+# Cygwin : Choose here between a WIN32 build or a  build : 
+# if WIN32, use the usual libs in /lib/w32api (libopengl32.a, libwinmm.a...)
+# if POSIX, use the usual libs :  env_local.AppendUnique(LIBS = ['X11', 'GL'] )
+if sys.platform=='win32' or sys.platform=='cygwin':
     thirdparty.windows.addWindowsToEnv(env_local)
 
 # get list of files (recursive)
@@ -66,6 +70,7 @@ manualuse = env_local.Program('ManualUse',files,PDB='ManualUse.pdb')
 
 # install to prod dir
 finaldir = os.path.join(env['proddir'],'Examples','ManualUse')
+print 'Manual use final dir : ' + finaldir
 env_local.Install(finaldir, manualuse)
 env_local.Install(finaldir, '#Examples/Data/meshs')
 
@@ -76,6 +81,5 @@ if sys.platform == 'darwin':
                                  typecode = 'APPL',
                                  resources = ['#Examples/Data/meshs'])
     env_local.InstallBundle(finaldir, manualuse)
-
 
 Return('manualuse')

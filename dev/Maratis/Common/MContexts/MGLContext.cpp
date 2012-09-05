@@ -40,7 +40,6 @@
 
 #include "MGLContext.h"
 
-
 static int g_GLversion = 0;
 static float maxAnisotropy = 0.0f;
 

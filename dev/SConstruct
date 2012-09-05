@@ -19,10 +19,11 @@ import platformcustom
 opts = SConscript('#var/scons/EnvOptions')
 
 tools = ['default']
+print 'sys.platform: ' + sys.platform
 if sys.platform == 'darwin':
     import macbundle
     tools.append (macbundle.TOOL_BUNDLE)
-
+	
 # create the main environment
 env = Environment( options = opts, tools = tools )
 

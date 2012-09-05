@@ -37,12 +37,17 @@
 #include <algorithm>
 
 #ifdef WIN32
-	#include <direct.h>
-	#define mkdir _mkdir
-	#define rmdir _rmdir
+	#ifdef __CYGWIN__
+		// on Cygwin, mkdir is to be used as on POSIX OS
+		#define mkdir(file) mkdir(file, 0777)
+	#else
+		#include <direct.h>
+		#define mkdir _mkdir
+		#define rmdir _rmdir
+	#endif
 #else
 	#define mkdir(file) mkdir(file, 0777)
-        #include <unistd.h>
+    #include <unistd.h>
 #endif
 
 static MFileOpenHook* s_fileOpenHook = 0;

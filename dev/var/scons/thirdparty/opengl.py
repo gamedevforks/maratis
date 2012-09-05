@@ -33,7 +33,11 @@ def getOpenGLParameters():
     elif sys.platform=='linux2' or sys.platform=='linux3':
         # OpenGL settings for linux
         pass
-    
+    elif sys.platform=='cygwin':
+        #params['libs'] = 'GL.dll'  # cygwin real opengl GL for X11 (lib/libGL.dll.a)
+        params['libs'] = 'opengl32' # cygwin WIN32 openGL (lib/w32api/libopengl32.a)
+        pass
+
     return params
 
 

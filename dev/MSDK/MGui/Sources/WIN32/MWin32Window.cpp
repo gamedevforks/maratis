@@ -42,6 +42,7 @@
 #endif
 
 #include <zmouse.h>
+#include <windows.h>
 #include <mmsystem.h>
 #include <Shlobj.h>
 

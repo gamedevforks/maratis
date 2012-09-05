@@ -45,7 +45,6 @@
 #endif
 
 
-
 // start time
 static struct timeval startTime;
 

@@ -22,8 +22,12 @@ def getWindowsParameters():
     # common defs
 
     # platform specific
-    if sys.platform=='win32':
+    if sys.platform=='win32' or sys.platform=='cygwin':
         # Windows settings for win32
+		#   winmm : needed for all joyXXX functions...
+		# 	Comdlg32 : needed for GetOpenFileName,...
+		#   Gdi32 : needed for SwapBuffer,...
+		# Seems un useful : 'glaux' 'Shell32', 'User32'...
         params['libs'] = 'User32 Shell32 Gdi32 Comdlg32 Winmm'.split()
         pass
     elif sys.platform=='darwin':

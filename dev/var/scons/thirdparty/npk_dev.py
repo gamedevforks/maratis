@@ -21,7 +21,7 @@ def getNPKDevParameters():
     params['defines'].append('M_PACKAGE_WRITABLE')
 
     # platform specific
-    if sys.platform=='win32':
+    if sys.platform=='win32' or sys.platform=='cygwin':
         # npk settings for win32
         params['libs'].append('npk_dev')
         pass
