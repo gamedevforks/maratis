@@ -14,8 +14,9 @@
 #include <MContexts/MBulletContext.h>
 #include <MLoaders/MiOSImageLoader.h>
 #include <MLoaders/MWavSoundLoader.h>
-//#include <MLoaders/MFreetypeLoader.h>
+#include <MLoaders/MFreetypeLoader.h>
 #include <MLoaders/MBinFontLoader.h>
+#include <MLoaders/MBinMeshLoader.h>
 
 #include <MFileManager/MLevelLoad.h>
 #include <MBehaviors/MBLookAt.h>
@@ -27,6 +28,8 @@
 #include <MProject/MProject.h>
 #include <MRenderers/MiOSStandardRenderer.h>
 #include <MRenderers/MFixedRenderer.h>
+#include <MFileManager/MPackageManagerNPK.h>
+
 
 MRenderingContext * render = NULL;
 MInputContext *	input = NULL;
@@ -37,6 +40,8 @@ MSystemContext * msystem = NULL;
 MPhysicsContext * physics = NULL;
 MScriptContext * script = NULL;
 MSoundContext * soundContext = NULL;
+MPackageManager * packageManager = NULL;
+
 
 class MiOSContext : public MSystemContext
 {
@@ -142,6 +147,20 @@ public:
 			}
 		}
 		
+		
+		// if we have a package manager, try to load the package
+		if(packageManager)
+		{
+			char packageFile[256];
+			strcpy(packageFile, filename);
+			if(char* ext = strstr(packageFile, ".mproj"))
+			{
+				strcpy(ext, ".npk");
+				packageManager->loadPackage(packageFile);
+			}
+		}
+		
+		
 		// load start level
 		engine->loadLevel(proj.startLevel.c_str());
 	}
@@ -225,11 +244,13 @@ public:
         script = new MScript();
         input = new MInput();
         msystem = new MiOSContext();
+		packageManager = new MPackageManagerNPK();
         
-        // create default Level and Game
-        level = new MLevel();
-        game = new MGame();
-        
+                
+		// package manager
+		engine->setPackageManager(packageManager);
+		packageManager->init();
+
         // init MEngine
         engine->setSoundContext(soundContext); // sound context
         engine->setPhysicsContext(physics); // physics context
@@ -240,6 +261,7 @@ public:
         engine->getImageLoader()->addLoader(M_loadImage); // image loader
 		engine->getSoundLoader()->addLoader(M_loadWavSound); // sound loader
         engine->getLevelLoader()->addLoader(xmlLevelLoad); // level loader
+		engine->getFontLoader()->addLoader(M_loadFont); // freetype font loader
         engine->getFontLoader()->addLoader(M_loadBinFont); // bin font loader
         
         // add some default "Maratis" behaviors : uncomment if wanted or add custom
@@ -251,16 +273,20 @@ public:
         engine->getRendererManager()->addRenderer(MFixedRenderer::getStaticName(), MFixedRenderer::getNew);
         
         // mesh loader
-        engine->getMeshLoader()->addLoader(xmlMeshLoad);
-        engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
-        engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
-        engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
+		engine->getMeshLoader()->addLoader(xmlMeshLoad);
+		engine->getMeshLoader()->addLoader(M_loadBinMesh);
+		engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
+		engine->getArmatureAnimLoader()->addLoader(M_loadBinArmatureAnim);
+		engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
+		engine->getTexturesAnimLoader()->addLoader(M_loadBinTexturesAnim);
+		engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
+        engine->getMaterialsAnimLoader()->addLoader(M_loadBinMaterialsAnim);
         
-        // set level
+		
+        // create default Level
+        level = new MLevel();
         engine->setLevel(level);
         
-        // set game
-        engine->setGame(game);
 		
         // configure accelerometer support
         [self configureMobileInput];
@@ -273,6 +299,10 @@ public:
 		{
 			return NO;
 		}
+		
+		// set game
+		game = new MGame();
+        engine->setGame(game);
 		
         // begin game
         game->begin();
@@ -626,6 +656,7 @@ public:
 		SAFE_DELETE(script);
 		SAFE_DELETE(input);
 		SAFE_DELETE(msystem);
+		SAFE_DELETE(packageManager);
 	}
     
     // Device Motion

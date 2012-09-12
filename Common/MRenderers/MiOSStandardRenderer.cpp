@@ -830,7 +830,7 @@ MShadowLight * MStandardRenderer::createShadowLight(MOLight * light)
 			shadowLight->shadowQuality = shadowQuality;
 			
 			render->bindTexture(shadowLight->shadowTexture);
-			render->texImage(0, shadowQuality, shadowQuality, M_UBYTE, M_DEPTH, 0);
+			render->texImage(0, shadowQuality, shadowQuality, M_UINT, M_DEPTH, 0);
 			render->bindTexture(0);
 		}
 		
@@ -848,7 +848,7 @@ MShadowLight * MStandardRenderer::createShadowLight(MOLight * light)
 		render->setTextureFilterMode(M_TEX_FILTER_LINEAR, M_TEX_FILTER_LINEAR);
 		render->setTextureUWrapMode(M_WRAP_CLAMP);
 		render->setTextureVWrapMode(M_WRAP_CLAMP);
-		render->texImage(0, shadowQuality, shadowQuality, M_UBYTE, M_DEPTH, 0);
+		render->texImage(0, shadowQuality, shadowQuality, M_UINT, M_DEPTH, 0);
 		render->bindTexture(0);
 		
 		return shadowLight;

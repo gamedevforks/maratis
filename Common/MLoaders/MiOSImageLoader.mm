@@ -40,13 +40,39 @@ bool M_loadImage(const char * filename, void * data)
 {
 	if((! data) || (! filename))
 		return false;
+
+	
+	// read from MFile
+	MFile* fp = M_fopen(filename, "rb");
+	if(!fp)
+		return false;
+	
+	M_fseek(fp, 0, SEEK_END);
+	int filesize = M_ftell(fp);
+	M_rewind(fp);
+	
+	char* buffer = new char[filesize];
+	if(filesize != M_fread(buffer, sizeof(char), filesize, fp))
+	{
+		M_fclose(fp);
+		delete [] buffer;
+		return false;
+	}
+	
+	M_fclose(fp);
+
+	NSData *memData = [[NSData alloc] initWithBytes:buffer length:filesize];
+	CGImageRef CGImage = [UIImage imageWithData:memData].CGImage;
+
+	delete [] buffer;
+	[memData release];
 	
 	
-	// get CGImage
-	CGImageRef CGImage = [UIImage imageNamed:[NSString stringWithUTF8String:filename]].CGImage;
 	
     if(! CGImage)
+	{
         return false;
+	}
 	
 	// read CGImage infos
     CGBitmapInfo info = CGImageGetBitmapInfo(CGImage);
@@ -56,7 +82,6 @@ bool M_loadImage(const char * filename, void * data)
     if(bpp < 8 || bpp > 32 || (colormodel != kCGColorSpaceModelMonochrome && colormodel != kCGColorSpaceModelRGB))
     {
         printf("ERROR MiOSImageLoader : unsupported format %s\n", filename);
-        CGImageRelease(CGImage);
         return false;
     }
 	
@@ -143,8 +168,7 @@ bool M_loadImage(const char * filename, void * data)
 			break;
 		}
 	}
-	
+
 	CFRelease(CGImgageData);
-    CGImageRelease(CGImage);
 	return true;
 }

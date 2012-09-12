@@ -414,8 +414,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
+	"if(AlphaTest)"
+		"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -459,8 +459,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
+	"if(AlphaTest)"
+		"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -514,8 +514,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
+	"if(AlphaTest)"
+		"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -563,8 +563,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
+	"if(AlphaTest)"
+		"if(texture0.w < 0.5) discard;"
 							
 	+ lightShader +
 
@@ -621,8 +621,8 @@ fragHeader +
 
 "void main(void)"
 "{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
+	"if(AlphaTest)"
+		"if(texture0.w < 0.5) discard;"
 		
 	+ lightShader +
 

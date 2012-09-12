@@ -23,7 +23,7 @@
 				intensity="100.000000"
 				spotAngle="60.000000"
 				spotExponent="0.040000"
-				shadow="true"
+				shadow="false"
 				shadowBias="2.000000"
 				shadowBlur="0.0000"
 				shadowQuality="256" />
