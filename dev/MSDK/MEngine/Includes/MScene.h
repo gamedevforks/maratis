@@ -83,7 +83,7 @@ public:
 
 	// name
 	void setName(const char * name);
-	inline const char * getName(void){ return m_name.getData(); }
+	inline const char * getName(void){ return m_name.getSafeString(); }
 
 	// data mode
 	inline void setDataMode(M_DATA_MODES dataMode){ m_dataMode = dataMode; }

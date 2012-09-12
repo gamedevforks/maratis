@@ -90,7 +90,7 @@ public:
 
 	// text
 	void setText(const char * text);
-	inline const char * getText(void){ return m_text.getData(); }
+	inline const char * getText(void){ return m_text.getSafeString(); }
 
 	// lines offset
 	inline vector <float> * getLinesOffset(void){ return &m_linesOffset; }

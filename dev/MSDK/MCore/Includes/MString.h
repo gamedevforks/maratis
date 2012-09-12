@@ -49,6 +49,7 @@ public:
 	
 	void clear(void);
 	void set(const char * data);
+	const char * getSafeString(void);
 	inline const char * getData(void){ return m_data; }
 	
 	inline void operator = (const MString & string){ set(string.m_data); }

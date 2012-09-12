@@ -73,7 +73,7 @@ public:
 public:
 
 	// create
-	bool create(const char * title, unsigned int width, unsigned int height, int colorBits, bool fullscreen, int samples = 0);
+	bool create(const char * title, unsigned int width, unsigned int height, int colorBits, bool fullscreen, bool vsync = false, int samples = 0);
 
 	// events
 	inline void setPointerEvent(void (*pointerEvent)(MWinEvent * windowEvents)){ m_pointerEvent = pointerEvent; }

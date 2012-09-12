@@ -1893,7 +1893,7 @@ int enableRenderToTexture(lua_State * L)
 				render->setTextureFilterMode(M_TEX_FILTER_LINEAR, M_TEX_FILTER_LINEAR);
 				render->setTextureUWrapMode(M_WRAP_CLAMP);
 				render->setTextureVWrapMode(M_WRAP_CLAMP);
-				render->texImage(0, width, height, M_UBYTE, M_DEPTH, 0);
+				render->texImage(0, width, height, M_UINT, M_DEPTH, 0);
 				render->bindTexture(0);
 				
 				colorTexture->setTextureId(m_colorTextureId);

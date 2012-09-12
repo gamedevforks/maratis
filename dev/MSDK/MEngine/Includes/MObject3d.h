@@ -151,7 +151,7 @@ public:
 
 	// name
 	void setName(const char * name);
-	inline const char * getName(void){ return m_name.getData(); }
+	inline const char * getName(void){ return m_name.getSafeString(); }
 
 	// type
 	virtual int getType(void){ return M_OBJECT3D; }

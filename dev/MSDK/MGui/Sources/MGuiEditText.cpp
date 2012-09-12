@@ -181,7 +181,7 @@ void MGuiEditText::updateFromVariable(void)
 	case M_VAR_STRING:
 		{
 			MString * value = (MString *)getVariablePointer();
-			setText(value->getData());
+			setText(value->getSafeString());
 		}
 		break;
 	}

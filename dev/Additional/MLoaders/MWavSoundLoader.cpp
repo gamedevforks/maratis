@@ -36,7 +36,7 @@
 
 bool M_loadWavSound(const char * filename, void * data)
 {
-	FILE * file = fopen(filename, "rb");
+	MFile * file = M_fopen(filename, "rb");
 	if(! file)
 	{
 		printf("ERROR Load Sound : unable to read %s file\n", filename);
@@ -45,35 +45,35 @@ bool M_loadWavSound(const char * filename, void * data)
 	
 	// read header
 	char header[4];
-	fread(header, sizeof(char), 4, file);
+	M_fread(header, sizeof(char), 4, file);
 	
 	// RIFF - WAV
 	if(strncmp(header, "RIFF", 4) == 0)
 	{
 		unsigned int size;
-		fread(&size, sizeof(int), 1, file);
-		fread(header, sizeof(char), 4, file);
+		M_fread(&size, sizeof(int), 1, file);
+		M_fread(header, sizeof(char), 4, file);
 		
 		if(strncmp(header, "WAVE", 4) == 0)
 		{
 			short format_tag, channels, block_align, bits_per_sample;
 			unsigned int format_length, sample_rate, avg_bytes_sec, data_size;
 			
-			fread(header, sizeof(char), 4, file); // "fmt ";
-			fread(&format_length, sizeof(int),1,file);
-			fread(&format_tag, sizeof(short), 1, file);
-			fread(&channels, sizeof(short),1,file);
-			fread(&sample_rate, sizeof(int), 1, file);
-			fread(&avg_bytes_sec, sizeof(int), 1, file);
-			fread(&block_align, sizeof(short), 1, file);
-			fread(&bits_per_sample, sizeof(short), 1, file);
-			fread(header, sizeof(char), 4, file); // "data"
-			fread(&data_size, sizeof(int), 1, file);
+			M_fread(header, sizeof(char), 4, file); // "fmt ";
+			M_fread(&format_length, sizeof(int),1,file);
+			M_fread(&format_tag, sizeof(short), 1, file);
+			M_fread(&channels, sizeof(short),1,file);
+			M_fread(&sample_rate, sizeof(int), 1, file);
+			M_fread(&avg_bytes_sec, sizeof(int), 1, file);
+			M_fread(&block_align, sizeof(short), 1, file);
+			M_fread(&bits_per_sample, sizeof(short), 1, file);
+			M_fread(header, sizeof(char), 4, file); // "data"
+			M_fread(&data_size, sizeof(int), 1, file);
 			
 			if((! (bits_per_sample == 8 || bits_per_sample == 16)) || (! (channels > 0 && channels <= 2)) || (format_tag != 1))
 			{
 				printf("1ERROR Load Sound : unsupported RIFF file\n");
-				fclose(file);
+				M_fclose(file);
 				return false;
 			}
 			
@@ -113,9 +113,9 @@ bool M_loadWavSound(const char * filename, void * data)
 			sound->create(format, data_size, sample_rate);
 			
 			// read sound data
-			fread((char *)sound->getData(), sizeof(char), data_size, file);
+			M_fread((char *)sound->getData(), sizeof(char), data_size, file);
 			
-			fclose(file);
+			M_fclose(file);
 			return true;
 		}
 		else{
@@ -123,6 +123,6 @@ bool M_loadWavSound(const char * filename, void * data)
 		}
 	}
 	
-	fclose(file);
+	M_fclose(file);
 	return false;
 }

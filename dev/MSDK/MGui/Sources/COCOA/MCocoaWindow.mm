@@ -750,7 +750,7 @@ void MWindow::swapBuffer(void)
 	[context flushBuffer];
 }
 
-bool MWindow::create(const char * title, unsigned int width, unsigned int height, int colorBits, bool fullscreen, int samples)
+bool MWindow::create(const char * title, unsigned int width, unsigned int height, int colorBits, bool fullscreen, bool vsync, int samples)
 {
     delegate = [[GLFWWindowDelegate alloc] init];
     if(delegate == nil)
@@ -879,9 +879,13 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	if(title != NULL)
 		setTitle(title);
 
-	// sync
-	//GLint sync = 60;
-    //[context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
+	
+	// v-sync
+	if(vsync)
+	{
+		GLint sync = 1;
+		[context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
+	}
 	
 	// window scale
 	NSRect contentRect = [window contentRectForFrameRect:[window frame]];
