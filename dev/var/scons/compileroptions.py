@@ -34,7 +34,8 @@ class CompilationFlags:
             self.CppDebugFlags   = '-g'
             self.CppReleaseFlags = '-Os'
             # preprocessor definitions
-			# choose here between a WIN32 build or a POSIX LINUX build (both compile but POSIX build have still perhaps some link errors to be fixed)
+			# choose here between a WIN32 build or a POSIX LINUX like build :
+			# both compile but POSIX build have still perhaps some link errors to be fixed and needs a X server
             self.CppCommonDefines  = 'WIN32'
             self.CppDebugDefines   = '_DEBUG __Debug__'
             self.CppReleaseDefines = 'NDEBUG'

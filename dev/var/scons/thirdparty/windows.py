@@ -29,7 +29,7 @@ def getWindowsParameters():
 		#   Gdi32 : needed for SwapBuffer,...
 		#	crtdll : needed for __commit used by npk_dev
 		# Seems un useful : 'glaux' 'Shell32', 'User32'...
-        params['libs'] = 'User32 Shell32 Gdi32 Comdlg32 Winmm crtdll'.split()
+        params['libs'] = 'User32 Shell32 Gdi32 Comdlg32 Winmm'.split()
         pass
     elif sys.platform=='darwin':
         # Windows settings for osx

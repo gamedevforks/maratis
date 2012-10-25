@@ -25,11 +25,11 @@
 
 
 #include <MEngine.h>
+#include <MLog.h>
 #include <MWindow.h>
 
 #include <MGameWinEvents.h>
 #include "Maratis/MaratisPlayer.h"
-
 
 // window events
 void windowEvents(MWinEvent * windowEvents)
@@ -69,6 +69,8 @@ void draw(void)
 // main
 int main(int argc, char **argv)
 {
+	MLOG(5, "main: "<<argc<<" args...");
+
 	setlocale(LC_NUMERIC, "C");
 
 	unsigned int width = 1024;
@@ -89,15 +91,19 @@ int main(int argc, char **argv)
 	MWindow * window = MWindow::getInstance();
 
 	// create window
-	window->create("Maratis", width, height, 32, fullscreen == 1);
+	bool res=window->create("Maratis", width, height, 32, fullscreen == 1);
+    if (!res)
+		MLOG(3, "cannot create window");
+
 	if(fullscreen)
 		window->hideCursor();
 
 	// set current directory
 	char rep[256];
 	getRepertory(rep, argv[0]);
+	MLOG(5, "Current repertory: " << rep);
 	window->setCurrentDirectory(rep);
-	
+
 	// get Maratis (first time call onstructor)
 	MaratisPlayer * maratis = MaratisPlayer::getInstance();
 
@@ -115,8 +121,10 @@ int main(int argc, char **argv)
 			engine->getGame()->begin();
 			projectFound = true;
 		}
+		else
+			MLOG(3, "Cannot load project "<<argv[1]);
 	}
-	
+
 	if(! projectFound)
 	{
 		// if we've found, and written the embedded sections, then use that data
@@ -125,12 +133,12 @@ int main(int argc, char **argv)
 		{
 			MProject embeddedProj;
 			embeddedProj.renderer = s_embedded_renderer;
-			
+
 			char levelName[256];
 			getGlobalFilename(levelName, window->getCurrentDirectory(), s_embedded_level_name);
 			char projName[256];
 			getGlobalFilename(projName, window->getCurrentDirectory(), s_embedded_game_name);
-			
+
 			embeddedProj.startLevel = levelName;
 			maratis->loadProject(&embeddedProj, projName);
 			engine->getGame()->begin();
@@ -141,14 +149,14 @@ int main(int argc, char **argv)
 			// look for an mproj in the current directory
 			std::vector<std::string> files;
 			readDirectory(".", &files);
-			
+
 			for(int i = 0; i < files.size(); ++i)
 			{
 				if(strstr(files[i].c_str(), ".mproj"))
 				{
 					char filename[256];
 					getGlobalFilename(filename, window->getCurrentDirectory(), files[i].c_str());
-					
+
 					if(maratis->loadProject(filename))
 					{
 						engine->getGame()->begin();
@@ -159,14 +167,14 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+	else
+		MLOG(4, "Project found");
 
-	
 	// time
 	unsigned int frequency = 60;
 	unsigned long previousFrame = 0;
 	unsigned long startTick = window->getSystemTick();
-	
-	
+
 	// on events
 	while(window->isActive())
 	{
@@ -176,7 +184,7 @@ int main(int argc, char **argv)
 			engine->getGame()->end();
 			break;
 		}
-		
+
 		// on events
 		if(window->onEvents())
 		{
@@ -192,7 +200,7 @@ int main(int argc, char **argv)
 				unsigned int i;
 				unsigned int steps = (unsigned int)(frame - previousFrame);
 
-			
+
 				// don't wait too much
 				if(steps >= (frequency/2))
 				{
@@ -201,7 +209,7 @@ int main(int argc, char **argv)
 					previousFrame += steps;
 					continue;
 				}
-				
+
 				// update
 				for(i=0; i<steps; i++)
 				{
@@ -219,9 +227,11 @@ int main(int argc, char **argv)
 				window->sleep(0.1);
 			}
 		}
-		
+
 		//window->sleep(0.001); // 1 mili sec seems to slow down on some machines...
 	}
+
+    MLOG(5, "Quitting main...");
 
 	maratis->clear();
 	return 0;
