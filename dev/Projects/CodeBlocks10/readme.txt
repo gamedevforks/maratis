@@ -1,4 +1,5 @@
-For the moment this project works with cygwin build as some path contains the cygwin keyword because the Maratis Scons build writes the libs in a folder containing the build platform name:
-/build/platform/release/...
-It should be although possible to adapt to any platform by creating a variable in codeblock storing the platform (cygwin, linux, mac...) and using it in path :
-../../build/$PLATFORM/release/...
+For the moment this project should work with the cygwin build as some defines are hard coded in the build settings.
+Feel free to create any other build config (linux, mac,...).
+It should even be possible to adapt to any platform changing the PLATFORM variable to the platform used by scons (cygwin, linux, mac...) as already used in pathes :
+../../build/$(PLATFORM)/release/...
+Skai.
