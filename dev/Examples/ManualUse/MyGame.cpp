@@ -27,14 +27,17 @@
 
 
 #include "MyGame.h"
-
+#include <MLog.h>
 
 MyGame::MyGame(void):
 MGame()
-{}
+{
+    MLOG(6, "new MyGame...");
+}
 
 MyGame::~MyGame(void)
-{}
+{
+}
 
 void MyGame::onBegin(void)
 {
@@ -44,7 +47,10 @@ void MyGame::onBegin(void)
 	// get level
 	MLevel * level = engine->getLevel();
 	if(! level)
-		return;
+	{
+	    MLOG(4, "Cannot get level from engine");
+	    return;
+	}
 
 	// create a scene manually
 	if(level->getScenesNumber() == 0)
@@ -57,6 +63,8 @@ void MyGame::onBegin(void)
 
 		// camera
 		MOCamera * camera = scene->addNewCamera();
+		if (!camera)
+            MLOG(4, "Failed to add a new camera");
 		camera->setClearColor(MVector3(0.5f, 0.5f, 0.5f)); // set grey clear color
 		camera->setPosition(MVector3(0.0f, -80.0f, 20.0f));
 		camera->setEulerRotation(MVector3(90.0f, 0.0f, 0.0f));
@@ -64,13 +72,22 @@ void MyGame::onBegin(void)
 		// add robot entity
 		getGlobalFilename(filename, workingDir, "meshs/robot.mesh");
 		MMeshRef * meshRef = level->loadMesh(filename);
-		scene->addNewEntity(meshRef);
+		if (!meshRef)
+            MLOG(4, "cannot load mesh robot");
+		MOEntity* re=scene->addNewEntity(meshRef);
+        if (!re)
+            MLOG(4, "Cannot add Robot entity to scene");
 
 		// add cubes with physics
 		{
 			// create entities
 			getGlobalFilename(filename, workingDir, "meshs/box.mesh");
 			meshRef = level->loadMesh(filename);
+			if (!meshRef)
+                MLOG(4, "Cannot load box mesh")
+            else
+                MLOG(5, "Box mesh loaded: "<<filename);
+
 			MOEntity * box1 = scene->addNewEntity(meshRef);
 			MOEntity * box2 = scene->addNewEntity(meshRef);
 			MOEntity * box3 = scene->addNewEntity(meshRef);
@@ -86,6 +103,8 @@ void MyGame::onBegin(void)
 
 			// enable physics, MPhysicsProperties create a static box shape by default
 			MPhysicsProperties * phyProps = box1->createPhysicsProperties();
+            if (!phyProps)
+                MLOG(4, "Cannot create phys prop from box");
 
 			phyProps = box2->createPhysicsProperties();
 			phyProps->setMass(1);
@@ -106,6 +125,8 @@ void MyGame::onBegin(void)
 
 		// add light
 		MOLight * light = scene->addNewLight();
+		if (!light)
+            MLOG(4, "Cannot add light");
 		light->setPosition(MVector3(0.0f, 0.0f, 100.0f));
 		light->setRadius(1000.0f);
 	}
@@ -121,25 +142,39 @@ void MyGame::update(void)
 	// get level
 	MLevel * level = engine->getLevel();
 	if(! level)
-		return;
+	{
+	    MLOG(4, "Cannot get level from engine");
+	    return;
+	}
 
 	// get current scene
 	MScene * scene = level->getCurrentScene();
 	if(! scene)
-		return;
+	{
+	    MLOG(4, "Cannot get scene from level");
+	    return;
+	}
 
 	// rotate the entity
 	MOEntity * entity = scene->getEntityByIndex(0);
-	entity->addAxisAngleRotation(MVector3(0.0f, 0.0f, 1.0f), 1.0f);
+	if (entity)
+        entity->addAxisAngleRotation(MVector3(0.0f, 0.0f, 1.0f), 1.0f);
+    else
+        MLOG(4, "Cannot retrieve entity 0");
 
 	// change light intensity with keyboard
 	MOLight * light = scene->getLightByIndex(0);
 
-	if(input->isKeyPressed("UP")){ // inputs are also virtual, you can create your hown keys or axis
+	if(light && input->isKeyPressed("UP"))
+	{
+	    MLOG(5, "Pumping up light intensity: "<<light->getIntensity());
+	    // inputs are also virtual, you can create your hown keys or axis
 		light->setIntensity(light->getIntensity() + 0.1f);
 	}
 
-	if(input->isKeyPressed("DOWN")){
+	if(light && input->isKeyPressed("DOWN"))
+	{
+	    MLOG(5, "Decreasing light intensity: "<<light->getIntensity())
 		light->setIntensity(MAX(0.0f, light->getIntensity() - 0.1f));
 	}
 }
@@ -164,11 +199,12 @@ void MyGame::draw(void)
 	render->enableDepthTest();
 
 	MOCamera * camera = scene->getCameraByIndex(0);
-	
+
 	render->setClearColor(*camera->getClearColor());
 	render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
 	camera->enable();
 	camera->updateListener();
 	scene->draw(camera);
-}*/
+}
+*/

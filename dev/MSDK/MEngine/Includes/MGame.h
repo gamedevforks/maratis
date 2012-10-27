@@ -54,7 +54,7 @@ public:
 
 	// begin / end
 	void begin(void) { onBegin(); onBeginLevel(); onBeginScene(); m_isRunning = true; }
-	void end(void){ onEndScene(); onEndLevel(); onEnd(); m_isRunning = false; }
+	void end(void) { onEndScene(); onEndLevel(); onEnd(); m_isRunning = false; }
 
 	// events
 	virtual void update(void);

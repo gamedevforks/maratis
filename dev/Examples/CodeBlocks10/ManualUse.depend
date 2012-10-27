@@ -51,7 +51,7 @@
 	"MLevel.h"
 	"MGame.h"
 
-1346872544 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mcore\includes\mcore.h
+1351368127 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mcore\includes\mcore.h
 	"MUtils.h"
 	"MString.h"
 	"MFile.h"
@@ -219,7 +219,7 @@
 
 1346872543 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mlevel.h
 
-1351363476 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mgame.h
+1351377979 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mgame.h
 
 1351366618 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mlog.h
 	<ostream>
@@ -890,13 +890,14 @@
 	<iostream>
 	<fstream>
 
-1346872540 source:g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\mygame.cpp
+1351378383 source:g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\mygame.cpp
 	"MyGame.h"
+	<MLog.h>
 
-1346872540 g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\mygame.h
+1351378582 g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\mygame.h
 	<MEngine.h>
 
-1351367668 source:g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\main.cpp
+1351377935 source:g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\main.cpp
 	<MEngine.h>
 	<MWindow.h>
 	<MLog.h>

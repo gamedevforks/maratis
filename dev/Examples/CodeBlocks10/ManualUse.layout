@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="..\ManualUse\main.cpp" open="1" top="1" tabpos="0">
-		<Cursor position="3193" topLine="106" />
+	<File name="..\ManualUse\MyGame.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="2383" topLine="51" />
+	</File>
+	<File name="..\ManualUse\MyGame.h" open="1" top="0" tabpos="3">
+		<Cursor position="1611" topLine="15" />
+	</File>
+	<File name="..\ManualUse\main.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="1337" topLine="46" />
 	</File>
 </CodeBlocks_layout_file>

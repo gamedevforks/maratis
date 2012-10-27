@@ -111,6 +111,8 @@ void draw(void)
 		{
 			game->draw();
 		}
+		else
+            MLOG(4, "Game not running");
 	}
 
 	window->swapBuffer();
