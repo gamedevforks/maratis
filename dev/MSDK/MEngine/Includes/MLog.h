@@ -37,7 +37,10 @@
 #include <fstream>
 #include <string>
 // to do : add syslog support
+
+#ifdef __CYGWIN__
 //#include <syslog.h>
+#endif
 
 /* Log function compatible with the syslog standard, usefull for filtering logs, and logging networkly (todo).
 	0	Emergency	emerg (panic)	System is unusable.	A "panic" condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call.

@@ -44,26 +44,26 @@ public:
 	virtual ~MGame(void);
 
 private:
-	
+
 	static MOCamera * getCurrentCamera(MScene * scene);
-	
+
 public:
 
 	// is running
 	inline bool isRunning(void){ return m_isRunning; }
 
 	// begin / end
-	void begin(void){ onBegin(); onBeginLevel(); onBeginScene(); m_isRunning = true; }
+	void begin(void) { onBegin(); onBeginLevel(); onBeginScene(); m_isRunning = true; }
 	void end(void){ onEndScene(); onEndLevel(); onEnd(); m_isRunning = false; }
 
 	// events
 	virtual void update(void);
 	virtual void draw(void);
 
-	virtual void onBegin(void){}
+	virtual void onBegin(void) { }
 	virtual void onEnd(void){}
 
-	virtual void onBeginLevel(void){}
+	virtual void onBeginLevel(void) { }
 	virtual void onEndLevel(void){}
 
 	virtual void onBeginScene(void);

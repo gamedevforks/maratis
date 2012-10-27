@@ -28,7 +28,7 @@
 
 #include <MEngine.h>
 #include <MWindow.h>
-
+#include <MLog.h>
 #include <MGameWinEvents.h>
 
 //MCore_Implements
@@ -126,14 +126,17 @@ int main(int argc, char **argv)
 	bool fullscreen = false;
 
 	// get engine
-	MEngine * engine = MEngine::getInstance();
+	MEngine* engine = MEngine::getInstance();
 
 	// get window
-	MWindow * window = MWindow::getInstance();
+	MWindow* window = MWindow::getInstance();
 	window->setPointerEvent(windowEvents); // window events
 
 	// create window
-	window->create("Maratis - ManualUse example", width, height, 32, fullscreen);
+	MLOG(5, "Creating a window of "<<width<<"*"<<height<<" at 32bpp "<<(fullscreen?"in fullscreen":"not fullscreen")<<"..." );
+	bool b=window->create("Maratis - ManualUse example", width, height, 32, fullscreen);
+	if (!b)
+	   MLOG(4, "Create window returned false");
 	if(fullscreen)
 		window->hideCursor();
 
@@ -141,6 +144,7 @@ int main(int argc, char **argv)
 	{
 		char rep[256];
 		getRepertory(rep, argv[0]);
+		MLOG(5, "Current dir set to "<<rep)
 		window->setCurrentDirectory(rep);
 	}
 
@@ -151,11 +155,12 @@ int main(int argc, char **argv)
 	MScriptContext * script = new MScript();
 	MInputContext *	input = new MInput();
 	MSystemContext * system = new MWinContext();
-	
+
 	// create default Level and Game
 	MLevel * level = new MLevel();
 	MGame * game = new MyGame(); // MyGame
 
+    MLOG(5, "Set contexts...");
 	// init MEngine (you can replace all contexts by others and add or use different data loaders)
 	engine->setSoundContext(soundContext); // sound context
 	engine->setRenderingContext(render); // rendering context
@@ -177,7 +182,7 @@ int main(int argc, char **argv)
 	// add renderers
 	engine->getRendererManager()->addRenderer(MStandardRenderer::getStaticName(), MStandardRenderer::getNew);
 	engine->getRendererManager()->addRenderer(MFixedRenderer::getStaticName(), MFixedRenderer::getNew);
-	
+
 	// mesh loader
 	engine->getMeshLoader()->addLoader(xmlMeshLoad);
 	engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
@@ -201,7 +206,7 @@ int main(int argc, char **argv)
 	unsigned int frequency = 60;
 	unsigned long previousFrame = 0;
 	unsigned long startTick = window->getSystemTick();
-	
+
 	// on events
 	while(window->isActive())
 	{
@@ -228,7 +233,7 @@ int main(int argc, char **argv)
 					previousFrame += steps;
 					continue;
 				}
-				
+
 				// update
 				for(i=0; i<steps; i++)
 				{
@@ -249,7 +254,9 @@ int main(int argc, char **argv)
 		}
 	}
 
+	MLOG(5, "Quitting: ending game...");
 	game->end();
+    MLOG(5, "Quitting: destroying renderer...");
 	renderer->destroy();
 
 	SAFE_DELETE(game);
