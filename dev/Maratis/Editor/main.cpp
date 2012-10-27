@@ -29,7 +29,7 @@
 
 #include <MEngine.h>
 #include <MLoaders/MDevILLoader.h>
-
+#include <MLog.h>
 #include "MFilesUpdate/MFilesUpdate.h"
 #include "Maratis/Maratis.h"
 #include "Maratis/MaratisUI.h"
@@ -81,6 +81,7 @@ void draw(void)
 // main
 int main(int argc, char **argv)
 {
+    MLOG(6, "Entering main...");
 	setlocale(LC_NUMERIC, "C");
 
 	// get engine (first time call onstructor)
@@ -90,23 +91,36 @@ int main(int argc, char **argv)
 	MWindow * window = MWindow::getInstance();
 
 	// create window
-	window->create("Maratis", 1024,768, 32, false);
+	bool b=window->create("Maratis", 1024,768, 32, false);
+    if(!b)
+        MLOG(4, "Cannot create window");
 
 	// set current directory
 	char rep[256];
 	getRepertory(rep, argv[0]);
 	window->setCurrentDirectory(rep);
+    MLOG(5, "Current dir set to "<<rep);
 
 	// get Maratis (first time call onstructor)
+    MLOG(6, "Getting Maratis object...");
 	Maratis * maratis = Maratis::getInstance();
+    if (!maratis)
+        MLOG(4, "Cannot get the Maratis instance");
 	MRenderingContext * render = engine->getRenderingContext();
+    if (!render)
+        MLOG(4, "Cannot get rendering context from engine");
 
 	// init gui
+    MLOG(5, "main: init GUI...");
 	MGui * gui = MGui::getInstance();
+    if (!gui)
+        MLOG(4, "Cannot get MGui instance");
 	gui->setRenderingContext(render);
+    MLOG(6, "main: adding default.tga...");
 	gui->addFont(new MGuiTextureFont("font/default.tga"));
 
 	// init MaratisUI
+    MLOG(5, "main: init Maratis UI...")
 	MaratisUI * UI = MaratisUI::getInstance();
 	window->setPointerEvent(MaratisUI::windowEvents);
 
@@ -114,7 +128,10 @@ int main(int argc, char **argv)
 	{
 		MImage image;
 		if(! M_loadImage("gui/Title.png", &image))
-			return 0;
+		{
+            MLOG(4, "Cant load title image Title.png");
+            return 0;
+        }
 
 		render->createTexture(&logoTextureId);
 		render->bindTexture(logoTextureId);
@@ -144,8 +161,8 @@ int main(int argc, char **argv)
 
 	int f = 0;
 	int t = 0;
-	
-	
+
+    MLOG(7, "Entering main loop...");
 	// on events
 	while(window->isActive())
 	{
@@ -154,7 +171,7 @@ int main(int argc, char **argv)
 			UI->endGame();
 			engine->setActive(true);
 		}
-		
+
 		// on events
 		if(window->onEvents())
 		{
@@ -170,7 +187,7 @@ int main(int argc, char **argv)
 				unsigned int i;
 				unsigned int steps = (unsigned int)(frame - previousFrame);
 
-			
+
 				// don't wait too much
 				if(steps >= (frequency/2))
 				{
@@ -179,7 +196,7 @@ int main(int argc, char **argv)
 					previousFrame += steps;
 					continue;
 				}
-				
+
 				// update
 				for(i=0; i<steps; i++)
 				{
@@ -217,7 +234,7 @@ int main(int argc, char **argv)
 				window->sleep(0.1);
 			}
 		}
-		
+
 		//window->sleep(0.001); // 1 mili sec seems to slow down on some machines...
 	}
 

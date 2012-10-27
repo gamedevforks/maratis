@@ -31,7 +31,6 @@
 #include <MLoaders/MDevILLoader.h>
 #include "../Includes/MGui.h"
 
-
 // global functions
 void set2dMode(MRenderingContext * render)
 {
@@ -99,7 +98,8 @@ bool MGui::loadTexture(const char * filename, unsigned int * textureId)
 	for(i=0; i<tSize; i++)
 	{
 		MGuiTexture * texture = m_textures[i];
-
+        if (!texture)
+            continue;
 		if(strcmp(filename, texture->name.c_str()) == 0)
 		{
 			*textureId = texture->textureId;

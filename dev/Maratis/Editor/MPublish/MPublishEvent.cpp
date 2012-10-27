@@ -46,7 +46,7 @@ const char* getPubDir()
 {
 	MEngine* engine = MEngine::getInstance();
 	MSystemContext* system = engine->getSystemContext();
-	
+
 	char dir[256];
 	getGlobalFilename(dir, system->getWorkingDirectory(), "published");
 	s_pubDir = dir;
@@ -58,7 +58,7 @@ const char* getDataDir()
 {
 	if(s_dataDir.empty())
 		return getPubDir();
-	
+
 	return s_dataDir.c_str();
 }
 
@@ -74,12 +74,12 @@ MPackage openProjectPackage(const char* projName)
 	{
 		return 0;
 	}
-		
+
 	sprintf(ext, ".npk");
 	char packFile[256];
-	
+
 	getGlobalFilename(packFile, getDataDir(), projFile);
-	
+
 	MPackageManager* packageManager = engine->getPackageManager();
 	MPackage package = packageManager->openPackage(packFile);
 
@@ -171,24 +171,24 @@ class MPublishEventMeshsPackage : public MPublishEvent
 		MEngine* engine = MEngine::getInstance();
 		MSystemContext* system = engine->getSystemContext();
 		MPackageManager* packageManager = engine->getPackageManager();
-		
-		char directory[256], localFilename[256]; 
-		getGlobalFilename(directory, system->getWorkingDirectory(), "meshs"); 
-		std::vector<std::string> files; 
+
+		char directory[256], localFilename[256];
+		getGlobalFilename(directory, system->getWorkingDirectory(), "meshs");
+		std::vector<std::string> files;
 		readDirectory(directory, &files, 1, 1);
-		
+
 		MLevel* currentLevel = engine->getLevel();
 		MLevel* tempLevel = new MLevel();
 		engine->setLevel(tempLevel);
-		
+
 		MMesh* mesh = MMesh::getNew();
 		MArmatureAnim* armAnim = MArmatureAnim::getNew();
 		MTexturesAnim* texAnim = MTexturesAnim::getNew();
 		MMaterialsAnim* matAnim = MMaterialsAnim::getNew();
-		
+
 		// open package and scan meshes
 		MPackage package = openProjectPackage(projName);
-		for(int i = 0; i < files.size(); ++i) 
+		for(int i = 0; i < files.size(); ++i)
 		{
 			// export bin
 			if(strstr(files[i].c_str(), ".mesh") != 0)
@@ -212,25 +212,25 @@ class MPublishEventMeshsPackage : public MPublishEvent
 				if(engine->getTexturesAnimLoader()->loadData(files[i].c_str(), texAnim))
 					exportTexturesAnimBin((files[i] + ".bin").c_str(), texAnim);
 			}
-			
+
 			tempLevel->clear();
-			
+
 			// pack file
 			getLocalFilename(localFilename, system->getWorkingDirectory(), files[i].c_str());
 			packageManager->addFileToPackage((files[i] + ".bin").c_str(), package, localFilename);
 		}
 		packageManager->closePackage(package);
-		
+
 		// clear mesh
 		mesh->destroy();
 		armAnim->destroy();
 		texAnim->destroy();
 		matAnim->destroy();
-		
+
 		// remove bin
-		for(int i = 0; i < files.size(); ++i) 
+		for(int i = 0; i < files.size(); ++i)
 			remove((files[i] + ".bin").c_str());
-		
+
 		// restore level
 		engine->setLevel(currentLevel);
 		SAFE_DELETE(tempLevel);
@@ -250,12 +250,12 @@ static void embedProject(const char * src, const char * dest, const char * game,
 	printf("%s\n", game);
 	printf("%s\n", level);
 	printf("%s\n", renderer);
-	
+
 	FILE* fp = 0;
 	fp = fopen(src, "rb");
 	if(! fp)
 		return;
-	
+
 	fseek(fp, 0, SEEK_END);
 	size_t size = ftell(fp);
 	rewind(fp);
@@ -267,7 +267,7 @@ static void embedProject(const char * src, const char * dest, const char * game,
 		return;
 	}
 	fclose(fp);
-	
+
 	// look for the embedded data and replace it
 	for(char* pChar = buff; pChar != buff+size; ++pChar)
 	{
@@ -287,7 +287,7 @@ static void embedProject(const char * src, const char * dest, const char * game,
 			}
 		}
 	}
-	
+
 	fp = fopen(dest, "wb");
 	fwrite(buff, sizeof(char), size, fp);
 	fclose(fp);
@@ -320,7 +320,7 @@ void copySysWindows(const char* projName)
 #else
 	const char * appName = "MaratisPlayer.exe";
 #endif
-	
+
 	MEngine* engine = MEngine::getInstance();
 	MSystemContext* system = engine->getSystemContext();
 
@@ -338,12 +338,12 @@ void copySysWindows(const char* projName)
 
 			char level[256];
 			getLocalFilename(level, system->getWorkingDirectory(), proj.startLevel.c_str());
-			
+
 			// we need the project "filename" to still be a .mproj for MaratisPlayer to behave
 			// correctly
 			strcpy(ext, ".mproj");
 			embedProject(appName, destName, filename, level, proj.renderer.c_str());
-		
+
 			// find all dynamic libraries
 			copyDirFiles(".", getPubDir(), ".dll");
 		}
@@ -359,7 +359,7 @@ void copySysOSX(const char* projName)
 #else
 	const char * appName = "MaratisPlayer";
 #endif
-	
+
 	MWindow * window = MWindow::getInstance();
 	MEngine* engine = MEngine::getInstance();
 	MSystemContext* system = engine->getSystemContext();
@@ -373,27 +373,27 @@ void copySysOSX(const char* projName)
 		if(proj.loadXML(projName))
 		{
 			strcpy(ext, ".app");
-			
+
 			char path[256];
 			char srcName[256];
 			char destName[256];
 			char appPath[256];
 			char level[256];
-			
+
 			getLocalFilename(level, system->getWorkingDirectory(), proj.startLevel.c_str());
 			getGlobalFilename(appPath, getPubDir(), filename);
-			
+
 			sprintf(path, "../../../%s.app", appName);
 			getGlobalFilename(srcName, window->getCurrentDirectory(), path);
 			copyDirectory(srcName, appPath);
-			
+
 			strcpy(ext, "");
 			sprintf(srcName, "%s/Contents/MacOS/%s", appPath, appName);
-		
+
 			strcpy(ext, ".mproj");
 			embedProject(srcName, srcName, filename, level, proj.renderer.c_str());
 			chmod(srcName, 0777);
-			
+
 			// we need to put all data in app/Contents/Resources/
 			sprintf(destName, "%s/Contents/Resources", appPath);
 			createDirectory(destName);
@@ -411,7 +411,7 @@ void copySysLinux(const char* projName)
 #else
 	const char * appName = "MaratisPlayer";
 #endif
-	
+
 	MEngine* engine = MEngine::getInstance();
 	MSystemContext* system = engine->getSystemContext();
 
@@ -421,20 +421,20 @@ void copySysLinux(const char* projName)
 	if(char* ext = strstr(filename, ".mproj"))
 	{
 		*ext = 0;
-		
+
 		MProject proj;
 		if(proj.loadXML(projName))
 		{
 			char destName[256];
 			getGlobalFilename(destName, getPubDir(), filename);
-			
+
 			char level[256];
 			getLocalFilename(level, system->getWorkingDirectory(), proj.startLevel.c_str());
-			
+
 			strcpy(ext, ".mproj");
 			embedProject(appName, destName, filename, level, proj.renderer.c_str());
 			chmod(destName, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-			
+
 			// find all dynamic libraries
 			copyDirFiles(".", getPubDir(), ".so");
 		}
@@ -452,8 +452,8 @@ class MPublishEventCopySys : public MPublishEvent
 {
 	void	execute(const char* projName)
 	{
-		
-		// for now these are #define'd out. In reality the engine should ship with 
+
+		// for now these are #define'd out. In reality the engine should ship with
 		// players for all OS's and then you can choose which OS(/device) you want
 		// to publish to
 #ifdef WIN32

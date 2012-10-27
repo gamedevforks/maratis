@@ -31,10 +31,9 @@
 #include <stdio.h>
 #include "../Includes/MGui.h"
 
- 
-MGuiTextureFont::MGuiTextureFont(const char * filename): 
+MGuiTextureFont::MGuiTextureFont(const char * filename):
 m_texture(0),
-m_space(0.5f), 
+m_space(0.5f),
 m_tabSpace(2.0f)
 {
 	MGui::getInstance()->loadTexture(filename, &m_texture);
@@ -45,7 +44,7 @@ MVector2 MGuiTextureFont::getCharacterPosition(const char * text, const MVector2
 	MVector2 pos;
 	float xc = position.x;
 	float yc = position.y;
-	
+
 	unsigned int i;
 	unsigned int tSize = strlen(text);
 	for(i=0; i<charId && i<tSize; i++)
@@ -60,7 +59,7 @@ MVector2 MGuiTextureFont::getCharacterPosition(const char * text, const MVector2
 			xc += size * getTabSpace();
 		}
 		else
-		{		
+		{
 			xc += size * getSpace(); // move to next character
 		}
 	}
@@ -75,7 +74,7 @@ MVector2 MGuiTextureFont::getMaxSize(const char * text, const float size)
 {
 	MVector2 max;
 	float xc=0, yc=0;
-	
+
 	max.set(0, 0);
 
 	unsigned int i;
@@ -114,7 +113,7 @@ unsigned int MGuiTextureFont::findPointedCharacter(const char * text, const MVec
 	float xc=position.x, yc=position.y;
 	float halfSpace = getSpace() * 0.50001f;
 	float halfTabSpace = getTabSpace() - halfSpace;
-																
+
 	unsigned int tSize = strlen(text);
 
 	// if out (up) of the first line
@@ -169,7 +168,7 @@ unsigned int MGuiTextureFont::findPointedCharacter(const char * text, const MVec
 			xc += size * getTabSpace();
 		}
 		else
-		{	
+		{
 			xc += size * getSpace(); // move to next character
 		}
 	}
@@ -215,15 +214,15 @@ void MGuiTextureFont::draw(const char * text, const MVector2 & position, float s
 			v=float((unsigned char)text[i]/16)/16.0f; //v position of character
 
 			g_texCoords[0] = MVector2(u, v+0.0625f);
-			g_vertices[0] = MVector2(xc, yc+size);						
-			
-			g_texCoords[1] = MVector2(u+0.0625f, v+0.0625f);	
-			g_vertices[1] = MVector2(xc+size, yc+size);							
-			
-			g_texCoords[3] = MVector2(u+0.0625f, v+0.001f);	
-			g_vertices[3] = MVector2(xc+size, yc);							
-			
-			g_texCoords[2] = MVector2(u, v+0.001f);				
+			g_vertices[0] = MVector2(xc, yc+size);
+
+			g_texCoords[1] = MVector2(u+0.0625f, v+0.0625f);
+			g_vertices[1] = MVector2(xc+size, yc+size);
+
+			g_texCoords[3] = MVector2(u+0.0625f, v+0.001f);
+			g_vertices[3] = MVector2(xc+size, yc);
+
+			g_texCoords[2] = MVector2(u, v+0.001f);
 			g_vertices[2] = MVector2(xc, yc);
 
 			render->drawArray(M_PRIMITIVE_TRIANGLE_STRIP, 0, 4);
@@ -283,7 +282,7 @@ void MGuiTextureFont::drawSelection(const char * text, const MVector2 & position
 		{
 			// right quad
 			{
-				g_vertices[3] = MVector2(xc+size*0.5f, yc+size);							
+				g_vertices[3] = MVector2(xc+size*0.5f, yc+size);
 				g_vertices[2] = MVector2(xc+size*0.5f, yc);
 				render->drawArray(M_PRIMITIVE_TRIANGLE_STRIP, 0, 4);
 			}
@@ -304,7 +303,7 @@ void MGuiTextureFont::drawSelection(const char * text, const MVector2 & position
 			if(i+1 == end || i+1 == textLength)
 			{
 				// right quad
-				g_vertices[3] = MVector2(xc+offset, yc+size);							
+				g_vertices[3] = MVector2(xc+offset, yc+size);
 				g_vertices[2] = MVector2(xc+offset, yc);
 				render->drawArray(M_PRIMITIVE_TRIANGLE_STRIP, 0, 4);
 			}
@@ -316,7 +315,7 @@ void MGuiTextureFont::drawSelection(const char * text, const MVector2 & position
 			if(i+1 == end || i+1 == textLength)
 			{
 				// right quad
-				g_vertices[3] = MVector2(xc+offset, yc+size);							
+				g_vertices[3] = MVector2(xc+offset, yc+size);
 				g_vertices[2] = MVector2(xc+offset, yc);
 				render->drawArray(M_PRIMITIVE_TRIANGLE_STRIP, 0, 4);
 			}
