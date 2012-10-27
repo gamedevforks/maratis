@@ -206,6 +206,12 @@ m_currentFrameBuffer(0)
 	//glPointParameterf (GL_POINT_SIZE_MIN, 1.0f);
 	
 	
+	int max_ind, max_vert;
+	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &max_ind);
+	glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_vert);
+	
+	printf("MAX i:%d v:%d\n", max_ind, max_vert);
+	
 	// stencil
 	glClearStencil(0);
 

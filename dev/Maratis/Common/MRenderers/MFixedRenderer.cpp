@@ -215,6 +215,10 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				render->enableNormalArray();
 				render->setNormalPointer(M_FLOAT, normals);
 			}
+			else
+			{
+				render->disableNormalArray();
+			}
 			
 			// Color
 			if(colors)
@@ -222,6 +226,10 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				render->disableLighting();
 				render->enableColorArray();
 				render->setColorPointer(M_UBYTE, 4, colors);
+			}
+			else
+			{
+				render->disableColorArray();
 			}
 			
 			// Material
@@ -235,8 +243,12 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			if(texturesPassNumber > 0)
 				render->setMatrixMode(M_MATRIX_TEXTURE);
 			else
+			{	
+				render->bindTexture(0);
 				render->disableTexture();
-			
+				render->disableTexCoordArray();
+			}
+
 			// Textures
 			int id = texturesPassNumber;
 			for(unsigned int t=0; t<texturesPassNumber; t++)
@@ -307,10 +319,8 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			
 			// disable arrays
 			render->disableVertexArray();
-			if(normals)
-				render->disableNormalArray();
-			if(colors)
-				render->disableColorArray();
+			render->disableNormalArray();
+			render->disableColorArray();
 			
 			// restore textures
 			for(int t=(int)(id-1); t>=0; t--)
@@ -1056,5 +1066,5 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 	}
 	
 	render->disableLighting();
-	render->disableFog();	
+	render->disableFog();
 }

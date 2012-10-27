@@ -1274,7 +1274,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 			M_TYPES indicesType;
 			unsigned int vSize = subMesh->getVerticesSize();
 
-			if(vSize <= 65536){
+			if(vSize < 65536){
 				indicesType = M_USHORT;
 			}
 			else{

@@ -31,21 +31,26 @@
 #ifndef _M_CORE_H
 #define _M_CORE_H
 
-// M_CORE_EXPORT
 #ifdef WIN32
 
-	#if defined(MCORE_DLL)
+	#ifdef _MSC_VER
 		#pragma warning(disable: 4251)
+	#endif
+
+	// M_CORE_EXPORT
+	#if defined(MCORE_DLL)
 		#define M_CORE_EXPORT __declspec( dllexport )
 	#elif defined(MCORE_STATIC)
 		#define M_CORE_EXPORT
 	#else
-		#pragma warning(disable: 4251)
 		#define M_CORE_EXPORT __declspec( dllimport )
 	#endif
 
 #else
+
+	// M_CORE_EXPORT
 	#define M_CORE_EXPORT
+
 #endif
 
 
