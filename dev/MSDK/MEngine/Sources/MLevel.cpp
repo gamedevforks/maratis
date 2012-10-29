@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 #include "../Includes/MEngine.h"
-
+#include <MLog.h>
 
 // level
 MLevel::MLevel(void):
@@ -92,6 +92,7 @@ MFontRef * MLevel::loadFont(const char * filename)
 
 MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 {
+    MLOG(6, "MLevel load mesh " << (filename?filename:"NULL") );
 	unsigned int i;
 	unsigned int size = m_meshManager.getRefsNumber();
 	for(i=0; i<size; i++)
@@ -112,6 +113,8 @@ MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 
 	// add data
 	MMeshRef * ref = MMeshRef::getNew(NULL, filename);
+    if (!ref)
+        MLOG(4, "Cannot get new mesh ref");
 	m_meshManager.addRef(ref);
 
 	if(preload)
@@ -321,7 +324,7 @@ MShaderRef * MLevel::loadShader(const char * filename, M_SHADER_TYPES type)
 MFXRef * MLevel::createFX(MShaderRef * vertexShaderRef, MShaderRef * pixelShaderRef)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-	
+
 	unsigned int i;
 	unsigned int size = m_FXManager.getFXRefsNumber();
 	for(i=0; i<size; i++)
@@ -460,7 +463,7 @@ void MLevel::setCurrentSceneId(unsigned int id)
 			// mesh
 			MMeshRef * ref = entity->getMeshRef();
 			decrDataRefScore(ref);
-			
+
 		}
 
 		// sounds
@@ -570,7 +573,7 @@ void MLevel::changeCurrentSceneIfRequested()
 			// onBeginScene
 			if(game)
 				game->onBeginScene();
-		}	
+		}
 	}
 
 	m_requestedSceneId = 0xFFFFFFFF; // reset requested scene
@@ -603,7 +606,7 @@ MScene * MLevel::getCurrentScene(void)
 }
 
 MScene * MLevel::getSceneByName(const char * name)
-{	
+{
 	unsigned int i;
 	unsigned int sSize = getScenesNumber();
 	for(i=0; i<sSize; i++)

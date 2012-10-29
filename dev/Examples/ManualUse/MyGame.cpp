@@ -60,7 +60,8 @@ void MyGame::onBegin(void)
 
 		// add scene
 		MScene * scene = level->addNewScene();
-
+        if (!scene)
+            MLOG(4, "Failed to add a new scene");
 		// camera
 		MOCamera * camera = scene->addNewCamera();
 		if (!camera)

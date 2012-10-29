@@ -28,7 +28,7 @@
 //========================================================================
 
 #include "../Includes/MEngine.h"
-
+#include "../Includes/MLog.h"
 
 static unsigned int s_renderBufferId = 0;
 
@@ -40,7 +40,7 @@ m_isRunning(false)
 MGame::~MGame(void)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-	
+
 	// delete frame buffer
 	if(s_renderBufferId != 0)
 		render->deleteFrameBuffer(&s_renderBufferId);
@@ -56,7 +56,7 @@ MOCamera * MGame::getCurrentCamera(MScene * scene)
 		else
 			return scene->getCameraByIndex(0);
 	}
-	
+
 	return NULL;
 }
 
@@ -99,13 +99,13 @@ void MGame::update(void)
 		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
 		{
 			MScene * sceneLayer = level->getSceneByIndex(sceneLayerId-1);
-			
+
 			sceneLayer->updateObjectsBehaviors();
 			sceneLayer->update();
 			sceneLayer->updateObjectsMatrices();
 		}
 	}
-	
+
 	// flush input
 	engine->getInputContext()->flush();
 
@@ -126,8 +126,8 @@ void MGame::draw(void)
 	MScene * scene = level->getCurrentScene();
 	if(! scene)
 		return;
-	
-	
+
+
 	// render to texture
 	{
 		unsigned int currentFrameBuffer = 0;
@@ -135,11 +135,13 @@ void MGame::draw(void)
 
 		int viewport[4];
 		bool recoverViewport = false;
-		
+
 		unsigned int c, cSize = scene->getCamerasNumber();
 		for(c=0; c<cSize; c++)
 		{
 			MOCamera * camera = scene->getCameraByIndex(c);
+			if (!camera)
+                MLOG(4, "Camera NULL");
 			if(camera->isActive() && camera->getRenderColorTexture())
 			{
 				if(! recoverViewport)
@@ -147,53 +149,53 @@ void MGame::draw(void)
 					render->getViewport(viewport);
 					recoverViewport = true;
 				}
-				
+
 				MTextureRef * colorTexture = camera->getRenderColorTexture();
 				MTextureRef * depthTexture = camera->getRenderDepthTexture();
-				
+
 				unsigned int width = colorTexture->getWidth();
 				unsigned int height = colorTexture->getHeight();
-				
+
 				// render buffer
 				if(s_renderBufferId == 0)
 					render->createFrameBuffer(&s_renderBufferId);
-				
+
 				render->bindFrameBuffer(s_renderBufferId);
-				
+
 				render->enableDepthTest();
-				
+
 				render->attachFrameBufferTexture(M_ATTACH_COLOR0, colorTexture->getTextureId());
 				if(depthTexture)
 					render->attachFrameBufferTexture(M_ATTACH_DEPTH, depthTexture->getTextureId());
-				
+
 				render->setViewport(0, 0, width, height);
 				render->setClearColor(*camera->getClearColor());
 				render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
-				
+
 				// draw the scene
 				camera->enable();
 				scene->draw(camera);
-				
+
 				// finish render to texture
 				render->bindFrameBuffer(currentFrameBuffer);
 			}
 		}
-		
+
 		// recover viewport
 		if(recoverViewport)
 			render->setViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 	}
 
-	
+
 	// depth test
 	render->enableDepthTest();
-	
+
 	// render scene
 	if(scene->getCamerasNumber() == 0)
 	{
 		// draw scene with default camera
 		MOCamera camera;
-		
+
 		render->setClearColor(*camera.getClearColor());
 		render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
@@ -205,7 +207,7 @@ void MGame::draw(void)
 	else
 	{
 		MOCamera * camera = getCurrentCamera(scene);
-		
+
 		render->setClearColor(*camera->getClearColor());
 		render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
@@ -213,8 +215,9 @@ void MGame::draw(void)
 		camera->updateListener();
 		scene->draw(camera);
 		scene->drawObjectsBehaviors();
-		
+
 		// scene layer
+		//MLOG(6, "MGame::draw: "<<level->getScenesNumber()<<" scenes found in level" );
 		unsigned int sceneLayerId = camera->getSceneLayer();
 		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
 		{
@@ -225,7 +228,7 @@ void MGame::draw(void)
 				layerCamera->enable();
 				camera = layerCamera;
 			}
-			
+
 			// draw on top
 			render->clear(M_BUFFER_DEPTH);
 			sceneLayer->draw(camera);

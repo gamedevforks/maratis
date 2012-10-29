@@ -29,6 +29,7 @@
 
 
 #include <MEngine.h>
+#include <MLog.h>
 #include <tinyxml.h>
 
 #include "MMeshLoad.h"
@@ -42,17 +43,17 @@ MVector3 computeTangent(
 	MVector3 Edge2 = P3 - P1;
 	MVector2 Edge1uv = UV2 - UV1;
 	MVector2 Edge2uv = UV3 - UV1;
-	
+
 	float cp = Edge1uv.y * Edge2uv.x - Edge1uv.x * Edge2uv.y;
-	
+
 	if(cp != 0.0f)
 	{
 		float mul = 1.0f / cp;
 		MVector3 tangent = (Edge1 * -Edge2uv.y + Edge2 * Edge1uv.y) * mul;
-		
+
 		return tangent.getNormalized();
 	}
-	
+
 	return MVector3(0.0f, 0.0f, 0.0f);
 }
 
@@ -61,14 +62,14 @@ void generateTangents(MSubMesh * subMesh)
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
 	MVector2 * texCoords = subMesh->getTexCoords();
-	
+
 	if(! (vertices && normals && texCoords))
 		return;
-	
+
 
 	bool generate = false;
 	unsigned int mapChannel;
-	
+
 	// find normal mapChannel
 	unsigned int d;
 	unsigned int dSize = subMesh->getDisplaysNumber();
@@ -109,31 +110,31 @@ void generateTangents(MSubMesh * subMesh)
 			}
 		}
 	}
-	
+
 	// generate
 	if(generate)
 	{
 		M_TYPES indicesType = subMesh->getIndicesType();
 		void * indices = subMesh->getIndices();
 		MVector3 * tangents = subMesh->allocTangents(subMesh->getNormalsSize());
-		
+
 		// texCoord offset
 		unsigned int offset = 0;
 		if(subMesh->isMapChannelExist(mapChannel))
 			offset = subMesh->getMapChannelOffset(mapChannel);
-		
+
 		texCoords = texCoords + offset;
-		
+
 		// scan triangles to generate tangents from vertices and texCoords
 		for(d=0; d<dSize; d++)
 		{
 			MDisplay * display = subMesh->getDisplay(d);
-			
+
 			if(display->getPrimitiveType() == M_PRIMITIVE_TRIANGLES)
 			{
 				unsigned int begin = display->getBegin();
 				unsigned int size = display->getSize();
-				
+
 				if(! indices)
 				{
 					for(unsigned int i=begin; i<(begin+size); i+=3)
@@ -141,17 +142,17 @@ void generateTangents(MSubMesh * subMesh)
 						MVector3 * P1 = &vertices[i];
 						MVector3 * P2 = &vertices[i+1];
 						MVector3 * P3 = &vertices[i+2];
-						
+
 						MVector3 * N1 = &normals[i];
 						MVector3 * N2 = &normals[i+1];
 						MVector3 * N3 = &normals[i+2];
-						
+
 						MVector2 * UV1 = &texCoords[i];
 						MVector2 * UV2 = &texCoords[i+1];
 						MVector2 * UV3 = &texCoords[i+2];
-						
+
 						MVector3 tangent = computeTangent(*P1, *P2, *P3, *UV1, *UV2, *UV3);
-						
+
 						tangents[i]   = -(tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
 						tangents[i+1] = -(tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
 						tangents[i+2] = -(tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
@@ -165,21 +166,21 @@ void generateTangents(MSubMesh * subMesh)
 						unsigned short A = _indices[i];
 						unsigned short B = _indices[i+1];
 						unsigned short C = _indices[i+2];
-						
+
 						MVector3 * P1 = &vertices[A];
 						MVector3 * P2 = &vertices[B];
 						MVector3 * P3 = &vertices[C];
-						
+
 						MVector3 * N1 = &normals[A];
 						MVector3 * N2 = &normals[B];
 						MVector3 * N3 = &normals[C];
-						
+
 						MVector2 * UV1 = &texCoords[A];
 						MVector2 * UV2 = &texCoords[B];
 						MVector2 * UV3 = &texCoords[C];
-						
+
 						MVector3 tangent = computeTangent(*P1, *P2, *P3, *UV1, *UV2, *UV3);
-						
+
 						tangents[A] = -(tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
 						tangents[B] = -(tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
 						tangents[C] = -(tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
@@ -193,21 +194,21 @@ void generateTangents(MSubMesh * subMesh)
 						unsigned int A = _indices[i];
 						unsigned int B = _indices[i+1];
 						unsigned int C = _indices[i+2];
-						
+
 						MVector3 * P1 = &vertices[A];
 						MVector3 * P2 = &vertices[B];
 						MVector3 * P3 = &vertices[C];
-						
+
 						MVector3 * N1 = &normals[A];
 						MVector3 * N2 = &normals[B];
 						MVector3 * N3 = &normals[C];
-						
+
 						MVector2 * UV1 = &texCoords[A];
 						MVector2 * UV2 = &texCoords[B];
 						MVector2 * UV3 = &texCoords[C];
-						
+
 						MVector3 tangent = computeTangent(*P1, *P2, *P3, *UV1, *UV2, *UV3);
-						
+
 						tangents[A] = -(tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
 						tangents[B] = -(tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
 						tangents[C] = -(tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
@@ -215,7 +216,7 @@ void generateTangents(MSubMesh * subMesh)
 				}
 			}
 		}
-	}	
+	}
 }
 
 void readFloatKeys(TiXmlElement * node, MKey * keys)
@@ -274,7 +275,7 @@ bool xmlArmatureAnimLoad(const char * filename, void * data)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 		return false;
-	
+
 	TiXmlHandle hDoc(&doc);
 	TiXmlElement * pRootNode;
 	TiXmlHandle hRoot(0);
@@ -366,7 +367,7 @@ bool xmlTextureAnimLoad(const char * filename, void * data)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 		return false;
-	
+
 	TiXmlHandle hDoc(&doc);
 	TiXmlElement * pRootNode;
 	TiXmlHandle hRoot(0);
@@ -440,7 +441,7 @@ bool xmlMaterialAnimLoad(const char * filename, void * data)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 		return false;
-	
+
 	TiXmlHandle hDoc(&doc);
 	TiXmlElement * pRootNode;
 	TiXmlHandle hRoot(0);
@@ -640,7 +641,7 @@ bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 		return false;
-	
+
 	TiXmlHandle hDoc(&doc);
 	TiXmlElement * pRootNode;
 	TiXmlHandle hRoot(0);
@@ -660,25 +661,34 @@ bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory)
 
 bool xmlMeshLoad(const char * filename, void * data)
 {
+    MLOG(6, "xmlMeshLoad "<< filename?filename:"NULL");
 	MLevel * level = MEngine::getInstance()->getLevel();
 
 	// read document
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
-		return false;
-	
+	{
+	    MLOG(4, "TiXmlDocument load failed");
+	    return false;
+	}
+
 	TiXmlHandle hDoc(&doc);
 	TiXmlElement * pRootNode;
 	TiXmlHandle hRoot(0);
 
-
 	// Maratis
 	pRootNode = hDoc.FirstChildElement().Element();
 	if(! pRootNode)
-		return false;
+	{
+	    MLOG(4, "Cannot find any root node");
+	    return false;
+	}
 
 	if(strcmp(pRootNode->Value(), "Maratis") != 0)
-		return false;
+	{
+	    MLOG(4, "Cannot find Maratis root node");
+	    return false;
+	}
 
 	hRoot = TiXmlHandle(pRootNode);
 
@@ -686,7 +696,10 @@ bool xmlMeshLoad(const char * filename, void * data)
 	// Mesh
 	TiXmlElement * pMeshNode = pRootNode->FirstChildElement("Mesh");
 	if(! pMeshNode)
-		return false;
+	{
+	    MLOG(4, "Cannot find a Mesh child element");
+	    return false;
+	}
 
 	// create new mesh
 	MMesh * mesh = (MMesh *)data;
@@ -714,6 +727,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * texturesNode = pMeshNode->FirstChildElement("Textures");
 	if(texturesNode)
 	{
+	    MLOG(7, "xmlMeshLoad: Textures found");
 		unsigned int numTextures = 0;
 		texturesNode->QueryUIntAttribute("num", &numTextures);
 		mesh->allocTextures(numTextures);
@@ -734,7 +748,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 				imageNode->QueryIntAttribute("mipmap", &value);
 				mipmap = (value == 1);
 			}
-	
+
 			if(! file)
 			{
 				mesh->addNewTexture(NULL);
@@ -801,6 +815,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * materialsNode = pMeshNode->FirstChildElement("Materials");
 	if(materialsNode)
 	{
+	    MLOG(7, "xmlMeshLoad: materials found");
 		unsigned int numMaterials = 0;
 		materialsNode->QueryUIntAttribute("num", &numMaterials);
 		mesh->allocMaterials(numMaterials);
@@ -969,7 +984,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 					}
 				}
 			}
-			
+
 			// ZFX (optional optim)
 			{
 				// ZVertexShader
@@ -978,20 +993,20 @@ bool xmlMeshLoad(const char * filename, void * data)
 				if(vertexShaderNode){
 					vertShadFile = vertexShaderNode->Attribute("file");
 				}
-				
+
 				// ZFragmentShader
 				const char * fragShadFile = NULL;
 				TiXmlElement * fragmentShaderNode = materialNode->FirstChildElement("ZFragmentShader");
 				if(fragmentShaderNode){
 					fragShadFile = fragmentShaderNode->Attribute("file");
 				}
-				
+
 				// create ZFX
 				if(vertShadFile && fragShadFile)
 				{
 					getGlobalFilename(vertShadPath, meshRep, vertShadFile);
 					getGlobalFilename(fragShadPath, meshRep, fragShadFile);
-					
+
 					MShaderRef * vertShad = level->loadShader(vertShadPath, M_SHADER_VERTEX);
 					MShaderRef * pixShad = level->loadShader(fragShadPath, M_SHADER_PIXEL);
 					if(vertShad && pixShad)
@@ -1009,6 +1024,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * bonesNode = pMeshNode->FirstChildElement("Bones");
 	if(bonesNode)
 	{
+	    MLOG(7, "xmlMeshLoad: bones found");
 		MArmature * armature = mesh->createArmature();
 
 		unsigned int b, numBones = 0;
@@ -1019,14 +1035,14 @@ bool xmlMeshLoad(const char * filename, void * data)
 		for(b=0; b<numBones; b++)
 			armature->addNewBone();
 		b = 0;
-		
+
 		// Bone
 		TiXmlElement * boneNode = bonesNode->FirstChildElement("Bone");
 		for(boneNode; boneNode; boneNode=boneNode->NextSiblingElement("Bone"))
 		{
 			if(b >= armature->getBonesNumber())
 				break;
-			
+
 			MOBone * bone = armature->getBone(b);
 
 			const char * name = boneNode->Attribute("name");
@@ -1071,7 +1087,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 				scaleNode->QueryFloatAttribute("z", &scale.z);
 				bone->setScale(scale);
 			}
-			
+
 			b++;
 		}
 
@@ -1177,7 +1193,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 			unsigned int numTangents = 0;
 			tangentsNode->QueryUIntAttribute("num", &numTangents);
 			MVector3 * tangents = subMesh->allocTangents(numTangents);
-			
+
 			// tangent
 			TiXmlElement * tangentNode = tangentsNode->FirstChildElement("tangent");
 			for(tangentNode; tangentNode; tangentNode=tangentNode->NextSiblingElement("tangent"))
@@ -1189,7 +1205,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 				tangents++;
 			}
 		}
-		
+
 		// TexCoords
 		TiXmlElement * texCoordsNode = SubMeshNode->FirstChildElement("TexCoords");
 		if(texCoordsNode)
@@ -1202,23 +1218,23 @@ bool xmlMeshLoad(const char * filename, void * data)
 			// mapChannels
 			unsigned int numVertices = subMesh->getVerticesSize();
 			const char * mapChannelsData = texCoordsNode->Attribute("mapChannels");
-			
+
 			// read channels
 			if(mapChannelsData)
 			{
 				char str[256];
 				strcpy(str, mapChannelsData);
 				char * pch;
-				
+
 				unsigned int offset = 0;
 				pch = strtok(str, " ");
 				while(pch != NULL)
 				{
 					unsigned int channel = 0;
 					sscanf(pch, "%d", &channel);
-					
+
 					subMesh->setMapChannelOffset(channel, offset);
-					
+
 					pch = strtok(NULL, " ");
 					offset += numVertices;
 				}
@@ -1266,7 +1282,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 				colors++;
 			}
 		}
-		
+
 		// Indices
 		TiXmlElement * indicesNode = SubMeshNode->FirstChildElement("Indices");
 		if(indicesNode)
@@ -1333,7 +1349,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 
 				skinNode->QueryUIntAttribute("vertex", &vertexId);
 				skinNode->QueryUIntAttribute("numBones", &numBones);
-				
+
 				if(numBones > 0)
 				{
 					skinPoints->setVertexId(vertexId);
@@ -1350,7 +1366,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 						boneNode->QueryFloatAttribute("weight", bonesWeights);
 
 						*bonesIds = id;
-				
+
 						bonesIds++;
 						bonesWeights++;
 					}
@@ -1385,7 +1401,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 				// set material
 				if(material < mesh->getMaterialsNumber())
 					display->setMaterial(mesh->getMaterial(material));
-				
+
 				// set cull mode
 				M_CULL_MODES cullMode = M_CULL_BACK;
 				if(cullFace == 1)
@@ -1399,12 +1415,13 @@ bool xmlMeshLoad(const char * filename, void * data)
 		// generate tangents if needed
 		if(! subMesh->getTangents())
 			generateTangents(subMesh);
-		
 
-		
+
+
 		subMeshs++;
 	}
 
+    MLOG(6, "xmlMeshLoad success: "<<numSubMeshs<<" submeshs found");
 	// return mesh
 	return true;
 }

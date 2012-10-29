@@ -29,14 +29,17 @@
 
 
 #include "../Includes/MEngine.h"
-
+#include "../Includes/MLog.h"
 
 MMeshRef::MMeshRef(MMesh * mesh, const char * filename):
-	m_mesh(mesh){
+	m_mesh(mesh)
+{
+    MLOG(7, "new MMeshRef from "<< (filename?filename:"?") );
 	m_filename.set(filename);
 }
 
-MMeshRef::~MMeshRef(void){
+MMeshRef::~MMeshRef(void)
+{
 	clear();
 }
 
@@ -66,5 +69,7 @@ void MMeshRef::update(void)
 	if(! m_mesh)
 		m_mesh = MMesh::getNew();
 
-	engine->getMeshLoader()->loadData(getFilename(), m_mesh);	
+	bool b=engine->getMeshLoader()->loadData(getFilename(), m_mesh);
+	if (!b)
+        MLOG(4, "Cannot load data " << getFilename());
 }

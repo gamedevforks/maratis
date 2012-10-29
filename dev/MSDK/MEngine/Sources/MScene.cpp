@@ -286,10 +286,10 @@ void MScene::prepareCollisionShape(MOEntity * entity)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
 	MPhysicsProperties * phyProps = entity->getPhysicsProperties();
-	
+
 	if(! phyProps)
 		return;
-	
+
 	unsigned int shapeId = 0;
 	if(createShape(entity, phyProps, &shapeId))
 	{
@@ -314,7 +314,7 @@ void MScene::prepareCollisionShape(MOEntity * entity)
 				}
 			}
 		}
-		
+
 		// create multi shape
 		if(hasPhysicsChild)
 		{
@@ -322,7 +322,7 @@ void MScene::prepareCollisionShape(MOEntity * entity)
 			physics->createMultiShape(&shapeId);
 			physics->addChildShape(shapeId, subShapeId, MVector3(), MQuaternion());
 		}
-		
+
 		phyProps->setShapeId(shapeId);
 	}
 }
@@ -333,11 +333,11 @@ void MScene::prepareCollisionObject(MOEntity * entity)
 	MPhysicsProperties * phyProps = entity->getPhysicsProperties();
 	if(! phyProps)
 		return;
-	
+
 	unsigned int shapeId = phyProps->getShapeId();
 	if(shapeId == 0)
 		return;
-	
+
 	// has physics parent
 	MPhysicsProperties * parentPhyProps = NULL;
 	MOEntity * parentEntity = NULL;
@@ -353,54 +353,54 @@ void MScene::prepareCollisionObject(MOEntity * entity)
 			}
 		}
 	}
-	
+
 	if(parentPhyProps) // add shape to parent multi-shape
 	{
 		MVector3 position = entity->getPosition() * parentEntity->getTransformedScale();
 		MQuaternion rotation = entity->getRotation();
-		
+
 		phyProps->setShapeId(shapeId);
 		physics->addChildShape(parentPhyProps->getShapeId(), shapeId, position, rotation);
 	}
 	else // create collision object
 	{
 		unsigned int collisionObjectId;
-		
+
 		if(phyProps->isGhost())
 		{
 			MVector3 euler = entity->getTransformedRotation();
-			
+
 			physics->createGhost(
-				&collisionObjectId, shapeId, 
+				&collisionObjectId, shapeId,
 				entity->getTransformedPosition(),
 				MQuaternion(euler.x, euler.y, euler.z)
 			);
-			
+
 			phyProps->setShapeId(shapeId);
 			phyProps->setCollisionObjectId(collisionObjectId);
 		}
 		else
 		{
 			physics->createRigidBody(
-				&collisionObjectId, shapeId, 
+				&collisionObjectId, shapeId,
 				entity->getPosition(), entity->getRotation(),
 				phyProps->getMass()
 			);
-			
+
 			phyProps->setShapeId(shapeId);
 			phyProps->setCollisionObjectId(collisionObjectId);
-			
+
 			physics->setObjectRestitution(collisionObjectId, phyProps->getRestitution());
 			physics->setObjectDamping(collisionObjectId, phyProps->getLinearDamping(), phyProps->getAngularDamping());
 			physics->setObjectAngularFactor(collisionObjectId, phyProps->getAngularFactor());
 			physics->setObjectLinearFactor(collisionObjectId, *phyProps->getLinearFactor());
 			physics->setObjectFriction(collisionObjectId, phyProps->getFriction());
 		}
-		
+
 		// deactivate
 		if(! entity->isActive())
 			physics->deactivateObject(collisionObjectId);
-		
+
 		// set user pointer (entity)
 		physics->setObjectUserPointer(collisionObjectId, entity);
 	}
@@ -410,16 +410,16 @@ void MScene::prepareConstraints(MOEntity * entity)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
 	MPhysicsProperties * phyProps = entity->getPhysicsProperties();
-	
+
 	if(! phyProps)
 		return;
-	
+
 	unsigned int objectId = phyProps->getCollisionObjectId();
 	MPhysicsConstraint * constraint = phyProps->getConstraint();
-	
+
 	if((! constraint) || (objectId == 0) || phyProps->isGhost())
 		return;
-	
+
 	if(! entity->getParent())
 	{
 		MOEntity * constraintParent = getEntityByName(constraint->parentName.getData());
@@ -438,7 +438,7 @@ void MScene::prepareConstraints(MOEntity * entity)
 											  constraint->pivot,
 											  constraint->disableParentCollision
 											  );
-					
+
 					constraint->parentObjectId = parentObjectId;
 					physics->setLinearLimit(constraint->constraintId, constraint->lowerLinearLimit, constraint->upperLinearLimit);
 					physics->setAngularLimit(constraint->constraintId, constraint->lowerAngularLimit, constraint->upperAngularLimit);
@@ -449,7 +449,7 @@ void MScene::prepareConstraints(MOEntity * entity)
 }
 
 void MScene::preparePhysics(void)
-{	
+{
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
 	if(! physics)
 		return;
@@ -488,7 +488,7 @@ void MScene::deleteObject(MObject3d * object)
 
 	unsigned int i;
 	unsigned int oSize;
-	
+
 	// objects
 	switch(object->getType())
 	{
@@ -614,7 +614,7 @@ MOLight * MScene::getLightByName(const char * name)
 		if(strcmp(name, m_lights[i]->getName()) == 0)
 			return m_lights[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -627,7 +627,7 @@ MOCamera * MScene::getCameraByName(const char * name)
 		if(strcmp(name, m_cameras[i]->getName()) == 0)
 			return m_cameras[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -640,7 +640,7 @@ MOEntity * MScene::getEntityByName(const char * name)
 		if(strcmp(name, m_entities[i]->getName()) == 0)
 			return m_entities[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -653,7 +653,7 @@ MOSound * MScene::getSoundByName(const char * name)
 		if(strcmp(name, m_sounds[i]->getName()) == 0)
 			return m_sounds[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -666,7 +666,7 @@ MOText * MScene::getTextByName(const char * name)
 		if(strcmp(name, m_texts[i]->getName()) == 0)
 			return m_texts[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -702,11 +702,11 @@ void MScene::updatePhysics(void)
 		MOEntity * entity = getEntityByIndex(i);
 		if(! entity->isActive())
 			continue;
-		
+
 		MPhysicsProperties * phyProps = entity->getPhysicsProperties();
 		if(! phyProps)
 			continue;
-		
+
 		if(phyProps->getCollisionObjectId() > 0)
 		{
 			MObject3d * parent = entity->getParent();
@@ -729,7 +729,7 @@ void MScene::updatePhysics(void)
 			}
 		}
 	}
-	
+
 	physics->setWorldGravity(m_gravity);
 	physics->updateSimulation();
 
@@ -738,7 +738,7 @@ void MScene::updatePhysics(void)
 		MOEntity * entity = getEntityByIndex(i);
 		if(! entity->isActive())
 			continue;
-		
+
 		MPhysicsProperties * phyProps = entity->getPhysicsProperties();
 		if(phyProps)
 		{
@@ -765,7 +765,7 @@ void MScene::updateObjectsBehaviors(void)
 		MObject3d * object = getObjectByIndex(i);
 		if(! object->isActive())
 			continue;
-			
+
 		object->updateBehaviors();
 	}
 }
@@ -779,7 +779,7 @@ void MScene::drawObjectsBehaviors(void)
 		MObject3d * object = getObjectByIndex(i);
 		if(! object->isActive())
 			continue;
-		
+
 		object->drawBehaviors();
 	}
 }
@@ -793,7 +793,7 @@ void MScene::updateObjectsMatrices(void)
 		MObject3d * object = getObjectByIndex(i);
 		if(! object->isActive())
 			continue;
-			
+
 		if(! object->hasParent())
 		{
 			if(object->needToUpdate())

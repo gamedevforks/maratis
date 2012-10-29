@@ -29,6 +29,7 @@
 
 
 #include <MEngine.h>
+#include <MLog.h>
 #include "MFixedRenderer.h"
 
 
@@ -41,7 +42,9 @@ m_verticesNumber(0),
 m_normalsNumber(0),
 m_vertices(NULL),
 m_normals(NULL)
-{}
+{
+    MLOG(6, "MFixedRenderer creation...");
+}
 
 MFixedRenderer::~MFixedRenderer(void)
 {
@@ -69,14 +72,14 @@ MVector3 * MFixedRenderer::getVertices(unsigned int size)
 {
 	if(size == 0)
 		return NULL;
-	
+
 	if(size > m_verticesNumber)
 	{
 		SAFE_DELETE_ARRAY(m_vertices);
 		m_vertices = new MVector3[size];
 		m_verticesNumber = size;
 	}
-	
+
 	return m_vertices;
 }
 
@@ -84,14 +87,14 @@ MVector3 * MFixedRenderer::getNormals(unsigned int size)
 {
 	if(size == 0)
 		return NULL;
-	
+
 	if(size > m_normalsNumber)
 	{
 		SAFE_DELETE_ARRAY(m_normals);
 		m_normals = new MVector3[size];
 		m_normalsNumber = size;
 	}
-	
+
 	return m_normals;
 }
 
@@ -102,13 +105,13 @@ void MFixedRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
 	for(s=0; s<sSize; s++)
 	{
 		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
-		
+
 		// data
 		MVector3 * vertices = subMesh->getVertices();
 
 		if(! vertices)
 			continue;
-		
+
 		MSkinData * skinData = subMesh->getSkinData();
 		if(armature && skinData)
 		{
@@ -119,7 +122,7 @@ void MFixedRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
 			subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
 		}
 	}
-	
+
 	mesh->updateBoundingBox();
 }
 
@@ -127,10 +130,10 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 {
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
-	
-	
+
+
 	render->setColor4(MVector4(1, 1, 1, 1));
-	
+
 
 	// get material
 	MMaterial * material = display->getMaterial();
@@ -138,7 +141,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 		float opacity = material->getOpacity();
 		if(opacity <= 0.0f)
 			return;
-		
+
 		// data
 		M_TYPES indicesType = subMesh->getIndicesType();
 		void * indices = subMesh->getIndices();
@@ -147,7 +150,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 		// begin / size
 		unsigned int begin = display->getBegin();
 		unsigned int size = display->getSize();
-		
+
 		// get properties
 		M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
 		M_BLENDING_MODES blendMode = material->getBlendMode();
@@ -156,11 +159,11 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 		MVector3 * specular = material->getSpecular();
 		MVector3 * emit = material->getEmit();
 		float shininess = material->getShininess();
-		
+
 		// get current fog color
 		MVector3 currentFogColor;
 		render->getFogColor(&currentFogColor);
-		
+
 		// set cull mode
 		if(cullMode == M_CULL_NONE){
 			render->disableCullFace();
@@ -169,13 +172,13 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			render->enableCullFace();
 			render->setCullMode(cullMode);
 		}
-		
+
 		// texture passes
 		unsigned int texturesPassNumber = MIN(8, material->getTexturesPassNumber());
-		
+
 		// set blending mode
 		render->setBlendingMode(blendMode);
-		
+
 		// alpha test
 		if(blendMode != M_BLENDING_ALPHA && texturesPassNumber > 0)
 		{
@@ -187,7 +190,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 					render->setAlphaTest(0.5f);
 			}
 		}
-		
+
 		// set fog color depending on blending
 		switch(blendMode)
 		{
@@ -199,16 +202,16 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				render->setFogColor(MVector3(1, 1, 1));
 				break;
 		}
-		
+
 		// fixed pipeline
 		{
 			// no FX
 			render->bindFX(0);
-			
+
 			// Vertex
 			render->enableVertexArray();
 			render->setVertexPointer(M_FLOAT, 3, vertices);
-			
+
 			// Normal
 			if(normals)
 			{
@@ -219,7 +222,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			{
 				render->disableNormalArray();
 			}
-			
+
 			// Color
 			if(colors)
 			{
@@ -231,19 +234,19 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			{
 				render->disableColorArray();
 			}
-			
+
 			// Material
 			render->setMaterialDiffuse(MVector4(diffuse->x, diffuse->y, diffuse->z, opacity));
 			render->setMaterialSpecular(MVector4(*specular));
 			render->setMaterialAmbient(MVector4());
 			render->setMaterialEmit(MVector4(*emit));
 			render->setMaterialShininess(shininess);
-			
+
 			// switch to texture matrix mode
 			if(texturesPassNumber > 0)
 				render->setMatrixMode(M_MATRIX_TEXTURE);
 			else
-			{	
+			{
 				render->bindTexture(0);
 				render->disableTexture();
 				render->disableTexCoordArray();
@@ -254,7 +257,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			for(unsigned int t=0; t<texturesPassNumber; t++)
 			{
 				MTexturePass * texturePass = material->getTexturePass(t);
-				
+
 				MTexture * texture = texturePass->getTexture();
 				if((! texture) || (! texCoords))
 				{
@@ -263,25 +266,25 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 					render->disableTexCoordArray();
 					continue;
 				}
-				
+
 				// texCoords
 				unsigned int offset = 0;
 				if(subMesh->isMapChannelExist(texturePass->getMapChannel()))
 					offset = subMesh->getMapChannelOffset(texturePass->getMapChannel());
-				
+
 				// texture id
 				unsigned int textureId = 0;
 				MTextureRef * texRef = texture->getTextureRef();
 				if(texRef)
 					textureId = texRef->getTextureId();
-				
+
 				// bind texture
 				render->bindTexture(textureId, t);
 				render->enableTexture();
 				render->setTextureCombineMode(texturePass->getCombineMode());
 				render->setTextureUWrapMode(texture->getUWrapMode());
 				render->setTextureVWrapMode(texture->getVWrapMode());
-				
+
 				// texture matrix
 				render->loadIdentity();
 				render->translate(MVector2(0.5f, 0.5f));
@@ -289,16 +292,16 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				render->rotate(MVector3(0, 0, -1), texture->getTexRotate());
 				render->translate(MVector2(-0.5f, -0.5f));
 				render->translate(*texture->getTexTranslate());
-				
+
 				// texture coords
 				render->enableTexCoordArray();
 				render->setTexCoordPointer(M_FLOAT, 2, texCoords + offset);
 			}
-			
+
 			// switch back to modelview matrix mode
 			if(texturesPassNumber > 0)
 				render->setMatrixMode(M_MATRIX_MODELVIEW);
-			
+
 			// draw
 			if(indices)
 			{
@@ -315,13 +318,13 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			else{
 				render->drawArray(primitiveType, begin, size);
 			}
-			
-			
+
+
 			// disable arrays
 			render->disableVertexArray();
 			render->disableNormalArray();
 			render->disableColorArray();
-			
+
 			// restore textures
 			for(int t=(int)(id-1); t>=0; t--)
 			{
@@ -329,7 +332,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				render->disableTexture();
 				render->disableTexCoordArray();
 				render->setTextureCombineMode(M_TEX_COMBINE_MODULATE);
-				
+
 				render->setMatrixMode(M_MATRIX_TEXTURE);
 				render->loadIdentity();
 				render->setMatrixMode(M_MATRIX_MODELVIEW);
@@ -340,7 +343,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 		render->setFogColor(currentFogColor);
 		if(blendMode != M_BLENDING_ALPHA)
 			render->setAlphaTest(0.0f);
-		
+
 		// restore lighting
 		if(colors)
 			render->enableLighting();
@@ -350,15 +353,15 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 void MFixedRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-	
+
 	// begin / size
 	unsigned int begin = display->getBegin();
 	unsigned int size = display->getSize();
-	
+
 	// display properties
 	M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
 	M_CULL_MODES cullMode = display->getCullMode();
-	
+
 	// cull mode
 	if(cullMode == M_CULL_NONE){
 		render->disableCullFace();
@@ -367,18 +370,18 @@ void MFixedRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display
 		render->enableCullFace();
 		render->setCullMode(cullMode);
 	}
-	
+
 	// indices
 	M_TYPES indicesType = subMesh->getIndicesType();
 	void * indices = subMesh->getIndices();
-	
+
 	// FX
 	render->bindFX(0);
-	
+
 	// Vertex
 	render->enableVertexArray();
 	render->setVertexPointer(M_FLOAT, 3, vertices);
-	
+
 	// draw
 	if(indices)
 	{
@@ -394,10 +397,10 @@ void MFixedRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display
 	}
 	else
 		render->drawArray(primitiveType, begin, size);
-	
+
 	// disable vertex array
 	render->disableVertexArray();
-	
+
 	// restore FX
 	render->bindFX(0);
 }
@@ -408,26 +411,26 @@ void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
 	MColor * colors = subMesh->getColors();
-	
+
 	if(! vertices)
 		return;
-	
+
 	MSkinData * skinData = subMesh->getSkinData();
 	if(armature && skinData)
 	{
 		unsigned int verticesSize = subMesh->getVerticesSize();
 		unsigned int normalsSize = subMesh->getNormalsSize();
-		
+
 		MVector3 * skinVertices = getVertices(verticesSize);
 		MVector3 * skinNormals = getNormals(normalsSize);
-		
+
 		computeSkinning(armature, skinData, vertices, normals, NULL, skinVertices, skinNormals, NULL);
 		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-		
+
 		vertices = skinVertices;
 		normals = skinNormals;
 	}
-	
+
 	unsigned int i;
 	unsigned int displayNumber = subMesh->getDisplaysNumber();
 	for(i=0; i<displayNumber; i++)
@@ -435,7 +438,7 @@ void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 		MDisplay * display = subMesh->getDisplay(i);
 		if(! display->isVisible())
 			continue;
-		
+
 		MMaterial * material = display->getMaterial();
 		if(material)
 		{
@@ -448,12 +451,12 @@ void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-	
+
 	// data
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
 	MColor * colors = subMesh->getColors();
-	
+
 	if(! vertices)
 		return;
 
@@ -462,19 +465,19 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 	{
 		unsigned int verticesSize = subMesh->getVerticesSize();
 		unsigned int normalsSize = subMesh->getNormalsSize();
-		
+
 		MVector3 * skinVertices = getVertices(verticesSize);
 		MVector3 * skinNormals = getNormals(normalsSize);
-		
+
 		computeSkinning(armature, skinData, vertices, normals, NULL, skinVertices, skinNormals, NULL);
 		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-		
+
 		vertices = skinVertices;
 		normals = skinNormals;
 	}
-	
+
 	render->setColorMask(0, 0, 0, 0);
-	
+
 	unsigned int i;
 	unsigned int displayNumber = subMesh->getDisplaysNumber();
 	for(i=0; i<displayNumber; i++)
@@ -482,20 +485,20 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 		MDisplay * display = subMesh->getDisplay(i);
 		if((! display->isVisible()) || (! display->getMaterial()))
 			continue;
-		
+
 		if(display->getMaterial()->getBlendMode() == M_BLENDING_ALPHA)
 			drawDisplayTriangles(subMesh, display, vertices);
 	}
-	
+
 	render->setColorMask(1, 1, 1, 1);
 	render->setDepthMask(0);
-	
+
 	for(i=0; i<displayNumber; i++)
 	{
 		MDisplay * display = subMesh->getDisplay(i);
 		if(! display->isVisible())
 			continue;
-		
+
 		MMaterial * material = display->getMaterial();
 		if(material)
 		{
@@ -503,7 +506,7 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 				drawDisplay(subMesh, display, vertices, normals, colors);
 		}
 	}
-	
+
 	render->setDepthMask(1);
 }
 
@@ -513,7 +516,7 @@ float MFixedRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & pos)
 	{
 		return (pos - camera->getTransformedPosition()).getSquaredLength();
 	}
-	
+
 	MVector3 axis = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();
 	float dist = (pos - camera->getTransformedPosition()).dotProduct(axis);
 	return dist*dist;
@@ -523,7 +526,7 @@ void MFixedRenderer::updateVisibility(MScene * scene, MOCamera * camera)
 {
 	// make frustum
 	camera->getFrustum()->makeVolume(camera);
-	
+
 	// compute object visibility
 	unsigned int i;
 	unsigned int oSize = scene->getObjectsNumber();
@@ -538,7 +541,7 @@ void MFixedRenderer::updateVisibility(MScene * scene, MOCamera * camera)
 void MFixedRenderer::enableFog(MOCamera * camera)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-	
+
 	float fogMin = camera->getClippingFar()*0.9999f;
 	if(camera->hasFog())
 	{
@@ -550,7 +553,7 @@ void MFixedRenderer::enableFog(MOCamera * camera)
 	else {
 		render->disableFog();
 	}
-	
+
 	render->setFogColor(*camera->getClearColor());
 	render->setFogDistance(fogMin, camera->getClippingFar());
 }
@@ -560,46 +563,46 @@ void MFixedRenderer::drawText(MOText * textObj)
 	MFont * font = textObj->getFont();
 	const char * text = textObj->getText();
 	vector <float> * linesOffset = textObj->getLinesOffset();
-	
+
 	if(! (strlen(text) > 0 && font))
 		return;
-	
+
 	if(linesOffset->size() == 0)
 		return;
-	
+
 	MRenderingContext * render = MEngine().getInstance()->getRenderingContext();
-	
-	
+
+
 	render->enableBlending();
 	render->enableTexture();
 	render->disableLighting();
-	
+
 	render->setColor4(*textObj->getColor());
 	render->setBlendingMode(M_BLENDING_ALPHA);
-	
+
 	static MVector2 vertices[4];
 	static MVector2 texCoords[4];
-	
+
 	render->disableNormalArray();
 	render->disableColorArray();
 	render->enableVertexArray();
 	render->enableTexCoordArray();
-	
+
 	render->setVertexPointer(M_FLOAT, 2, vertices);
 	render->setTexCoordPointer(M_FLOAT, 2, texCoords);
-	
+
 	render->bindTexture(font->getTextureId());
-	
+
 	unsigned int lineId = 0;
 	float lineOffset = (*linesOffset)[0];
-	
+
 	float size = textObj->getSize();
 	float tabSize = size*2;
 	float fontSize = (float)font->getFontSize();
 	float widthFactor = font->getTextureWith() / fontSize;
 	float heightFactor = font->getTextureHeight() / fontSize;
 	float xc = 0, yc = 0;
-	
+
 	unsigned int i;
 	unsigned int textLen = strlen(text);
 	for(i=0; i<textLen; i++)
@@ -610,52 +613,52 @@ void MFixedRenderer::drawText(MOText * textObj)
 			{
 				lineId++;
 				lineOffset = (*linesOffset)[lineId];
-				
+
 				yc += size;
 				xc = 0;
 			}
 			continue;
 		}
-		
+
 		if(text[i] == '\t') // tab
 		{
 			int tab = (int)(xc / tabSize) + 1;
 			xc = tab*tabSize;
 			continue;
 		}
-		
+
 		// get character
 		unsigned int charCode = (unsigned int)((unsigned char)text[i]);
 		MCharacter * character = font->getCharacter(charCode);
 		if(! character)
 			continue;
-		
+
 		MVector2 pos = character->getPos();
 		MVector2 scale = character->getScale();
 		MVector2 offset = character->getOffset() * size + MVector2(lineOffset, 0);
-		
+
 		float width = scale.x * widthFactor * size;
 		float height = scale.y * heightFactor * size;
-		
+
 		// construct quad
 		texCoords[0] = MVector2(pos.x, (pos.y + scale.y));
-		vertices[0] = MVector2(xc, (yc + height)) + offset;						
-		
-		texCoords[1] = MVector2((pos.x + scale.x), (pos.y + scale.y));	
-		vertices[1] = MVector2((xc + width), (yc + height)) + offset;							
-		
-		texCoords[3] = MVector2((pos.x + scale.x), pos.y);	
-		vertices[3] = MVector2((xc + width), yc) + offset;							
-		
-		texCoords[2] = MVector2(pos.x, pos.y);				
+		vertices[0] = MVector2(xc, (yc + height)) + offset;
+
+		texCoords[1] = MVector2((pos.x + scale.x), (pos.y + scale.y));
+		vertices[1] = MVector2((xc + width), (yc + height)) + offset;
+
+		texCoords[3] = MVector2((pos.x + scale.x), pos.y);
+		vertices[3] = MVector2((xc + width), yc) + offset;
+
+		texCoords[2] = MVector2(pos.x, pos.y);
 		vertices[2] = MVector2(xc, yc) + offset;
-		
+
 		// draw quad
 		render->drawArray(M_PRIMITIVE_TRIANGLE_STRIP, 0, 4);
-		
+
 		//move to next character
 		xc += character->getXAdvance() * size;
-	}	
+	}
 }
 
 void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
@@ -665,7 +668,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 		MBox3d lightBox;
 		MOLight * light;
 	};
-	
+
 	struct MSubMeshPass
 	{
 		unsigned int subMeshId;
@@ -673,47 +676,47 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 		MObject3d * object;
 		MOLight * lights[4];
 	};
-	
+
 	// sub objects
 	#define MAX_TRANSP_SUBOBJ 4096
 	static int transpList[MAX_TRANSP_SUBOBJ];
 	static float transpZList[MAX_TRANSP_SUBOBJ];
 	static MSubMeshPass transpSubObjs[MAX_TRANSP_SUBOBJ];
-	
+
 	// lights list
 	#define MAX_ENTITY_LIGHTS 256
 	static int entityLightsList[MAX_ENTITY_LIGHTS];
 	static float entityLightsZList[MAX_ENTITY_LIGHTS];
 	static MEntityLight entityLights[MAX_ENTITY_LIGHTS];
 
-	
+
 	// get render
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 	render->enableLighting();
 	render->enableBlending();
 
-	
+
 	// make frustum
 	MFrustum * frustum = camera->getFrustum();
 	frustum->makeVolume(camera);
-	
+
 	// update visibility
 	updateVisibility(scene, camera);
-	
+
 	// fog
 	enableFog(camera);
-	
+
 	// camera
 	MVector3 cameraPos = camera->getTransformedPosition();
-	
-	
+
+
 	// transp sub obj number
 	unsigned int transpSubObsNumber = 0;
-	
+
 	// lights
 	unsigned int l;
 	unsigned int lSize = scene->getLightsNumber();
-	
+
 	// entities
 	unsigned int i;
 	unsigned int eSize = scene->getEntitiesNumber();
@@ -722,10 +725,10 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 		// get entity
 		MOEntity * entity = scene->getEntityByIndex(i);
 		MMesh * mesh = entity->getMesh();
-		
+
 		if(! entity->isActive())
 			continue;
-		
+
 		if(! entity->isVisible())
 		{
 			if(mesh)
@@ -741,62 +744,62 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 										mesh->getArmatureAnim(),
 										entity->getCurrentFrame()
 										);
-					
+
 					// TODO : optimize and add a tag to desactivate it
 					updateSkinning(mesh, armature);
 					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 				}
 			}
-			
+
 			continue;
 		}
-		
+
 		// draw mesh
 		if(mesh)
 		{
 			MVector3 scale = entity->getTransformedScale();
 			MBox3d * entityBox = entity->getBoundingBox();
-			
+
 			float minScale = scale.x;
 			minScale = MIN(minScale, scale.y);
 			minScale = MIN(minScale, scale.z);
 			minScale = 1.0f / minScale;
-			
+
 			unsigned int entityLightsNumber = 0;
 			for(l=0; l<lSize; l++)
 			{
 				// get entity
 				MOLight * light = scene->getLightByIndex(l);
-				
+
 				if(! light->isActive())
 					continue;
-				
+
 				if(! light->isVisible())
 					continue;
-				
+
 				// light box
 				MVector3 lightPos = light->getTransformedPosition();
 				MVector3 localPos = entity->getInversePosition(lightPos);
-				
+
 				float localRadius = light->getRadius() * minScale;
-				
+
 				MBox3d lightBox(
 								MVector3(localPos - localRadius),
 								MVector3(localPos + localRadius)
 								);
-				
+
 				if(! entityBox->isInCollisionWith(&lightBox))
 					continue;
-				
+
 				MEntityLight * entityLight = &entityLights[entityLightsNumber];
 				entityLight->lightBox = lightBox;
 				entityLight->light = light;
-				
+
 				entityLightsNumber++;
 				if(entityLightsNumber == MAX_ENTITY_LIGHTS)
 					break;
 			}
-			
+
 			// animate armature
 			if(mesh->getArmature() && mesh->getArmatureAnim())
 				animateArmature(
@@ -804,28 +807,28 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 								mesh->getArmatureAnim(),
 								entity->getCurrentFrame()
 								);
-			
+
 			// animate textures
 			if(mesh->getTexturesAnim())
 				animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
-			
+
 			// animate materials
 			if(mesh->getMaterialsAnim())
 				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
-			
+
 			unsigned int s;
 			unsigned int sSize = mesh->getSubMeshsNumber();
 			for(s=0; s<sSize; s++)
 			{
 				MSubMesh * subMesh = &mesh->getSubMeshs()[s];
 				MBox3d * box = subMesh->getBoundingBox();
-				
+
 				// check if submesh visible
 				if(sSize > 1)
 				{
 					MVector3 * min = box->getMin();
 					MVector3 * max = box->getMax();
-					
+
 					MVector3 points[8] = {
 						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
 						entity->getTransformedVector(MVector3(min->x, max->y, min->z)),
@@ -836,15 +839,15 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 						entity->getTransformedVector(MVector3(max->x, max->y, max->z)),
 						entity->getTransformedVector(MVector3(max->x, min->y, max->z))
 					};
-					
+
 					if(! frustum->isVolumePointsVisible(points, 8))
 						continue;
 				}
-				
+
 				// subMesh center
 				MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
 				center = entity->getTransformedVector(center);
-				
+
 				// sort entity lights
 				unsigned int lightsNumber = 0;
 				for(l=0; l<entityLightsNumber; l++)
@@ -852,34 +855,34 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					MEntityLight * entityLight = &entityLights[l];
 					if(! box->isInCollisionWith(&entityLight->lightBox))
 						continue;
-					
+
 					MOLight * light = entityLight->light;
-					
+
 					float z = (center - light->getTransformedPosition()).getLength();
 					entityLightsList[lightsNumber] = l;
 					entityLightsZList[l] = (1.0f/z)*light->getRadius();
 					lightsNumber++;
 				}
-				
+
 				if(lightsNumber > 1)
 					sortFloatList(entityLightsList, entityLightsZList, 0, (int)lightsNumber-1);
-				
+
 				// local lights
 				if(lightsNumber > 4)
 					lightsNumber = 4;
-				
+
 				for(l=0; l<lightsNumber; l++)
 				{
 					MEntityLight * entityLight = &entityLights[entityLightsList[l]];
 					MOLight * light = entityLight->light;
-					
+
 					// attenuation
 					float quadraticAttenuation = (8.0f / light->getRadius());
 					quadraticAttenuation = (quadraticAttenuation*quadraticAttenuation)*light->getIntensity();
-					
+
 					// color
 					MVector3 color = light->getFinalColor();
-					
+
 					// set light
 					render->enableLight(l);
 					render->setLightPosition(l, light->getTransformedPosition());
@@ -887,7 +890,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					render->setLightSpecular(l, MVector4(color));
 					render->setLightAmbient(l, MVector3(0, 0, 0));
 					render->setLightAttenuation(l, 1, 0, quadraticAttenuation);
-					
+
 					// spot
 					render->setLightSpotAngle(l, light->getSpotAngle());
 					if(light->getSpotAngle() < 90){
@@ -898,51 +901,51 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 						render->setLightSpotExponent(l, 0.0f);
 					}
 				}
-				
+
 				for(l=lightsNumber; l<4; l++){
 					render->disableLight(l);
 				}
-				
+
 				render->pushMatrix();
 				render->multMatrix(entity->getMatrix());
-				
+
 				// draw opaques
 				drawOpaques(subMesh, mesh->getArmature());
-				
+
 				if(subMesh->hasTransparency())
 				{
 					if(transpSubObsNumber < MAX_TRANSP_SUBOBJ)
 					{
 						// transparent subMesh pass
 						MSubMeshPass * subMeshPass = &transpSubObjs[transpSubObsNumber];
-						
+
 						// lights
 						subMeshPass->lightsNumber = lightsNumber;
 						for(l=0; l<lightsNumber; l++)
 							subMeshPass->lights[l] = entityLights[entityLightsList[l]].light;
-						
+
 						// z distance to camera
 						float z = getDistanceToCam(camera, center);
-						
+
 						// set values
 						transpList[transpSubObsNumber] = transpSubObsNumber;
 						transpZList[transpSubObsNumber] = z;
 						subMeshPass->subMeshId = s;
 						subMeshPass->object = entity;
-						
+
 						transpSubObsNumber++;
 					}
 				}
-				
+
 				render->popMatrix();
 			}
-			
+
 			mesh->updateBoundingBox();
 			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 		}
 	}
-	
-	
+
+
 	// texts
 	unsigned int tSize = scene->getTextsNumber();
 	for(i=0; i<tSize; i++)
@@ -952,35 +955,35 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 		{
 			// transparent pass
 			MSubMeshPass * subMeshPass = &transpSubObjs[transpSubObsNumber];
-			
+
 			// center
 			MBox3d * box = text->getBoundingBox();
 			MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
 			center = text->getTransformedVector(center);
-			
+
 			// z distance to camera
 			float z = getDistanceToCam(camera, center);
-			
+
 			// set values
 			transpList[transpSubObsNumber] = transpSubObsNumber;
 			transpZList[transpSubObsNumber] = z;
 			subMeshPass->object = text;
-			
+
 			transpSubObsNumber++;
 		}
 	}
-	
-	
+
+
 	// sort transparent list
 	if(transpSubObsNumber > 1)
 		sortFloatList(transpList, transpZList, 0, (int)transpSubObsNumber-1);
-	
+
 	// draw transparents
 	for(i=0; i<transpSubObsNumber; i++)
 	{
 		MSubMeshPass * subMeshPass = &transpSubObjs[transpList[i]];
 		MObject3d * object = subMeshPass->object;
-		
+
 		// objects
 		switch(object->getType())
 		{
@@ -990,7 +993,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				unsigned int subMeshId = subMeshPass->subMeshId;
 				MMesh * mesh = entity->getMesh();
 				MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshId];
-				
+
 				// animate armature
 				if(mesh->getArmature() && mesh->getArmatureAnim())
 					animateArmature(
@@ -998,27 +1001,27 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 									mesh->getArmatureAnim(),
 									entity->getCurrentFrame()
 									);
-				
+
 				// animate textures
 				if(mesh->getTexturesAnim())
 					animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
-				
+
 				// animate materials
 				if(mesh->getMaterialsAnim())
 					animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
-				
+
 				// lights
 				for(l=0; l<subMeshPass->lightsNumber; l++)
 				{
 					MOLight * light = subMeshPass->lights[l];
-					
+
 					// attenuation
 					float quadraticAttenuation = (8.0f / light->getRadius());
 					quadraticAttenuation = (quadraticAttenuation*quadraticAttenuation)*light->getIntensity();
-					
+
 					// color
 					MVector3 color = light->getFinalColor();
-					
+
 					// set light
 					render->enableLight(l);
 					render->setLightPosition(l, light->getTransformedPosition());
@@ -1026,7 +1029,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					render->setLightSpecular(l, MVector4(color));
 					render->setLightAmbient(l, MVector3(0, 0, 0));
 					render->setLightAttenuation(l, 1, 0, quadraticAttenuation);
-					
+
 					// spot
 					render->setLightSpotAngle(l, light->getSpotAngle());
 					if(light->getSpotAngle() < 90){
@@ -1037,25 +1040,25 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 						render->setLightSpotExponent(l, 0.0f);
 					}
 				}
-				
+
 				for(l=subMeshPass->lightsNumber; l<4; l++){
 					render->disableLight(l);
 				}
-				
+
 				render->pushMatrix();
 				render->multMatrix(entity->getMatrix());
 				drawTransparents(subMesh, mesh->getArmature());
 				render->popMatrix();
-				
+
 				mesh->updateBoundingBox();
 				(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 			}
 				break;
-				
+
 			case M_OBJECT3D_TEXT:
 			{
 				MOText * text = (MOText *)object;
-				
+
 				render->pushMatrix();
 				render->multMatrix(text->getMatrix());
 				drawText(text);
@@ -1064,7 +1067,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				break;
 		}
 	}
-	
+
 	render->disableLighting();
 	render->disableFog();
 }

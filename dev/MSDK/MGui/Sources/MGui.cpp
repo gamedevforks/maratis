@@ -30,6 +30,7 @@
 
 #include <MLoaders/MDevILLoader.h>
 #include "../Includes/MGui.h"
+#include <MGui.h>
 
 // global functions
 void set2dMode(MRenderingContext * render)
@@ -52,7 +53,8 @@ void set2dMode(MRenderingContext * render)
 // MGui
 MGui::MGui(void):
 m_render(NULL)
-{}
+{
+}
 
 MGui::~MGui(void)
 {
