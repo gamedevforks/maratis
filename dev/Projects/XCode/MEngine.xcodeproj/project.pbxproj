@@ -95,6 +95,8 @@
 		E918E4D01305AC0F0080ED5C /* MMeshTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E4791305AC0F0080ED5C /* MMeshTools.cpp */; };
 		E918E4D11305AC0F0080ED5C /* MBehaviorCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E47A1305AC0F0080ED5C /* MBehaviorCreator.cpp */; };
 		E918E4D21305AC0F0080ED5C /* MArmature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E918E47B1305AC0F0080ED5C /* MArmature.cpp */; };
+		E9A43CEC16415FFA00AC32AD /* MLog.h in Headers */ = {isa = PBXBuildFile; fileRef = E9A43CEB16415FFA00AC32AD /* MLog.h */; };
+		E9A43CEE1641600600AC32AD /* MLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9A43CED1641600600AC32AD /* MLog.cpp */; };
 		E9B1033814C9E83200344202 /* MPackageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E9B1033714C9E83200344202 /* MPackageManager.h */; };
 /* End PBXBuildFile section */
 
@@ -188,6 +190,8 @@
 		E918E4791305AC0F0080ED5C /* MMeshTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MMeshTools.cpp; path = ../../MSDK/MEngine/Sources/MMeshTools.cpp; sourceTree = SOURCE_ROOT; };
 		E918E47A1305AC0F0080ED5C /* MBehaviorCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBehaviorCreator.cpp; path = ../../MSDK/MEngine/Sources/MBehaviorCreator.cpp; sourceTree = SOURCE_ROOT; };
 		E918E47B1305AC0F0080ED5C /* MArmature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MArmature.cpp; path = ../../MSDK/MEngine/Sources/MArmature.cpp; sourceTree = SOURCE_ROOT; };
+		E9A43CEB16415FFA00AC32AD /* MLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLog.h; path = ../../MSDK/MEngine/Includes/MLog.h; sourceTree = SOURCE_ROOT; };
+		E9A43CED1641600600AC32AD /* MLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MLog.cpp; path = ../../MSDK/MEngine/Sources/MLog.cpp; sourceTree = SOURCE_ROOT; };
 		E9B1033714C9E83200344202 /* MPackageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPackageManager.h; path = ../../MSDK/MEngine/Includes/MPackageManager.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -241,6 +245,7 @@
 		E918E4231305AC0E0080ED5C /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				E9A43CEB16415FFA00AC32AD /* MLog.h */,
 				E9B1033714C9E83200344202 /* MPackageManager.h */,
 				E918E4241305AC0E0080ED5C /* MMorphingData.h */,
 				E918E4251305AC0E0080ED5C /* MBox3d.h */,
@@ -294,6 +299,7 @@
 		E918E4501305AC0F0080ED5C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E9A43CED1641600600AC32AD /* MLog.cpp */,
 				E918E4511305AC0F0080ED5C /* MArmatureAnim.cpp */,
 				E918E4521305AC0F0080ED5C /* MSoundRef.cpp */,
 				E918E4531305AC0F0080ED5C /* MVariable.cpp */,
@@ -394,6 +400,7 @@
 				E918E4A61305AC0F0080ED5C /* MLevel.h in Headers */,
 				E918E4A71305AC0F0080ED5C /* MFXManager.h in Headers */,
 				E9B1033814C9E83200344202 /* MPackageManager.h in Headers */,
+				E9A43CEC16415FFA00AC32AD /* MLog.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,6 +494,7 @@
 				E918E4D01305AC0F0080ED5C /* MMeshTools.cpp in Sources */,
 				E918E4D11305AC0F0080ED5C /* MBehaviorCreator.cpp in Sources */,
 				E918E4D21305AC0F0080ED5C /* MArmature.cpp in Sources */,
+				E9A43CEE1641600600AC32AD /* MLog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
