@@ -18,6 +18,7 @@
 		6BE2BB6A1367754800C3BB17 /* MES1Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6BE2BB681367754800C3BB17 /* MES1Context.cpp */; };
 		AEB652441373D8B5007EAB33 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEB652431373D8B5007EAB33 /* CoreMotion.framework */; };
 		AEFF8FCC1364FA9300195AEF /* exampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AEFF8FCB1364FA9300195AEF /* exampleViewController.m */; };
+		E900BFE816410DEB0037876B /* MLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E900BFE716410DEB0037876B /* MLog.cpp */; };
 		E93607B913A24D5600ED816C /* MiOSStandardRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */; };
 		E936082413A2540100ED816C /* MBinFontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082213A2540100ED816C /* MBinFontLoader.cpp */; };
 		E936082713A2542000ED816C /* MWavSoundLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082513A2542000ED816C /* MWavSoundLoader.cpp */; };
@@ -350,6 +351,8 @@
 		AEB652431373D8B5007EAB33 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		AEFF8FCA1364FA9300195AEF /* exampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exampleViewController.h; sourceTree = "<group>"; };
 		AEFF8FCB1364FA9300195AEF /* exampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = exampleViewController.m; sourceTree = "<group>"; };
+		E900BFE616410DD90037876B /* MLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLog.h; path = ../../../trunk/dev/MSDK/MEngine/Includes/MLog.h; sourceTree = SOURCE_ROOT; };
+		E900BFE716410DEB0037876B /* MLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MLog.cpp; path = ../../../trunk/dev/MSDK/MEngine/Sources/MLog.cpp; sourceTree = SOURCE_ROOT; };
 		E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MiOSStandardRenderer.cpp; path = ../Common/MRenderers/MiOSStandardRenderer.cpp; sourceTree = SOURCE_ROOT; };
 		E93607B713A24D5600ED816C /* MiOSStandardRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSStandardRenderer.h; path = ../Common/MRenderers/MiOSStandardRenderer.h; sourceTree = SOURCE_ROOT; };
 		E93607B813A24D5600ED816C /* MiOSStandardShaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiOSStandardShaders.h; path = ../Common/MRenderers/MiOSStandardShaders.h; sourceTree = SOURCE_ROOT; };
@@ -1793,6 +1796,7 @@
 		E9C997FD13291E6B002A3F21 /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				E900BFE616410DD90037876B /* MLog.h */,
 				E9F8B2BC14CACF6C00AB7CF4 /* MPackageManager.h */,
 				E9C997FE13291E6B002A3F21 /* MMorphingData.h */,
 				E9C997FF13291E6B002A3F21 /* MBox3d.h */,
@@ -1846,6 +1850,7 @@
 		E9C9982A13291E6B002A3F21 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E900BFE716410DEB0037876B /* MLog.cpp */,
 				E9C9982B13291E6B002A3F21 /* MArmatureAnim.cpp */,
 				E9C9982C13291E6B002A3F21 /* MSoundRef.cpp */,
 				E9C9982D13291E6B002A3F21 /* MVariable.cpp */,
@@ -2504,6 +2509,7 @@
 				E9F308491600AA3000054873 /* cartoon.vert in Sources */,
 				E9F3084A1600AA3000054873 /* Z_simple.frag in Sources */,
 				E9F3084B1600AA3000054873 /* Z_simple.vert in Sources */,
+				E900BFE816410DEB0037876B /* MLog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
