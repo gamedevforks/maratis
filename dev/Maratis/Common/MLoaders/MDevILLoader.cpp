@@ -205,23 +205,43 @@ bool M_loadImageFlip(const char * filename, void * data, bool flip)
 	
 	// get properties
 	int bytePerPix = ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
+	int channels = ilGetInteger(IL_IMAGE_CHANNELS);
 	
 	int width  = ilGetInteger(IL_IMAGE_WIDTH);
 	int height = ilGetInteger(IL_IMAGE_HEIGHT);
 	
-	if(bytePerPix == 4)
-		ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	else
-		ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
-	
-	// create image
-	MImage copy;
 	MImage * image = (MImage *)data;
-	image->create(M_UBYTE, (unsigned int)width, (unsigned int)height, (unsigned int)bytePerPix);
 	
-	// copy data
-	unsigned int size = image->getSize();
-	memcpy(image->getData(), ilGetData(), size);
+	
+	// half float RBG
+	if(bytePerPix == 6)
+	{
+		ilConvertImage(IL_RGB, IL_FLOAT);
+		
+		// create image
+		image->create(M_FLOAT, (unsigned int)width, (unsigned int)height, (unsigned int)channels);
+		
+		// copy data
+		memcpy(image->getData(), ilGetData(), image->getSize()*sizeof(float));
+	}
+	else
+	{
+		if(bytePerPix == 4)
+			ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+		else
+		{
+			channels = 3;
+			bytePerPix = 3;
+			ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+		}
+		
+		// create image
+		image->create(M_UBYTE, (unsigned int)width, (unsigned int)height, (unsigned int)channels);
+		
+		// copy data
+		unsigned int size = image->getSize();
+		memcpy(image->getData(), ilGetData(), size);
+	}
 
 	if(flip)
 	{

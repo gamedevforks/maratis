@@ -51,10 +51,11 @@
 
 
 // windows contexts
-HDC m_hDC;
-HWND m_hWnd;
-HGLRC m_hRC;
-HINSTANCE m_hInstance;
+static HDC m_hDC;
+static HWND m_hWnd;
+static HGLRC m_hRC;
+static HINSTANCE m_hInstance;
+static int cursorVis = 1;
 
 
 MWindow::MWindow(void):
@@ -178,12 +179,20 @@ void MWindow::setCursorPos(int x, int y)
 
 void MWindow::hideCursor(void)
 {
-	ShowCursor(0);
+	if(cursorVis == 1)
+	{
+		ShowCursor(0);
+		cursorVis = 0;
+	}
 }
 
 void MWindow::showCursor(void)
 {
-	ShowCursor(1);
+	if(cursorVis == 0)
+	{
+		ShowCursor(1);
+		cursorVis = 1;
+	}
 }
 
 bool MWindow::isMouseOverWindow(void)
