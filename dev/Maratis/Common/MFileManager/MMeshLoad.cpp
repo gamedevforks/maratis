@@ -661,7 +661,8 @@ bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory)
 
 bool xmlMeshLoad(const char * filename, void * data)
 {
-    MLOG(6, "xmlMeshLoad "<< filename?filename:"NULL");
+    MLOG(7, "xmlMeshLoad " << filename?filename:"NULL");
+	
 	MLevel * level = MEngine::getInstance()->getLevel();
 
 	// read document
@@ -697,7 +698,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * pMeshNode = pRootNode->FirstChildElement("Mesh");
 	if(! pMeshNode)
 	{
-	    MLOG(4, "Cannot find a Mesh child element");
+	    MLOG(4, "Cannot find a Mesh node");
 	    return false;
 	}
 
@@ -727,7 +728,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * texturesNode = pMeshNode->FirstChildElement("Textures");
 	if(texturesNode)
 	{
-	    MLOG(7, "xmlMeshLoad: Textures found");
+	    MLOG(7, "entering Textures node");
+		
 		unsigned int numTextures = 0;
 		texturesNode->QueryUIntAttribute("num", &numTextures);
 		mesh->allocTextures(numTextures);
@@ -815,7 +817,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * materialsNode = pMeshNode->FirstChildElement("Materials");
 	if(materialsNode)
 	{
-	    MLOG(7, "xmlMeshLoad: materials found");
+	    MLOG(7, "entering Materials node");
+		
 		unsigned int numMaterials = 0;
 		materialsNode->QueryUIntAttribute("num", &numMaterials);
 		mesh->allocMaterials(numMaterials);
@@ -1024,7 +1027,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * bonesNode = pMeshNode->FirstChildElement("Bones");
 	if(bonesNode)
 	{
-	    MLOG(7, "xmlMeshLoad: bones found");
+	    MLOG(7, "entering Bones node");
+		
 		MArmature * armature = mesh->createArmature();
 
 		unsigned int b, numBones = 0;
@@ -1417,11 +1421,10 @@ bool xmlMeshLoad(const char * filename, void * data)
 			generateTangents(subMesh);
 
 
-
 		subMeshs++;
 	}
 
     MLOG(6, "xmlMeshLoad success: "<<numSubMeshs<<" submeshs found");
-	// return mesh
+	
 	return true;
 }

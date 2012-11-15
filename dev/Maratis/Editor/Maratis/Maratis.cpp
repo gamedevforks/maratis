@@ -192,7 +192,8 @@ m_renderer(NULL)
 			i++;
 			sprintf(m_tempDir, "%s/mtemp%d", window->getTempDirectory(), i);
 		}
-        MLOG(5, "Maratis constructor: creating temp dir "<<m_tempDir);
+		
+        MLOG(5, "creating temp dir " << m_tempDir);
 		createDirectory(m_tempDir);
 	}
 
@@ -407,7 +408,7 @@ void Maratis::start(void)
 	const char * version = (const char *)glGetString(GL_VERSION);
 	if(version)
     {
-        MLOG(5, "Maratis start: found GL version "<<version);
+        MLOG(5, "found GL version " << version);
 		sscanf(version, "%d", &GLversion);
 	}
 
@@ -464,7 +465,6 @@ void Maratis::start(void)
 		// set default renderer
 		if(m_renderer == NULL)
 		{
-            MLOG(5, "GL version ="<<GLversion);
 			if(GLversion >= 2)
 				m_renderer = new MStandardRenderer();
 			else
@@ -487,7 +487,6 @@ void Maratis::start(void)
 	m_lightEntity = new MOEntity	(loadEditorMesh("gui/meshs/light.mesh"));
 	m_cameraEntity = new MOEntity	(loadEditorMesh("gui/meshs/camera.mesh"));
 	m_soundEntity = new MOEntity	(loadEditorMesh("gui/meshs/sound.mesh"));
-    MLOG(6, "Maratis start ok");
 }
 
 void Maratis::clear(void)
@@ -564,7 +563,6 @@ void Maratis::restart(void)
 
 void Maratis::initVue(void)
 {
-    MLOG(6, "Maratis init Vue...")
 	// user vue
 	m_perspectiveVue.setClippingNear(1);
 	m_perspectiveVue.setClippingFar(100000);

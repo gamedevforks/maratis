@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2012 Skaiware
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,7 +29,7 @@
 
 
 #include "../Includes/MEngine.h"
-#include "../Includes/MLog.h"
+
 #include <iostream>
 #include <fstream>
 

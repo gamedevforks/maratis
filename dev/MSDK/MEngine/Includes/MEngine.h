@@ -93,6 +93,8 @@ class MMaterialsAnimRef;
 
 #include <MCore.h>
 
+#include "MLog.h"
+
 #include "MPackageManager.h"
 
 #include "MKey.h"

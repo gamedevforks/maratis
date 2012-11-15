@@ -69,8 +69,7 @@ void draw(void)
 // main
 int main(int argc, char **argv)
 {
-	MLOG(5, "main: "<<argc<<" args...");
-
+	MLOG(5, "main: " << argc << " args...");
 	setlocale(LC_NUMERIC, "C");
 
 	unsigned int width = 1024;
@@ -84,26 +83,32 @@ int main(int argc, char **argv)
 	if(argc > 4)
 		sscanf(argv[4], "%d", &fullscreen);
 
+	
 	// get engine (first time call onstructor)
 	MEngine * engine = MEngine::getInstance();
 
+	
 	// get window (first time call onstructor)
 	MWindow * window = MWindow::getInstance();
 
 	// create window
-	bool res=window->create("Maratis", width, height, 32, fullscreen == 1);
-    if (!res)
+	if(! window->create("Maratis", width, height, 32, fullscreen == 1))
+    {
 		MLOG(3, "cannot create window");
+		return 0;
+	}
 
 	if(fullscreen)
 		window->hideCursor();
 
+	
 	// set current directory
 	char rep[256];
 	getRepertory(rep, argv[0]);
-	MLOG(5, "Current repertory: " << rep);
+	MLOG(5, "current repertory: " << rep);
 	window->setCurrentDirectory(rep);
 
+	
 	// get Maratis (first time call onstructor)
 	MaratisPlayer * maratis = MaratisPlayer::getInstance();
 
@@ -121,8 +126,6 @@ int main(int argc, char **argv)
 			engine->getGame()->begin();
 			projectFound = true;
 		}
-		else
-			MLOG(3, "Cannot load project "<<argv[1]);
 	}
 
 	if(! projectFound)
@@ -167,9 +170,8 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	else
-		MLOG(4, "Project found");
-
+	
+	
 	// time
 	unsigned int frequency = 60;
 	unsigned long previousFrame = 0;
@@ -230,8 +232,6 @@ int main(int argc, char **argv)
 
 		//window->sleep(0.001); // 1 mili sec seems to slow down on some machines...
 	}
-
-    MLOG(5, "Quitting main...");
 
 	maratis->clear();
 	return 0;

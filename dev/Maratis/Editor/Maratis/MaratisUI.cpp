@@ -3418,7 +3418,6 @@ void MaratisUI::gameButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	MEngine * engine = MEngine::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
 	MGame * game = MEngine::getInstance()->getGame();
-	MScriptContext * scriptContext = engine->getScriptContext();
 
 
 	switch(guiEvents->type)

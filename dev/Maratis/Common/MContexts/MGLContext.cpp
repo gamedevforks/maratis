@@ -172,7 +172,6 @@ m_currentFrameBuffer(0)
 	if(version)
 	{
 		sscanf(version, "%d", &g_GLversion);
-		printf("GL_VERSION : %s\n", version);
 	}
 
 	// init cull face (back)
@@ -209,8 +208,6 @@ m_currentFrameBuffer(0)
 	int max_ind, max_vert;
 	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &max_ind);
 	glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_vert);
-	
-	printf("MAX i:%d v:%d\n", max_ind, max_vert);
 	
 	// stencil
 	glClearStencil(0);

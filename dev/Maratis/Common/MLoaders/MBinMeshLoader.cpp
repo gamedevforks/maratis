@@ -118,7 +118,8 @@ static bool readDataRef(MFile * file, char * filename, const char * rep)
 // Mesh bin loading
 bool M_loadBinMesh(const char * filename, void * data)
 {
-    MLOG(7, "M_loadBinMesh "<< (filename?filename:"NULL") );
+    MLOG(7, "M_loadBinMesh " << (filename?filename:"NULL"));
+	
 	char rep[256], path[256];
 	bool state;
 
@@ -126,7 +127,7 @@ bool M_loadBinMesh(const char * filename, void * data)
 	MFile * file = M_fopen(filename, "rb");
 	if(! file)
 	{
-		printf("Error : can't read file %s\n", filename);
+		MLOG(7, "Can't read file " << (filename?filename:"NULL"));
 		return false;
 	}
 

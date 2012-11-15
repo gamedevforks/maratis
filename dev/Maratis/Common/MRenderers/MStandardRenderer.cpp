@@ -1248,19 +1248,17 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 	bool restoreCamera = false;
 
-    //MLOG(7, "MStdRenderer::drawScene: Num of lights="<<l);
 	for(l=0; l<lSize; l++)
 	{
 		MOLight * light = scene->getLightByIndex(l);
 		if(! (light->isActive() && light->isVisible()))
 			continue;
 
-        //MLOG(7, "Light "<< l <<" SpotAngle=" << light->getSpotAngle() << " light is casting shadow="<< (light->isCastingShadow()?"true":"false") );
 		if(light->getSpotAngle() < 90.0f && light->isCastingShadow())
 		{
 			unsigned int i;
 			unsigned int eSize = scene->getEntitiesNumber();
-			//MLOG(7, "MStdRenderer::drawScene: Num of entities="<<eSize);
+	
 			unsigned int shadowQuality = light->getShadowQuality();
 			MShadowLight * shadowLight = createShadowLight(light);
 

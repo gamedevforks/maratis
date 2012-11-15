@@ -194,6 +194,10 @@
 			Name="Includes"
 			>
 			<File
+				RelativePath="..\..\MSDK\MEngine\Includes\MLog.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\MSDK\MEngine\Includes\MArmature.h"
 				>
 			</File>
@@ -377,6 +381,10 @@
 		<Filter
 			Name="Sources"
 			>
+			<File
+				RelativePath="..\..\MSDK\MEngine\Sources\MLog.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\MSDK\MEngine\Sources\MArmature.cpp"
 				>

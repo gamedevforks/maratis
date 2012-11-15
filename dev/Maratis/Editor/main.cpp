@@ -81,46 +81,53 @@ void draw(void)
 // main
 int main(int argc, char **argv)
 {
-    MLOG(6, "Entering main...");
+    MLOG(6, "entering main...");
 	setlocale(LC_NUMERIC, "C");
 
-	// get engine (first time call onstructor)
+	// get engine (first time call constructor)
 	MEngine * engine = MEngine::getInstance();
 
-	// get window (first time call onstructor)
+	// get window (first time call constructor)
 	MWindow * window = MWindow::getInstance();
 
+	
 	// create window
-	bool b=window->create("Maratis", 1024,768, 32, false);
-    if(!b)
-        MLOG(4, "Cannot create window");
+	if(! window->create("Maratis", 1024,768, 32, false))
+	{
+		MLOG(4, "cannot create window");
+		return 0;
+	}
 
 	// set current directory
 	char rep[256];
 	getRepertory(rep, argv[0]);
 	window->setCurrentDirectory(rep);
-    MLOG(5, "Current dir set to "<<rep);
+    MLOG(5, "current dir set to " << rep);
 
-	// get Maratis (first time call onstructor)
-    MLOG(6, "Getting Maratis object...");
+	
+	// init Maratis (first time call constructor)
+    MLOG(6, "init Maratis...");
 	Maratis * maratis = Maratis::getInstance();
-    if (!maratis)
-        MLOG(4, "Cannot get the Maratis instance");
+    if(! maratis)
+        MLOG(4, "cannot get the Maratis instance");
+	
 	MRenderingContext * render = engine->getRenderingContext();
-    if (!render)
-        MLOG(4, "Cannot get rendering context from engine");
+    if(! render)
+        MLOG(4, "cannot get rendering context from engine");
 
+	
 	// init gui
-    MLOG(5, "main: init GUI...");
+    MLOG(5, "init GUI...");
 	MGui * gui = MGui::getInstance();
-    if (!gui)
-        MLOG(4, "Cannot get MGui instance");
+    if(! gui)
+        MLOG(4, "cannot get MGui instance");
+	
 	gui->setRenderingContext(render);
-    MLOG(6, "main: adding default.tga...");
 	gui->addFont(new MGuiTextureFont("font/default.tga"));
 
+	
 	// init MaratisUI
-    MLOG(5, "main: init Maratis UI...")
+    MLOG(5, "init Maratis UI...")
 	MaratisUI * UI = MaratisUI::getInstance();
 	window->setPointerEvent(MaratisUI::windowEvents);
 
@@ -129,7 +136,7 @@ int main(int argc, char **argv)
 		MImage image;
 		if(! M_loadImage("gui/Title.png", &image))
 		{
-            MLOG(4, "Cant load title image Title.png");
+            MLOG(4, "cant load title image");
             return 0;
         }
 
@@ -146,6 +153,7 @@ int main(int argc, char **argv)
 		window->swapBuffer();
 	}
 
+	
 	// load project
 	if(argc > 1)
     {
@@ -154,6 +162,7 @@ int main(int argc, char **argv)
 		maratis->loadProject(filename);
 	}
 
+	
 	// time
 	unsigned int frequency = 60;
 	unsigned long previousFrame = 0;
@@ -162,7 +171,9 @@ int main(int argc, char **argv)
 	int f = 0;
 	int t = 0;
 
-    MLOG(7, "Entering main loop...");
+	
+    MLOG(7, "entering main loop...");
+	
 	// on events
 	while(window->isActive())
 	{

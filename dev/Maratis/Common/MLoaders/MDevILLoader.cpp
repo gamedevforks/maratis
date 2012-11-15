@@ -124,8 +124,7 @@ static void flipImage(MImage * source)
 	unsigned int width = source->getWidth();
 	unsigned int height = source->getHeight();
 	unsigned int components = source->getComponents();
-	void * data = source->getData();
-	
+
 	MImage copy;
 	copy.create(dataType, width, height, components);
 	

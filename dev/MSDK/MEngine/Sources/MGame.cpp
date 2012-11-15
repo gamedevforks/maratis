@@ -28,7 +28,6 @@
 //========================================================================
 
 #include "../Includes/MEngine.h"
-#include "../Includes/MLog.h"
 
 static unsigned int s_renderBufferId = 0;
 
@@ -140,8 +139,7 @@ void MGame::draw(void)
 		for(c=0; c<cSize; c++)
 		{
 			MOCamera * camera = scene->getCameraByIndex(c);
-			if (!camera)
-                MLOG(4, "Camera NULL");
+			
 			if(camera->isActive() && camera->getRenderColorTexture())
 			{
 				if(! recoverViewport)
@@ -217,7 +215,6 @@ void MGame::draw(void)
 		scene->drawObjectsBehaviors();
 
 		// scene layer
-		//MLOG(6, "MGame::draw: "<<level->getScenesNumber()<<" scenes found in level" );
 		unsigned int sceneLayerId = camera->getSceneLayer();
 		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
 		{

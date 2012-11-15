@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 #include "../Includes/MEngine.h"
-#include <MLog.h>
+
 
 // level
 MLevel::MLevel(void):
@@ -92,7 +92,8 @@ MFontRef * MLevel::loadFont(const char * filename)
 
 MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 {
-    MLOG(6, "MLevel load mesh " << (filename?filename:"NULL") );
+    MLOG(6, "MLevel load mesh " << (filename?filename:"NULL"));
+	
 	unsigned int i;
 	unsigned int size = m_meshManager.getRefsNumber();
 	for(i=0; i<size; i++)
@@ -113,8 +114,6 @@ MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 
 	// add data
 	MMeshRef * ref = MMeshRef::getNew(NULL, filename);
-    if (!ref)
-        MLOG(4, "Cannot get new mesh ref");
 	m_meshManager.addRef(ref);
 
 	if(preload)
