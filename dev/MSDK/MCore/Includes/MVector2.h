@@ -219,6 +219,7 @@ public:
 	MVector2 getNormalized() const;
 	MVector2 getRotated(const float angle) const;	
 
+	// return angle that vec needs to rotate
 	inline float getAngleBetween(const MVector2 & vec)
 	{
 		float angle = (float)((atan2(y, x) - atan2(vec.y, vec.x))*RAD_TO_DEG);
