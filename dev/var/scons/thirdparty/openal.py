@@ -14,6 +14,7 @@ def getOpenALParameters():
     params['defines']     = []
     params['objs']        = []
     params['libs']        = []
+    params['installLibs'] = []
     params['includePath'] = []
     params['libPath']     = []
     params['frameworks']  = []
@@ -28,6 +29,8 @@ def getOpenALParameters():
         params['includePath'].append('openal/include')
         params['libPath'].append('openal/win32')
         params['libs'].append('OpenAL32')
+        params['installLibs'].append('OpenAL32.dll')
+        params['installLibs'].append('wrap_oal.dll')
         pass
     elif sys.platform=='darwin':
         # OpenAL settings for osx
@@ -64,6 +67,18 @@ def addOpenALToEnv(env):
     env.AppendUnique(LIBS = params['libs'])
     env.AppendUnique(FRAMEWORKS = params['frameworks'])
     pass
+
+
+def getOpenALLibs(env):
+    """ get openAL libraries with full path"""
+    # retrieve params
+    params = getOpenALParameters()
+    # get full path of install libs: only the first libpath is used!!
+    vlibpath = []
+    for lib in params['installLibs']:
+        libpath = os.path.join(env['thirdpartydir'],params['libPath'][0],lib)
+        vlibpath.append(libpath)
+    return vlibpath
 
 
 if __name__ == '__main__':

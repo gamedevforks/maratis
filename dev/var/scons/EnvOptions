@@ -38,10 +38,10 @@ opts.Add( PathVariable( 'prod_area',
                         os.path.join(basepath,'prod'),
                         PathVariable.PathIsDirCreate ) )
 
-opts.Add( EnumVariable( 'MSVC_VERSION',
-                      'current visual compiler',
-                      '9.0Exp',
-                      ['8.0','9.0Exp']) )
+#opts.Add( EnumVariable( 'MSVC_VERSION',
+#                      'current visual compiler',
+#                      '9.0Exp',
+#                      ['8.0','9.0Exp']) )
                       
 opts.Add( EnumVariable( 'TARGET_ARCH',
                       'target arch',

@@ -37,6 +37,7 @@ files = [mcore_lib, mengine_lib]
 
 import thirdparty
 files.append(thirdparty.libsndfile.getLibSndFileLibs(env))
+files.append(thirdparty.openal.getOpenALLibs(env))
 inst_msdk = env.Install(os.path.join(env['proddir'],'MSDK'), files)
 inst_maratis = env.Install(os.path.join(env['proddir'],'Maratis','Bin'), files)
 # examples: manualuse
