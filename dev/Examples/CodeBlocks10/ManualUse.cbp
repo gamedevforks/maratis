@@ -119,6 +119,7 @@
 		<Unit filename="..\ManualUse\main.cpp" />
 		<Unit filename="..\..\MSDK\MCore\Sources\MDataLoader.cpp" />
 		<Unit filename="..\..\MSDK\MEngine\Sources\MLevel.cpp" />
+		<Unit filename="..\..\MSDK\MEngine\Sources\MLog.cpp" />
 		<Unit filename="..\..\MSDK\MEngine\Sources\MMeshRef.cpp" />
 		<Extensions>
 			<code_completion />

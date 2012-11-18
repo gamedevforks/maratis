@@ -29,7 +29,8 @@
 //
 //========================================================================
 
-
+#include <iostream>
+#include <stdlib.h>
 #include <stdio.h>
 
 #ifdef __APPLE__
@@ -39,6 +40,8 @@
 #endif
 
 #include "MGLContext.h"
+// Anael: cant we include an engine header ?
+//#include "MLog.h"
 
 static int g_GLversion = 0;
 static float maxAnisotropy = 0.0f;
@@ -171,6 +174,8 @@ m_currentFrameBuffer(0)
 	const char * version = (const char *)glGetString(GL_VERSION);
 	if(version)
 	{
+	    m_gl_version=version;
+	    //std::cout<<"GL version:"<<version<<std::endl;
 		sscanf(version, "%d", &g_GLversion);
 	}
 
@@ -197,18 +202,18 @@ m_currentFrameBuffer(0)
 	// point
 	//glPointSize(2.0);
 	//glEnable(GL_POINT_SMOOTH);
-	
+
 	//float coeffs[] = {1.0f, 0, 0};
 	//glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, coeffs);
-	
+
 	//glPointParameterf (GL_POINT_SIZE_MAX, 100.0);
 	//glPointParameterf (GL_POINT_SIZE_MIN, 1.0f);
-	
-	
+
+
 	int max_ind, max_vert;
 	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &max_ind);
 	glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_vert);
-	
+
 	// stencil
 	glClearStencil(0);
 
@@ -466,7 +471,7 @@ void MGLContext::texImage(unsigned int level, unsigned int width, unsigned int h
 	GLenum intFormat = format;
 	//if(type == M_FLOAT && mode == M_RGB)
 	//	intFormat = GL_RGB32F_ARB;
-	
+
 	glTexImage2D(GL_TEXTURE_2D, level, intFormat, width, height, 0, format, returnGLType(type), pixels);
 	if(level > 0)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
@@ -532,7 +537,7 @@ void CHECK_FRAMEBUFFER_STATUS()
 {
 	GLenum status;
 	status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-	
+
 	switch(status){
 		case GL_FRAMEBUFFER_COMPLETE:
             break;

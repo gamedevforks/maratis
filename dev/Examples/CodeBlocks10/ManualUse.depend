@@ -6,8 +6,9 @@
 	<MGameWinEvents.h>
 	"Maratis/MaratisPlayer.h"
 
-1346868943 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mengine.h
+1353276462 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mengine.h
 	<MCore.h>
+	"MLog.h"
 	"MPackageManager.h"
 	"MKey.h"
 	"MObject3dAnim.h"
@@ -97,7 +98,7 @@
 	"MMatrix4x4.h"
 	"MQuaternion.h"
 
-1346868944 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mcore\includes\mvector2.h
+1353276462 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mcore\includes\mvector2.h
 
 1346868944 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mcore\includes\mvector3.h
 
@@ -221,7 +222,7 @@
 
 1351374379 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mgame.h
 
-1351363018 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mlog.h
+1353276462 g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\includes\mlog.h
 	<ostream>
 	<iostream>
 	<sstream>
@@ -890,7 +891,7 @@
 	<iostream>
 	<fstream>
 
-1351374783 source:g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\mygame.cpp
+1351456429 source:g:\perso\devel\maratis\maratis\trunk\dev\examples\manualuse\mygame.cpp
 	"MyGame.h"
 	<MLog.h>
 
@@ -921,4 +922,14 @@
 	<MRenderers/MStandardRenderer.h>
 	<MRenderers/MFixedRenderer.h>
 	"MyGame.h"
+
+1351466232 source:g:\perso\devel\maratis\maratis\trunk\dev\msdk\mcore\sources\mdataloader.cpp
+	"../Includes/MCore.h"
+
+1353276462 source:g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\sources\mlevel.cpp
+	<stdio.h>
+	"../Includes/MEngine.h"
+
+1353276462 source:g:\perso\devel\maratis\maratis\trunk\dev\msdk\mengine\sources\mmeshref.cpp
+	"../Includes/MEngine.h"
 

@@ -80,6 +80,7 @@ m_FXsNumber(0)
 	render->setTextureVWrapMode(M_WRAP_REPEAT);
 
 	render->sendTextureImage(&image, 1, 1, 0);
+    MLOG(6, "MStandardRenderer creation ok");
 }
 
 MStandardRenderer::~MStandardRenderer(void)
@@ -1258,7 +1259,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		{
 			unsigned int i;
 			unsigned int eSize = scene->getEntitiesNumber();
-	
+
 			unsigned int shadowQuality = light->getShadowQuality();
 			MShadowLight * shadowLight = createShadowLight(light);
 

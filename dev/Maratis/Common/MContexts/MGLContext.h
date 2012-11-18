@@ -43,11 +43,13 @@ private:
 
 	// frame buffer
 	unsigned int m_currentFrameBuffer;
-	
+
+    const char * m_gl_version;
+
 	// fog
 	float m_fogMin, m_fogMax;
 	MVector3 m_fogColor;
-	
+
 	// lights
 	struct
 	{
@@ -65,6 +67,8 @@ public:
 
 	MGLContext(void);
 	~MGLContext(void);
+
+    const char* getRendererVersion() { return m_gl_version; }
 
 	// view
 	void setOrthoView(float left, float right, float bottom, float top, float zNear, float zFar);
@@ -102,13 +106,13 @@ public:
 	void attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId);
 	void attachFrameBufferRB(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int renderBufferId);
 	void setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size);
-	
+
 	// render buffer
 	void createRenderBuffer(unsigned int * renderBufferId);
 	void deleteRenderBuffer(unsigned int * renderBufferId);
 	void bindRenderBuffer(unsigned int renderBufferId);
 	void setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width, unsigned int height);
-	
+
 	// shaders
 	void createVertexShader(unsigned int * shaderId);
 	void createPixelShader(unsigned int * shaderId);
@@ -127,7 +131,7 @@ public:
 	void sendUniformVec4(unsigned int fxId, const char * name, float * values, const int count = 1);
 	void sendUniformMatrix(unsigned int fxId, const char * name, MMatrix4x4 * matrix, const int count = 1, const bool transpose = false);
 	void getAttribLocation(unsigned int fxId, const char * name, int * location);
-	
+
 	// arrays
 	void enableVertexArray(void);
 	void enableColorArray(void);
@@ -176,7 +180,7 @@ public:
 
 	// alpha
 	void setAlphaTest(float value);
-	
+
 	// depth
 	void enableDepthTest(void);
 	void disableDepthTest(void);
@@ -187,7 +191,7 @@ public:
 	void disableStencilTest(void);
 	void setStencilFunc(M_STENCIL_FUNCS func, int ref=0);
 	void setStencilOp(M_STENCIL_OPS op);
-	
+
 	// cull face
 	void enableCullFace(void);
 	void disableCullFace(void);
@@ -199,7 +203,7 @@ public:
 	void beginQuery(unsigned int queryId);
 	void endQuery(void);
 	void getQueryResult(unsigned int queryId, unsigned int * result);
-	
+
 	// matrix
 	void loadIdentity(void);
 	void setMatrixMode(M_MATRIX_MODES mode);
@@ -243,7 +247,7 @@ public:
 	void getLightSpotDirection(unsigned int id, MVector3 * direction);
 	void getLightSpotAngle(unsigned int id, float * angle);
 	void getLightSpotExponent(unsigned int id, float * exponent);
-	
+
 	// blending
 	void enableBlending(void);
 	void disableBlending(void);

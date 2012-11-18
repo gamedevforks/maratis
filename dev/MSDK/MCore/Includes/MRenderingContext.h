@@ -207,6 +207,9 @@ public:
 	// destructor
 	virtual ~MRenderingContext(void){}
 
+    // Anael : rename to what ever you d like as soos as the client of this interface ha s a way to know the version on the rendering engine
+    virtual const char* getRendererVersion() = 0;
+
 	// view
 	virtual void setOrthoView(float left, float right, float bottom, float top, float zNear, float zFar) = 0;
 	virtual void setPerspectiveView(float fov, float ratio, float zNear, float zFar) = 0;
@@ -243,13 +246,13 @@ public:
 	virtual void attachFrameBufferTexture(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int textureId) = 0;
 	virtual void attachFrameBufferRB(M_FRAME_BUFFER_ATTACHMENT attachment, unsigned int renderBufferId){}
 	virtual void setDrawingBuffers(M_FRAME_BUFFER_ATTACHMENT * buffers, unsigned int size) = 0;
-	
+
 	// render buffer
 	virtual void createRenderBuffer(unsigned int * renderBufferId){}
 	virtual void deleteRenderBuffer(unsigned int * renderBufferId){}
 	virtual void bindRenderBuffer(unsigned int renderBufferId){}
 	virtual void setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width, unsigned int height){}
-	
+
 	// shaders
 	virtual void createVertexShader(unsigned int * shaderId) = 0;
 	virtual void createPixelShader(unsigned int * shaderId) = 0;
@@ -268,7 +271,7 @@ public:
 	virtual void sendUniformVec4(unsigned int fxId, const char * name, float * values, const int count = 1) = 0;
 	virtual void sendUniformMatrix(unsigned int fxId, const char * name, MMatrix4x4 * matrix, const int count = 1, const bool transpose = false) = 0;
 	virtual void getAttribLocation(unsigned int fxId, const char * name, int * location) = 0;
-	
+
 	// arrays
 	virtual void enableVertexArray(void) = 0;
 	virtual void enableColorArray(void) = 0;
@@ -317,7 +320,7 @@ public:
 
 	// alpha
 	virtual void setAlphaTest(float value) = 0;
-	
+
 	// depth
 	virtual void enableDepthTest(void) = 0;
 	virtual void disableDepthTest(void) = 0;
@@ -340,7 +343,7 @@ public:
 	virtual void beginQuery(unsigned int queryId){}
 	virtual void endQuery(void){}
 	virtual void getQueryResult(unsigned int queryId, unsigned int * result){}
-	
+
 	// matrix
 	virtual void loadIdentity(void) = 0;
 	virtual void setMatrixMode(M_MATRIX_MODES mode) = 0;

@@ -153,6 +153,7 @@ int main(int argc, char **argv)
 	// create virtual contexts
 	MSoundContext * soundContext = new MALContext();
 	MRenderingContext * render = new MGLContext();
+	MLOG(5, "Render version: " << render->getRendererVersion());
 	MPhysicsContext * physics = new MBulletContext();
 	MScriptContext * script = new MScript();
 	MInputContext *	input = new MInput();
