@@ -2241,12 +2241,8 @@ int doFile(lua_State * L)
 	char globalFilename[256];
 	getGlobalFilename(globalFilename, g_currentDirectory, filename);
 
-	// do file and update current directory // doesn't work with file packing !
-	//getRepertory(g_currentDirectory, globalFilename);
-	//luaL_dofile(L, globalFilename);
-	
-	// use this instead :
-	char * text = readTextFile(filename);
+	// read text
+	char * text = readTextFile(globalFilename);
 	if(! text)
 		return 0;
 	
@@ -2258,6 +2254,8 @@ int doFile(lua_State * L)
 	
 	// set back to current
 	strcpy(g_currentDirectory, current);
+	
+	SAFE_FREE(text);
 	return 0;
 }
 
