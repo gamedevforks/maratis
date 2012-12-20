@@ -207,7 +207,7 @@ public:
 	// destructor
 	virtual ~MRenderingContext(void){}
 
-    // Anael : rename to what ever you d like as soos as the client of this interface ha s a way to know the version on the rendering engine
+	//  version
     virtual const char* getRendererVersion() = 0;
 
 	// view

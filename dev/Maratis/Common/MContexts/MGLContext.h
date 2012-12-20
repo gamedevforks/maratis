@@ -41,10 +41,11 @@ class MGLContext : public MRenderingContext
 {
 private:
 
+	// version
+    const char * m_gl_version;
+	
 	// frame buffer
 	unsigned int m_currentFrameBuffer;
-
-    const char * m_gl_version;
 
 	// fog
 	float m_fogMin, m_fogMax;
@@ -68,7 +69,8 @@ public:
 	MGLContext(void);
 	~MGLContext(void);
 
-    const char* getRendererVersion() { return m_gl_version; }
+	// version
+    const char * getRendererVersion(void) { return m_gl_version; }
 
 	// view
 	void setOrthoView(float left, float right, float bottom, float top, float zNear, float zFar);

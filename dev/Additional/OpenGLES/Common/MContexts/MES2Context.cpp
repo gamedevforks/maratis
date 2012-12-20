@@ -168,8 +168,8 @@ m_currentFrameBuffer(0)
 	const char * version = (const char *)glGetString(GL_VERSION);
 	if(version)
 	{
+		m_gl_version=version;
 		sscanf(version, "%d", &g_GLversion);
-		printf("GL_VERSION : %s\n", version);
 	}
     
 	// init cull face (back)

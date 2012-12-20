@@ -41,6 +41,9 @@ class MES1Context : public MRenderingContext
 {
 private:
 
+	// version
+    const char * m_gl_version;
+	
 	// frame buffer
 	unsigned int m_currentFrameBuffer;
 	
@@ -66,6 +69,9 @@ public:
 	MES1Context(void);
 	~MES1Context(void);
 
+	// version
+	const char * getRendererVersion(void) { return m_gl_version; }
+	
 	// view
 	void setOrthoView(float left, float right, float bottom, float top, float zNear, float zFar);
 	void setPerspectiveView(float fov, float ratio, float zNear, float zFar);

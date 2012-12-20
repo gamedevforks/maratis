@@ -42,6 +42,9 @@ class MES2Context : public MRenderingContext
 {
 private:
 
+	// version
+    const char * m_gl_version;
+	
 	// Matrices
 	unsigned int m_matrixStep;
 	M_MATRIX_MODES m_matrixMode;
@@ -77,6 +80,9 @@ public:
 	MES2Context(void);
 	~MES2Context(void);
 
+	// version
+	const char * getRendererVersion(void) { return m_gl_version; }
+	
 	// view
 	void setOrthoView(float left, float right, float bottom, float top, float zNear, float zFar);
 	void setPerspectiveView(float fov, float ratio, float zNear, float zFar);
