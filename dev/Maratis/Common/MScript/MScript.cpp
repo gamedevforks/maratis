@@ -2070,21 +2070,21 @@ int setBehaviorVariable(lua_State * L)
 						case M_VARIABLE_VEC2:
 							{
 								MVector2 vec;
-								if(getVector2(L, 2, &vec))
+								if(getVector2(L, 4, &vec))
 									*(MVector2 *)variable.getPointer() = vec;
 								return 0;
 							}
 						case M_VARIABLE_VEC3:
 							{
 								MVector3 vec;
-								if(getVector3(L, 2, &vec))
+								if(getVector3(L, 4, &vec))
 									*(MVector3 *)variable.getPointer() = vec;
 								return 0;
 							}
 						case M_VARIABLE_VEC4:
 							{
 								MVector4 vec;
-								if(getVector4(L, 2, &vec))
+								if(getVector4(L, 4, &vec))
 									*(MVector4 *)variable.getPointer() = vec;
 								return 0;
 							}
