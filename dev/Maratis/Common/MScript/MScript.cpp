@@ -820,9 +820,9 @@ int getRotatedVector(lua_State * L)
 	return 0;
 }
 
-int getInversePosition(lua_State * L)
+int getInverseVector(lua_State * L)
 {
-	if(! isFunctionOk(L, "getInversePosition", 2))
+	if(! isFunctionOk(L, "getInverseVector", 2))
 		return 0;
 	
 	MObject3d * object;
@@ -2791,7 +2791,7 @@ void MScript::init(void)
 	lua_register(m_state, "getTransformedScale",	getTransformedScale);
 	lua_register(m_state, "getInverseRotatedVector",getInverseRotatedVector);
 	lua_register(m_state, "getRotatedVector",		getRotatedVector);
-	lua_register(m_state, "getInversePosition",		getInversePosition);
+	lua_register(m_state, "getInverseVector",		getInverseVector);
 	lua_register(m_state, "getTransformedVector",	getTransformedVector);
 	lua_register(m_state, "updateMatrix",			updateMatrix);
 	lua_register(m_state, "getMatrix",				getMatrix);
