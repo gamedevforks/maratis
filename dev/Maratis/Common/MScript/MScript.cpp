@@ -3529,16 +3529,16 @@ void MScript::init(void)
 	lua_register(m_state, "setLightColor",	   setLightColor);
 	lua_register(m_state, "setLightRadius",	   setLightRadius);
 	lua_register(m_state, "setLightIntensity", setLightIntensity);
-	lua_register(m_state, "setlightShadowQuality",	setlightShadowQuality);
-	lua_register(m_state, "setlightShadowBias",		setlightShadowBias);
-	lua_register(m_state, "setlightShadowBlur",		setlightShadowBlur);
-	lua_register(m_state, "setlightSpotAngle",		setlightSpotAngle);
-	lua_register(m_state, "setlightSpotExponent",	setlightSpotExponent);	
-	lua_register(m_state, "getlightShadowQuality",	getlightShadowQuality);
-	lua_register(m_state, "getlightShadowBias",		getlightShadowBias);
-	lua_register(m_state, "getlightShadowBlur",		getlightShadowBlur);
-	lua_register(m_state, "getlightSpotAngle",		getlightSpotAngle);
-	lua_register(m_state, "getlightSpotExponent",	getlightSpotExponent);
+	lua_register(m_state, "setLightShadowQuality",	setlightShadowQuality);
+	lua_register(m_state, "setLightShadowBias",		setlightShadowBias);
+	lua_register(m_state, "setLightShadowBlur",		setlightShadowBlur);
+	lua_register(m_state, "setLightSpotAngle",		setlightSpotAngle);
+	lua_register(m_state, "setLightSpotExponent",	setlightSpotExponent);	
+	lua_register(m_state, "getLightShadowQuality",	getlightShadowQuality);
+	lua_register(m_state, "getLightShadowBias",		getlightShadowBias);
+	lua_register(m_state, "getLightShadowBlur",		getlightShadowBlur);
+	lua_register(m_state, "getLightSpotAngle",		getlightSpotAngle);
+	lua_register(m_state, "getLightSpotExponent",	getlightSpotExponent);
 	
 	// camera
 	lua_register(m_state, "changeCurrentCamera",    changeCurrentCamera);
