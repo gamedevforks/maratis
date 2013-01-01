@@ -30,8 +30,9 @@
 
 #include "MScript.h"
 
+static char g_currentDirectory[256] = "";
+const char * LUA_VEC3 = "LUA_VEC3";
 
-char g_currentDirectory[256] = "";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,11 +52,12 @@ char g_currentDirectory[256] = "";
 		}	\
 	}
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Global Functions
+// useful functions
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool isFunctionOk(lua_State * L, const char * name, unsigned int nbArgs)
+static bool isFunctionOk(lua_State * L, const char * name, unsigned int nbArgs)
 {
 	int nbArguments = lua_gettop(L);
 	if(nbArguments < (int)nbArgs)
@@ -66,71 +68,77 @@ bool isFunctionOk(lua_State * L, const char * name, unsigned int nbArgs)
 	return true;
 }
 
-void pushFloatArray(lua_State* L, float * values, unsigned int nbValues)
+static void pushFloatArray(lua_State * L, float * values, unsigned int nbValues)
 {
 	lua_newtable(L);
-
+	
 	for(unsigned int i=0; i<nbValues; i++)
 	{
 		lua_pushinteger(L, i+1);
 		lua_pushnumber(L, values[i]);
 		lua_rawset(L, -3);
 	}
+	
+	if(nbValues == 3) // vec3
+	{
+		luaL_getmetatable(L, LUA_VEC3);
+		lua_setmetatable(L, -2);
+	}
 }
 
-MObject3d * getObject3d(LUA_INTEGER object)
+static MObject3d * getObject3d(LUA_INTEGER object)
 {
-	if(object == 0)
+	if(object <= 0)
 		return NULL;
 	
 	return (MObject3d*)object;
 }
 
-bool getVector2(lua_State * L, int index, MVector2 * vector)
+static bool getVector2(lua_State * L, int index, MVector2 * vector)
 {
 	if(lua_istable(L, index) && (lua_objlen(L, index) >= 2))
 	{
 		lua_pushnil(L);
-
+		
 		lua_next(L, index);
 		vector->x = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
-
+		
 		lua_next(L, index);
 		vector->y = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
-
+		
 		return true;
 	}
-
+	
 	return false;
 }
 
-bool getVector3(lua_State * L, int index, MVector3 * vector)
+static bool getVector3(lua_State * L, int index, MVector3 * vector)
 {
 	if(lua_istable(L, index) && (lua_objlen(L, index) >= 3))
 	{
 		lua_pushnil(L);
-
+		
 		lua_next(L, index);
 		vector->x = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
-
+		
 		lua_next(L, index);
 		vector->y = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
-
+		
 		lua_next(L, index);
 		vector->z = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
-
+		
 		return true;
 	}
-
+	
 	return false;
 }
 
-bool getVector4(lua_State * L, int index, MVector4 * vector)
+static bool getVector4(lua_State * L, int index, MVector4 * vector)
 {
 	if(lua_istable(L, index) && (lua_objlen(L, index) >= 4))
 	{
@@ -157,6 +165,220 @@ bool getVector4(lua_State * L, int index, MVector4 * vector)
 	
 	return false;
 }
+
+static void linkObjects(MObject3d *parent, MObject3d *child)
+{
+	if(parent == NULL || child == NULL)
+		return;
+	
+	child->linkTo(parent);
+	
+	// local matrix
+	MMatrix4x4 localMatrix = parent->getMatrix()->getInverse() * (*child->getMatrix());
+	
+	child->setPosition(localMatrix.getTranslationPart());
+	child->setEulerRotation(localMatrix.getEulerAngles());
+	
+	float xSize = localMatrix.getRotatedVector3(MVector3(1, 0, 0)).getLength();
+	float ySize = localMatrix.getRotatedVector3(MVector3(0, 1, 0)).getLength();
+	float zSize = localMatrix.getRotatedVector3(MVector3(0, 0, 1)).getLength();
+	
+	child->setScale(MVector3(xSize, ySize, zSize));
+}
+
+static void unlinkObjects(MObject3d *parent, MObject3d *child)
+{
+	if(parent == NULL || child == NULL)
+		return;
+	
+	child->unLink();
+	
+	// matrix
+	MMatrix4x4 * matrix = child->getMatrix();
+	
+	child->setPosition(matrix->getTranslationPart());
+	child->setEulerRotation(matrix->getEulerAngles());
+	
+	float xSize = matrix->getRotatedVector3(MVector3(1, 0, 0)).getLength();
+	float ySize = matrix->getRotatedVector3(MVector3(0, 1, 0)).getLength();
+	float zSize = matrix->getRotatedVector3(MVector3(0, 0, 1)).getLength();
+	
+	child->setScale(MVector3(xSize, ySize, zSize));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// vector math
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static int vec3__add(lua_State *L)
+{
+	MVector3 a;
+	if(getVector3(L, 1, &a))
+	{
+		MVector3 b;
+		if(getVector3(L, 2, &b))
+		{
+			pushFloatArray(L, a+b, 3);
+			return 1;
+		}
+		else
+		{
+			float v = (float)lua_tonumber(L, 2);
+			pushFloatArray(L, a+v, 3);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int vec3__sub(lua_State *L)
+{
+	MVector3 a;
+	if(getVector3(L, 1, &a))
+	{
+		MVector3 b;
+		if(getVector3(L, 2, &b))
+		{
+			pushFloatArray(L, a-b, 3);
+			return 1;
+		}
+		else
+		{
+			float v = (float)lua_tonumber(L, 2);
+			pushFloatArray(L, a-v, 3);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int vec3__mul(lua_State *L)
+{
+	MVector3 a;
+	if(getVector3(L, 1, &a))
+	{
+		MVector3 b;
+		if(getVector3(L, 2, &b))
+		{
+			pushFloatArray(L, a*b, 3);
+			return 1;
+		}
+		else
+		{
+			float v = (float)lua_tonumber(L, 2);
+			pushFloatArray(L, a*v, 3);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int vec3__div(lua_State *L)
+{
+	MVector3 a;
+	if(getVector3(L, 1, &a))
+	{
+		MVector3 b;
+		if(getVector3(L, 2, &b))
+		{
+			pushFloatArray(L, a/b, 3);
+			return 1;
+		}
+		else
+		{
+			float v = (float)lua_tonumber(L, 2);
+			pushFloatArray(L, a/v, 3);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int vec3__unm(lua_State *L)
+{
+	MVector3 a;
+	getVector3(L, 1, &a);
+	pushFloatArray(L, -a, 3);
+	return 1;
+}
+
+void registerVec3(lua_State * L)
+{
+	// register vec3
+	luaL_newmetatable(L, LUA_VEC3);
+	
+	lua_pushcfunction(L, vec3__add); lua_setfield(L, -2, "__add");
+	lua_pushcfunction(L, vec3__sub); lua_setfield(L, -2, "__sub");
+	lua_pushcfunction(L, vec3__mul); lua_setfield(L, -2, "__mul");
+	lua_pushcfunction(L, vec3__div); lua_setfield(L, -2, "__div");
+	lua_pushcfunction(L, vec3__unm); lua_setfield(L, -2, "__unm");
+	
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -1, "__index");
+}
+
+static int vec3(lua_State *L)
+{
+	if(! isFunctionOk(L, "vec", 3))
+		return 0;
+	
+	float x = (float)lua_tonumber(L, 1);
+	float y = (float)lua_tonumber(L, 2);
+	float z = (float)lua_tonumber(L, 3);
+
+	pushFloatArray(L, MVector3(x, y, z), 3);
+	return 1;
+}
+
+static int length(lua_State *L)
+{
+	if(! isFunctionOk(L, "length", 1))
+		return 0;
+	
+	MVector3 a;
+	getVector3(L, 1, &a);
+	lua_pushnumber(L, a.getLength());
+	return 1;
+}
+
+static int normalize(lua_State *L)
+{
+	if(! isFunctionOk(L, "normalize", 1))
+		return 0;
+	
+	MVector3 a;
+	getVector3(L, 1, &a);
+	pushFloatArray(L, a.getNormalized(), 3);
+	return 1;
+}
+
+static int dot(lua_State *L)
+{
+	if(! isFunctionOk(L, "dot", 2))
+		return 0;
+	
+	MVector3 a, b;
+	getVector3(L, 1, &a);
+	getVector3(L, 2, &b);
+	lua_pushnumber(L, a.dotProduct(b));
+	return 1;
+}
+
+static int cross(lua_State *L)
+{
+	if(! isFunctionOk(L, "cross", 2))
+		return 0;
+	
+	MVector3 a, b;
+	getVector3(L, 1, &a);
+	getVector3(L, 2, &b);
+	pushFloatArray(L, a.crossProduct(b), 3);
+	return 1;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Global Functions
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int getScene(lua_State * L)
 {
@@ -254,7 +476,31 @@ int getClone(lua_State * L)
 				break;
 		}
 		
+		if(cloneObj)
+		{
+			char name[256];
+			sprintf(name, "%s_clone%d", object->getName(), scene->getObjectsNumber());
+			cloneObj->setName(name);
+		}
+		
 		lua_pushinteger(L, (lua_Integer)cloneObj);
+		return 1;
+	}
+	
+	return 0;
+}
+
+int getParent(lua_State * L)
+{
+	if(! isFunctionOk(L, "getParent", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		lua_pushinteger(L, (lua_Integer)object->getParent());
 		return 1;
 	}
 	
@@ -388,6 +634,57 @@ int getScale(lua_State * L)
 	return 0;
 }
 
+int getTransformedPosition(lua_State * L)
+{
+	if(! isFunctionOk(L, "getTransformedPosition", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		pushFloatArray(L, object->getTransformedPosition(), 3);
+		return 1;
+	}
+	
+	return 0;
+}
+
+int getTransformedRotation(lua_State * L)
+{
+	if(! isFunctionOk(L, "getTransformedRotation", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		pushFloatArray(L, object->getTransformedRotation(), 3);
+		return 1;
+	}
+	
+	return 0;
+}
+
+int getTransformedScale(lua_State * L)
+{
+	if(! isFunctionOk(L, "getTransformedScale", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		pushFloatArray(L, object->getTransformedScale(), 3);
+		return 1;
+	}
+	
+	return 0;
+}
+
 int setPosition(lua_State * L)
 {
 	if(! isFunctionOk(L, "setPosition", 2))
@@ -448,6 +745,123 @@ int setScale(lua_State * L)
 	return 0;
 }
 
+int updateMatrix(lua_State * L)
+{
+	if(! isFunctionOk(L, "updateMatrix", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		object->updateMatrix();
+	}
+	
+	return 0;
+}
+
+int getMatrix(lua_State * L)
+{
+	if(! isFunctionOk(L, "getMatrix", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		pushFloatArray(L, object->getMatrix()->entries, 16);
+		return 1;
+	}
+	
+	return 0;
+}
+
+int getInverseRotatedVector(lua_State * L)
+{
+	if(! isFunctionOk(L, "getInverseRotatedVector", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		MVector3 vec;
+		if(getVector3(L, 2, &vec))
+		{
+			pushFloatArray(L, object->getInverseRotatedVector(vec), 3);
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int getRotatedVector(lua_State * L)
+{
+	if(! isFunctionOk(L, "getRotatedVector", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		MVector3 vec;
+		if(getVector3(L, 2, &vec))
+		{
+			pushFloatArray(L, object->getRotatedVector(vec), 3);
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int getInversePosition(lua_State * L)
+{
+	if(! isFunctionOk(L, "getInversePosition", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		MVector3 vec;
+		if(getVector3(L, 2, &vec))
+		{
+			pushFloatArray(L, object->getInversePosition(vec), 3);
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int getTransformedVector(lua_State * L)
+{
+	if(! isFunctionOk(L, "getTransformedVector", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		MVector3 vec;
+		if(getVector3(L, 2, &vec))
+		{
+			pushFloatArray(L, object->getTransformedVector(vec), 3);
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
 int isVisible(lua_State * L)
 {
 	if(! isFunctionOk(L, "isVisible", 1))
@@ -497,6 +911,64 @@ int deactivate(lua_State * L)
 		return 0;
 	}
 
+	return 0;
+}
+
+int isActive(lua_State * L)
+{
+	if(! isFunctionOk(L, "isActive", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		lua_pushboolean(L, object->isActive());
+		return 1;
+	}
+	
+	return 0;
+}
+
+int getName(lua_State * L)
+{
+	if(! isFunctionOk(L, "getName", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		lua_pushstring(L, object->getName());
+		return 1;
+	}
+	
+	return 0;
+}
+
+int setParent(lua_State * L)
+{
+	if(! isFunctionOk(L, "setParent", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id  = lua_tointeger(L, 1);
+	lua_Integer id2 = lua_tointeger(L, 2);
+	
+	if((object = getObject3d(id)))
+	{
+		MObject3d * parent = getObject3d(id2);
+		if(parent)
+			linkObjects(parent, object);
+		else
+			unlinkObjects(parent, object);
+		
+		object->updateMatrix();
+		return 0;
+	}
+	
 	return 0;
 }
 
@@ -2284,25 +2756,49 @@ void MScript::init(void)
 	luaopen_string(m_state);
 	luaopen_math(m_state);
 
-	// load custom functions
+	// vec3
+	registerVec3(m_state);
+	lua_register(m_state, "vec3", vec3);
+	lua_register(m_state, "length", length);
+	lua_register(m_state, "normalize", normalize);
+	lua_register(m_state, "dot", dot);
+	lua_register(m_state, "cross", cross);
+	
+	// object/scene init
 	lua_register(m_state, "getScene",	 getScene);
 	lua_register(m_state, "getObject",	 getObject);
 	lua_register(m_state, "getClone",	 getClone);
-	lua_register(m_state, "rotate",		 rotate);
-	lua_register(m_state, "translate",	 translate);
-	lua_register(m_state, "getPosition", getPosition);
-	lua_register(m_state, "getRotation", getRotation);
-	lua_register(m_state, "getScale",	 getScale);
-	lua_register(m_state, "setPosition", setPosition);
-	lua_register(m_state, "setRotation", setRotation);
-	lua_register(m_state, "setScale",	 setScale);
-	lua_register(m_state, "isVisible",	 isVisible);
-	lua_register(m_state, "activate",	 activate);
-	lua_register(m_state, "deactivate", deactivate);
-
+	lua_register(m_state, "getParent",	 getParent);
+	
+	// object
+	lua_register(m_state, "rotate",					rotate);
+	lua_register(m_state, "translate",				translate);
+	lua_register(m_state, "getPosition",			getPosition);
+	lua_register(m_state, "getRotation",			getRotation);
+	lua_register(m_state, "getScale",				getScale);
+	lua_register(m_state, "setPosition",			setPosition);
+	lua_register(m_state, "setRotation",			setRotation);
+	lua_register(m_state, "setScale",				setScale);
+	lua_register(m_state, "isVisible",				isVisible);
+	lua_register(m_state, "activate",				activate);
+	lua_register(m_state, "deactivate",				deactivate);
+	lua_register(m_state, "isActive",				isActive);
+	lua_register(m_state, "getName",				getName);
+	lua_register(m_state, "setParent",				setParent);
+	
+	lua_register(m_state, "getTransformedPosition", getTransformedPosition);
+	lua_register(m_state, "getTransformedRotation", getTransformedRotation);
+	lua_register(m_state, "getTransformedScale",	getTransformedScale);
+	lua_register(m_state, "getInverseRotatedVector",getInverseRotatedVector);
+	lua_register(m_state, "getRotatedVector",		getRotatedVector);
+	lua_register(m_state, "getInversePosition",		getInversePosition);
+	lua_register(m_state, "getTransformedVector",	getTransformedVector);
+	lua_register(m_state, "updateMatrix",			updateMatrix);
+	lua_register(m_state, "getMatrix",				getMatrix);
+	
 	// behavior
-	lua_register(m_state, "getBehaviorVariable", getBehaviorVariable);
-	lua_register(m_state, "setBehaviorVariable", setBehaviorVariable);
+	lua_register(m_state, "getBehaviorVariable",	getBehaviorVariable);
+	lua_register(m_state, "setBehaviorVariable",	setBehaviorVariable);
 
 	// animation
 	lua_register(m_state, "getCurrentAnimation",	getCurrentAnimation);

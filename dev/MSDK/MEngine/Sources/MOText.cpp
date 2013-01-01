@@ -51,6 +51,7 @@ m_fontRef(text.m_fontRef),
 m_color(text.m_color),
 m_boundingBox(text.m_boundingBox)
 {
+	prepare();
 }
 
 // destructor
