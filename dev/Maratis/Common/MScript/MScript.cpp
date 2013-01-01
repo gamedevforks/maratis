@@ -31,6 +31,7 @@
 #include "MScript.h"
 
 static char g_currentDirectory[256] = "";
+static unsigned long g_startTick = 0;
 const char * LUA_VEC3 = "LUA_VEC3";
 
 
@@ -83,6 +84,18 @@ static void pushFloatArray(lua_State * L, float * values, unsigned int nbValues)
 	{
 		luaL_getmetatable(L, LUA_VEC3);
 		lua_setmetatable(L, -2);
+	}
+}
+
+static void pushIntArray(lua_State * L, lua_Integer * values, unsigned int nbValues)
+{
+	lua_newtable(L);
+	
+	for(unsigned int i=0; i<nbValues; i++)
+	{
+		lua_pushinteger(L, i+1);
+		lua_pushinteger(L, values[i]);
+		lua_rawset(L, -3);
 	}
 }
 
@@ -501,6 +514,31 @@ int getParent(lua_State * L)
 	if((object = getObject3d(id)))
 	{
 		lua_pushinteger(L, (lua_Integer)object->getParent());
+		return 1;
+	}
+	
+	return 0;
+}
+
+int getChilds(lua_State * L)
+{
+	if(! isFunctionOk(L, "getChilds", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		unsigned int cSize = object->getChildsNumber();
+		lua_Integer * childs = new lua_Integer[cSize];
+		
+		for(unsigned int c=0; c<cSize; c++)
+			childs[c] = (lua_Integer)object->getChild(c);
+		
+		pushIntArray(L, childs, cSize);
+		
+		delete [] childs;
 		return 1;
 	}
 	
@@ -1387,6 +1425,330 @@ int setAngularDamping(lua_State * L)
 	return 0;
 }
 
+int getCentralForce(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "getCentralForce", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				MVector3 force;
+				physics->getCentralForce(phyProps->getCollisionObjectId(), &force);
+				pushFloatArray(L, force, 3);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getTorque(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "getTorque", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				MVector3 force;
+				physics->getTorque(phyProps->getCollisionObjectId(), &force);
+				pushFloatArray(L, force, 3);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getMass(lua_State * L)
+{
+	if(! isFunctionOk(L, "getMass", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float mass = phyProps->getMass();
+				lua_pushnumber(L, (lua_Number)mass);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int setMass(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "setMass", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float mass = (float)lua_tonumber(L, 2);
+				phyProps->setMass(mass);
+				physics->setObjectMass(phyProps->getCollisionObjectId(), mass);
+				return 0;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getFriction(lua_State * L)
+{
+	if(! isFunctionOk(L, "getFriction", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float friction = phyProps->getFriction();
+				lua_pushnumber(L, (lua_Number)friction);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int setFriction(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "setFriction", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float friction = (float)lua_tonumber(L, 2);
+				phyProps->setFriction(friction);
+				physics->setObjectFriction(phyProps->getCollisionObjectId(), friction);
+				return 0;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getRestitution(lua_State * L)
+{
+	if(! isFunctionOk(L, "getRestitution", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float restitution = phyProps->getRestitution();
+				lua_pushnumber(L, (lua_Number)restitution);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int setRestitution(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "setRestitution", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float restitution = (float)lua_tonumber(L, 2);
+				phyProps->setRestitution(restitution);
+				physics->setObjectRestitution(phyProps->getCollisionObjectId(), restitution);
+				return 0;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getAngularFactor(lua_State * L)
+{
+	if(! isFunctionOk(L, "getAngularFactor", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float aFactor = phyProps->getAngularFactor();
+				lua_pushnumber(L, (lua_Number)aFactor);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int setAngularFactor(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "setAngularFactor", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				float aFactor = (float)lua_tonumber(L, 2);
+				phyProps->setAngularFactor(aFactor);
+				physics->setObjectAngularFactor(phyProps->getCollisionObjectId(), aFactor);
+				return 0;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getLinearFactor(lua_State * L)
+{
+	if(! isFunctionOk(L, "getLinearFactor", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				MVector3 * linFactor = phyProps->getLinearFactor();
+				pushFloatArray(L, *linFactor, 3);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int setLinearFactor(lua_State * L)
+{
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
+	if(! isFunctionOk(L, "setLinearFactor", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+			{
+				MVector3 linFactor;
+				if(getVector3(L, 2, &linFactor))
+				{
+					phyProps->setLinearFactor(linFactor);
+					physics->setObjectLinearFactor(phyProps->getCollisionObjectId(), linFactor);
+					return 0;
+				}
+			}
+		}
+	}
+	
+	return 0;
+}
+
 int getNumCollisions(lua_State * L)
 {
 	if(! isFunctionOk(L, "getNumCollisions", 1))
@@ -1926,6 +2288,265 @@ int setLightIntensity(lua_State * L)
 
 	return 0;
 }
+
+int enableShadow(lua_State * L)
+{
+	if(! isFunctionOk(L, "enableShadow", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			bool shadow = lua_toboolean(L, 2) == 1;
+			MOLight * light = (MOLight*)object;
+			light->castShadow(shadow);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int isCastingShadow(lua_State * L)
+{
+	if(! isFunctionOk(L, "isCastingShadow", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			MOLight * light = (MOLight*)object;
+			lua_pushboolean(L, light->isCastingShadow());
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int setlightShadowQuality(lua_State * L)
+{
+	if(! isFunctionOk(L, "setlightShadowQuality", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			int quality = lua_tointeger(L, 2);
+			MOLight * light = (MOLight*)object;
+			light->setShadowQuality(quality);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int setlightShadowBias(lua_State * L)
+{
+	if(! isFunctionOk(L, "setlightShadowBias", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			float bias = lua_tonumber(L, 2);
+			MOLight * light = (MOLight*)object;
+			light->setShadowBias(bias);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int setlightShadowBlur(lua_State * L)
+{
+	if(! isFunctionOk(L, "setlightShadowBlur", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			float blur = lua_tonumber(L, 2);
+			MOLight * light = (MOLight*)object;
+			light->setShadowBlur(blur);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int getlightShadowQuality(lua_State * L)
+{
+	if(! isFunctionOk(L, "getlightShadowQuality", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			MOLight * light = (MOLight*)object;
+			lua_pushinteger(L, light->getShadowQuality());
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int getlightShadowBias(lua_State * L)
+{
+	if(! isFunctionOk(L, "getlightShadowBias", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			MOLight * light = (MOLight*)object;
+			lua_pushnumber(L, light->getShadowBias());
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int getlightShadowBlur(lua_State * L)
+{
+	if(! isFunctionOk(L, "getlightShadowBlur", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			MOLight * light = (MOLight*)object;
+			lua_pushnumber(L, light->getShadowBlur());
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int setlightSpotAngle(lua_State * L)
+{
+	if(! isFunctionOk(L, "setlightSpotAngle", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			float angle = lua_tonumber(L, 2);
+			MOLight * light = (MOLight*)object;
+			light->setSpotAngle(angle);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int setlightSpotExponent(lua_State * L)
+{
+	if(! isFunctionOk(L, "setlightSpotExponent", 2))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			float exponent = lua_tonumber(L, 2);
+			MOLight * light = (MOLight*)object;
+			light->setSpotExponent(exponent);
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int getlightSpotAngle(lua_State * L)
+{
+	if(! isFunctionOk(L, "getlightSpotAngle", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			MOLight * light = (MOLight*)object;
+			lua_pushnumber(L, light->getSpotAngle());
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int getlightSpotExponent(lua_State * L)
+{
+	if(! isFunctionOk(L, "getlightSpotExponent", 1))
+		return 0;
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_LIGHT)
+		{
+			MOLight * light = (MOLight*)object;
+			lua_pushnumber(L, light->getSpotExponent());
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
 
 int getSoundGain(lua_State * L)
 {
@@ -2698,6 +3319,30 @@ int setTextColor(lua_State * L)
 	return 0;
 }
 
+int getWindowScale(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	MScript * script = (MScript *)engine->getScriptContext();
+
+	unsigned int width, height;
+	system->getScreenSize(&width, &height);
+	
+	float scale[2] = {width, height};
+	script->pushFloatArray(scale, 2);
+	
+	return 1;
+}
+
+int getSystemTick(lua_State * L)
+{
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+
+	lua_pushinteger(L, (lua_Integer)(system->getSystemTick() - g_startTick));
+	return 1;
+}
+
 int doFile(lua_State * L)
 {
 	if(! isFunctionOk(L, "doFile", 1))
@@ -2748,6 +3393,12 @@ MScript::~MScript(void)
 
 void MScript::init(void)
 {
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	
+	g_startTick = system->getSystemTick();
+	
+	
 	// create context
 	m_state = lua_open();
 
@@ -2769,6 +3420,7 @@ void MScript::init(void)
 	lua_register(m_state, "getObject",	 getObject);
 	lua_register(m_state, "getClone",	 getClone);
 	lua_register(m_state, "getParent",	 getParent);
+	lua_register(m_state, "getChilds",	 getChilds);
 	
 	// object
 	lua_register(m_state, "rotate",					rotate);
@@ -2785,6 +3437,9 @@ void MScript::init(void)
 	lua_register(m_state, "isActive",				isActive);
 	lua_register(m_state, "getName",				getName);
 	lua_register(m_state, "setParent",				setParent);
+	
+	lua_register(m_state, "enableShadow",			enableShadow);
+	lua_register(m_state, "isCastingShadow",		isCastingShadow);
 	
 	lua_register(m_state, "getTransformedPosition", getTransformedPosition);
 	lua_register(m_state, "getTransformedRotation", getTransformedRotation);
@@ -2818,12 +3473,29 @@ void MScript::init(void)
 	lua_register(m_state, "setLinearDamping",	setLinearDamping);
 	lua_register(m_state, "getAngularDamping",	getAngularDamping);
 	lua_register(m_state, "setAngularDamping",	setAngularDamping);
+	lua_register(m_state, "getMass",			getMass);
+	lua_register(m_state, "setMass",			setMass);
+	lua_register(m_state, "getFriction",		getFriction);
+	lua_register(m_state, "setFriction",		setFriction);
+	lua_register(m_state, "getMass",			getMass);
+	lua_register(m_state, "setMass",			setMass);
+	lua_register(m_state, "getFriction",		getFriction);
+	lua_register(m_state, "setFriction",		setFriction);
+	lua_register(m_state, "getRestitution",		getRestitution);
+	lua_register(m_state, "setRestitution",		setRestitution);
+	lua_register(m_state, "getAngularFactor",	getAngularFactor);
+	lua_register(m_state, "setAngularFactor",	setAngularFactor);
+	lua_register(m_state, "getLinearFactor",	getLinearFactor);
+	lua_register(m_state, "setLinearFactor",	setLinearFactor);
+	lua_register(m_state, "getCentralForce",	getCentralForce);
+	lua_register(m_state, "getTorque",			getTorque);
+	
 	lua_register(m_state, "isCollisionTest",	isCollisionTest);
 	lua_register(m_state, "isCollisionBetween", isCollisionBetween);
 	lua_register(m_state, "clearForces",		clearForces);
 	lua_register(m_state, "getNumCollisions",	getNumCollisions);
 	lua_register(m_state, "rayHit",				rayHit);
-
+	
 	// input
 	lua_register(m_state, "isKeyPressed", isKeyPressed);
 	lua_register(m_state, "onKeyDown",	  onKeyDown);
@@ -2857,7 +3529,17 @@ void MScript::init(void)
 	lua_register(m_state, "setLightColor",	   setLightColor);
 	lua_register(m_state, "setLightRadius",	   setLightRadius);
 	lua_register(m_state, "setLightIntensity", setLightIntensity);
-
+	lua_register(m_state, "setlightShadowQuality",	setlightShadowQuality);
+	lua_register(m_state, "setlightShadowBias",		setlightShadowBias);
+	lua_register(m_state, "setlightShadowBlur",		setlightShadowBlur);
+	lua_register(m_state, "setlightSpotAngle",		setlightSpotAngle);
+	lua_register(m_state, "setlightSpotExponent",	setlightSpotExponent);	
+	lua_register(m_state, "getlightShadowQuality",	getlightShadowQuality);
+	lua_register(m_state, "getlightShadowBias",		getlightShadowBias);
+	lua_register(m_state, "getlightShadowBlur",		getlightShadowBlur);
+	lua_register(m_state, "getlightSpotAngle",		getlightSpotAngle);
+	lua_register(m_state, "getlightSpotExponent",	getlightSpotExponent);
+	
 	// camera
 	lua_register(m_state, "changeCurrentCamera",    changeCurrentCamera);
 	lua_register(m_state, "getCameraClearColor",    getCameraClearColor);
@@ -2885,18 +3567,18 @@ void MScript::init(void)
 	lua_register(m_state, "getTextColor", getTextColor);
 	lua_register(m_state, "setTextColor", setTextColor);
 
-	// cursor
-	lua_register(m_state, "centerCursor", centerCursor);
-	lua_register(m_state, "hideCursor", hideCursor);
-	lua_register(m_state, "showCursor", showCursor);
-
-	// dofile
+	// do file
 	lua_register(m_state, "dofile", doFile);
+	
+	// global
+	lua_register(m_state, "centerCursor",	centerCursor);
+	lua_register(m_state, "hideCursor",		hideCursor);
+	lua_register(m_state, "showCursor",		showCursor);
+	lua_register(m_state, "getWindowScale", getWindowScale);
+	lua_register(m_state, "getSystemTick",	getSystemTick);
+	lua_register(m_state, "quit",			quit);
+	
 
-	// quit
-	lua_register(m_state, "quit", quit);
-	
-	
 	// register custom functions
 	map<string, int (*)(void)>::iterator
 		mit (m_functions.begin()),
@@ -3067,7 +3749,7 @@ void MScript::pushIntArray(const int * values, unsigned int valuesNumber)
 	for(unsigned int i=0; i<valuesNumber; i++)
 	{
 		lua_pushinteger(m_state, (lua_Integer)i+1);
-		lua_pushnumber(m_state, (lua_Integer)values[i]);
+		lua_pushinteger(m_state, (lua_Integer)values[i]);
 		lua_rawset(m_state, -3);
 	}
 }
