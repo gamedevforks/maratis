@@ -134,6 +134,13 @@ public:
 	void sendUniformMatrix(unsigned int fxId, const char * name, MMatrix4x4 * matrix, const int count = 1, const bool transpose = false);
 	void getAttribLocation(unsigned int fxId, const char * name, int * location);
 
+	// VBO
+	void createVBO(unsigned int * vboId);
+	void deleteVBO(unsigned int * vboId);
+	void bindVBO(M_VBO_TYPES type, unsigned int vboId);
+	void setVBO(M_VBO_TYPES type, const void * data, unsigned int size, M_VBO_MODES mode);
+	void setVBOSubData(M_VBO_TYPES type, unsigned int offset, const void * data, unsigned int size);
+	
 	// arrays
 	void enableVertexArray(void);
 	void enableColorArray(void);

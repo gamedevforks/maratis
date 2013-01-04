@@ -76,12 +76,17 @@ m_tangents(NULL),
 m_texCoords(NULL),
 m_colors(NULL),
 
+m_vboId1(0),
+m_vboId2(0),
+
 m_displaysNumber(0),
 m_displays(NULL)
 {}
 
 MSubMesh::~MSubMesh(void)
 {
+	clearVBO();
+	
 	clearIndices();
 	clearVertices();
 	clearNormals();
@@ -263,6 +268,17 @@ MColor * MSubMesh::allocColors(unsigned int size)
 	m_colors = new MColor[size];
 
 	return m_colors;
+}
+
+void MSubMesh::clearVBO(void)
+{
+	MEngine * engine = MEngine::getInstance();
+	MRenderingContext * render = engine->getRenderingContext();
+	if(render && m_vboId1>0)
+	{
+		render->deleteVBO(&m_vboId1);
+		render->deleteVBO(&m_vboId2);
+	}
 }
 
 void MSubMesh::allocDisplays(unsigned int size)

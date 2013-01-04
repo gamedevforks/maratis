@@ -114,6 +114,10 @@ private:
 	MVector3 * m_tangents;
 	MVector2 * m_texCoords;
 
+	// VBO (optional)
+	unsigned int m_vboId1;
+	unsigned int m_vboId2; // for indices
+	
 	// mapChannels offset (map of textureCoords offsets used for channel mapping)
 	map<unsigned int, unsigned int> m_mapChannelsOffset;
 	
@@ -167,6 +171,11 @@ public:
 	inline MVector3 * getTangents(void){ return m_tangents; }
 	inline MVector2 * getTexCoords(void){ return m_texCoords; }
 
+	// VBO
+	void clearVBO(void);
+	unsigned int * getVBOid1(void){ return &m_vboId1; }
+	unsigned int * getVBOid2(void){ return &m_vboId2; }
+	
 	// mapChannels offset
 	void clearMapChannelOffset(void);
 	void setMapChannelOffset(unsigned int channel, unsigned int offset);

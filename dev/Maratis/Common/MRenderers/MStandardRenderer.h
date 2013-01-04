@@ -138,6 +138,8 @@ private:
 	void updateVisibility(MScene * scene, MOCamera * camera);
 	void enableFog(MOCamera * camera);
 	
+	void initVBO(MSubMesh * subMesh);
+	
 	float getDistanceToCam(MOCamera * camera, const MVector3 & pos);
 	
 	// shadow lights

@@ -198,6 +198,21 @@ enum M_STENCIL_OPS
 	M_STENCIL_REPLACE
 };
 
+// VBO types
+enum M_VBO_TYPES
+{
+	M_VBO_ARRAY = 0,
+	M_VBO_ELEMENT_ARRAY
+};
+
+// VBO modes
+enum M_VBO_MODES
+{
+	M_VBO_STATIC = 0,
+	M_VBO_DYNAMIC,
+	M_VBO_STREAM
+};
+
 
 // rendering context
 class M_CORE_EXPORT MRenderingContext
@@ -272,6 +287,13 @@ public:
 	virtual void sendUniformMatrix(unsigned int fxId, const char * name, MMatrix4x4 * matrix, const int count = 1, const bool transpose = false) = 0;
 	virtual void getAttribLocation(unsigned int fxId, const char * name, int * location) = 0;
 
+	// VBO
+	virtual void createVBO(unsigned int * vboId){}
+	virtual void deleteVBO(unsigned int * vboId){}
+	virtual void bindVBO(M_VBO_TYPES type, unsigned int vboId){}
+	virtual void setVBO(M_VBO_TYPES type, const void * data, unsigned int size, M_VBO_MODES mode){}
+	virtual void setVBOSubData(M_VBO_TYPES type, unsigned int offset, const void * data, unsigned int size){}
+	
 	// arrays
 	virtual void enableVertexArray(void) = 0;
 	virtual void enableColorArray(void) = 0;

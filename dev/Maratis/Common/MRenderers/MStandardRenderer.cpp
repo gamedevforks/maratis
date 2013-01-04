@@ -225,12 +225,106 @@ void MStandardRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
 	mesh->updateBoundingBox();
 }
 
+void MStandardRenderer::initVBO(MSubMesh * subMesh)
+{
+	MEngine * engine = MEngine::getInstance();
+	MRenderingContext * render = engine->getRenderingContext();
+	
+	unsigned int * vboId1 = subMesh->getVBOid1();
+	unsigned int * vboId2 = subMesh->getVBOid2();
+	
+	M_VBO_MODES mode = M_VBO_STATIC;
+	if(subMesh->getSkinData() || subMesh->getMorphingData())
+		mode = M_VBO_DYNAMIC;
+	
+	if(*vboId1 == 0 && mode == M_VBO_STATIC) // only use VBO for static geometry
+	{
+		// data
+		MColor * colors = subMesh->getColors();
+		MVector3 * vertices = subMesh->getVertices();
+		MVector3 * normals = subMesh->getNormals();
+		MVector3 * tangents = subMesh->getTangents();
+		MVector2 * texCoords = subMesh->getTexCoords();
+		
+		unsigned int totalSize = sizeof(MVector3)*subMesh->getVerticesSize();
+		if(normals)
+			totalSize += sizeof(MVector3)*subMesh->getNormalsSize();
+		if(tangents)
+			totalSize += sizeof(MVector3)*subMesh->getTangentsSize();
+		if(texCoords)
+			totalSize += sizeof(MVector2)*subMesh->getTexCoordsSize();
+		if(colors)
+			totalSize += sizeof(MColor)*subMesh->getColorsSize();
+		
+		// indices
+		M_TYPES indicesType = subMesh->getIndicesType();
+		void * indices = subMesh->getIndices();
+		
+
+		// data VBO
+		render->createVBO(vboId1);
+		render->bindVBO(M_VBO_ARRAY, *vboId1);
+		
+		render->setVBO(M_VBO_ARRAY, 0, totalSize, mode);
+		
+		unsigned int offset = 0;
+		render->setVBOSubData(M_VBO_ARRAY, offset, vertices, sizeof(MVector3)*subMesh->getVerticesSize());
+		offset += sizeof(MVector3)*subMesh->getVerticesSize();
+		
+		if(normals)
+		{
+			render->setVBOSubData(M_VBO_ARRAY, offset, normals, sizeof(MVector3)*subMesh->getNormalsSize());
+			offset += sizeof(MVector3)*subMesh->getNormalsSize();
+		}
+		
+		if(tangents)
+		{
+			render->setVBOSubData(M_VBO_ARRAY, offset, tangents, sizeof(MVector3)*subMesh->getTangentsSize());
+			offset += sizeof(MVector3)*subMesh->getTangentsSize();
+		}
+		
+		if(texCoords)
+		{
+			render->setVBOSubData(M_VBO_ARRAY, offset, texCoords, sizeof(MVector2)*subMesh->getTexCoordsSize());
+			offset += sizeof(MVector2)*subMesh->getTexCoordsSize();
+		}
+		
+		if(colors)
+		{
+			render->setVBOSubData(M_VBO_ARRAY, offset, colors, sizeof(MColor)*subMesh->getColorsSize());
+			offset += sizeof(MColor)*subMesh->getColorsSize();
+		}
+		
+		// indices VBO
+		if(indices)
+		{
+			unsigned int typeSize = indicesType == M_USHORT ? sizeof(short) : sizeof(int);
+			
+			render->createVBO(vboId2);
+			render->bindVBO(M_VBO_ELEMENT_ARRAY, *vboId2);
+			
+			render->setVBO(M_VBO_ELEMENT_ARRAY, indices, subMesh->getIndicesSize()*typeSize, mode);
+		}
+		
+		
+		render->bindVBO(M_VBO_ARRAY, 0);
+		render->bindVBO(M_VBO_ELEMENT_ARRAY, 0);
+	}
+}
+
 void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MVector3 * tangents, MColor * colors)
 {
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 
 
+	// VBO
+	initVBO(subMesh);
+	
+	unsigned int * vboId1 = subMesh->getVBOid1();
+	unsigned int * vboId2 = subMesh->getVBOid2();
+	
+	
 	// get material
 	MMaterial * material = display->getMaterial();
 	{
@@ -427,26 +521,37 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			// bind FX
 			render->bindFX(fxId);
 
-
+			
+			// bind VBO is any
+			if(*vboId1 > 0)
+				render->bindVBO(M_VBO_ARRAY, *vboId1);
+			
+			
 			// Vertex
 			render->getAttribLocation(fxId, "Vertex", &attribIndex);
 			if(attribIndex != -1)
 			{
-				render->setAttribPointer(attribIndex, M_FLOAT, 3, vertices);
+				if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 3, 0);
+				else			render->setAttribPointer(attribIndex, M_FLOAT, 3, vertices);
 				render->enableAttribArray(attribIndex);
 			}
 
 			if(! basicFX)
 			{
+				unsigned int offset = sizeof(MVector3)*subMesh->getVerticesSize();
+				
 				// Normal
 				if(normals)
 				{
 					render->getAttribLocation(fxId, "Normal", &attribIndex);
 					if(attribIndex != -1)
 					{
-						render->setAttribPointer(attribIndex, M_FLOAT, 3, normals);
+						if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 3, (void*)offset);
+						else			render->setAttribPointer(attribIndex, M_FLOAT, 3, normals);
 						render->enableAttribArray(attribIndex);
 					}
+					
+					offset += sizeof(MVector3)*subMesh->getNormalsSize();
 				}
 
 				// Tangent
@@ -455,18 +560,28 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 					render->getAttribLocation(fxId, "Tangent", &attribIndex);
 					if(attribIndex != -1)
 					{
-						render->setAttribPointer(attribIndex, M_FLOAT, 3, tangents);
+						if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 3, (void*)offset);
+						else			render->setAttribPointer(attribIndex, M_FLOAT, 3, tangents);
 						render->enableAttribArray(attribIndex);
 					}
+					
+					offset += sizeof(MVector3)*subMesh->getTangentsSize();
 				}
 
+				// Texcoords
+				if(texCoords)
+				{
+					offset += sizeof(MVector2)*subMesh->getTexCoordsSize();
+				}
+				
 				// Color
 				if(colors)
 				{
 					render->getAttribLocation(fxId, "Color", &attribIndex);
 					if(attribIndex != -1)
 					{
-						render->setAttribPointer(attribIndex, M_UBYTE, 3, colors, true);
+						if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_UBYTE, 3, (void*)offset, true);
+						else			render->setAttribPointer(attribIndex, M_UBYTE, 3, colors, true);
 						render->enableAttribArray(attribIndex);
 					}
 				}
@@ -474,6 +589,12 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 
 			// Textures
+			unsigned int textureArrayOffset = sizeof(MVector3)*subMesh->getVerticesSize();
+			{
+				if(normals) textureArrayOffset += sizeof(MVector3)*subMesh->getNormalsSize();
+				if(tangents) textureArrayOffset += sizeof(MVector3)*subMesh->getTangentsSize();
+			}
+			
 			int id = texturesPassNumber;
 			for(unsigned int t=0; t<texturesPassNumber; t++)
 			{
@@ -502,7 +623,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				render->setTextureUWrapMode(texture->getUWrapMode());
 				render->setTextureVWrapMode(texture->getVWrapMode());
 
-				// texture matrix TODO:
+				// texture matrix
 				MMatrix4x4 * texMatrix = &TextureMatrix[t];
 				texMatrix->loadIdentity();
 				texMatrix->translate(MVector2(0.5f, 0.5f));
@@ -517,7 +638,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				render->getAttribLocation(fxId, name, &attribIndex);
 				if(attribIndex != -1)
 				{
-					render->setAttribPointer(attribIndex, M_FLOAT, 2, texCoords + offset);
+					if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 2, (void*)(textureArrayOffset + sizeof(MVector2)*offset));
+					else			render->setAttribPointer(attribIndex, M_FLOAT, 2, texCoords + offset);
 					render->enableAttribArray(attribIndex);
 				}
 			}
@@ -592,14 +714,31 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			// draw
 			if(indices)
 			{
-				switch(indicesType)
+				if(*vboId2 > 0)
 				{
-					case M_USHORT:
-						render->drawElement(primitiveType, size, indicesType, (unsigned short*)indices + begin);
-						break;
-					case M_UINT:
-						render->drawElement(primitiveType, size, indicesType, (unsigned int*)indices + begin);
-						break;
+					render->bindVBO(M_VBO_ELEMENT_ARRAY, *vboId2);
+					
+					switch(indicesType)
+					{
+						case M_USHORT:
+							render->drawElement(primitiveType, size, indicesType, (void*)(begin*sizeof(short)));
+							break;
+						case M_UINT:
+							render->drawElement(primitiveType, size, indicesType, (void*)(begin*sizeof(int)));
+							break;
+					}
+				}
+				else
+				{
+					switch(indicesType)
+					{
+						case M_USHORT:
+							render->drawElement(primitiveType, size, indicesType, (unsigned short*)indices + begin);
+							break;
+						case M_UINT:
+							render->drawElement(primitiveType, size, indicesType, (unsigned int*)indices + begin);
+							break;
+					}
 				}
 			}
 			else{
@@ -620,6 +759,10 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 			// restore FX
 			render->bindFX(0);
+			
+			// restore VBO
+			render->bindVBO(M_VBO_ARRAY, 0);
+			render->bindVBO(M_VBO_ELEMENT_ARRAY, 0);
 		}
 
 		// restore fog and alpha test

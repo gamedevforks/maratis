@@ -714,6 +714,40 @@ void MGLContext::getAttribLocation(unsigned int fxId, const char * name, int * l
 	(*location) = glGetAttribLocationARB((GLhandleARB)fxId, name);
 }
 
+// VBO
+void MGLContext::createVBO(unsigned int * vboId){
+	glGenBuffersARB(1, vboId);
+}
+void MGLContext::deleteVBO(unsigned int * vboId){
+	glDeleteBuffersARB(1, vboId);
+}
+void MGLContext::bindVBO(M_VBO_TYPES type, unsigned int vboId)
+{
+	GLenum gltype = type == M_VBO_ARRAY ? GL_ARRAY_BUFFER_ARB : GL_ELEMENT_ARRAY_BUFFER_ARB;
+	glBindBufferARB(gltype, vboId);
+}
+void MGLContext::setVBO(M_VBO_TYPES type, const void * data, unsigned int size, M_VBO_MODES mode)
+{
+	GLenum gltype = type == M_VBO_ARRAY ? GL_ARRAY_BUFFER_ARB : GL_ELEMENT_ARRAY_BUFFER_ARB;
+	switch(mode)
+	{
+		case M_VBO_STATIC:
+			glBufferDataARB(gltype, size, data, GL_STATIC_DRAW_ARB);
+			break;
+		case M_VBO_DYNAMIC:
+			glBufferDataARB(gltype, size, data, GL_DYNAMIC_DRAW_ARB);
+			break;
+		case M_VBO_STREAM:
+			glBufferDataARB(gltype, size, data, GL_STREAM_DRAW_ARB);
+			break;
+	}
+}
+void MGLContext::setVBOSubData(M_VBO_TYPES type, unsigned int offset, const void * data, unsigned int size)
+{
+	GLenum gltype = type == M_VBO_ARRAY ? GL_ARRAY_BUFFER_ARB : GL_ELEMENT_ARRAY_BUFFER_ARB;
+	glBufferSubDataARB(gltype, offset, size, data);
+}
+
 // arrays
 void MGLContext::enableVertexArray(void){
 	glEnableClientState(GL_VERTEX_ARRAY);

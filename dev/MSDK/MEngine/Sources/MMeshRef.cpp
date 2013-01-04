@@ -30,10 +30,9 @@
 
 #include "../Includes/MEngine.h"
 
-MMeshRef::MMeshRef(MMesh * mesh, const char * filename):
-	m_mesh(mesh)
+
+MMeshRef::MMeshRef(MMesh * mesh, const char * filename):m_mesh(mesh)
 {
-    MLOG(7, "new MMeshRef from " << (filename?filename:"?"));
 	m_filename.set(filename);
 }
 

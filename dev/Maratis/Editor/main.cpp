@@ -227,7 +227,7 @@ int main(int argc, char **argv)
 							MFilesUpdate::update();
 						}
 
-						//printf("fps:%d\n", f);
+						printf("fps:%d\n", f);
 						t = 0;
 						f = 0;
 					}
