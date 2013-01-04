@@ -411,17 +411,20 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 					MTexture * texture = material->getTexturePass(0)->getTexture();
 					if(texture)
 					{
-						if(texture->getTextureRef()->getComponents() > 3)
+						if(texture->getTextureRef())
 						{
-							fxId = m_FXs[7]; // basic FX with texture
-							texturesPassNumber = 1;
+							if(texture->getTextureRef()->getComponents() > 3)
+							{
+								fxId = m_FXs[7]; // basic FX with texture
+								texturesPassNumber = 1;
+							}
 						}
 					}
 				}
 
 				basicFX = true;
 			}
-			else if(ZFXRef)
+			else if(ZFXRef) // if custom shader, use the Z FX is any
 			{
 				fxId = ZFXRef->getFXId();
 			}
@@ -1780,6 +1783,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		for(int s=(int)opaqueNumber-1; s>=0; s--)
 		{
 			MSubMeshPass * subMeshPass = &m_opaqueList[m_opaqueSortList[s]];
+			
+			
 			MOEntity * entity = (MOEntity *)subMeshPass->object;
 			MMesh * mesh = entity->getMesh();
 			MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
@@ -1816,6 +1821,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		}
 
 
+		
 		// render pass
 		m_forceNoFX = false;
 		render->setColorMask(1, 1, 1, 1);

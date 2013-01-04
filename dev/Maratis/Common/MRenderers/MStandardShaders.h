@@ -223,7 +223,7 @@ string functionsShader = string(
 
 // lights
 string lightShader = string(
-						
+									
 "if(LightActive[0])"
 "{"
 	"computeLight("
@@ -453,10 +453,7 @@ fragHeader +
 + functionsShader +
 
 "void main(void)"
-"{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
-							
+"{"			
 	+ lightShader +
 
 	"vec4 finalColor = vec4(diffuse+specular, MaterialOpacity)*texture0;"
@@ -500,10 +497,7 @@ fragHeader +
 + functionsShader +
 
 "void main(void)"
-"{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
-							
+"{"				
 	+ lightShader +
 
 	"vec4 finalColor = vec4(diffuse*texture0.xyz + specular*texture1.xyz, MaterialOpacity*texture0.w);"
@@ -557,10 +551,7 @@ fragHeader +
 + functionsShader +
 
 "void main(void)"
-"{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
-							
+"{"					
 	+ lightShader +
 
 	"vec4 finalColor = vec4(diffuse*texture0.xyz + specular*texture1.xyz, MaterialOpacity*texture0.w);"
@@ -608,10 +599,7 @@ fragHeader +
 + functionsShader +
 
 "void main(void)"
-"{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
-							
+"{"					
 	+ lightShader +
 
 	"vec4 finalColor = vec4(diffuse*texture0.xyz + specular*texture1.xyz, MaterialOpacity*texture0.w);"
@@ -669,9 +657,6 @@ fragHeader +
 
 "void main(void)"
 "{"
-	//"if(AlphaTest)"
-	//	"if(texture0.w < 0.5) discard;"
-		
 	+ lightShader +
 
 	"vec4 finalColor = vec4(diffuse*texture0.xyz + specular*texture1.xyz, MaterialOpacity*texture0.w);"

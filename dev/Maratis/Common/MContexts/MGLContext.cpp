@@ -40,8 +40,7 @@
 #endif
 
 #include "MGLContext.h"
-// Anael: cant we include an engine header ?
-//#include "MLog.h"
+
 
 static int g_GLversion = 0;
 static float maxAnisotropy = 0.0f;
@@ -175,7 +174,6 @@ m_currentFrameBuffer(0)
 	if(version)
 	{
 	    m_gl_version=version;
-	    //std::cout<<"GL version:"<<version<<std::endl;
 		sscanf(version, "%d", &g_GLversion);
 	}
 
@@ -208,11 +206,6 @@ m_currentFrameBuffer(0)
 
 	//glPointParameterf (GL_POINT_SIZE_MAX, 100.0);
 	//glPointParameterf (GL_POINT_SIZE_MIN, 1.0f);
-
-
-	int max_ind, max_vert;
-	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &max_ind);
-	glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_vert);
 
 	// stencil
 	glClearStencil(0);
