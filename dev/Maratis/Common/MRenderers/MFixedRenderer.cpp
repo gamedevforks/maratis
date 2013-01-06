@@ -576,6 +576,7 @@ void MFixedRenderer::drawText(MOText * textObj)
 	render->enableBlending();
 	render->enableTexture();
 	render->disableLighting();
+	render->disableCullFace();
 
 	render->setColor4(*textObj->getColor());
 	render->setBlendingMode(M_BLENDING_ALPHA);

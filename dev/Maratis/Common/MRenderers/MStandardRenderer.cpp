@@ -1075,6 +1075,9 @@ void MStandardRenderer::drawText(MOText * textObj)
 	ProjModelViewMatrix = (*cameraProjMatrix) * ModelViewMatrix;
 
 
+	// cull face
+	render->disableCullFace();
+	
 	// blending
 	render->enableBlending();
 	render->setBlendingMode(M_BLENDING_ALPHA);

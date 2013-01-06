@@ -2380,6 +2380,15 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 
 	switch(guiEvents->type)
 	{
+			
+		case MGUI_EVENT_ON_CHANGE:
+			
+			// text
+			if(edit->getVariablePointer() == &UI->m_editText)
+				((MOText *)object)->setText(edit->getText());
+			
+			break;
+			
         case MGUI_EVENT_SEND_VARIABLE:
 
             maratis->autoSave();
@@ -2412,118 +2421,115 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             }
 
             // position
-			else
-				if(edit->getVariablePointer() == &UI->m_editPosition.x ||
-				   edit->getVariablePointer() == &UI->m_editPosition.y ||
-				   edit->getVariablePointer() == &UI->m_editPosition.z)
+			else if(edit->getVariablePointer() == &UI->m_editPosition.x ||
+				    edit->getVariablePointer() == &UI->m_editPosition.y ||
+				    edit->getVariablePointer() == &UI->m_editPosition.z)
             {
                 object->setPosition(UI->m_editPosition);
             }
 
             // rotation
-            else
-                if(edit->getVariablePointer() == &UI->m_editRotation.x ||
-                   edit->getVariablePointer() == &UI->m_editRotation.y ||
-                   edit->getVariablePointer() == &UI->m_editRotation.z)
-                {
-                    object->setEulerRotation(UI->m_editRotation);
-                }
+            else if(edit->getVariablePointer() == &UI->m_editRotation.x ||
+                    edit->getVariablePointer() == &UI->m_editRotation.y ||
+                    edit->getVariablePointer() == &UI->m_editRotation.z)
+			{
+				object->setEulerRotation(UI->m_editRotation);
+			}
 
             // scale
-                else
-                    if(edit->getVariablePointer() == &UI->m_editScale.x ||
-                       edit->getVariablePointer() == &UI->m_editScale.y ||
-                       edit->getVariablePointer() == &UI->m_editScale.z)
-                    {
-                        object->setScale(UI->m_editScale);
-                    }
+			else if(edit->getVariablePointer() == &UI->m_editScale.x ||
+					edit->getVariablePointer() == &UI->m_editScale.y ||
+					edit->getVariablePointer() == &UI->m_editScale.z)
+			{
+				object->setScale(UI->m_editScale);
+			}
 
             // radius
-                    else if(edit->getVariablePointer() == &UI->m_editRadius)
-                        ((MOLight *)object)->setRadius(UI->m_editRadius);
+			else if(edit->getVariablePointer() == &UI->m_editRadius)
+				((MOLight *)object)->setRadius(UI->m_editRadius);
             // intensity
-                    else if(edit->getVariablePointer() == &UI->m_editIntensity)
-                        ((MOLight *)object)->setIntensity(UI->m_editIntensity);
+			else if(edit->getVariablePointer() == &UI->m_editIntensity)
+				((MOLight *)object)->setIntensity(UI->m_editIntensity);
             // spotAngle
-                    else if(edit->getVariablePointer() == &UI->m_editSpotAngle)
-                    {
-                        float angle = CLAMP(UI->m_editSpotAngle, 1.0f, 90.0f);
-                        ((MOLight *)object)->setSpotAngle(angle);
-                        UI->m_editSpotAngle = angle;
-                    }
+			else if(edit->getVariablePointer() == &UI->m_editSpotAngle)
+			{
+				float angle = CLAMP(UI->m_editSpotAngle, 1.0f, 90.0f);
+				((MOLight *)object)->setSpotAngle(angle);
+				UI->m_editSpotAngle = angle;
+			}
             // spotExponent
-                    else if(edit->getVariablePointer() == &UI->m_editSpotExponent)
-                    {
-                        ((MOLight *)object)->setSpotExponent(UI->m_editSpotExponent);
-                        UI->m_editSpotExponent = ((MOLight *)object)->getSpotExponent();
-                    }
+			else if(edit->getVariablePointer() == &UI->m_editSpotExponent)
+			{
+				((MOLight *)object)->setSpotExponent(UI->m_editSpotExponent);
+				UI->m_editSpotExponent = ((MOLight *)object)->getSpotExponent();
+			}
             // shadowBias
-                    else if(edit->getVariablePointer() == &UI->m_editShadowBias)
-                    {
-                        ((MOLight *)object)->setShadowBias(UI->m_editShadowBias);
-                    }
+			else if(edit->getVariablePointer() == &UI->m_editShadowBias)
+			{
+				((MOLight *)object)->setShadowBias(UI->m_editShadowBias);
+			}
             // shadowBlur
-                    else if(edit->getVariablePointer() == &UI->m_editShadowBlur)
-                    {
-                        ((MOLight *)object)->setShadowBlur(UI->m_editShadowBlur);
-                    }
+			else if(edit->getVariablePointer() == &UI->m_editShadowBlur)
+			{
+				((MOLight *)object)->setShadowBlur(UI->m_editShadowBlur);
+			}
             // shadowQuality
-                    else if(edit->getVariablePointer() == &UI->m_editShadowQuality)
-                    {
-                        UI->m_editShadowQuality = MIN(4096, /*getNextPowerOfTwo*/(UI->m_editShadowQuality));
-                        ((MOLight *)object)->setShadowQuality(UI->m_editShadowQuality);
-                    }
+			else if(edit->getVariablePointer() == &UI->m_editShadowQuality)
+			{
+				UI->m_editShadowQuality = MIN(4096, /*getNextPowerOfTwo*/(UI->m_editShadowQuality));
+				((MOLight *)object)->setShadowQuality(UI->m_editShadowQuality);
+			}
 
             // fov
-                    else if(edit->getVariablePointer() == &UI->m_editFov)
-                        ((MOCamera *)object)->setFov(UI->m_editFov);
+			else if(edit->getVariablePointer() == &UI->m_editFov)
+				((MOCamera *)object)->setFov(UI->m_editFov);
             // clip near
-                    else if(edit->getVariablePointer() == &UI->m_editClipNear)
-                        ((MOCamera *)object)->setClippingNear(UI->m_editClipNear);
+            else if(edit->getVariablePointer() == &UI->m_editClipNear)
+				((MOCamera *)object)->setClippingNear(UI->m_editClipNear);
             // clip far
-                    else if(edit->getVariablePointer() == &UI->m_editClipFar)
-                        ((MOCamera *)object)->setClippingFar(UI->m_editClipFar);
+            else if(edit->getVariablePointer() == &UI->m_editClipFar)
+				((MOCamera *)object)->setClippingFar(UI->m_editClipFar);
             // fog distance
-                    else if(edit->getVariablePointer() == &UI->m_editFogDistance)
-                        ((MOCamera *)object)->setFogDistance(UI->m_editFogDistance);
+            else if(edit->getVariablePointer() == &UI->m_editFogDistance)
+				((MOCamera *)object)->setFogDistance(UI->m_editFogDistance);
 
             // pitch
-                    else if(edit->getVariablePointer() == &UI->m_editPitch)
-                        ((MOSound *)object)->setPitch(UI->m_editPitch);
+            else if(edit->getVariablePointer() == &UI->m_editPitch)
+				((MOSound *)object)->setPitch(UI->m_editPitch);
             // gain
-                    else if(edit->getVariablePointer() == &UI->m_editGain)
-                        ((MOSound *)object)->setGain(UI->m_editGain = CLAMP(UI->m_editGain, 0.0f, 1.0f));
+			else if(edit->getVariablePointer() == &UI->m_editGain)
+				((MOSound *)object)->setGain(UI->m_editGain = CLAMP(UI->m_editGain, 0.0f, 1.0f));
             // radius
-                    else if(edit->getVariablePointer() == &UI->m_editSndRadius)
-                        ((MOSound *)object)->setRadius(UI->m_editSndRadius);
+            else if(edit->getVariablePointer() == &UI->m_editSndRadius)
+				((MOSound *)object)->setRadius(UI->m_editSndRadius);
             // rolloff
-                    else if(edit->getVariablePointer() == &UI->m_editRolloff)
-                        ((MOSound *)object)->setRolloff(UI->m_editRolloff);
+            else if(edit->getVariablePointer() == &UI->m_editRolloff)
+				((MOSound *)object)->setRolloff(UI->m_editRolloff);
 
             // mass
-                    else if(edit->getVariablePointer() == &UI->m_editMass)
-                        ((MOEntity *)object)->getPhysicsProperties()->setMass(UI->m_editMass);
+            else if(edit->getVariablePointer() == &UI->m_editMass)
+				((MOEntity *)object)->getPhysicsProperties()->setMass(UI->m_editMass);
             // friction
-                    else if(edit->getVariablePointer() == &UI->m_editFriction)
-                        ((MOEntity *)object)->getPhysicsProperties()->setFriction(UI->m_editFriction);
+            else if(edit->getVariablePointer() == &UI->m_editFriction)
+				((MOEntity *)object)->getPhysicsProperties()->setFriction(UI->m_editFriction);
             // restitution
-                    else if(edit->getVariablePointer() == &UI->m_editRestitution)
-                        ((MOEntity *)object)->getPhysicsProperties()->setRestitution(UI->m_editRestitution);
+            else if(edit->getVariablePointer() == &UI->m_editRestitution)
+				((MOEntity *)object)->getPhysicsProperties()->setRestitution(UI->m_editRestitution);
             // linear damping
-                    else if(edit->getVariablePointer() == &UI->m_editLinearDamping)
-                        ((MOEntity *)object)->getPhysicsProperties()->setLinearDamping(UI->m_editLinearDamping);
+            else if(edit->getVariablePointer() == &UI->m_editLinearDamping)
+				((MOEntity *)object)->getPhysicsProperties()->setLinearDamping(UI->m_editLinearDamping);
             // angular damping
-                    else if(edit->getVariablePointer() == &UI->m_editAngularDamping)
-                        ((MOEntity *)object)->getPhysicsProperties()->setAngularDamping(UI->m_editAngularDamping);
+			else if(edit->getVariablePointer() == &UI->m_editAngularDamping)
+				((MOEntity *)object)->getPhysicsProperties()->setAngularDamping(UI->m_editAngularDamping);
             // angular factor
-                    else if(edit->getVariablePointer() == &UI->m_editAngularFactor)
-                        ((MOEntity *)object)->getPhysicsProperties()->setAngularFactor(UI->m_editAngularFactor);
+            else if(edit->getVariablePointer() == &UI->m_editAngularFactor)
+				((MOEntity *)object)->getPhysicsProperties()->setAngularFactor(UI->m_editAngularFactor);
 
-            // size
-                    else if(edit->getVariablePointer() == &UI->m_editSize)
-                        ((MOText *)object)->setSize(UI->m_editSize);
-                    else if(edit->getVariablePointer() == &UI->m_editText)
-                        ((MOText *)object)->setText(UI->m_editText.getData());
+            // text size
+            else if(edit->getVariablePointer() == &UI->m_editSize)
+				((MOText *)object)->setSize(UI->m_editSize);
+			// else if(edit->getVariablePointer() == &UI->m_editText)
+			//   ((MOText *)object)->setText(UI->m_editText.getData());
 
             break;
         case MGUI_EVENT_DRAW:
@@ -2531,29 +2537,27 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             {
                 // position
                 if(	edit->getVariablePointer() == &UI->m_editPosition.x ||
-                   edit->getVariablePointer() == &UI->m_editPosition.y ||
-                   edit->getVariablePointer() == &UI->m_editPosition.z)
+                    edit->getVariablePointer() == &UI->m_editPosition.y ||
+                    edit->getVariablePointer() == &UI->m_editPosition.z)
                 {
                     UI->m_editPosition = object->getPosition();
                 }
 
                 // rotation
-                else
-                    if(	edit->getVariablePointer() == &UI->m_editRotation.x ||
-                       edit->getVariablePointer() == &UI->m_editRotation.y ||
-                       edit->getVariablePointer() == &UI->m_editRotation.z)
-                    {
-                        UI->m_editRotation = object->getEulerRotation();
-                    }
+                else if(edit->getVariablePointer() == &UI->m_editRotation.x ||
+                        edit->getVariablePointer() == &UI->m_editRotation.y ||
+                        edit->getVariablePointer() == &UI->m_editRotation.z)
+				{
+					UI->m_editRotation = object->getEulerRotation();
+				}
 
                 // scale
-                    else
-                        if(	edit->getVariablePointer() == &UI->m_editScale.x ||
-                           edit->getVariablePointer() == &UI->m_editScale.y ||
-                           edit->getVariablePointer() == &UI->m_editScale.z)
-                        {
-                            UI->m_editScale = object->getScale();
-                        }
+				else if(edit->getVariablePointer() == &UI->m_editScale.x ||
+						edit->getVariablePointer() == &UI->m_editScale.y ||
+						edit->getVariablePointer() == &UI->m_editScale.z)
+				{
+					UI->m_editScale = object->getScale();
+				}
             }
             break;
 
