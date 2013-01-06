@@ -4672,7 +4672,7 @@ void MaratisUI::editScriptEvents(MGuiButton * button, MGuiEvent * guiEvents)
             if(button->isPressed())
             {
                 const char * script = scene->getScriptFilename();
-                if(strlen(script) > 0)
+                if(script)
                 {
 #ifdef _WIN32
 					char args[256];
