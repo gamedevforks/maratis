@@ -2387,8 +2387,19 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             // parent
             if(edit->getVariablePointer() == &UI->m_editParent)
             {
+				bool link = true;
+				if(UI->m_editParent.getData())
+				{
+					if(UI->m_editParent.getData()[0] == '\0' || strcmp(UI->m_editParent.getData(), "...") == 0)
+						link = false;
+				}
+				else
+				{
+					link = false;
+				}
+				
 				// Either reset curren object's parent to NULL or try setting a new parent
-				if(UI->m_editParent.getData()[0] == '\0' || strcmp(UI->m_editParent.getData(), "...") == 0)
+				if(! link)
 				{
 					Maratis::getInstance()->unlinkTwoObjects(object->getParent(), object);
 				}
