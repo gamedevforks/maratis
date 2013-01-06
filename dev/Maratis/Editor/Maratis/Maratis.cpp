@@ -570,7 +570,8 @@ void Maratis::initVue(void)
 	m_perspectiveVue.setEulerRotation(MVector3(40, 0, 0));
 	m_perspectiveVue.updateMatrix();
 
-	(*getSelectionCenter()) = MVector3(0, 0, 0);
+	m_selectionCenter = MVector3(0, 0, 0);
+	m_viewCenter = m_selectionCenter;
 	clearSelectedObjects();
 }
 
@@ -1260,10 +1261,10 @@ void Maratis::rotateCurrentVue(void)
 	MMouse * mouse = MMouse::getInstance();
 
 	// inverse center
-	MVector3 lCenter = m_perspectiveVue.getInversePosition(m_selectionCenter);
+	MVector3 lCenter = m_perspectiveVue.getInversePosition(m_viewCenter);
 
 	// rotation
-	m_perspectiveVue.addAxisAngleRotation(MVector3(1, 0, 0), -(float)mouse->getYDirection());
+	m_perspectiveVue.addAxisAngleRotation(MVector3(1, 0, 0), -(float)mouse->getYDirection()*0.65f);
 
 	MMatrix4x4 matrix;
 	MQuaternion rotation = m_perspectiveVue.getRotation();
@@ -1271,12 +1272,12 @@ void Maratis::rotateCurrentVue(void)
 	matrix.invert();
 
 	MVector3 axis = matrix * MVector3(0, 0, 1);
-	m_perspectiveVue.addAxisAngleRotation(axis, -(float)mouse->getXDirection());
+	m_perspectiveVue.addAxisAngleRotation(axis, -(float)mouse->getXDirection()*0.65f);
 	m_perspectiveVue.updateMatrix();
 
 	// position
 	MVector3 fCenter = m_perspectiveVue.getTransformedVector(lCenter);
-	m_perspectiveVue.setPosition(m_perspectiveVue.getPosition() + (m_selectionCenter - fCenter));
+	m_perspectiveVue.setPosition(m_perspectiveVue.getPosition() + (m_viewCenter - fCenter));
 
 	m_perspectiveVue.updateMatrix();
 }
@@ -1302,6 +1303,7 @@ void Maratis::panCurrentVue(void)
 		camera->setPosition(position + ((xAxis * (-(float)mouse->getXDirection())) + (zAxis * (float)mouse->getYDirection()))*dFactor);
 		camera->updateMatrix();
 
+		updateSelectionCenter();
 		return;
 	}
 
@@ -1309,7 +1311,7 @@ void Maratis::panCurrentVue(void)
 	MVector3 position = camera->getPosition();
 	MVector3 axis = camera->getRotatedVector(MVector3(0, 0, -1));
 
-	float z = (m_selectionCenter - position).dotProduct(axis);
+	float z = (m_viewCenter - position).dotProduct(axis);
 	float fovFactor = camera->getFov() * 0.0192f;
 
 	float dx = - ((mouse->getXDirection() / (float)viewport[3]) * z) * fovFactor;
@@ -1317,6 +1319,8 @@ void Maratis::panCurrentVue(void)
 
 	camera->setPosition(position + (xAxis * dx) + (zAxis * dy));
 	camera->updateMatrix();
+	
+	updateSelectionCenter();
 }
 
 void Maratis::zoomCurrentVue(void)
@@ -1333,7 +1337,7 @@ void Maratis::zoomCurrentVue(void)
 		MVector3 cameraAxis = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();;
 
 		float factor = (camera->getFov() - 1);
-		float dist = ((*getSelectionCenter()) - position).dotProduct(cameraAxis);
+		float dist = (m_viewCenter - position).dotProduct(cameraAxis);
 
 		camera->setPosition(position + (cameraAxis * (dist - factor)));
 		camera->updateMatrix();
@@ -1343,7 +1347,7 @@ void Maratis::zoomCurrentVue(void)
 
 	// dir
 	float dir = (-mouse->getWheelDirection()) * 20.0f;
-	float dFactor = (m_selectionCenter - position).getLength() * 0.01f;
+	float dFactor = (m_viewCenter - position).getLength() * 0.01f;
 
 	MVector3 vec(0, 0, -1);
 	MVector3 axis = camera->getRotatedVector(vec);
@@ -1358,7 +1362,7 @@ void Maratis::switchCurrentVueMode(void)
 	MVector3 cameraAxis = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();;
 	MVector3 position = camera->getPosition();
 
-	float dist = ((*getSelectionCenter()) - position).dotProduct(cameraAxis);
+	float dist = (m_viewCenter - position).dotProduct(cameraAxis);
 
 	if(camera->isOrtho())
 	{
@@ -1389,7 +1393,7 @@ void Maratis::changeCurrentVue(int vue)
 	if(! camera->isOrtho())
 		switchCurrentVueMode();
 
-	float dist = ((*getSelectionCenter()) - position).getLength();
+	float dist = (m_viewCenter - position).getLength();
 
 	// set vue
 	switch(vue)
@@ -1486,7 +1490,7 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 
 	float dist;
 	float nearDist;
-	MVector3 I;
+	MVector3 I, intersectionPoint;
 	MVector3 rayVector = localDest - localOrigin;
 
 	// init near dist
@@ -1553,6 +1557,7 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 						dist = (I - localOrigin).getSquaredLength();
 						if(dist < nearDist)
 						{
+							intersectionPoint = I;
 							nearDist = dist;
 							raytraced = true;
 						}
@@ -1563,16 +1568,17 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 				if((display->getCullMode() == M_CULL_FRONT) || (display->getCullMode() == M_CULL_NONE))
 				{
 					if(getNearestRaytracedPosition(
-												   localDest, localOrigin,
+												   localOrigin, localDest,
 												   indices,
 												   subMesh->getIndicesType(),
 												   vertices,
 												   display->getSize(),
-												   &I))
+												   &I, 1))
 					{
 						dist = (I - localOrigin).getSquaredLength();
 						if(dist < nearDist)
 						{
+							intersectionPoint = I;
 							nearDist = dist;
 							raytraced = true;
 						}
@@ -1583,12 +1589,12 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 	}
 
 	if(raytraced)
-		*distance = (((*matrix) * I) - origin).getLength();
+		*distance = (((*matrix) * intersectionPoint) - origin).getLength();
 
 	return raytraced;
 }
 
-MObject3d * Maratis::getNearestObject(MScene * scene, const MVector3 & rayO, const MVector3 & rayD)
+MObject3d * Maratis::getNearestObject(MScene * scene, const MVector3 & rayO, const MVector3 & rayD, MVector3 * intersectPoint)
 {
 	// get camera
 	MOCamera * camera = getPerspectiveVue();
@@ -1733,6 +1739,12 @@ MObject3d * Maratis::getNearestObject(MScene * scene, const MVector3 & rayO, con
 		distance = dist;
 	}
 
+	
+	if(intersectPoint && nearestObject)
+	{
+		*intersectPoint = rayO + (rayD - rayO).getNormalized()*distance;
+	}
+	
 	return nearestObject;
 }
 
@@ -1972,7 +1984,7 @@ void Maratis::selectObjectsInMainView(MScene * scene)
 }
 
 void Maratis::updateSelectionCenter(void)
-{
+{	
 	MVector3 position(0, 0, 0);
 
 	unsigned int i;
@@ -1985,6 +1997,19 @@ void Maratis::updateSelectionCenter(void)
 
 	if(oSize > 0)
 		m_selectionCenter = position / (float)oSize;
+	
+	
+	// view center
+	{
+		MLevel * level = MEngine::getInstance()->getLevel();
+		MScene * scene = level->getCurrentScene();
+		
+		MVector3 rayO = m_perspectiveVue.getTransformedPosition();
+		MVector3 rayD = m_perspectiveVue.getTransformedVector(MVector3(0, 0, -m_perspectiveVue.getClippingFar()));
+		
+		if(! getNearestObject(scene, rayO, rayD, &m_viewCenter))
+			m_viewCenter = m_selectionCenter;
+	}
 }
 
 void Maratis::drawGrid(MScene * scene)
@@ -4097,15 +4122,15 @@ void Maratis::drawMainView(MScene * scene)
 		switch(getTransformMode())
 		{
             case M_TRANSFORM_ROTATION:
-                updateSelectionCenter();
+                //updateSelectionCenter();
                 drawEditRotation(camera);
                 break;
             case M_TRANSFORM_POSITION:
-                updateSelectionCenter();
+                //updateSelectionCenter();
                 drawEditPosition(camera);
                 break;
             case M_TRANSFORM_SCALE:
-                updateSelectionCenter();
+                //updateSelectionCenter();
                 drawEditScale(camera);
                 break;
 

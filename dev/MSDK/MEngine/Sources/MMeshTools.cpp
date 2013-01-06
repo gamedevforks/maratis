@@ -542,7 +542,7 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 	return false;
 }
 
-bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest, const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size, MVector3 * intersection)
+bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest, const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size, MVector3 * intersection, bool invertNormal)
 {
 	bool isRaytraced = false;
 	float dist;
@@ -551,7 +551,7 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 	MVector3 rayVector = dest - origin;
 
 	// init near dist
-	nearDist =  rayVector.getSquaredLength();
+	nearDist = rayVector.getSquaredLength();
 
 	switch(indicesType)
 	{
@@ -567,6 +567,8 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 
 				// make normal
 				MVector3 normal = getTriangleNormal(*v1, *v2, *v3);
+				if(invertNormal)
+					normal = -normal;
 
 				// compute ray intersection
 				if(isEdgeTriangleIntersection(origin, dest, *v1, *v2, *v3, normal, &I))
@@ -596,7 +598,9 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 
 				// make normal
 				MVector3 normal = getTriangleNormal(*v1, *v2, *v3);
-
+				if(invertNormal)
+					normal = -normal;
+				
 				// compute ray intersection
 				if(isEdgeTriangleIntersection(origin, dest, *v1, *v2, *v3, normal, &I))
 				{

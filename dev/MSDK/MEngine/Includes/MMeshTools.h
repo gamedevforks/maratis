@@ -81,7 +81,8 @@ M_ENGINE_EXPORT bool getNearestRaytracedPosition(
 	M_TYPES indicesType,
 	const MVector3 * vertices, 
 	unsigned int size, 
-	MVector3 * intersection
+	MVector3 * intersection,
+	bool invertNormal = false
 	);
 
 #endif
