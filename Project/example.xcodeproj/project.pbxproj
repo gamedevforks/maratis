@@ -22,6 +22,14 @@
 		E93607B913A24D5600ED816C /* MiOSStandardRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E93607B613A24D5600ED816C /* MiOSStandardRenderer.cpp */; };
 		E936082413A2540100ED816C /* MBinFontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082213A2540100ED816C /* MBinFontLoader.cpp */; };
 		E936082713A2542000ED816C /* MWavSoundLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E936082513A2542000ED816C /* MWavSoundLoader.cpp */; };
+		E94A115216A2138F0030F47D /* Demos.mproj in Resources */ = {isa = PBXBuildFile; fileRef = E94A110516A2138F0030F47D /* Demos.mproj */; };
+		E94A115316A2138F0030F47D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = E94A110616A2138F0030F47D /* fonts */; };
+		E94A115416A2138F0030F47D /* levels in Resources */ = {isa = PBXBuildFile; fileRef = E94A110D16A2138F0030F47D /* levels */; };
+		E94A115516A2138F0030F47D /* maps in Resources */ = {isa = PBXBuildFile; fileRef = E94A111816A2138F0030F47D /* maps */; };
+		E94A115616A2138F0030F47D /* meshs in Resources */ = {isa = PBXBuildFile; fileRef = E94A112916A2138F0030F47D /* meshs */; };
+		E94A115716A2138F0030F47D /* scripts in Resources */ = {isa = PBXBuildFile; fileRef = E94A114116A2138F0030F47D /* scripts */; };
+		E94A115816A2138F0030F47D /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = E94A114A16A2138F0030F47D /* shaders */; };
+		E94A115916A2138F0030F47D /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = E94A115016A2138F0030F47D /* sounds */; };
 		E97380E4148BB10C000F7FC0 /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9737F82148BB10B000F7FC0 /* btAxisSweep3.cpp */; };
 		E97380E5148BB10C000F7FC0 /* btBroadphaseProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9737F85148BB10B000F7FC0 /* btBroadphaseProxy.cpp */; };
 		E97380E6148BB10C000F7FC0 /* btCollisionAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9737F87148BB10B000F7FC0 /* btCollisionAlgorithm.cpp */; };
@@ -266,66 +274,6 @@
 		E9CCDE2E16008B8E00E045E0 /* MPackageManagerNPK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9CCDE2C16008B8E00E045E0 /* MPackageManagerNPK.cpp */; };
 		E9F307881600A38800054873 /* libFreetype2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F307871600A38800054873 /* libFreetype2.a */; };
 		E9F3079F1600A81600054873 /* MFreetypeLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9F3079D1600A81600054873 /* MFreetypeLoader.cpp */; };
-		E9F3080F1600AA3000054873 /* Demos.mproj in Resources */ = {isa = PBXBuildFile; fileRef = E9F307CA1600AA2F00054873 /* Demos.mproj */; };
-		E9F308101600AA3000054873 /* GenR102.TTF in Resources */ = {isa = PBXBuildFile; fileRef = E9F307CD1600AA2F00054873 /* GenR102.TTF */; };
-		E9F308121600AA3000054873 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = E9F307CF1600AA3000054873 /* OFL.txt */; };
-		E9F308131600AA3000054873 /* ballTest.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D11600AA3000054873 /* ballTest.level */; };
-		E9F308141600AA3000054873 /* CartoonTPots.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D21600AA3000054873 /* CartoonTPots.level */; };
-		E9F308151600AA3000054873 /* Follow.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D31600AA3000054873 /* Follow.level */; };
-		E9F308161600AA3000054873 /* joints.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D41600AA3000054873 /* joints.level */; };
-		E9F308171600AA3000054873 /* Jules.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D51600AA3000054873 /* Jules.level */; };
-		E9F308181600AA3000054873 /* Physics.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D61600AA3000054873 /* Physics.level */; };
-		E9F308191600AA3000054873 /* shadTest.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D71600AA3000054873 /* shadTest.level */; };
-		E9F3081A1600AA3000054873 /* Switch.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D81600AA3000054873 /* Switch.level */; };
-		E9F3081B1600AA3000054873 /* Text.level in Resources */ = {isa = PBXBuildFile; fileRef = E9F307D91600AA3000054873 /* Text.level */; };
-		E9F3081C1600AA3000054873 /* brick.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307DB1600AA3000054873 /* brick.png */; };
-		E9F3081D1600AA3000054873 /* BRICKS.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307DC1600AA3000054873 /* BRICKS.png */; };
-		E9F3081E1600AA3000054873 /* cement.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307DD1600AA3000054873 /* cement.png */; };
-		E9F3081F1600AA3000054873 /* dot3.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307DE1600AA3000054873 /* dot3.png */; };
-		E9F308201600AA3000054873 /* FIRE.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307DF1600AA3000054873 /* FIRE.png */; };
-		E9F308211600AA3000054873 /* lightMap.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E01600AA3000054873 /* lightMap.png */; };
-		E9F308221600AA3000054873 /* ramp01.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E11600AA3000054873 /* ramp01.png */; };
-		E9F308231600AA3000054873 /* ramp02.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E21600AA3000054873 /* ramp02.png */; };
-		E9F308241600AA3000054873 /* setDiffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E31600AA3000054873 /* setDiffuse.png */; };
-		E9F308251600AA3000054873 /* setDot3.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E41600AA3000054873 /* setDot3.png */; };
-		E9F308261600AA3000054873 /* setSpec.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E51600AA3000054873 /* setSpec.png */; };
-		E9F308271600AA3000054873 /* teapot.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E61600AA3000054873 /* teapot.png */; };
-		E9F308281600AA3000054873 /* teapotSpec.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E71600AA3000054873 /* teapotSpec.png */; };
-		E9F308291600AA3000054873 /* Thumbs.db in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E81600AA3000054873 /* Thumbs.db */; };
-		E9F3082A1600AA3000054873 /* white.png in Resources */ = {isa = PBXBuildFile; fileRef = E9F307E91600AA3000054873 /* white.png */; };
-		E9F3082B1600AA3000054873 /* ball.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307EB1600AA3000054873 /* ball.mesh */; };
-		E9F3082C1600AA3000054873 /* box.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307EC1600AA3000054873 /* box.mesh */; };
-		E9F3082D1600AA3000054873 /* CartoonTPot01.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307ED1600AA3000054873 /* CartoonTPot01.mesh */; };
-		E9F3082E1600AA3000054873 /* CartoonTPot02.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307EE1600AA3000054873 /* CartoonTPot02.mesh */; };
-		E9F3082F1600AA3000054873 /* cone.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307EF1600AA3000054873 /* cone.mesh */; };
-		E9F308301600AA3000054873 /* cylinder.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F01600AA3000054873 /* cylinder.mesh */; };
-		E9F308311600AA3000054873 /* Fire.maa in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F11600AA3000054873 /* Fire.maa */; };
-		E9F308321600AA3000054873 /* Fire.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F21600AA3000054873 /* Fire.mesh */; };
-		E9F308331600AA3000054873 /* Jules.maa in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F31600AA3000054873 /* Jules.maa */; };
-		E9F308341600AA3000054873 /* Jules.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F41600AA3000054873 /* Jules.mesh */; };
-		E9F308351600AA3000054873 /* MultiTexture.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F51600AA3000054873 /* MultiTexture.mesh */; };
-		E9F308361600AA3000054873 /* MultiTexture.mma in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F61600AA3000054873 /* MultiTexture.mma */; };
-		E9F308371600AA3000054873 /* MultiTexture.mta in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F71600AA3000054873 /* MultiTexture.mta */; };
-		E9F308381600AA3000054873 /* robot.maa in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F81600AA3000054873 /* robot.maa */; };
-		E9F308391600AA3000054873 /* robot.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307F91600AA3000054873 /* robot.mesh */; };
-		E9F3083A1600AA3000054873 /* robot.mma in Resources */ = {isa = PBXBuildFile; fileRef = E9F307FA1600AA3000054873 /* robot.mma */; };
-		E9F3083B1600AA3000054873 /* set.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307FB1600AA3000054873 /* set.mesh */; };
-		E9F3083C1600AA3000054873 /* StoneBox.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307FC1600AA3000054873 /* StoneBox.mesh */; };
-		E9F3083D1600AA3000054873 /* StoneSet.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307FD1600AA3000054873 /* StoneSet.mesh */; };
-		E9F3083E1600AA3000054873 /* teapot.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307FE1600AA3000054873 /* teapot.mesh */; };
-		E9F3083F1600AA3000054873 /* temple.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F307FF1600AA3000054873 /* temple.mesh */; };
-		E9F308401600AA3000054873 /* templeLightMap.mesh in Resources */ = {isa = PBXBuildFile; fileRef = E9F308001600AA3000054873 /* templeLightMap.mesh */; };
-		E9F308411600AA3000054873 /* CartoonTPot.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308021600AA3000054873 /* CartoonTPot.lua */; };
-		E9F308421600AA3000054873 /* Follow.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308031600AA3000054873 /* Follow.lua */; };
-		E9F308431600AA3000054873 /* Jules.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308041600AA3000054873 /* Jules.lua */; };
-		E9F308441600AA3000054873 /* PhysicsTest.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308051600AA3000054873 /* PhysicsTest.lua */; };
-		E9F308451600AA3000054873 /* ShadTest.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308061600AA3000054873 /* ShadTest.lua */; };
-		E9F308461600AA3000054873 /* Switch.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308071600AA3000054873 /* Switch.lua */; };
-		E9F308471600AA3000054873 /* Text.lua in Resources */ = {isa = PBXBuildFile; fileRef = E9F308081600AA3000054873 /* Text.lua */; };
-		E9F308481600AA3000054873 /* cartoon.frag in Sources */ = {isa = PBXBuildFile; fileRef = E9F3080A1600AA3000054873 /* cartoon.frag */; };
-		E9F308491600AA3000054873 /* cartoon.vert in Sources */ = {isa = PBXBuildFile; fileRef = E9F3080B1600AA3000054873 /* cartoon.vert */; };
-		E9F3084A1600AA3000054873 /* Z_simple.frag in Sources */ = {isa = PBXBuildFile; fileRef = E9F3080C1600AA3000054873 /* Z_simple.frag */; };
-		E9F3084B1600AA3000054873 /* Z_simple.vert in Sources */ = {isa = PBXBuildFile; fileRef = E9F3080D1600AA3000054873 /* Z_simple.vert */; };
 		E9F8B2BB14CACF5D00AB7CF4 /* MStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9F8B2BA14CACF5D00AB7CF4 /* MStdFile.cpp */; };
 /* End PBXBuildFile section */
 
@@ -360,6 +308,14 @@
 		E936082313A2540100ED816C /* MBinFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBinFontLoader.h; path = ../../../trunk/dev/Maratis/Common/MLoaders/MBinFontLoader.h; sourceTree = SOURCE_ROOT; };
 		E936082513A2542000ED816C /* MWavSoundLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MWavSoundLoader.cpp; path = ../../../trunk/dev/Additional/MLoaders/MWavSoundLoader.cpp; sourceTree = SOURCE_ROOT; };
 		E936082613A2542000ED816C /* MWavSoundLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MWavSoundLoader.h; path = ../../../trunk/dev/Additional/MLoaders/MWavSoundLoader.h; sourceTree = SOURCE_ROOT; };
+		E94A110516A2138F0030F47D /* Demos.mproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Demos.mproj; path = ../Examples/Demos/Demos.mproj; sourceTree = SOURCE_ROOT; };
+		E94A110616A2138F0030F47D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../Examples/Demos/fonts; sourceTree = SOURCE_ROOT; };
+		E94A110D16A2138F0030F47D /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../Examples/Demos/levels; sourceTree = SOURCE_ROOT; };
+		E94A111816A2138F0030F47D /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = ../Examples/Demos/maps; sourceTree = SOURCE_ROOT; };
+		E94A112916A2138F0030F47D /* meshs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = meshs; path = ../Examples/Demos/meshs; sourceTree = SOURCE_ROOT; };
+		E94A114116A2138F0030F47D /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../Examples/Demos/scripts; sourceTree = SOURCE_ROOT; };
+		E94A114A16A2138F0030F47D /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = ../Examples/Demos/shaders; sourceTree = SOURCE_ROOT; };
+		E94A115016A2138F0030F47D /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../Examples/Demos/sounds; sourceTree = SOURCE_ROOT; };
 		E9737F7D148BB10B000F7FC0 /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = ../../../3rdparty/bullet/btBulletCollisionCommon.h; sourceTree = SOURCE_ROOT; };
 		E9737F7E148BB10B000F7FC0 /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = ../../../3rdparty/bullet/btBulletDynamicsCommon.h; sourceTree = SOURCE_ROOT; };
 		E9737F7F148BB10B000F7FC0 /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "../../../3rdparty/bullet/Bullet-C-Api.h"; sourceTree = SOURCE_ROOT; };
@@ -921,66 +877,6 @@
 		E9F307871600A38800054873 /* libFreetype2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFreetype2.a; path = ../../../3rdparty/freetype/ios/libFreetype2.a; sourceTree = SOURCE_ROOT; };
 		E9F3079D1600A81600054873 /* MFreetypeLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MFreetypeLoader.cpp; path = ../../../trunk/dev/Maratis/Common/MLoaders/MFreetypeLoader.cpp; sourceTree = SOURCE_ROOT; };
 		E9F3079E1600A81600054873 /* MFreetypeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MFreetypeLoader.h; path = ../../../trunk/dev/Maratis/Common/MLoaders/MFreetypeLoader.h; sourceTree = SOURCE_ROOT; };
-		E9F307CA1600AA2F00054873 /* Demos.mproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Demos.mproj; path = ../Examples/Demos/Demos.mproj; sourceTree = SOURCE_ROOT; };
-		E9F307CD1600AA2F00054873 /* GenR102.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; name = GenR102.TTF; path = ../Examples/Demos/fonts/Gentium102/GenR102.TTF; sourceTree = SOURCE_ROOT; };
-		E9F307CF1600AA3000054873 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = OFL.txt; path = ../Examples/Demos/fonts/Gentium102/OFL.txt; sourceTree = SOURCE_ROOT; };
-		E9F307D11600AA3000054873 /* ballTest.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ballTest.level; path = ../Examples/Demos/levels/ballTest.level; sourceTree = SOURCE_ROOT; };
-		E9F307D21600AA3000054873 /* CartoonTPots.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CartoonTPots.level; path = ../Examples/Demos/levels/CartoonTPots.level; sourceTree = SOURCE_ROOT; };
-		E9F307D31600AA3000054873 /* Follow.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Follow.level; path = ../Examples/Demos/levels/Follow.level; sourceTree = SOURCE_ROOT; };
-		E9F307D41600AA3000054873 /* joints.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = joints.level; path = ../Examples/Demos/levels/joints.level; sourceTree = SOURCE_ROOT; };
-		E9F307D51600AA3000054873 /* Jules.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Jules.level; path = ../Examples/Demos/levels/Jules.level; sourceTree = SOURCE_ROOT; };
-		E9F307D61600AA3000054873 /* Physics.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Physics.level; path = ../Examples/Demos/levels/Physics.level; sourceTree = SOURCE_ROOT; };
-		E9F307D71600AA3000054873 /* shadTest.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = shadTest.level; path = ../Examples/Demos/levels/shadTest.level; sourceTree = SOURCE_ROOT; };
-		E9F307D81600AA3000054873 /* Switch.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Switch.level; path = ../Examples/Demos/levels/Switch.level; sourceTree = SOURCE_ROOT; };
-		E9F307D91600AA3000054873 /* Text.level */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Text.level; path = ../Examples/Demos/levels/Text.level; sourceTree = SOURCE_ROOT; };
-		E9F307DB1600AA3000054873 /* brick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = brick.png; path = ../Examples/Demos/maps/brick.png; sourceTree = SOURCE_ROOT; };
-		E9F307DC1600AA3000054873 /* BRICKS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = BRICKS.png; path = ../Examples/Demos/maps/BRICKS.png; sourceTree = SOURCE_ROOT; };
-		E9F307DD1600AA3000054873 /* cement.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cement.png; path = ../Examples/Demos/maps/cement.png; sourceTree = SOURCE_ROOT; };
-		E9F307DE1600AA3000054873 /* dot3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dot3.png; path = ../Examples/Demos/maps/dot3.png; sourceTree = SOURCE_ROOT; };
-		E9F307DF1600AA3000054873 /* FIRE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = FIRE.png; path = ../Examples/Demos/maps/FIRE.png; sourceTree = SOURCE_ROOT; };
-		E9F307E01600AA3000054873 /* lightMap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lightMap.png; path = ../Examples/Demos/maps/lightMap.png; sourceTree = SOURCE_ROOT; };
-		E9F307E11600AA3000054873 /* ramp01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ramp01.png; path = ../Examples/Demos/maps/ramp01.png; sourceTree = SOURCE_ROOT; };
-		E9F307E21600AA3000054873 /* ramp02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ramp02.png; path = ../Examples/Demos/maps/ramp02.png; sourceTree = SOURCE_ROOT; };
-		E9F307E31600AA3000054873 /* setDiffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setDiffuse.png; path = ../Examples/Demos/maps/setDiffuse.png; sourceTree = SOURCE_ROOT; };
-		E9F307E41600AA3000054873 /* setDot3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setDot3.png; path = ../Examples/Demos/maps/setDot3.png; sourceTree = SOURCE_ROOT; };
-		E9F307E51600AA3000054873 /* setSpec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setSpec.png; path = ../Examples/Demos/maps/setSpec.png; sourceTree = SOURCE_ROOT; };
-		E9F307E61600AA3000054873 /* teapot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = teapot.png; path = ../Examples/Demos/maps/teapot.png; sourceTree = SOURCE_ROOT; };
-		E9F307E71600AA3000054873 /* teapotSpec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = teapotSpec.png; path = ../Examples/Demos/maps/teapotSpec.png; sourceTree = SOURCE_ROOT; };
-		E9F307E81600AA3000054873 /* Thumbs.db */ = {isa = PBXFileReference; lastKnownFileType = file; name = Thumbs.db; path = ../Examples/Demos/maps/Thumbs.db; sourceTree = SOURCE_ROOT; };
-		E9F307E91600AA3000054873 /* white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = white.png; path = ../Examples/Demos/maps/white.png; sourceTree = SOURCE_ROOT; };
-		E9F307EB1600AA3000054873 /* ball.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ball.mesh; path = ../Examples/Demos/meshs/ball.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307EC1600AA3000054873 /* box.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = box.mesh; path = ../Examples/Demos/meshs/box.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307ED1600AA3000054873 /* CartoonTPot01.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CartoonTPot01.mesh; path = ../Examples/Demos/meshs/CartoonTPot01.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307EE1600AA3000054873 /* CartoonTPot02.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CartoonTPot02.mesh; path = ../Examples/Demos/meshs/CartoonTPot02.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307EF1600AA3000054873 /* cone.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cone.mesh; path = ../Examples/Demos/meshs/cone.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307F01600AA3000054873 /* cylinder.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cylinder.mesh; path = ../Examples/Demos/meshs/cylinder.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307F11600AA3000054873 /* Fire.maa */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Fire.maa; path = ../Examples/Demos/meshs/Fire.maa; sourceTree = SOURCE_ROOT; };
-		E9F307F21600AA3000054873 /* Fire.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Fire.mesh; path = ../Examples/Demos/meshs/Fire.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307F31600AA3000054873 /* Jules.maa */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Jules.maa; path = ../Examples/Demos/meshs/Jules.maa; sourceTree = SOURCE_ROOT; };
-		E9F307F41600AA3000054873 /* Jules.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Jules.mesh; path = ../Examples/Demos/meshs/Jules.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307F51600AA3000054873 /* MultiTexture.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiTexture.mesh; path = ../Examples/Demos/meshs/MultiTexture.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307F61600AA3000054873 /* MultiTexture.mma */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiTexture.mma; path = ../Examples/Demos/meshs/MultiTexture.mma; sourceTree = SOURCE_ROOT; };
-		E9F307F71600AA3000054873 /* MultiTexture.mta */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiTexture.mta; path = ../Examples/Demos/meshs/MultiTexture.mta; sourceTree = SOURCE_ROOT; };
-		E9F307F81600AA3000054873 /* robot.maa */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = robot.maa; path = ../Examples/Demos/meshs/robot.maa; sourceTree = SOURCE_ROOT; };
-		E9F307F91600AA3000054873 /* robot.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = robot.mesh; path = ../Examples/Demos/meshs/robot.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307FA1600AA3000054873 /* robot.mma */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = robot.mma; path = ../Examples/Demos/meshs/robot.mma; sourceTree = SOURCE_ROOT; };
-		E9F307FB1600AA3000054873 /* set.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = set.mesh; path = ../Examples/Demos/meshs/set.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307FC1600AA3000054873 /* StoneBox.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StoneBox.mesh; path = ../Examples/Demos/meshs/StoneBox.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307FD1600AA3000054873 /* StoneSet.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StoneSet.mesh; path = ../Examples/Demos/meshs/StoneSet.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307FE1600AA3000054873 /* teapot.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = teapot.mesh; path = ../Examples/Demos/meshs/teapot.mesh; sourceTree = SOURCE_ROOT; };
-		E9F307FF1600AA3000054873 /* temple.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = temple.mesh; path = ../Examples/Demos/meshs/temple.mesh; sourceTree = SOURCE_ROOT; };
-		E9F308001600AA3000054873 /* templeLightMap.mesh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = templeLightMap.mesh; path = ../Examples/Demos/meshs/templeLightMap.mesh; sourceTree = SOURCE_ROOT; };
-		E9F308021600AA3000054873 /* CartoonTPot.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CartoonTPot.lua; path = ../Examples/Demos/scripts/CartoonTPot.lua; sourceTree = SOURCE_ROOT; };
-		E9F308031600AA3000054873 /* Follow.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Follow.lua; path = ../Examples/Demos/scripts/Follow.lua; sourceTree = SOURCE_ROOT; };
-		E9F308041600AA3000054873 /* Jules.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Jules.lua; path = ../Examples/Demos/scripts/Jules.lua; sourceTree = SOURCE_ROOT; };
-		E9F308051600AA3000054873 /* PhysicsTest.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PhysicsTest.lua; path = ../Examples/Demos/scripts/PhysicsTest.lua; sourceTree = SOURCE_ROOT; };
-		E9F308061600AA3000054873 /* ShadTest.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ShadTest.lua; path = ../Examples/Demos/scripts/ShadTest.lua; sourceTree = SOURCE_ROOT; };
-		E9F308071600AA3000054873 /* Switch.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Switch.lua; path = ../Examples/Demos/scripts/Switch.lua; sourceTree = SOURCE_ROOT; };
-		E9F308081600AA3000054873 /* Text.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Text.lua; path = ../Examples/Demos/scripts/Text.lua; sourceTree = SOURCE_ROOT; };
-		E9F3080A1600AA3000054873 /* cartoon.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = cartoon.frag; path = ../Examples/Demos/shaders/cartoon.frag; sourceTree = SOURCE_ROOT; };
-		E9F3080B1600AA3000054873 /* cartoon.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = cartoon.vert; path = ../Examples/Demos/shaders/cartoon.vert; sourceTree = SOURCE_ROOT; };
-		E9F3080C1600AA3000054873 /* Z_simple.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Z_simple.frag; path = ../Examples/Demos/shaders/Z_simple.frag; sourceTree = SOURCE_ROOT; };
-		E9F3080D1600AA3000054873 /* Z_simple.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Z_simple.vert; path = ../Examples/Demos/shaders/Z_simple.vert; sourceTree = SOURCE_ROOT; };
 		E9F8B2B714CACF5100AB7CF4 /* MFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MFile.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MFile.h; sourceTree = SOURCE_ROOT; };
 		E9F8B2B814CACF5100AB7CF4 /* MRenderingContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRenderingContext.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MRenderingContext.h; sourceTree = SOURCE_ROOT; };
 		E9F8B2B914CACF5100AB7CF4 /* MStdFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MStdFile.h; path = ../../../trunk/dev/MSDK/MCore/Includes/MStdFile.h; sourceTree = SOURCE_ROOT; };
@@ -1060,14 +956,14 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E9F307CA1600AA2F00054873 /* Demos.mproj */,
-				E9F307CB1600AA2F00054873 /* fonts */,
-				E9F307D01600AA3000054873 /* levels */,
-				E9F307DA1600AA3000054873 /* maps */,
-				E9F307EA1600AA3000054873 /* meshs */,
-				E9F308011600AA3000054873 /* scripts */,
-				E9F308091600AA3000054873 /* shaders */,
-				E9F3080E1600AA3000054873 /* sounds */,
+				E94A110516A2138F0030F47D /* Demos.mproj */,
+				E94A110616A2138F0030F47D /* fonts */,
+				E94A110D16A2138F0030F47D /* levels */,
+				E94A111816A2138F0030F47D /* maps */,
+				E94A112916A2138F0030F47D /* meshs */,
+				E94A114116A2138F0030F47D /* scripts */,
+				E94A114A16A2138F0030F47D /* shaders */,
+				E94A115016A2138F0030F47D /* sounds */,
 				8D1107310486CEB800E47090 /* example-Info.plist */,
 			);
 			name = Resources;
@@ -2009,130 +1905,6 @@
 			path = ../../../3rdparty/npk/src;
 			sourceTree = SOURCE_ROOT;
 		};
-		E9F307CB1600AA2F00054873 /* fonts */ = {
-			isa = PBXGroup;
-			children = (
-				E9F307CC1600AA2F00054873 /* Gentium102 */,
-			);
-			name = fonts;
-			path = ../Examples/Demos/fonts;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F307CC1600AA2F00054873 /* Gentium102 */ = {
-			isa = PBXGroup;
-			children = (
-				E9F307CD1600AA2F00054873 /* GenR102.TTF */,
-				E9F307CF1600AA3000054873 /* OFL.txt */,
-			);
-			name = Gentium102;
-			path = ../Examples/Demos/fonts/Gentium102;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F307D01600AA3000054873 /* levels */ = {
-			isa = PBXGroup;
-			children = (
-				E9F307D11600AA3000054873 /* ballTest.level */,
-				E9F307D21600AA3000054873 /* CartoonTPots.level */,
-				E9F307D31600AA3000054873 /* Follow.level */,
-				E9F307D41600AA3000054873 /* joints.level */,
-				E9F307D51600AA3000054873 /* Jules.level */,
-				E9F307D61600AA3000054873 /* Physics.level */,
-				E9F307D71600AA3000054873 /* shadTest.level */,
-				E9F307D81600AA3000054873 /* Switch.level */,
-				E9F307D91600AA3000054873 /* Text.level */,
-			);
-			name = levels;
-			path = ../Examples/Demos/levels;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F307DA1600AA3000054873 /* maps */ = {
-			isa = PBXGroup;
-			children = (
-				E9F307DB1600AA3000054873 /* brick.png */,
-				E9F307DC1600AA3000054873 /* BRICKS.png */,
-				E9F307DD1600AA3000054873 /* cement.png */,
-				E9F307DE1600AA3000054873 /* dot3.png */,
-				E9F307DF1600AA3000054873 /* FIRE.png */,
-				E9F307E01600AA3000054873 /* lightMap.png */,
-				E9F307E11600AA3000054873 /* ramp01.png */,
-				E9F307E21600AA3000054873 /* ramp02.png */,
-				E9F307E31600AA3000054873 /* setDiffuse.png */,
-				E9F307E41600AA3000054873 /* setDot3.png */,
-				E9F307E51600AA3000054873 /* setSpec.png */,
-				E9F307E61600AA3000054873 /* teapot.png */,
-				E9F307E71600AA3000054873 /* teapotSpec.png */,
-				E9F307E81600AA3000054873 /* Thumbs.db */,
-				E9F307E91600AA3000054873 /* white.png */,
-			);
-			name = maps;
-			path = ../Examples/Demos/maps;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F307EA1600AA3000054873 /* meshs */ = {
-			isa = PBXGroup;
-			children = (
-				E9F307EB1600AA3000054873 /* ball.mesh */,
-				E9F307EC1600AA3000054873 /* box.mesh */,
-				E9F307ED1600AA3000054873 /* CartoonTPot01.mesh */,
-				E9F307EE1600AA3000054873 /* CartoonTPot02.mesh */,
-				E9F307EF1600AA3000054873 /* cone.mesh */,
-				E9F307F01600AA3000054873 /* cylinder.mesh */,
-				E9F307F11600AA3000054873 /* Fire.maa */,
-				E9F307F21600AA3000054873 /* Fire.mesh */,
-				E9F307F31600AA3000054873 /* Jules.maa */,
-				E9F307F41600AA3000054873 /* Jules.mesh */,
-				E9F307F51600AA3000054873 /* MultiTexture.mesh */,
-				E9F307F61600AA3000054873 /* MultiTexture.mma */,
-				E9F307F71600AA3000054873 /* MultiTexture.mta */,
-				E9F307F81600AA3000054873 /* robot.maa */,
-				E9F307F91600AA3000054873 /* robot.mesh */,
-				E9F307FA1600AA3000054873 /* robot.mma */,
-				E9F307FB1600AA3000054873 /* set.mesh */,
-				E9F307FC1600AA3000054873 /* StoneBox.mesh */,
-				E9F307FD1600AA3000054873 /* StoneSet.mesh */,
-				E9F307FE1600AA3000054873 /* teapot.mesh */,
-				E9F307FF1600AA3000054873 /* temple.mesh */,
-				E9F308001600AA3000054873 /* templeLightMap.mesh */,
-			);
-			name = meshs;
-			path = ../Examples/Demos/meshs;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F308011600AA3000054873 /* scripts */ = {
-			isa = PBXGroup;
-			children = (
-				E9F308021600AA3000054873 /* CartoonTPot.lua */,
-				E9F308031600AA3000054873 /* Follow.lua */,
-				E9F308041600AA3000054873 /* Jules.lua */,
-				E9F308051600AA3000054873 /* PhysicsTest.lua */,
-				E9F308061600AA3000054873 /* ShadTest.lua */,
-				E9F308071600AA3000054873 /* Switch.lua */,
-				E9F308081600AA3000054873 /* Text.lua */,
-			);
-			name = scripts;
-			path = ../Examples/Demos/scripts;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F308091600AA3000054873 /* shaders */ = {
-			isa = PBXGroup;
-			children = (
-				E9F3080A1600AA3000054873 /* cartoon.frag */,
-				E9F3080B1600AA3000054873 /* cartoon.vert */,
-				E9F3080C1600AA3000054873 /* Z_simple.frag */,
-				E9F3080D1600AA3000054873 /* Z_simple.vert */,
-			);
-			name = shaders;
-			path = ../Examples/Demos/shaders;
-			sourceTree = SOURCE_ROOT;
-		};
-		E9F3080E1600AA3000054873 /* sounds */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = sounds;
-			path = ../Examples/Demos/sounds;
-			sourceTree = SOURCE_ROOT;
-		};
 		E9F5E71E1328EC3300DE6658 /* MCore */ = {
 			isa = PBXGroup;
 			children = (
@@ -2189,62 +1961,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E9F3080F1600AA3000054873 /* Demos.mproj in Resources */,
-				E9F308101600AA3000054873 /* GenR102.TTF in Resources */,
-				E9F308121600AA3000054873 /* OFL.txt in Resources */,
-				E9F308131600AA3000054873 /* ballTest.level in Resources */,
-				E9F308141600AA3000054873 /* CartoonTPots.level in Resources */,
-				E9F308151600AA3000054873 /* Follow.level in Resources */,
-				E9F308161600AA3000054873 /* joints.level in Resources */,
-				E9F308171600AA3000054873 /* Jules.level in Resources */,
-				E9F308181600AA3000054873 /* Physics.level in Resources */,
-				E9F308191600AA3000054873 /* shadTest.level in Resources */,
-				E9F3081A1600AA3000054873 /* Switch.level in Resources */,
-				E9F3081B1600AA3000054873 /* Text.level in Resources */,
-				E9F3081C1600AA3000054873 /* brick.png in Resources */,
-				E9F3081D1600AA3000054873 /* BRICKS.png in Resources */,
-				E9F3081E1600AA3000054873 /* cement.png in Resources */,
-				E9F3081F1600AA3000054873 /* dot3.png in Resources */,
-				E9F308201600AA3000054873 /* FIRE.png in Resources */,
-				E9F308211600AA3000054873 /* lightMap.png in Resources */,
-				E9F308221600AA3000054873 /* ramp01.png in Resources */,
-				E9F308231600AA3000054873 /* ramp02.png in Resources */,
-				E9F308241600AA3000054873 /* setDiffuse.png in Resources */,
-				E9F308251600AA3000054873 /* setDot3.png in Resources */,
-				E9F308261600AA3000054873 /* setSpec.png in Resources */,
-				E9F308271600AA3000054873 /* teapot.png in Resources */,
-				E9F308281600AA3000054873 /* teapotSpec.png in Resources */,
-				E9F308291600AA3000054873 /* Thumbs.db in Resources */,
-				E9F3082A1600AA3000054873 /* white.png in Resources */,
-				E9F3082B1600AA3000054873 /* ball.mesh in Resources */,
-				E9F3082C1600AA3000054873 /* box.mesh in Resources */,
-				E9F3082D1600AA3000054873 /* CartoonTPot01.mesh in Resources */,
-				E9F3082E1600AA3000054873 /* CartoonTPot02.mesh in Resources */,
-				E9F3082F1600AA3000054873 /* cone.mesh in Resources */,
-				E9F308301600AA3000054873 /* cylinder.mesh in Resources */,
-				E9F308311600AA3000054873 /* Fire.maa in Resources */,
-				E9F308321600AA3000054873 /* Fire.mesh in Resources */,
-				E9F308331600AA3000054873 /* Jules.maa in Resources */,
-				E9F308341600AA3000054873 /* Jules.mesh in Resources */,
-				E9F308351600AA3000054873 /* MultiTexture.mesh in Resources */,
-				E9F308361600AA3000054873 /* MultiTexture.mma in Resources */,
-				E9F308371600AA3000054873 /* MultiTexture.mta in Resources */,
-				E9F308381600AA3000054873 /* robot.maa in Resources */,
-				E9F308391600AA3000054873 /* robot.mesh in Resources */,
-				E9F3083A1600AA3000054873 /* robot.mma in Resources */,
-				E9F3083B1600AA3000054873 /* set.mesh in Resources */,
-				E9F3083C1600AA3000054873 /* StoneBox.mesh in Resources */,
-				E9F3083D1600AA3000054873 /* StoneSet.mesh in Resources */,
-				E9F3083E1600AA3000054873 /* teapot.mesh in Resources */,
-				E9F3083F1600AA3000054873 /* temple.mesh in Resources */,
-				E9F308401600AA3000054873 /* templeLightMap.mesh in Resources */,
-				E9F308411600AA3000054873 /* CartoonTPot.lua in Resources */,
-				E9F308421600AA3000054873 /* Follow.lua in Resources */,
-				E9F308431600AA3000054873 /* Jules.lua in Resources */,
-				E9F308441600AA3000054873 /* PhysicsTest.lua in Resources */,
-				E9F308451600AA3000054873 /* ShadTest.lua in Resources */,
-				E9F308461600AA3000054873 /* Switch.lua in Resources */,
-				E9F308471600AA3000054873 /* Text.lua in Resources */,
+				E94A115216A2138F0030F47D /* Demos.mproj in Resources */,
+				E94A115316A2138F0030F47D /* fonts in Resources */,
+				E94A115416A2138F0030F47D /* levels in Resources */,
+				E94A115516A2138F0030F47D /* maps in Resources */,
+				E94A115616A2138F0030F47D /* meshs in Resources */,
+				E94A115716A2138F0030F47D /* scripts in Resources */,
+				E94A115816A2138F0030F47D /* shaders in Resources */,
+				E94A115916A2138F0030F47D /* sounds in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2505,10 +2229,6 @@
 				E9CCDCB21600775700E045E0 /* MBinMeshLoader.cpp in Sources */,
 				E9CCDE2E16008B8E00E045E0 /* MPackageManagerNPK.cpp in Sources */,
 				E9F3079F1600A81600054873 /* MFreetypeLoader.cpp in Sources */,
-				E9F308481600AA3000054873 /* cartoon.frag in Sources */,
-				E9F308491600AA3000054873 /* cartoon.vert in Sources */,
-				E9F3084A1600AA3000054873 /* Z_simple.frag in Sources */,
-				E9F3084B1600AA3000054873 /* Z_simple.vert in Sources */,
 				E900BFE816410DEB0037876B /* MLog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
