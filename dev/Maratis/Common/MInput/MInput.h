@@ -31,10 +31,8 @@
 #ifndef _M_INPUT_H
 #define _M_INPUT_H
 
-#include <map>
-#include <MEngine.h>
+#include <MCore.h>
 
-class MVector2;
 
 class MInput : public MInputContext
 {
@@ -51,7 +49,7 @@ private :
         MVector2 touchPoint;
         MVector2 lastTouchPoint;
         
-        TouchData()
+        TouchData(void)
         {
             phase = MTouchPhaseNone;
             touchPoint.loadIdentity();
@@ -64,11 +62,13 @@ private :
 	map<string, int> m_props;
     map<string, MVector3> m_vecprops;
     map<int, TouchData> m_touches;
+	
+	vector<float *> m_axisToFlush;
 
 public:
 
 	void createKey(const char * name);
-	void createAxis(const char * name);
+	void createAxis(const char * name, bool flush=false);
 	void createProperty(const char * name);
     void createVectorProperty(const char * name);
 
@@ -85,14 +85,13 @@ public:
 	int getProperty(const char * name);
     MVector3 getVectorProperty(const char * name);
     
-    // Multi-Touch Support
-    // Touch events
+    // touch events
     void beginTouch(int touchID, MVector2 touchPoint);
     void updateTouch(int touchID, MVector2 touchPoint);
     void endTouch(int touchID, MVector2 touchPoint);
     void cancelTouch(int touchID, MVector2 touchPoint);
     
-    // Get Touch data
+    // touch data
     MVector2 getTouchPosition(int touchID);
     MVector2 getLastTouchPosition(int touchID);
     MTouchPhase getTouchPhase(int touchID);

@@ -153,9 +153,9 @@ void generateTangents(MSubMesh * subMesh)
 
 						MVector3 tangent = computeTangent(*P1, *P2, *P3, *UV1, *UV2, *UV3);
 
-						tangents[i]   = -(tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
-						tangents[i+1] = -(tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
-						tangents[i+2] = -(tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
+						tangents[i]   = (tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
+						tangents[i+1] = (tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
+						tangents[i+2] = (tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
 					}
 				}
 				else if(indicesType == M_USHORT)
@@ -181,9 +181,9 @@ void generateTangents(MSubMesh * subMesh)
 
 						MVector3 tangent = computeTangent(*P1, *P2, *P3, *UV1, *UV2, *UV3);
 
-						tangents[A] = -(tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
-						tangents[B] = -(tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
-						tangents[C] = -(tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
+						tangents[A] = (tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
+						tangents[B] = (tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
+						tangents[C] = (tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
 					}
 				}
 				else if(indicesType == M_UINT)
@@ -209,9 +209,9 @@ void generateTangents(MSubMesh * subMesh)
 
 						MVector3 tangent = computeTangent(*P1, *P2, *P3, *UV1, *UV2, *UV3);
 
-						tangents[A] = -(tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
-						tangents[B] = -(tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
-						tangents[C] = -(tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
+						tangents[A] = (tangent - ((*N1) * tangent.dotProduct(*N1))).getNormalized();
+						tangents[B] = (tangent - ((*N2) * tangent.dotProduct(*N2))).getNormalized();
+						tangents[C] = (tangent - ((*N3) * tangent.dotProduct(*N3))).getNormalized();
 					}
 				}
 			}
@@ -669,7 +669,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 	{
-	    MLOG(4, "TiXmlDocument load failed");
+	    MLOG(4, "TiXmlDocument load failed : " << doc.ErrorDesc() << " " << doc.ErrorRow());
 	    return false;
 	}
 

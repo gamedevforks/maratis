@@ -220,6 +220,12 @@ void MObject3d::computeChildsMatrices(void)
 	m_needToUpdate = false;
 }
 
+MVector3 MObject3d::getUniformRotatedVector(const MVector3 & vector)
+{
+	float L = vector.getLength();
+	return (m_matrix.getRotatedVector3(vector).getNormalized() * L);
+}
+
 void MObject3d::setPosition(const MVector3 & position)
 {
 	if(position != m_position)
@@ -262,15 +268,6 @@ void MObject3d::setRotation(const MQuaternion & rotation)
 		m_rotation = rotation;
 		m_needToUpdate = true;
 	}
-}
-
-MVector3 MObject3d::getTransformedScale(void) const
-{
-	float xSize = m_matrix.getRotatedVector3(MVector3(1, 0, 0)).getLength();
-	float ySize = m_matrix.getRotatedVector3(MVector3(0, 1, 0)).getLength();
-	float zSize = m_matrix.getRotatedVector3(MVector3(0, 0, 1)).getLength();
-
-	return MVector3(xSize, ySize, zSize);
 }
 
 void MObject3d::setScale(const MVector3 & scale)

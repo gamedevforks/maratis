@@ -49,9 +49,11 @@ private:
 		void * m_userPointer;
 	};
 	
+	unsigned int m_quality;
+	
 	btDefaultCollisionConfiguration * m_collisionConfiguration;
 	btCollisionDispatcher * m_dispatcher;
-	btDbvtBroadphase * m_overlappingPairCache;
+	btBroadphaseInterface * m_overlappingPairCache;
 	btSequentialImpulseConstraintSolver * m_solver;
 	btDiscreteDynamicsWorld * m_dynamicsWorld;
 	
@@ -75,6 +77,7 @@ public:
 	void clear(void);
 
 	// update simulation
+	void setSimulationQuality(unsigned int quality);
 	void updateSimulation(void);
 
 	// world gravity

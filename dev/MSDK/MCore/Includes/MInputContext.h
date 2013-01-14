@@ -31,17 +31,25 @@
 #ifndef _M_INPUT_CONTEXT
 #define _M_INPUT_CONTEXT
 
-class MVector2;
-class MVector3;
 
 class M_CORE_EXPORT MInputContext
 {
 public:
     
+	// multi-touch
+    enum MTouchPhase
+    {
+        MTouchPhaseBegin = 0,
+        MTouchPhaseUpdate,
+        MTouchPhaseEnd,
+        MTouchPhaseCancelled,
+        MTouchPhaseNone
+    };
+	
 	virtual ~MInputContext(void){}
 
 	virtual void createKey(const char * name) = 0;
-	virtual void createAxis(const char * name) = 0;
+	virtual void createAxis(const char * name, bool flush=false) = 0;
 	virtual void createProperty(const char * name) = 0;
     virtual void createVectorProperty(const char * name) = 0;
 
@@ -58,25 +66,13 @@ public:
 	virtual int getProperty(const char * name) = 0;
     virtual MVector3 getVectorProperty(const char * name) = 0;
     
-    // Support multi-touch
-    
-    // Defines the phase a touch is in
-    enum MTouchPhase
-    {
-        MTouchPhaseBegin = 0,
-        MTouchPhaseUpdate,
-        MTouchPhaseEnd,
-        MTouchPhaseCancelled,
-        MTouchPhaseNone
-    };
-    
-    // Touch events
+    // touch events
     virtual void beginTouch(int touchID, MVector2 touchPoint) = 0;
     virtual void updateTouch(int touchID, MVector2 touchPoint) = 0;
     virtual void endTouch(int touchID, MVector2 touchPoint) = 0;
     virtual void cancelTouch(int touchID, MVector2 touchPoint) = 0;
 	
-    // Get Touch data
+    // touch data
     virtual MVector2 getTouchPosition(int touchID) = 0;
     virtual MVector2 getLastTouchPosition(int touchID) = 0;
     virtual MTouchPhase getTouchPhase(int touchID) = 0;

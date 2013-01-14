@@ -80,6 +80,7 @@ class MOLight;
 class MOCamera;
 class MOEntity;
 class MOSound;
+class MOText;
 
 class MFontRef;
 class MShaderRef;

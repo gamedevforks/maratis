@@ -93,6 +93,7 @@ public:
 	void computeChildsMatrices(void);
 
 	// transform
+	MVector3 getUniformRotatedVector(const MVector3 & vector);
 	inline MVector3	getInverseRotatedVector(const MVector3 & vector) const	{ return m_matrix.getInverseRotatedVector3(vector); }
 	inline MVector3	getRotatedVector(const MVector3 & vector) const			{ return m_matrix.getRotatedVector3(vector); }
 	inline MVector3	getInversePosition(const MVector3 & position) const		{ return m_matrix.getInverse() * position; }
@@ -113,8 +114,8 @@ public:
 	inline MQuaternion getRotation(void) const { return m_rotation; }
 
 	// scale
-	MVector3 getTransformedScale(void) const;
 	void setScale(const MVector3 & scale);
+	inline MVector3 getTransformedScale(void) const { return m_matrix.getScale(); }
 	inline MVector3 getScale(void) const { return m_scale; }
 	
 	// linking

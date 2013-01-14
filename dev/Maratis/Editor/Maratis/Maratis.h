@@ -169,6 +169,7 @@ private:
 	void drawLight(void);
 	void drawCamera(void);
 	void drawSound(void);
+	void drawArmature(MOEntity * entity);
 	void drawBoundingBox(MBox3d * box);
 	void drawGrid(MScene * scene);
 	void drawPositionAxis(M_AXIS axis, MOCamera * camera, MMatrix4x4 * matrix, const bool viewTest = true);
@@ -182,7 +183,6 @@ private:
 	void transformRotation(void);
 	void transformPosition(void);
 	void transformScale(void);
-	void updateSelectionCenter(void);
 	MObject3d * getNearestObject(MScene * scene, const MVector3 & rayO, const MVector3 & rayD, MVector3 * intersectPoint = NULL);
 	M_AXIS selectEditRotation(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, float radius);
 	M_AXIS selectEditPosition(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, float radius);
@@ -304,6 +304,8 @@ public:
 
 	// selection
 	void selectObjectsInMainView(MScene * scene);
+	void updateSelectionCenter(void);
+	void updateViewCenter(void);
 
 	// publish
 	void publish(void);

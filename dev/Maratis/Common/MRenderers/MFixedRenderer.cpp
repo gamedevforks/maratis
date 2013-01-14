@@ -577,6 +577,7 @@ void MFixedRenderer::drawText(MOText * textObj)
 	render->enableTexture();
 	render->disableLighting();
 	render->disableCullFace();
+	render->setDepthMask(0);
 
 	render->setColor4(*textObj->getColor());
 	render->setBlendingMode(M_BLENDING_ALPHA);
@@ -660,6 +661,8 @@ void MFixedRenderer::drawText(MOText * textObj)
 		//move to next character
 		xc += character->getXAdvance() * size;
 	}
+	
+	render->setDepthMask(1);
 }
 
 void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)

@@ -40,7 +40,8 @@ MBulletContext::MBulletContext(void):
 	m_dispatcher(NULL),
 	m_overlappingPairCache(NULL),
 	m_solver(NULL),
-	m_dynamicsWorld(NULL)
+	m_dynamicsWorld(NULL),
+	m_quality(1)
 {
 }
 
@@ -64,10 +65,6 @@ void MBulletContext::init(const MVector3 & worldMin, const MVector3 & worldMax)
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
 
-	//int	maxProxies = 1024;
-	//btVector3 worldAabbMin(worldMin.x, worldMin.y, worldMin.z);
-	//btVector3 worldAabbMax(worldMax.x, worldMax.y, worldMax.z);
-	//m_overlappingPairCache = new btAxisSweep3(worldAabbMin, worldAabbMax, maxProxies);
 	m_overlappingPairCache = new btDbvtBroadphase();
 	
 	m_solver = new btSequentialImpulseConstraintSolver();
@@ -117,11 +114,15 @@ void MBulletContext::clear(void)
 }
 
 // update simulation
+void MBulletContext::setSimulationQuality(unsigned int quality)
+{
+	m_quality = quality;
+}
+
 void MBulletContext::updateSimulation(void)
 {
-	//m_dynamicsWorld->stepSimulation(1.0f/6.0f, 1, 1.0f/6.0f); // simple quality
-	m_dynamicsWorld->stepSimulation(1.0f/6.0f, 2, 1.0f/12.0f); // double quality
-	//m_dynamicsWorld->stepSimulation(1.0f/6.0f, 4, 1.0f/24.0f); // etc
+	unsigned int quality = MAX(1, m_quality);
+	m_dynamicsWorld->stepSimulation(1.0f/6.0f, quality, 1.0f/(6.0f*quality));
 }
 
 // world
@@ -461,8 +462,8 @@ int MBulletContext::isObjectInCollision(unsigned int objectId, unsigned int * co
 	for(int i=0; i<numManifolds; i++)
 	{
 		btPersistentManifold * contactManifold = m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
-		btCollisionObject * obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
-		btCollisionObject * obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+		btCollisionObject * obA = (btCollisionObject*)(contactManifold->getBody0());
+		btCollisionObject * obB = (btCollisionObject*)(contactManifold->getBody1());
 
 		if((object == obA) || (object == obB))
 		{
@@ -504,8 +505,8 @@ bool MBulletContext::isObjectsCollision(unsigned int object1Id, unsigned int obj
 	for(int i=0; i<numManifolds; i++)
 	{
 		btPersistentManifold * contactManifold = m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
-		btCollisionObject * obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
-		btCollisionObject * obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+		btCollisionObject * obA = (btCollisionObject*)(contactManifold->getBody0());
+		btCollisionObject * obB = (btCollisionObject*)(contactManifold->getBody1());
 
 		if((object1 == obA && object2 == obB) || (object1 == obB && object2 == obA))
 		{
@@ -524,11 +525,15 @@ bool MBulletContext::isObjectsCollision(unsigned int object1Id, unsigned int obj
 
 bool MBulletContext::isRayHit(const MVector3 & start, const MVector3 & end, unsigned int * objectId, MVector3 * point, MVector3 * normal)
 {
+	m_dynamicsWorld->updateAabbs();
+	m_dynamicsWorld->computeOverlappingPairs();
+	
 	btVector3 bstart(start.x, start.y, start.z);
 	btVector3 bend(end.x, end.y, end.z);
 	
 	btCollisionWorld::ClosestRayResultCallback rayCallback(bstart, bend);
 	m_dynamicsWorld->rayTest(bstart, bend, rayCallback);
+	
 	
 	if(rayCallback.hasHit())
 	{

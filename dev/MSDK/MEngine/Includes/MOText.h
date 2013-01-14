@@ -110,9 +110,6 @@ public:
 	// bounding box
 	inline MBox3d * getBoundingBox(void){ return &m_boundingBox; }
 
-	// draw
-	void draw(void);
-
 	// visibility
 	void updateVisibility(MOCamera * camera);
 };

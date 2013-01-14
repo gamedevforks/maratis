@@ -136,6 +136,8 @@ public:
 
 	MVector3 getEulerAngles(void) const;
 
+	MVector3 getScale(void) const;
+	
 	MVector4 getRow(int position) const;
 	MVector4 getColumn(int position) const;
 

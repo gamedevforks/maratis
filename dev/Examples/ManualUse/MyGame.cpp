@@ -4,21 +4,26 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-//  Maratis, Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
 //
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software Foundation,
-//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
 //
 //========================================================================
 
@@ -60,12 +65,10 @@ void MyGame::onBegin(void)
 
 		// add scene
 		MScene * scene = level->addNewScene();
-        if (!scene)
-            MLOG(4, "Failed to add a new scene");
+		
 		// camera
 		MOCamera * camera = scene->addNewCamera();
-		if (!camera)
-            MLOG(4, "Failed to add a new camera");
+		
 		camera->setClearColor(MVector3(0.5f, 0.5f, 0.5f)); // set grey clear color
 		camera->setPosition(MVector3(0.0f, -80.0f, 20.0f));
 		camera->setEulerRotation(MVector3(90.0f, 0.0f, 0.0f));
@@ -73,21 +76,13 @@ void MyGame::onBegin(void)
 		// add robot entity
 		getGlobalFilename(filename, workingDir, "meshs/robot.mesh");
 		MMeshRef * meshRef = level->loadMesh(filename);
-		if (!meshRef)
-            MLOG(4, "cannot load mesh robot");
-		MOEntity* re=scene->addNewEntity(meshRef);
-        if (!re)
-            MLOG(4, "Cannot add Robot entity to scene");
+		MOEntity * robot =scene->addNewEntity(meshRef);
 
 		// add cubes with physics
 		{
 			// create entities
 			getGlobalFilename(filename, workingDir, "meshs/box.mesh");
 			meshRef = level->loadMesh(filename);
-			if (!meshRef)
-                MLOG(4, "Cannot load box mesh")
-            else
-                MLOG(5, "Box mesh loaded: "<<filename);
 
 			MOEntity * box1 = scene->addNewEntity(meshRef);
 			MOEntity * box2 = scene->addNewEntity(meshRef);
@@ -104,8 +99,6 @@ void MyGame::onBegin(void)
 
 			// enable physics, MPhysicsProperties create a static box shape by default
 			MPhysicsProperties * phyProps = box1->createPhysicsProperties();
-            if (!phyProps)
-                MLOG(4, "Cannot create phys prop from box");
 
 			phyProps = box2->createPhysicsProperties();
 			phyProps->setMass(1);
@@ -126,8 +119,7 @@ void MyGame::onBegin(void)
 
 		// add light
 		MOLight * light = scene->addNewLight();
-		if (!light)
-            MLOG(4, "Cannot add light");
+		
 		light->setPosition(MVector3(0.0f, 0.0f, 100.0f));
 		light->setRadius(1000.0f);
 	}
@@ -144,7 +136,6 @@ void MyGame::update(void)
 	MLevel * level = engine->getLevel();
 	if(! level)
 	{
-	    MLOG(4, "Cannot get level from engine");
 	    return;
 	}
 
@@ -152,7 +143,6 @@ void MyGame::update(void)
 	MScene * scene = level->getCurrentScene();
 	if(! scene)
 	{
-	    MLOG(4, "Cannot get scene from level");
 	    return;
 	}
 
@@ -160,22 +150,18 @@ void MyGame::update(void)
 	MOEntity * entity = scene->getEntityByIndex(0);
 	if (entity)
         entity->addAxisAngleRotation(MVector3(0.0f, 0.0f, 1.0f), 1.0f);
-    else
-        MLOG(4, "Cannot retrieve entity 0");
 
 	// change light intensity with keyboard
 	MOLight * light = scene->getLightByIndex(0);
 
 	if(light && input->isKeyPressed("UP"))
 	{
-	    MLOG(5, "Pumping up light intensity: "<<light->getIntensity());
 	    // inputs are also virtual, you can create your hown keys or axis
 		light->setIntensity(light->getIntensity() + 0.1f);
 	}
 
 	if(light && input->isKeyPressed("DOWN"))
 	{
-	    MLOG(5, "Decreasing light intensity: "<<light->getIntensity())
 		light->setIntensity(MAX(0.0f, light->getIntensity() - 0.1f));
 	}
 }

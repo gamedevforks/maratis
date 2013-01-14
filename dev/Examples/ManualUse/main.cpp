@@ -4,21 +4,26 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-//  Maratis, Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
 //
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software Foundation,
-//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
 //
 //========================================================================
 
@@ -111,8 +116,6 @@ void draw(void)
 		{
 			game->draw();
 		}
-		else
-            MLOG(4, "Game not running");
 	}
 
 	window->swapBuffer();
@@ -135,10 +138,12 @@ int main(int argc, char **argv)
 	window->setPointerEvent(windowEvents); // window events
 
 	// create window
-	MLOG(5, "Creating a window of "<<width<<"*"<<height<<" at 32bpp "<<(fullscreen?"in fullscreen":"not fullscreen")<<"..." );
-	bool b=window->create("Maratis - ManualUse example", width, height, 32, fullscreen);
-	if (!b)
-	   MLOG(4, "Create window returned false");
+	if(! window->create("Maratis - ManualUse example", width, height, 32, fullscreen))
+	{
+		MLOG(4, "window create failed");
+		return 0;
+	}
+	
 	if(fullscreen)
 		window->hideCursor();
 
@@ -146,24 +151,23 @@ int main(int argc, char **argv)
 	{
 		char rep[256];
 		getRepertory(rep, argv[0]);
-		MLOG(5, "Current dir set to "<<rep)
 		window->setCurrentDirectory(rep);
 	}
 
 	// create virtual contexts
 	MSoundContext * soundContext = new MALContext();
 	MRenderingContext * render = new MGLContext();
-	MLOG(5, "Render version: " << render->getRendererVersion());
 	MPhysicsContext * physics = new MBulletContext();
 	MScriptContext * script = new MScript();
 	MInputContext *	input = new MInput();
 	MSystemContext * system = new MWinContext();
 
+	MLOG(5, "Render version: " << render->getRendererVersion());
+	
 	// create default Level and Game
 	MLevel * level = new MLevel();
 	MGame * game = new MyGame(); // MyGame
-
-    MLOG(5, "Set contexts...");
+	
 	// init MEngine (you can replace all contexts by others and add or use different data loaders)
 	engine->setSoundContext(soundContext); // sound context
 	engine->setRenderingContext(render); // rendering context
@@ -257,9 +261,10 @@ int main(int argc, char **argv)
 		}
 	}
 
-	MLOG(5, "Quitting: ending game...");
+	MLOG(5, "ending game...");
 	game->end();
-    MLOG(5, "Quitting: destroying renderer...");
+	
+    MLOG(5, "destroying renderer...");
 	renderer->destroy();
 
 	SAFE_DELETE(game);

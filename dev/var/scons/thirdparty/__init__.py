@@ -15,5 +15,6 @@ import windows
 import dirent
 import npk
 import npk_dev
+import assimp
 
 __all__ = ['']

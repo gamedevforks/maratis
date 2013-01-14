@@ -39,8 +39,8 @@
 
 
 // some helper functions for repetitive packaging work
-static std::string s_pubDir;
-static std::string s_dataDir;
+static string s_pubDir;
+static string s_dataDir;
 
 const char* getPubDir()
 {
@@ -117,7 +117,7 @@ class MPublishEvent##dir##Package : public MPublishEvent \
 		MSystemContext* system = engine->getSystemContext(); \
 		char directory[256], localFilename[256]; \
 		getGlobalFilename(directory, system->getWorkingDirectory(), #dir); \
-		std::vector<std::string> files; \
+		vector<string> files; \
 		readDirectory(directory, &files, 1, 1); \
 		MPackage package = openProjectPackage(projName); \
 		MPackageManager* packageManager = engine->getPackageManager();\
@@ -174,7 +174,7 @@ class MPublishEventMeshsPackage : public MPublishEvent
 
 		char directory[256], localFilename[256];
 		getGlobalFilename(directory, system->getWorkingDirectory(), "meshs");
-		std::vector<std::string> files;
+		vector<string> files;
 		readDirectory(directory, &files, 1, 1);
 
 		MLevel* currentLevel = engine->getLevel();
@@ -190,37 +190,51 @@ class MPublishEventMeshsPackage : public MPublishEvent
 		MPackage package = openProjectPackage(projName);
 		for(int i = 0; i < files.size(); ++i)
 		{
+			bool binarized = false;
+			
 			// export bin
 			if(strstr(files[i].c_str(), ".mesh") != 0)
 			{
-				mesh->clear();
 				if(engine->getMeshLoader()->loadData(files[i].c_str(), mesh))
-					exportMeshBin((files[i] + ".bin").c_str(), mesh);
+					binarized = exportMeshBin((files[i] + ".bin").c_str(), mesh);
 			}
 			else if (strstr(files[i].c_str(), ".maa") != 0)
 			{
 				if(engine->getArmatureAnimLoader()->loadData(files[i].c_str(), armAnim))
-					exportArmatureAnimBin((files[i] + ".bin").c_str(), armAnim);
+					binarized = exportArmatureAnimBin((files[i] + ".bin").c_str(), armAnim);
 			}
 			else if (strstr(files[i].c_str(), ".mma") != 0)
 			{
 				if(engine->getMaterialsAnimLoader()->loadData(files[i].c_str(), matAnim))
-					exportMaterialsAnimBin((files[i] + ".bin").c_str(), matAnim);
+					binarized = exportMaterialsAnimBin((files[i] + ".bin").c_str(), matAnim);
 			}
 			else if (strstr(files[i].c_str(), ".mta") != 0)
 			{
 				if(engine->getTexturesAnimLoader()->loadData(files[i].c_str(), texAnim))
-					exportTexturesAnimBin((files[i] + ".bin").c_str(), texAnim);
+					binarized = exportTexturesAnimBin((files[i] + ".bin").c_str(), texAnim);
+			}
+			else
+			{
+				// try to binarise unknow format
+				if(engine->getMeshLoader()->loadData(files[i].c_str(), mesh))
+				{
+					binarized = exportMeshBin((files[i] + ".bin").c_str(), mesh);
+				}
 			}
 
 			tempLevel->clear();
 
 			// pack file
 			getLocalFilename(localFilename, system->getWorkingDirectory(), files[i].c_str());
-			packageManager->addFileToPackage((files[i] + ".bin").c_str(), package, localFilename);
+			
+			if(binarized)
+				packageManager->addFileToPackage((files[i] + ".bin").c_str(), package, localFilename); // pack bin file
+			else
+				packageManager->addFileToPackage(files[i].c_str(), package, localFilename); // pack original file
 		}
 		packageManager->closePackage(package);
 
+		
 		// clear mesh
 		mesh->destroy();
 		armAnim->destroy();
@@ -295,7 +309,7 @@ static void embedProject(const char * src, const char * dest, const char * game,
 
 static void copyDirFiles(const char * src, const char * dest, const char * filter)
 {
-	std::vector<std::string> files;
+	vector<string> files;
 	readDirectory(src, &files);
 	for(int i = 0; i < files.size(); ++i)
 	{

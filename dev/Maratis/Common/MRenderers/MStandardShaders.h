@@ -540,7 +540,7 @@ fragHeader +
 "vec3 specular = vec3(0.0, 0.0, 0.0);"
 
 "vec3 nor = normalize(normal.xyz);"
-"vec3 bi = normalize(-cross(normal.xyz, tangent.xyz));"
+"vec3 bi = normalize(cross(normal.xyz, tangent.xyz));"
 "vec3 tan = normalize(tangent.xyz);"
 
 "vec3 bump = normalize(texture2D(Texture[2], texCoord[1].xy).xyz * 2.0 - 1.0);"
@@ -645,7 +645,7 @@ fragHeader +
 "vec3 specular = vec3(0.0, 0.0, 0.0);"
 
 "vec3 nor = normalize(normal.xyz);"
-"vec3 bi = normalize(-cross(normal.xyz, tangent.xyz));"
+"vec3 bi = normalize(cross(normal.xyz, tangent.xyz));"
 "vec3 tan = normalize(tangent.xyz);"
 
 "vec3 bump = normalize(texture2D(Texture[2], texCoord[1].xy).xyz * 2.0 - 1.0);"

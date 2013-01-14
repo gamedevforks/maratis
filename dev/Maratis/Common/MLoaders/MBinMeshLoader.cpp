@@ -31,7 +31,6 @@
 
 
 #include <MEngine.h>
-#include <MLog.h>
 #include "MBinMeshLoader.h"
 
 
@@ -135,6 +134,9 @@ bool M_loadBinMesh(const char * filename, void * data)
 	MEngine * engine = MEngine().getInstance();
 	MLevel * level = engine->getLevel();
 	MMesh * mesh = (MMesh *)data;
+	
+	mesh->clear();
+	
 
 	// get file directory
 	getRepertory(rep, filename);
@@ -626,7 +628,6 @@ bool M_loadBinArmatureAnim(const char * filename, void * data)
 	// bones
 	unsigned int b, bonesAnimNumber;
 	M_fread(&bonesAnimNumber, sizeof(int), 1, file);
-	if(bonesAnimNumber > 0)
 	{
 		MObject3dAnim * bonesAnim = anim->allocBonesAnim(bonesAnimNumber);
 
@@ -690,7 +691,6 @@ bool M_loadBinTexturesAnim(const char * filename, void * data)
 	// textures
 	unsigned int t, texturesAnimNumber;
 	M_fread(&texturesAnimNumber, sizeof(int), 1, file);
-	if(texturesAnimNumber > 0)
 	{
 		MTextureAnim * texturesAnim = anim->allocTexturesAnim(texturesAnimNumber);
 
@@ -754,7 +754,6 @@ bool M_loadBinMaterialsAnim(const char * filename, void * data)
 	// materials
 	unsigned int m, materialsAnimNumber;
 	M_fread(&materialsAnimNumber, sizeof(int), 1, file);
-	if(materialsAnimNumber > 0)
 	{
 		MMaterialAnim * materialsAnim = anim->allocMaterialsAnim(materialsAnimNumber);
 

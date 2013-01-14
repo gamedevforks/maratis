@@ -1077,6 +1077,7 @@ void MStandardRenderer::drawText(MOText * textObj)
 
 	// cull face
 	render->disableCullFace();
+	render->setDepthMask(0);
 	
 	// blending
 	render->enableBlending();
@@ -1192,6 +1193,7 @@ void MStandardRenderer::drawText(MOText * textObj)
 
 	// release FX
 	render->bindFX(0);
+	render->setDepthMask(1);
 }
 
 void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMesh * subMesh)

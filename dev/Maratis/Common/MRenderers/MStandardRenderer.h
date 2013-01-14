@@ -155,9 +155,6 @@ private:
 	// subMesh
 	void prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMesh * subMesh);
 	
-	// text
-	void drawText(MOText * textObj);
-	
 public:
 	
 	// destroy
@@ -172,6 +169,9 @@ public:
 	
 	// draw
 	void drawScene(MScene * scene, MOCamera * camera);
+	
+	// extra
+	void drawText(MOText * textObj);
 };
 
 #endif

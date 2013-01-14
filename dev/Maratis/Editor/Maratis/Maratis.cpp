@@ -36,7 +36,7 @@
 
 #include "MaratisUI.h"
 
-// MaratisCore
+// Maratis Common
 #include <MContexts/MGLContext.h>
 #include <MContexts/MALContext.h>
 #include <MContexts/MBulletContext.h>
@@ -59,7 +59,6 @@
 #include <MProject/MProject.h>
 #include <MRenderers/MStandardRenderer.h>
 #include <MRenderers/MFixedRenderer.h>
-#include <MLog.h>
 
 // Bins
 #include "../MBins/MFontBin.h"
@@ -67,6 +66,9 @@
 
 // publisher
 #include "../MPublish/MPublisher.h"
+
+// assimp loader
+#include "../MLoaders/MAssimpMeshLoader.h"
 
 
 // add ext if not
@@ -193,7 +195,6 @@ m_renderer(NULL)
 			sprintf(m_tempDir, "%s/mtemp%d", window->getTempDirectory(), i);
 		}
 		
-        MLOG(5, "creating temp dir " << m_tempDir);
 		createDirectory(m_tempDir);
 	}
 
@@ -208,6 +209,8 @@ m_renderer(NULL)
 		m_level = new MLevel();
 		m_game = new MGame();
 		m_packageManager = new MPackageManagerNPK();
+		
+		m_physics->setSimulationQuality(2);
 	}
 
 	// start
@@ -408,7 +411,6 @@ void Maratis::start(void)
 	const char * version = (const char *)glGetString(GL_VERSION);
 	if(version)
     {
-        MLOG(5, "found GL version " << version);
 		sscanf(version, "%d", &GLversion);
 	}
 
@@ -447,6 +449,7 @@ void Maratis::start(void)
 		// mesh loaders
 		engine->getMeshLoader()->addLoader(xmlMeshLoad);
 		engine->getMeshLoader()->addLoader(M_loadBinMesh);
+		engine->getMeshLoader()->addLoader(M_loadAssimpMesh);
 		engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
 		engine->getArmatureAnimLoader()->addLoader(M_loadBinArmatureAnim);
 		engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
@@ -821,6 +824,7 @@ void Maratis::addLight(void)
 	MOLight * light = scene->addNewLight();
 	light->setName(name);
 
+	light->setRadius(1000);
 	light->setPosition(*getSelectionCenter());
 	light->updateMatrix();
 
@@ -1303,7 +1307,6 @@ void Maratis::panCurrentVue(void)
 		camera->setPosition(position + ((xAxis * (-(float)mouse->getXDirection())) + (zAxis * (float)mouse->getYDirection()))*dFactor);
 		camera->updateMatrix();
 
-		updateSelectionCenter();
 		return;
 	}
 
@@ -1319,8 +1322,6 @@ void Maratis::panCurrentVue(void)
 
 	camera->setPosition(position + (xAxis * dx) + (zAxis * dy));
 	camera->updateMatrix();
-	
-	updateSelectionCenter();
 }
 
 void Maratis::zoomCurrentVue(void)
@@ -1564,7 +1565,7 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 					}
 				}
 
-				// FRONT or FRONT and BACK, scan invert ray
+				// FRONT or FRONT and BACK, scan invert
 				if((display->getCullMode() == M_CULL_FRONT) || (display->getCullMode() == M_CULL_NONE))
 				{
 					if(getNearestRaytracedPosition(
@@ -1819,6 +1820,8 @@ void Maratis::focusSelection(void)
 	MVector3 cameraAxis = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();
 	camera->setPosition(center - cameraAxis * distance);
 	camera->updateMatrix();
+	
+	m_viewCenter = m_selectionCenter;
 }
 
 void Maratis::activeSelection(void)
@@ -1969,9 +1972,6 @@ void Maratis::selectObjectsInMainView(MScene * scene)
 		addSelectedObject(nearestObject);
 	}
 
-	// update selection center
-	updateSelectionCenter();
-
 	// edit object
 	unsigned int oSize = getSelectedObjectsNumber();
 	if(oSize == 0)
@@ -1981,6 +1981,18 @@ void Maratis::selectObjectsInMainView(MScene * scene)
 	}
 
 	UI->editObject(getSelectedObjectByIndex(oSize - 1));
+}
+
+void Maratis::updateViewCenter(void)
+{
+	// view center
+	MLevel * level = MEngine::getInstance()->getLevel();
+	MScene * scene = level->getCurrentScene();
+	
+	MVector3 rayO = m_perspectiveVue.getTransformedPosition();
+	MVector3 rayD = m_perspectiveVue.getTransformedVector(MVector3(0, 0, -m_perspectiveVue.getClippingFar()));
+	
+	getNearestObject(scene, rayO, rayD, &m_viewCenter);
 }
 
 void Maratis::updateSelectionCenter(void)
@@ -1997,19 +2009,6 @@ void Maratis::updateSelectionCenter(void)
 
 	if(oSize > 0)
 		m_selectionCenter = position / (float)oSize;
-	
-	
-	// view center
-	{
-		MLevel * level = MEngine::getInstance()->getLevel();
-		MScene * scene = level->getCurrentScene();
-		
-		MVector3 rayO = m_perspectiveVue.getTransformedPosition();
-		MVector3 rayD = m_perspectiveVue.getTransformedVector(MVector3(0, 0, -m_perspectiveVue.getClippingFar()));
-		
-		if(! getNearestObject(scene, rayO, rayD, &m_viewCenter))
-			m_viewCenter = m_selectionCenter;
-	}
 }
 
 void Maratis::drawGrid(MScene * scene)
@@ -3156,8 +3155,6 @@ void Maratis::transformRotation(void)
 			// update matrix
 			object->updateMatrix();
 		}
-
-		updateSelectionCenter();
 	}
 	else
 	{
@@ -3261,7 +3258,6 @@ void Maratis::transformScale(void)
 			object->updateMatrix();
 		}
 
-		updateSelectionCenter();
 		return;
 	}
 
@@ -3417,7 +3413,6 @@ void Maratis::transformPosition(void)
 			object->updateMatrix();
 		}
 
-		updateSelectionCenter();
 		return;
 	}
 
@@ -3525,8 +3520,6 @@ void Maratis::transformPosition(void)
 
 		object->updateMatrix();
 	}
-
-	updateSelectionCenter();
 }
 
 void Maratis::transformSelectedObjects(void)
@@ -3597,53 +3590,6 @@ void Maratis::drawInvisibleEntity(MOEntity * entity)
 
 	// HACK opengl
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	/*
-     MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-     MMesh * mesh = entity->getMesh();
-     if(mesh)
-     {
-     // animate armature
-     if(mesh->getArmature() && mesh->getArmatureAnim())
-     animateArmature(
-     mesh->getArmature(),
-     mesh->getArmatureAnim(),
-     entity->getCurrentFrame()
-     );
-
-     render->pushMatrix();
-     render->multMatrix(entity->getMatrix());
-
-     unsigned int s;
-     unsigned int sSize = mesh->getSubMeshsNumber();
-     for(s=0; s<sSize; s++)
-     {
-     MSubMesh * subMesh = &mesh->getSubMeshs()[s];
-     unsigned int * indices = subMesh->getIndices();
-     MVector3 * vertices = subMesh->getVertices();
-
-     // skinning
-     if(mesh->getArmature() && subMesh->getSkinData())
-     {
-     unsigned int verticesSize = subMesh->getVerticesSize();
-     MVector3 * skinVertices = MSkinCache::getInstance()->getVertices(verticesSize);
-     computeSkinning(mesh->getArmature(), subMesh->getSkinData(), vertices, NULL, skinVertices, NULL);
-     vertices = skinVertices;
-     }
-
-     unsigned int i;
-     for(i=0; i<subMesh->getIndicesSize(); i+=3)
-     {
-     beginDraw(M_PRIMITIVE_LINE_LOOP);
-     pushVertex(vertices[indices[i+0]]);
-     pushVertex(vertices[indices[i+1]]);
-     pushVertex(vertices[indices[i+2]]);
-     endDraw();
-     }
-     }
-
-     render->popMatrix();
-     }*/
 }
 
 void Maratis::drawCamera(MScene * scene, MOCamera * camera)
@@ -3793,13 +3739,59 @@ void Maratis::drawSound(void)
 	}
 }
 
+void Maratis::drawArmature(MOEntity * entity)
+{
+	MEngine * engine = MEngine::getInstance();
+	MRenderingContext * render = engine->getRenderingContext();
+	
+	MMesh * mesh = entity->getMesh();
+	if(mesh)
+	{
+		MArmature * armature = mesh->getArmature();
+		if(armature)
+		{
+			if(mesh->getArmatureAnim())
+				animateArmature(
+					mesh->getArmature(),
+					mesh->getArmatureAnim(),
+					entity->getCurrentFrame()
+				);
+			
+			MVector3 iVue = m_perspectiveVue.getPosition();
+			
+			beginDraw(M_PRIMITIVE_LINES);
+			
+			unsigned int b, bSize = armature->getBonesNumber();
+			for(b=0; b<bSize; b++)
+			{
+				MOBone * bone = armature->getBone(b);
+				
+				MVector3 pos = entity->getTransformedVector(bone->getTransformedPosition());
+				float size = (pos - iVue).getLength() * 0.01f;
+				
+				pushVertex(pos + bone->getUniformRotatedVector(MVector3(-size, 0, 0)));
+				pushVertex(pos + bone->getUniformRotatedVector(MVector3( size, 0, 0)));
+				pushVertex(pos + bone->getUniformRotatedVector(MVector3(0, -size, 0)));
+				pushVertex(pos + bone->getUniformRotatedVector(MVector3(0,  size, 0)));
+				pushVertex(pos + bone->getUniformRotatedVector(MVector3(0, 0, -size)));
+				pushVertex(pos + bone->getUniformRotatedVector(MVector3(0, 0,  size)));
+			}
+			
+			endDraw(render);
+		}
+	}
+}
+
 void Maratis::drawMainView(MScene * scene)
 {
 	// get mouse
 	MMouse * mouse = MMouse::getInstance();
 
+	MEngine * engine = MEngine::getInstance();
+	
 	// get render
-	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	MRenderingContext * render = engine->getRenderingContext();
+	MRenderer * renderer = engine->getRenderer();
 
 	// get camera
 	MOCamera * camera = getPerspectiveVue();
@@ -4053,7 +4045,7 @@ void Maratis::drawMainView(MScene * scene)
 
 			render->enableTexture();
 			m_emptyText.setFontRef(text->getFontRef());
-			m_emptyText.draw();
+			renderer->drawText(&m_emptyText);
 			render->disableTexture();
 
 			if(isObjectSelected(text))
@@ -4066,6 +4058,21 @@ void Maratis::drawMainView(MScene * scene)
 		}
 	}
 
+	
+	// draw armatures
+	render->disableDepthTest();
+	for(i=0; i<eSize; i++)
+	{
+		MOEntity * entity = scene->getEntityByIndex(i);
+		if(entity->isActive() && !entity->isInvisible() && isObjectSelected(entity))
+		{
+			render->setColor3(MVector3(0.75f));
+			drawArmature(entity);
+		}
+	}
+	render->enableDepthTest();
+	
+	
 	// draw selected objects
 	if((! mouse->isLeftButtonPushed()) || (m_currentAxis == M_AXIS_NONE))
 	{
@@ -4122,15 +4129,15 @@ void Maratis::drawMainView(MScene * scene)
 		switch(getTransformMode())
 		{
             case M_TRANSFORM_ROTATION:
-                //updateSelectionCenter();
+                updateSelectionCenter();
                 drawEditRotation(camera);
                 break;
             case M_TRANSFORM_POSITION:
-                //updateSelectionCenter();
+                updateSelectionCenter();
                 drawEditPosition(camera);
                 break;
             case M_TRANSFORM_SCALE:
-                //updateSelectionCenter();
+                updateSelectionCenter();
                 drawEditScale(camera);
                 break;
 

@@ -206,15 +206,19 @@ void MGame::draw(void)
 	{
 		MOCamera * camera = getCurrentCamera(scene);
 
-		render->setClearColor(*camera->getClearColor());
-		render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
+		// draw current scene
+		if(! camera->getRenderColorTexture())
+		{
+			render->setClearColor(*camera->getClearColor());
+			render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
-		camera->enable();
-		camera->updateListener();
-		scene->draw(camera);
-		scene->drawObjectsBehaviors();
-
-		// scene layer
+			camera->enable();
+			camera->updateListener();
+			scene->draw(camera);
+			scene->drawObjectsBehaviors();
+		}
+		
+		// draw scene layer
 		unsigned int sceneLayerId = camera->getSceneLayer();
 		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
 		{

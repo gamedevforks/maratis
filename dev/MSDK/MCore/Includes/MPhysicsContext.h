@@ -46,6 +46,7 @@ public:
 	virtual void clear(void) = 0;
 
 	// update simulation
+	virtual void setSimulationQuality(unsigned int quality) = 0;
 	virtual void updateSimulation(void) = 0;
 
 	// world

@@ -31,6 +31,21 @@
 #include "../Includes/MGui.h"
 
 
+static bool stringCompare(const string &left, const string &right)
+{
+	for(string::const_iterator lit = left.begin(), rit = right.begin(); lit != left.end() && rit != right.end(); ++lit, ++rit)
+	{
+		if( tolower( *lit ) < tolower( *rit ) )
+			return true;
+		else if( tolower( *lit ) > tolower( *rit ) )
+			return false;
+	}
+	
+	if(left.size() < right.size())
+		return true;
+	
+	return false;
+}
 
 void MGuiFileBrowser::fileBrowserOkButtonEvents(MGuiButton * button, MGuiEvent * guiEvents)
 {
@@ -148,12 +163,16 @@ MGuiFileBrowser::MGuiFileBrowser(const MVector2 & position, const MVector2 & sca
 		NULL
 	);
 	
+	m_dirWin->setScrollBarVisible(false);
+	
 	m_fileWin = new MGuiWindow(
 		position + MVector2(m_margin) + MVector2(0, m_fileButtonsHeight + m_margin),
 		MVector2(scale.x - m_fileButtonsWidth - m_margin*3, m_fileButtonsHeight),
 		m_filesWinColor,
 		NULL
 	);
+	
+	m_fileWin->setScrollBarVisible(false);
 	
 	m_mainWin = new MGuiWindow(
 		position + MVector2(0, m_headWin->getScale().y),
@@ -237,22 +256,33 @@ void MGuiFileBrowser::updateMainWin(void)
 	if(readDirectory(m_currentDirectory.getData(), &m_files))
 	{
 		char filename[256];
-	
+		
+		
+		// prepare
 		unsigned int f, fSize =  m_files.size();
+		for(f=0; f<fSize; f++)
+		{
+			const char * name = m_files[f].c_str();
+			
+			if(f > 0)
+			{
+				getGlobalFilename(filename, m_currentDirectory.getData(), name);
+				if(isDirectory(filename))
+					m_files[f] = "/" + m_files[f];
+			}
+		}
+		
+		// sort
+		sort(m_files.begin(), m_files.end(), stringCompare);
+		
+		
+		// scan
 		for(f=0; f<fSize; f++)
 		{
 			float y = m_browserHeight*f;
 			const char * name = m_files[f].c_str();
 			
-			string textName;
-			if(f > 0)
-			{
-				getGlobalFilename(filename, m_currentDirectory.getData(), name);
-				if(isDirectory(filename))
-					textName = "/";
-			}
-			
-			textName = textName + name;
+			string textName = name;
 			
 			float grey = 0.24f;
 			if((f%2) == 0)
@@ -315,12 +345,16 @@ void MGuiFileBrowser::selectFile(unsigned int id)
 			m_currentDirectory.set(filename);
 			updateMainWin();
 		}
-		else
+		else if(strlen(name) > 0)
 		{
+			bool isDir = (name[0] == '/');
+			if(isDir)
+				name = name+1;
+			
 			char filename[256];
 			getGlobalFilename(filename, m_currentDirectory.getData(), name);
 			
-			if(isDirectory(filename)) // navigate
+			if(isDir) // navigate
 			{
 				m_currentDirectory.set(filename);
 				updateMainWin();
@@ -335,6 +369,8 @@ void MGuiFileBrowser::selectFile(unsigned int id)
 
 void MGuiFileBrowser::open(const char * startDirectory, const char * startFile, const char * okName, void (* pointerEvent)(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event))
 {
+	bool forceRoot = true;
+	
 	m_pointerEvent = pointerEvent;
 	
 	m_headWin->setVisible(true);
@@ -343,7 +379,13 @@ void MGuiFileBrowser::open(const char * startDirectory, const char * startFile, 
 	m_mainWin->setVisible(true);
 	
 	if(startDirectory)
-		m_currentDirectory.set(startDirectory);
+	{
+		if(isDirectory(startDirectory))
+		{
+			m_currentDirectory.set(startDirectory);
+			forceRoot = false;
+		}
+	}
 	
 	if(startFile)
 		m_currentFile.set(startFile);
@@ -351,8 +393,8 @@ void MGuiFileBrowser::open(const char * startDirectory, const char * startFile, 
 	if(okName)
 		m_okButton->setText(okName);
 	
-	bool forceRoot = true;
-	if(m_currentDirectory.getData())
+	
+	if(forceRoot && m_currentDirectory.getData())
 	{
 		if(isDirectory(m_currentDirectory.getData()))
 		{

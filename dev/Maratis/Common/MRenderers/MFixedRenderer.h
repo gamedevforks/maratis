@@ -64,9 +64,6 @@ private:
 	MVector3 * getVertices(unsigned int size);
 	MVector3 * getNormals(unsigned int size);
 	
-	// text
-	void drawText(MOText * textObj);
-	
 public:
 	
 	// destroy
@@ -81,6 +78,9 @@ public:
 	
 	// draw
 	void drawScene(MScene * scene, MOCamera * camera);
+	
+	// extra
+	void drawText(MOText * textObj);
 };
 
 #endif

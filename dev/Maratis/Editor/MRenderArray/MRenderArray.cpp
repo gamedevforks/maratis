@@ -71,6 +71,9 @@ void pushVertex(const MVector3 & vertex)
 
 void endDraw(MRenderingContext * render)
 {
+	if(g_verticesNumber == 0)
+		return;
+	
 	if(renderColors)
 	{
 		render->enableColorArray();

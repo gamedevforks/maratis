@@ -81,7 +81,6 @@ void draw(void)
 // main
 int main(int argc, char **argv)
 {
-    MLOG(6, "entering main...");
 	setlocale(LC_NUMERIC, "C");
 
 	// get engine (first time call constructor)
@@ -102,19 +101,21 @@ int main(int argc, char **argv)
 	char rep[256];
 	getRepertory(rep, argv[0]);
 	window->setCurrentDirectory(rep);
-    MLOG(5, "current dir set to " << rep);
 
 	
 	// init Maratis (first time call constructor)
     MLOG(6, "init Maratis...");
 	Maratis * maratis = Maratis::getInstance();
     if(! maratis)
+	{
         MLOG(4, "cannot get the Maratis instance");
+		return 0;
+	}
 	
+	// rendering context
 	MRenderingContext * render = engine->getRenderingContext();
-    if(! render)
-        MLOG(4, "cannot get rendering context from engine");
-
+	MLOG(5, "Render version : " << render->getRendererVersion());
+	
 	
 	// init gui
     MLOG(5, "init GUI...");

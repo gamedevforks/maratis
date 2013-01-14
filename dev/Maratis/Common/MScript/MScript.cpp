@@ -1857,7 +1857,7 @@ int rayHit(lua_State * L)
 			if(nbArguments == 3)
 			{
 				MObject3d * object;
-				lua_Integer id = lua_tointeger(L, 1);
+				lua_Integer id = lua_tointeger(L, 3);
 				if((object = getObject3d(id)))
 				{
 					if(object->getType() == M_OBJECT3D_ENTITY)
@@ -3401,12 +3401,9 @@ void MScript::init(void)
 	
 	// create context
 	m_state = lua_open();
+	luaL_openlibs(m_state);
 
-	luaopen_base(m_state);
-	luaopen_table(m_state);
-	luaopen_string(m_state);
-	luaopen_math(m_state);
-
+	
 	// vec3
 	registerVec3(m_state);
 	lua_register(m_state, "vec3", vec3);

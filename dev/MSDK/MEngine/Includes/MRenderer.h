@@ -50,6 +50,9 @@ public:
 
 	// draw
 	virtual void drawScene(MScene * scene, MOCamera * camera) = 0;
+	
+	// extra
+	virtual void drawText(MOText * text) = 0;
 };
 
 #endif

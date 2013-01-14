@@ -287,8 +287,6 @@ bool readDirectory(const char * filename, vector<string> * files, bool hiddenFil
 			files->push_back(string(pent->d_name));
 		}
     }
-
-	sort(files->begin(), files->end());
 	
     closedir(pdir);
     return true;

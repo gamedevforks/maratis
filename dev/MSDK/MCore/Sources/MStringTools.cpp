@@ -110,6 +110,21 @@ void getLocalFilename(char * out, const char * workingDirectory, const char * fi
 
 void getGlobalFilename(char * out, const char * workingDirectory, const char * filename)
 {
+	if(!out || !workingDirectory || !filename)
+		return;
+
+	// check if filename is local
+	if(strlen(filename) > 1)
+	{
+		if(strncmp(filename, "//", 2) != 0) // not Blender local filename
+		{
+			if((strncmp(filename+1, ":", 1) == 0) || (filename[0] == '/')){ // Win or Unix Root
+				strcpy(out, filename);
+				return;
+			}
+		}
+	}
+	
 	string res;
 	string file(filename);
 	string work(workingDirectory);
@@ -140,11 +155,7 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 		// next
 		token = strtok(NULL, "\\/");
 	}
-
-	if((strncmp(filename+1, ":", 1) == 0) || (filename[0] == '/')){ // ROOT
-		strcpy(out, filename);
-		return;
-	}
+	
 
 	unsigned int i;
 	unsigned int size = filePasses.size();

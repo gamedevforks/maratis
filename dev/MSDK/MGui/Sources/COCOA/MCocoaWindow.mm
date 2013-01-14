@@ -369,6 +369,9 @@ static int convertMacKeyCode(unsigned int macKeyCode)
 	mevent.data[1] = [[window contentView] bounds].size.height - p.y;
 	MWindow::getInstance()->sendEvents(&mevent);
 	MMouse::getInstance()->setPosition(p.x, [[window contentView] bounds].size.height - p.y);
+	
+	//float dx = (float)[event deltaX];
+	//float dy = (float)[event deltaY];
 }
 
 - (void)rightMouseDown:(NSEvent *)event
@@ -694,10 +697,6 @@ void MWindow::sendEvents(MWinEvent * events)
 		case MWIN_EVENT_MOUSE_WHEEL_MOVE:
 			mouse->setWheelDirection(events->data[0]);
 			break;
-			
-		//case MWIN_EVENT_MOUSE_MOVE:
-		//	mouse->setPosition(events->data[0], events->data[1]);
-		//	break;
 	}
 	
 	if(m_pointerEvent)

@@ -38,6 +38,7 @@ if sys.platform=='linux2' or sys.platform=='linux3':
                                    'dl'] )
 
 # add 3rdparty libraries parameters
+thirdparty.assimp.addAssimpToEnv(env_local)
 thirdparty.npk_dev.addNPKDevToEnv(env_local) # must be added  before zlib in order to link on CYGWIN WIN32
 thirdparty.lua.addLuaToEnv(env_local)
 thirdparty.bullet.addBulletToEnv(env_local)

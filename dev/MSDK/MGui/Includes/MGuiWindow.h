@@ -88,7 +88,8 @@ public:
 	// scroll bar
 	bool isScrollBarPressed(void);
 	void updateScrollingBar(void);
-
+	void setScrollBarVisible(bool visible){ m_hScrollSlide.setVisible(visible); m_vScrollSlide.setVisible(visible); }
+	
 	// auto scale
 	void autoScale(void);
 

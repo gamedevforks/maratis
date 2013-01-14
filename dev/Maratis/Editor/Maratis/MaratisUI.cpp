@@ -2790,6 +2790,7 @@ void MaratisUI::endGame(void)
 // window events
 void MaratisUI::windowEvents(MWinEvent * windowEvents)
 {
+	MWindow * window = MWindow::getInstance();
 	MMouse * mouse = MMouse::getInstance();
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
@@ -2828,7 +2829,7 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
         case MWIN_EVENT_MOUSE_MOVE:
 		{
 			MGuiWindow * popup = UI->getPopupWin();
-			if(! popup->isMouseInside())
+			if(window->isMouseOverWindow() && (! popup->isMouseInside()))
 				popup->setVisible(false);
 
 			if(mouse->isLeftButtonPushed())
@@ -2846,15 +2847,16 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
 				}
                 maratis->rotateCurrentVue();
 			}
+			
+			break;
 		}
-            break;
-
+	
         case MWIN_EVENT_MOUSE_WHEEL_MOVE:
 		{
-			if(UI->getView()->isHighLight())
+			if(UI->getView()->isHighLight() && !mouse->isMiddleButtonPushed())
 				maratis->zoomCurrentVue();
+			break;
 		}
-            break;
 
         case MWIN_EVENT_WINDOW_RESIZE:
             UI->resizeGUI();
@@ -2897,8 +2899,15 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
                 UI->editObject(UI->getEditedObject());
                 break;
             }
+			break;
 
         case MWIN_EVENT_KEY_UP:
+			
+			if(UI->isShortcutEngaged(&UI->m_scPanView))
+			{
+				maratis->updateViewCenter();
+			}
+			
             if(UI->isShortcutEngaged(&UI->m_scOrthogonalView))
             {
                 if(! gui->isSomethingEditing())
@@ -2965,10 +2974,11 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
                     UI->setPopupButton(" Ok To Delete ", okDeleteObjectsEvents);
                 break;
             }
+			break;
 
-            /*case MWIN_EVENT_WINDOW_CLOSE:
-             MWindow::getInstance()->setActive(false);
-             break;*/
+		case MWIN_EVENT_WINDOW_CLOSE:
+             UI->setPopupButton(" Ok To Quit ", okQuitEvents);
+             break;
     }
 
 	gui->onEvent(windowEvents);
@@ -4013,9 +4023,6 @@ void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 			MScene * scene = level->getCurrentScene();
 			MRenderingContext * render = engine->getRenderingContext();
 
-			// clear screen
-			//window->setNormalColor(*scene->getClearColor());
-
 			// viewport
 			unsigned int w = (unsigned int)window->getScale().x;
 			unsigned int h = (unsigned int)window->getScale().y;
@@ -4028,7 +4035,7 @@ void MaratisUI::viewEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 		}
             break;
 	case MGUI_EVENT_MOUSE_BUTTON_DOWN:
-		if(window->isMouseInside() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
+		if(window->isHighLight() && guiEvents->data[0] == MMOUSE_BUTTON_LEFT)
 		{
 			MEngine * engine = MEngine::getInstance();
 			MLevel * level = engine->getLevel();
@@ -5096,14 +5103,18 @@ bool MaratisUI::isShortcutEngaged(struct Shortcut * sc, bool checkLastInput)
     unsigned int key2 = sc->key2;
     unsigned int key3 = sc->key3;
 
-    if (checkLastInput)
+    if(checkLastInput)
     {
-        int lastInput = UI->m_lastInput;
-
-        if (! (lastInput == key1 || lastInput == key2 || lastInput == key3))
+        if(UI->m_lastInput != key1)
             return false;
     }
-    if(keyboard->isKeyPressed(key1) && keyboard->isKeyPressed(key2) && keyboard->isKeyPressed(key3))
+	else
+	{
+		if(! keyboard->isKeyPressed(key1))
+			return false;
+	}
+	
+    if(keyboard->isKeyPressed(key2) && keyboard->isKeyPressed(key3))
         return true;
     else
         return false;

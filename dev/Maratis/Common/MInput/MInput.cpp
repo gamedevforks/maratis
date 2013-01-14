@@ -44,8 +44,8 @@ MInput::MInput(void)
 		createKey(name);
 	}
     
-    // Create touch data
-    for (int i = 0; i < 5; i++)
+    // create touch data
+    for(int i=0; i<5; i++)
     {
         m_touches[i] = TouchData();
     }
@@ -117,6 +117,7 @@ MInput::MInput(void)
 	// axis
 	createAxis("MOUSE_X");
 	createAxis("MOUSE_Y");
+	createAxis("MOUSE_WHEEL", 1);
 
 	createAxis("JOY1_X");
 	createAxis("JOY1_Y");
@@ -142,10 +143,13 @@ void MInput::createKey(const char * name)
 		m_keys[name] = 0;
 }
 
-void MInput::createAxis(const char * name)
+void MInput::createAxis(const char * name, bool flush)
 {
 	if(name)
+	{
 		m_axis[name] = 0;
+		if(flush) m_axisToFlush.push_back(&m_axis[name]);
+	}
 }
 
 void MInput::createProperty(const char * name)
@@ -249,9 +253,6 @@ MVector3 MInput::getVectorProperty(const char * name)
     return MVector3();
 }
 
-// Multi-Touch Support
-
-// Touch events
 void MInput::beginTouch(int touchID, MVector2 touchPoint)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
@@ -304,7 +305,6 @@ void MInput::cancelTouch(int touchID, MVector2 touchPoint)
     }
 }
 
-// Get Touch data
 MVector2 MInput::getTouchPosition(int touchID)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
@@ -359,22 +359,27 @@ void MInput::flush(void)
 		mit (m_keys.begin()),
 		mend(m_keys.end());
 
-	for(;mit!=mend;++mit)
+	for(; mit!=mend; ++mit)
 	{
-	  if(mit->second == 1)
-		  mit->second = 2;
-	  else if(mit->second == 3)
-		  mit->second = 0;
+		if(mit->second == 1)
+			mit->second = 2;
+		else if(mit->second == 3)
+			mit->second = 0;
 	}
     
+	// axis
+	unsigned int a, aSize = m_axisToFlush.size();
+	for(a=0; a<aSize; a++)
+		(*m_axisToFlush[a]) = 0;
+	
     // touches
     map<int, TouchData>::iterator
-        t_it(m_touches.begin()),
-        t_end(m_touches.end());
+		t_it(m_touches.begin()),
+		t_end(m_touches.end());
     
-    for (; t_it != t_end; t_it++)
+    for(; t_it!=t_end; t_it++)
     {
-        TouchData* data = &(t_it->second);
+		TouchData* data = &(t_it->second);
         data->phase = MTouchPhaseNone;
         data->touchPoint = MVector2(0.0f);
     }

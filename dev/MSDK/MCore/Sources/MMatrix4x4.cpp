@@ -158,6 +158,15 @@ MVector3 MMatrix4x4::getEulerAngles(void) const
 	return MVector3(0, 0, 0);
 }
 
+MVector3 MMatrix4x4::getScale(void) const
+{
+	float xSize = getRotatedVector3(MVector3(1, 0, 0)).getLength();
+	float ySize = getRotatedVector3(MVector3(0, 1, 0)).getLength();
+	float zSize = getRotatedVector3(MVector3(0, 0, 1)).getLength();
+	
+	return MVector3(xSize, ySize, zSize);
+}
+
 void MMatrix4x4::loadIdentity(void)
 {
 	memset(entries, 0, 16*sizeof(float));
