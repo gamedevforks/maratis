@@ -183,6 +183,7 @@ private:
 	void transformRotation(void);
 	void transformPosition(void);
 	void transformScale(void);
+	MObject3d * getNearestMesh(MScene * scene, const MVector3 & rayO, const MVector3 & rayD, MVector3 * intersectPoint);
 	MObject3d * getNearestObject(MScene * scene, const MVector3 & rayO, const MVector3 & rayD, MVector3 * intersectPoint = NULL);
 	M_AXIS selectEditRotation(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, float radius);
 	M_AXIS selectEditPosition(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, float radius);

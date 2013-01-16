@@ -1471,12 +1471,23 @@ void Maratis::drawBoundingBox(MBox3d * box)
 bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVector3 & origin, const MVector3 & dest, float * distance, MOEntity * entity = NULL)
 {
 	// animate armature
-	if(entity && mesh->getArmature() && mesh->getArmatureAnim())
-		animateArmature(
-                        mesh->getArmature(),
-                        mesh->getArmatureAnim(),
-                        entity->getCurrentFrame()
-                        );
+	if(entity && mesh->getArmature())
+	{
+		MArmature * armature = mesh->getArmature();
+		if(mesh->getArmatureAnim())
+		{
+			animateArmature(
+				mesh->getArmature(),
+				mesh->getArmatureAnim(),
+				entity->getCurrentFrame()
+			);
+		}
+		else
+		{
+			armature->processBonesLinking();
+			armature->updateBonesSkinMatrix();
+		}
+	}
 
 	MMatrix4x4 iMatrix = matrix->getInverse();
 
@@ -1593,6 +1604,60 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 		*distance = (((*matrix) * intersectionPoint) - origin).getLength();
 
 	return raytraced;
+}
+
+MObject3d * Maratis::getNearestMesh(MScene * scene, const MVector3 & rayO, const MVector3 & rayD, MVector3 * intersectPoint)
+{
+	float distance = 0;
+	MObject3d * nearestObject = NULL;
+	
+	
+	unsigned int i;
+	unsigned int oSize = scene->getEntitiesNumber();
+	for(i=0; i<oSize; i++)
+	{
+		MOEntity * entity = scene->getEntityByIndex(i);
+		
+		if(! entity->isActive())
+			continue;
+		
+		if(entity->isInvisible())
+			continue;
+
+		float dist;
+		
+		MMatrix4x4 * matrix = entity->getMatrix();
+		
+		MMesh * mesh = entity->getMesh();
+		if(mesh)
+		{
+			if(! getNearestRaytracedDistance(mesh, matrix, rayO, rayD, &dist, entity))
+				continue;
+		}
+		else{
+			continue;
+		}
+	
+		if(! nearestObject)
+		{
+			nearestObject = entity;
+			distance = dist;
+			continue;
+		}
+		
+		if(dist > distance)
+			continue;
+		
+		nearestObject = entity;
+		distance = dist;
+	}
+	
+	if(intersectPoint && nearestObject)
+	{
+		*intersectPoint = rayO + (rayD - rayO).getNormalized()*distance;
+	}
+	
+	return nearestObject;
 }
 
 MObject3d * Maratis::getNearestObject(MScene * scene, const MVector3 & rayO, const MVector3 & rayD, MVector3 * intersectPoint)
@@ -1992,7 +2057,7 @@ void Maratis::updateViewCenter(void)
 	MVector3 rayO = m_perspectiveVue.getTransformedPosition();
 	MVector3 rayD = m_perspectiveVue.getTransformedVector(MVector3(0, 0, -m_perspectiveVue.getClippingFar()));
 	
-	getNearestObject(scene, rayO, rayD, &m_viewCenter);
+	getNearestMesh(scene, rayO, rayD, &m_viewCenter);
 }
 
 void Maratis::updateSelectionCenter(void)
@@ -3571,14 +3636,6 @@ void Maratis::drawInvisibleEntity(MOEntity * entity)
 	MMesh * mesh = entity->getMesh();
 	if(mesh)
 	{
-		// animate armature
-		if(mesh->getArmature() && mesh->getArmatureAnim())
-			animateArmature(
-                            mesh->getArmature(),
-                            mesh->getArmatureAnim(),
-                            entity->getCurrentFrame()
-                            );
-
 		render->pushMatrix();
 		render->multMatrix(entity->getMatrix());
 
@@ -3751,11 +3808,18 @@ void Maratis::drawArmature(MOEntity * entity)
 		if(armature)
 		{
 			if(mesh->getArmatureAnim())
+			{
 				animateArmature(
 					mesh->getArmature(),
 					mesh->getArmatureAnim(),
 					entity->getCurrentFrame()
 				);
+			}
+			else
+			{
+				armature->processBonesLinking();
+				armature->updateBonesSkinMatrix();
+			}
 			
 			MVector3 iVue = m_perspectiveVue.getPosition();
 			

@@ -669,7 +669,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 	{
-	    MLOG(4, "TiXmlDocument load failed : " << doc.ErrorDesc() << " " << doc.ErrorRow());
+	    MLOG(4, "TiXmlDocument load failed : " << doc.ErrorDesc() << " line " << doc.ErrorRow());
 	    return false;
 	}
 

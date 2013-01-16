@@ -3486,7 +3486,7 @@ void MScript::init(void)
 	lua_register(m_state, "setLinearFactor",	setLinearFactor);
 	lua_register(m_state, "getCentralForce",	getCentralForce);
 	lua_register(m_state, "getTorque",			getTorque);
-	
+
 	lua_register(m_state, "isCollisionTest",	isCollisionTest);
 	lua_register(m_state, "isCollisionBetween", isCollisionBetween);
 	lua_register(m_state, "clearForces",		clearForces);

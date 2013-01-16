@@ -1264,12 +1264,23 @@ void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEnti
 		sortFloatList(m_entityLightsList, m_entityLightsZList, 0, (int)lightsNumber-1);
 
 	// animate armature
-	if(mesh->getArmature() && mesh->getArmatureAnim())
-		animateArmature(
-						mesh->getArmature(),
-						mesh->getArmatureAnim(),
-						entity->getCurrentFrame()
-						);
+	if(mesh->getArmature())
+	{
+		MArmature * armature = mesh->getArmature();
+		if(mesh->getArmatureAnim())
+		{
+			animateArmature(
+				mesh->getArmature(),
+				mesh->getArmatureAnim(),
+				entity->getCurrentFrame()
+			);
+		}
+		else
+		{
+			armature->processBonesLinking();
+			armature->updateBonesSkinMatrix();
+		}
+	}
 
 	// animate textures
 	if(mesh->getTexturesAnim())
@@ -1508,12 +1519,23 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				if(mesh && entity->isActive() && entity->isVisible())
 				{
 					// animate armature
-					if(mesh->getArmature() && mesh->getArmatureAnim())
-						animateArmature(
-										mesh->getArmature(),
-										mesh->getArmatureAnim(),
-										entity->getCurrentFrame()
-										);
+					if(mesh->getArmature())
+					{
+						MArmature * armature = mesh->getArmature();
+						if(mesh->getArmatureAnim())
+						{
+							animateArmature(
+								mesh->getArmature(),
+								mesh->getArmatureAnim(),
+								entity->getCurrentFrame()
+							);
+						}
+						else
+						{
+							armature->processBonesLinking();
+							armature->updateBonesSkinMatrix();
+						}
+					}
 
 					// animate textures
 					if(mesh->getTexturesAnim())
@@ -1653,11 +1675,18 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				{
 					// animate armature
 					if(armatureAnim)
+					{
 						animateArmature(
 							mesh->getArmature(),
 							mesh->getArmatureAnim(),
 							entity->getCurrentFrame()
 						);
+					}
+					else
+					{
+						armature->processBonesLinking();
+						armature->updateBonesSkinMatrix();
+					}
 
 					// TODO : optimize and add a tag to desactivate it
 					updateSkinning(mesh, armature);
@@ -1795,12 +1824,23 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
 
 			// animate armature
-			if(mesh->getArmature() && mesh->getArmatureAnim())
-				animateArmature(
-					mesh->getArmature(),
-					mesh->getArmatureAnim(),
-					entity->getCurrentFrame()
-				);
+			if(mesh->getArmature())
+			{
+				MArmature * armature = mesh->getArmature();
+				if(mesh->getArmatureAnim())
+				{
+					animateArmature(
+						mesh->getArmature(),
+						mesh->getArmatureAnim(),
+						entity->getCurrentFrame()
+					);
+				}
+				else
+				{
+					armature->processBonesLinking();
+					armature->updateBonesSkinMatrix();
+				}
+			}
 
 			// animate textures
 			if(mesh->getTexturesAnim())

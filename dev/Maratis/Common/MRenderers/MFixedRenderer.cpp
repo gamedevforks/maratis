@@ -742,12 +742,23 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				if(armature)
 				{
 					// animate armature
-					if(armatureAnim)
-						animateArmature(
-										mesh->getArmature(),
-										mesh->getArmatureAnim(),
-										entity->getCurrentFrame()
-										);
+					if(mesh->getArmature())
+					{
+						MArmature * armature = mesh->getArmature();
+						if(mesh->getArmatureAnim())
+						{
+							animateArmature(
+								mesh->getArmature(),
+								mesh->getArmatureAnim(),
+								entity->getCurrentFrame()
+							);
+						}
+						else
+						{
+							armature->processBonesLinking();
+							armature->updateBonesSkinMatrix();
+						}
+					}
 
 					// TODO : optimize and add a tag to desactivate it
 					updateSkinning(mesh, armature);
@@ -805,12 +816,23 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 			}
 
 			// animate armature
-			if(mesh->getArmature() && mesh->getArmatureAnim())
-				animateArmature(
-								mesh->getArmature(),
-								mesh->getArmatureAnim(),
-								entity->getCurrentFrame()
-								);
+			if(mesh->getArmature())
+			{
+				MArmature * armature = mesh->getArmature();
+				if(mesh->getArmatureAnim())
+				{
+					animateArmature(
+						mesh->getArmature(),
+						mesh->getArmatureAnim(),
+						entity->getCurrentFrame()
+					);
+				}
+				else
+				{
+					armature->processBonesLinking();
+					armature->updateBonesSkinMatrix();
+				}
+			}
 
 			// animate textures
 			if(mesh->getTexturesAnim())
@@ -999,12 +1021,23 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshId];
 
 				// animate armature
-				if(mesh->getArmature() && mesh->getArmatureAnim())
-					animateArmature(
-									mesh->getArmature(),
-									mesh->getArmatureAnim(),
-									entity->getCurrentFrame()
-									);
+				if(mesh->getArmature())
+				{
+					MArmature * armature = mesh->getArmature();
+					if(mesh->getArmatureAnim())
+					{
+						animateArmature(
+							mesh->getArmature(),
+							mesh->getArmatureAnim(),
+							entity->getCurrentFrame()
+						);
+					}
+					else
+					{
+						armature->processBonesLinking();
+						armature->updateBonesSkinMatrix();
+					}
+				}
 
 				// animate textures
 				if(mesh->getTexturesAnim())

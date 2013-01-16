@@ -1628,7 +1628,7 @@ void MaratisUI::createGUI(void)
 
 	float headHeight = 50;
 	float editWidth = 270; //270
-	float keysHeight = 100;
+	float keysHeight = 55;
 	float timelineHeight = 30;
 	float timeBlockHeight = keysHeight + timelineHeight;
 	float timeLeftWidth = 90;
@@ -2093,7 +2093,7 @@ void MaratisUI::createGUI(void)
 
 	// play button
 	MGuiButton * playButton = new MGuiButton(
-                                             MVector2(30, 50),
+                                             MVector2(30, 49),
                                              MVector2(16, 16),
                                              normalColor,
                                              playButtonEvents);
@@ -2106,7 +2106,7 @@ void MaratisUI::createGUI(void)
 
 	// pause button
 	MGuiButton * pauseButton = new MGuiButton(
-                                              MVector2(30 + 16, 50),
+                                              MVector2(30 + 16, 49),
                                               MVector2(16, 16),
                                               normalColor,
                                               pauseButtonEvents);
@@ -2862,7 +2862,13 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
             UI->resizeGUI();
             break;
 
-        case MWIN_EVENT_KEY_DOWN:
+		case MWIN_EVENT_KEY_UP:
+			
+			if(UI->isShortcutEngaged(&UI->m_scPanView))
+			{
+				maratis->updateViewCenter();
+			}
+			
             if(UI->isShortcutEngaged(&UI->m_scSave))
             {
                 maratis->save();
@@ -2899,14 +2905,6 @@ void MaratisUI::windowEvents(MWinEvent * windowEvents)
                 UI->editObject(UI->getEditedObject());
                 break;
             }
-			break;
-
-        case MWIN_EVENT_KEY_UP:
-			
-			if(UI->isShortcutEngaged(&UI->m_scPanView))
-			{
-				maratis->updateViewCenter();
-			}
 			
             if(UI->isShortcutEngaged(&UI->m_scOrthogonalView))
             {
