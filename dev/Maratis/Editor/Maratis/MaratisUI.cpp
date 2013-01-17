@@ -1711,7 +1711,7 @@ void MaratisUI::createGUI(void)
 	addTextButtonToMenu(editMenu, " Select Same Mesh", MVector2(0, 80), selectSameMeshEvents);
 	addTextButtonToMenu(editMenu, " Link Selection", MVector2(0, 110), linkEvents);
 	addTextButtonToMenu(editMenu, " Unlink Selection", MVector2(0, 130), unlinkEvents);
-	addTextButtonToMenu(editMenu, " Activate/Desactivate", MVector2(0, 160), activeEvents);
+	addTextButtonToMenu(editMenu, " Activate/Deactivate", MVector2(0, 160), activeEvents);
 	addTextButtonToMenu(editMenu, " Duplicate", MVector2(0, 190), duplicateEvents);
 	addTextButtonToMenu(editMenu, " Delete", MVector2(0, 220), deleteEvents);
 

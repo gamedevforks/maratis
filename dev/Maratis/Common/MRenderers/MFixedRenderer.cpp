@@ -476,10 +476,14 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 		normals = skinNormals;
 	}
 
-	render->setColorMask(0, 0, 0, 0);
-
+	
 	unsigned int i;
 	unsigned int displayNumber = subMesh->getDisplaysNumber();
+	
+	/*
+	// not sure of this technique
+	render->setColorMask(0, 0, 0, 0);
+
 	for(i=0; i<displayNumber; i++)
 	{
 		MDisplay * display = subMesh->getDisplay(i);
@@ -491,7 +495,7 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 	}
 
 	render->setColorMask(1, 1, 1, 1);
-	render->setDepthMask(0);
+	render->setDepthMask(0);*/
 
 	for(i=0; i<displayNumber; i++)
 	{
@@ -507,7 +511,7 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 		}
 	}
 
-	render->setDepthMask(1);
+	//render->setDepthMask(1);
 }
 
 float MFixedRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & pos)
@@ -1005,6 +1009,8 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 		sortFloatList(transpList, transpZList, 0, (int)transpSubObsNumber-1);
 
 	// draw transparents
+	render->setDepthMask(0);
+	
 	for(i=0; i<transpSubObsNumber; i++)
 	{
 		MSubMeshPass * subMeshPass = &transpSubObjs[transpList[i]];
@@ -1104,6 +1110,8 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				break;
 		}
 	}
+	
+	render->setDepthMask(1);
 
 	render->disableLighting();
 	render->disableFog();

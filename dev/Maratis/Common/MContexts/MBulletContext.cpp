@@ -166,6 +166,7 @@ void MBulletContext::createRigidBody(unsigned int * objectId, unsigned int shape
 	MBUserData * userData = new MBUserData();
 	userData->m_objectId = *objectId;
 	m_userDatas.push_back(userData);
+
 	
 	// add collision object
 	rigidBody->setUserPointer(userData);

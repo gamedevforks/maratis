@@ -852,11 +852,15 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 		tangents = skinTangents;
 	}
 
+	
+	unsigned int i;
+	unsigned int displayNumber = subMesh->getDisplaysNumber();
+	
+	/*
+	// not sure of this technique
 	render->setColorMask(0, 0, 0, 0);
 	m_forceNoFX = true;
 
-	unsigned int i;
-	unsigned int displayNumber = subMesh->getDisplaysNumber();
 	for(i=0; i<displayNumber; i++)
 	{
 		MDisplay * display = subMesh->getDisplay(i);
@@ -874,7 +878,7 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 	m_forceNoFX = false;
 	render->setColorMask(1, 1, 1, 1);
 	render->setDepthMask(0);
-	render->setDepthMode(M_DEPTH_EQUAL);
+	render->setDepthMode(M_DEPTH_EQUAL);*/
 
 	for(i=0; i<displayNumber; i++)
 	{
@@ -890,8 +894,8 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 		}
 	}
 
-	render->setDepthMask(1);
-	render->setDepthMode(M_DEPTH_LEQUAL);
+	//render->setDepthMask(1);
+	//render->setDepthMode(M_DEPTH_LEQUAL);
 }
 
 float MStandardRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & pos)
@@ -1904,6 +1908,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 	// draw transparent
 	{
+		render->setDepthMask(0);
+		
 		if(transpNumber > 1)
 			sortFloatList(m_transpSortList, m_transpSortZList, 0, (int)transpNumber-1);
 
@@ -1948,5 +1954,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				}
 			}
 		}
+		
+		render->setDepthMask(1);
 	}
 }
