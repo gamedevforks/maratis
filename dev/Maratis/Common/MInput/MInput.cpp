@@ -45,7 +45,7 @@ MInput::MInput(void)
 	}
     
     // create touch data
-    for(int i=0; i<5; i++)
+    for(int i=0; i<10; i++)
     {
         m_touches[i] = TouchData();
     }
@@ -158,12 +158,6 @@ void MInput::createProperty(const char * name)
 		m_props[name] = 0;
 }
 
-void MInput::createVectorProperty(const char *name)
-{
-    if (name)
-        m_vecprops[name] = 0;
-}
-
 void MInput::downKey(const char * name)
 {
 	map<string, int>::iterator iter = m_keys.find(name);
@@ -190,13 +184,6 @@ void MInput::setProperty(const char * name, int prop)
 	map<string, int>::iterator iter = m_props.find(name);
 	if(iter != m_props.end())
 		iter->second = prop;
-}
-
-void MInput::setVectorProperty(const char *name, MVector3 vec)
-{
-    map<string, MVector3>::iterator iter = m_vecprops.find(name);
-    if (iter != m_vecprops.end())
-        iter->second = vec;
 }
 
 bool MInput::isKeyPressed(const char * name)
@@ -244,15 +231,6 @@ int MInput::getProperty(const char * name)
 	return 0;
 }
 
-MVector3 MInput::getVectorProperty(const char * name)
-{
-    map<string, MVector3>::iterator iter = m_vecprops.find(name);
-    if (iter != m_vecprops.end())
-        return iter->second;
-    
-    return MVector3();
-}
-
 void MInput::beginTouch(int touchID, MVector2 touchPoint)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
@@ -262,7 +240,7 @@ void MInput::beginTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->touchPoint = touchPoint;
         data->lastTouchPoint = touchPoint;
-        data->phase = MTouchPhaseBegin;
+        data->phase = M_TOUCH_BEGIN;
     }
 }
 
@@ -275,7 +253,7 @@ void MInput::updateTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
         data->touchPoint = touchPoint;
-        data->phase = MTouchPhaseUpdate;
+        data->phase = M_TOUCH_UPDATE;
     }
 }
 
@@ -288,7 +266,7 @@ void MInput::endTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
         data->touchPoint = touchPoint;
-        data->phase = MTouchPhaseEnd;
+        data->phase = M_TOUCH_END;
     }
 }
 
@@ -301,7 +279,7 @@ void MInput::cancelTouch(int touchID, MVector2 touchPoint)
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
         data->touchPoint = touchPoint;
-        data->phase = MTouchPhaseCancelled;
+        data->phase = M_TOUCH_CANCELLED;
     }
 }
 
@@ -313,7 +291,7 @@ MVector2 MInput::getTouchPosition(int touchID)
     {
         TouchData* data = &(iter->second);
         
-        if (data->phase != MTouchPhaseNone)
+        if (data->phase != M_TOUCH_NONE)
         {
             return data->touchPoint;
         }
@@ -329,7 +307,7 @@ MVector2 MInput::getLastTouchPosition(int touchID)
     if (iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
-        if (data->phase != MTouchPhaseNone)
+        if (data->phase != M_TOUCH_NONE)
         {
             return data->lastTouchPoint;
         }
@@ -338,7 +316,7 @@ MVector2 MInput::getLastTouchPosition(int touchID)
     return MVector2(0.0f);
 }
 
-MInputContext::MTouchPhase MInput::getTouchPhase(int touchID)
+M_TOUCH_PHASE MInput::getTouchPhase(int touchID)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
@@ -349,7 +327,7 @@ MInputContext::MTouchPhase MInput::getTouchPhase(int touchID)
         return data->phase;
     }
     
-    return MTouchPhaseNone;
+    return M_TOUCH_NONE;
 }
 
 void MInput::flush(void)
@@ -380,7 +358,7 @@ void MInput::flush(void)
     for(; t_it!=t_end; t_it++)
     {
 		TouchData* data = &(t_it->second);
-        data->phase = MTouchPhaseNone;
+        data->phase = M_TOUCH_NONE;
         data->touchPoint = MVector2(0.0f);
     }
 }

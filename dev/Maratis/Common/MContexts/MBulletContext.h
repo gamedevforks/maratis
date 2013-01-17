@@ -33,8 +33,9 @@
 #ifndef _M_BULLET_CONTEXT_H
 #define _M_BULLET_CONTEXT_H
 
-#include <btBulletDynamicsCommon.h>
 #include <MCore.h>
+#include <btBulletDynamicsCommon.h>
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
 
 
 class MBulletContext : public MPhysicsContext

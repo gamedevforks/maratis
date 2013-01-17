@@ -28,9 +28,6 @@
 //========================================================================
 
 
-#include <stdio.h>
-#include <BulletCollision/CollisionDispatch/btGhostObject.h>
-
 #include "MBulletContext.h"
 
 

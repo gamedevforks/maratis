@@ -29,7 +29,6 @@
 
 
 #include <MEngine.h>
-#include <MLog.h>
 #include "MFixedRenderer.h"
 
 

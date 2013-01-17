@@ -30,8 +30,6 @@
 //========================================================================
 
 
-#include <stdio.h>
-
 #ifdef __APPLE__
 	#include <OpenGLES/ES1/gl.h>
 	#include <OpenGLES/ES1/glext.h>

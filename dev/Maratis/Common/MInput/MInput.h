@@ -45,13 +45,13 @@ private :
 
     struct TouchData
     {
-        MTouchPhase phase;
+        M_TOUCH_PHASE phase;
         MVector2 touchPoint;
         MVector2 lastTouchPoint;
         
         TouchData(void)
         {
-            phase = MTouchPhaseNone;
+            phase = M_TOUCH_NONE;
             touchPoint.loadIdentity();
             lastTouchPoint.loadIdentity();
         }
@@ -60,7 +60,6 @@ private :
 	map<string, int> m_keys;
 	map<string, float> m_axis;
 	map<string, int> m_props;
-    map<string, MVector3> m_vecprops;
     map<int, TouchData> m_touches;
 	
 	vector<float *> m_axisToFlush;
@@ -70,31 +69,26 @@ public:
 	void createKey(const char * name);
 	void createAxis(const char * name, bool flush=false);
 	void createProperty(const char * name);
-    void createVectorProperty(const char * name);
 
 	void downKey(const char * name);
 	void upKey(const char * name);
 	void setAxis(const char * name, float axis);
 	void setProperty(const char * name, int prop);
-    void setVectorProperty(const char * name, MVector3 vec);
 
 	bool isKeyPressed(const char * name);
 	bool onKeyDown(const char * name);
 	bool onKeyUp(const char * name);
 	float getAxis(const char * name);
 	int getProperty(const char * name);
-    MVector3 getVectorProperty(const char * name);
     
-    // touch events
     void beginTouch(int touchID, MVector2 touchPoint);
     void updateTouch(int touchID, MVector2 touchPoint);
     void endTouch(int touchID, MVector2 touchPoint);
     void cancelTouch(int touchID, MVector2 touchPoint);
     
-    // touch data
     MVector2 getTouchPosition(int touchID);
     MVector2 getLastTouchPosition(int touchID);
-    MTouchPhase getTouchPhase(int touchID);
+    M_TOUCH_PHASE getTouchPhase(int touchID);
 
 	void flush(void);
 };
