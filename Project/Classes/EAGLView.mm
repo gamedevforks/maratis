@@ -6,6 +6,10 @@
 //  Copyright __MyCompanyName__ 2011. All rights reserved.
 //
 
+#define SCREEN_HEIGHT ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width)
+#define SCREEN_WIDTH ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait ? [[UIScreen mainScreen] bounds].size.width : [[UIScreen mainScreen] bounds].size.height)
+
+
 #include <MEngine.h>
 
 #include <MContexts/MES1Context.h>
@@ -54,9 +58,8 @@ public:
 	void getScreenSize(unsigned int * width, unsigned int * height)
 	{
         // Get real screen size
-        CGRect screenBounds = [[UIScreen mainScreen] bounds];
-		if (width) (*width) = CGRectGetWidth(screenBounds);
-		if (height) (*height) = CGRectGetHeight(screenBounds);
+		if (width) (*width) = SCREEN_WIDTH;
+		if (height) (*height) = SCREEN_HEIGHT;
 	}
 	
 	// cursor
@@ -445,11 +448,13 @@ public:
         input->createAxis("ACCEL_Y");
         input->createAxis("ACCEL_Z");
         
-        input->createVectorProperty("REAL_GRAVITY");
+		input->createAxis("GRAVITY_X");
+        input->createAxis("GRAVITY_Y");
+        input->createAxis("GRAVITY_Z");
         
-        input->createProperty("YAW");
-        input->createProperty("PITCH");
-        input->createProperty("ROLL");
+        input->createAxis("YAW");
+        input->createAxis("PITCH");
+        input->createAxis("ROLL");
     }
     else if (motionManager.accelerometerAvailable)
     {
@@ -491,19 +496,15 @@ public:
 {
     if (motionManager.deviceMotionAvailable && motionManager.deviceMotionActive)
     {
-        // To provide some standard support on non-mobile devices
-        input->setAxis("MOUSE_X", motionManager.deviceMotion.userAcceleration.x);
-        input->setAxis("MOUSE_Y", motionManager.deviceMotion.userAcceleration.y);
-        
         input->setAxis("MOTION_X", motionManager.deviceMotion.rotationRate.x);
         input->setAxis("MOTION_Y", motionManager.deviceMotion.rotationRate.y);
         input->setAxis("MOTION_Z", motionManager.deviceMotion.rotationRate.z);
         
         // Send data to the real gravity
-        input->setVectorProperty("REAL_GRAVITY", MVector3(motionManager.deviceMotion.gravity.x, 
-                                                          motionManager.deviceMotion.gravity.y, 
-                                                          motionManager.deviceMotion.gravity.z));
-        
+		input->setAxis("GRAVITY_X", motionManager.deviceMotion.gravity.x);
+        input->setAxis("GRAVITY_Y", motionManager.deviceMotion.gravity.y);
+        input->setAxis("GRAVITY_Z", motionManager.deviceMotion.gravity.z);
+		
         // Send data to accelerometer-specific axis
         input->setAxis("ACCEL_X", motionManager.deviceMotion.userAcceleration.x);
         input->setAxis("ACCEL_Y", motionManager.deviceMotion.userAcceleration.y);
@@ -517,9 +518,9 @@ public:
         {
             [currentAttitude multiplyByInverseOfAttitude:referenceAttitude];
             
-            input->setProperty("YAW", currentAttitude.yaw);
-            input->setProperty("PITCH", currentAttitude.pitch);
-            input->setProperty("ROLL", currentAttitude.roll);
+            input->setAxis("YAW", currentAttitude.yaw);
+            input->setAxis("PITCH", currentAttitude.pitch);
+            input->setAxis("ROLL", currentAttitude.roll);
         }
         else
         {
@@ -528,10 +529,6 @@ public:
     }
     else if (motionManager.accelerometerAvailable && motionManager.accelerometerActive)
     {    
-        // To provide some standard support on non-mobile devices
-        input->setAxis("MOUSE_X", motionManager.accelerometerData.acceleration.x);
-        input->setAxis("MOUSE_Y", motionManager.accelerometerData.acceleration.y);
-        
         // Send data to accelerometer-specific axis
         input->setAxis("ACCEL_X", motionManager.accelerometerData.acceleration.x);
         input->setAxis("ACCEL_Y", motionManager.accelerometerData.acceleration.y);
@@ -563,6 +560,8 @@ public:
     // Traverse all touches and create a new touch for each one
     for (UITouch* touch in [touches allObjects])
     {
+		CGSize size = self.bounds.size;
+		
         // Create a new TouchData object
         int* touchID = (int *)malloc(sizeof(int));
         *touchID = [self getAvailableTouchID];
@@ -572,9 +571,7 @@ public:
         CGPoint location = [touch locationInView:self];
         
         // Send the data to input
-        input->beginTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
-        
-        NSLog(@"Began Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
+        input->beginTouch(*touchID, MVector2((location.x * self.contentScaleFactor)/size.width, (location.y * self.contentScaleFactor)/size.height));
     }
 }
 
@@ -588,10 +585,18 @@ public:
         
         if (touchID != NULL)
         {
+			CGSize size = self.bounds.size;
+			
             // Send an updated touch to input
-            input->updateTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
+			MVector2 pos = MVector2((location.x * self.contentScaleFactor)/size.width, (location.y * self.contentScaleFactor)/size.height);
+            input->updateTouch(*touchID, pos);
         
-            NSLog(@"Updated Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
+			// simulate mouse input
+			if(touchID == 0)
+			{
+				input->setAxis("MOUSE_X", pos.x);
+				input->setAxis("MOUSE_Y", pos.y);
+			}
         }
     }
 }
@@ -606,10 +611,10 @@ public:
         
         if (touchID != NULL)
         {
+			CGSize size = self.bounds.size;
+			
             // Send the end touch to input
-            input->endTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
-        
-            NSLog(@"Ended Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
+            input->endTouch(*touchID, MVector2((location.x * self.contentScaleFactor)/size.width, (location.y * self.contentScaleFactor)/size.height));
         
             // After updating input, set the touch index as available and release the memory
             [self setTouchIDAvailable:*touchID];
@@ -628,10 +633,10 @@ public:
         
         if (touchID != NULL)
         {
+			CGSize size = self.bounds.size;
+			
             // Send the end touch to input
-            input->cancelTouch(*touchID, MVector2(location.x * self.contentScaleFactor, location.y * self.contentScaleFactor));
-            
-            NSLog(@"Cancelled Touch %d at position %2.f, %2.f.", *touchID, location.x * self.contentScaleFactor, location.y * self.contentScaleFactor);
+            input->cancelTouch(*touchID, MVector2((location.x * self.contentScaleFactor)/size.width, (location.y * self.contentScaleFactor)/size.height));
             
             // After updating input, set the touch index as available and release the memory
             [self setTouchIDAvailable:*touchID];
