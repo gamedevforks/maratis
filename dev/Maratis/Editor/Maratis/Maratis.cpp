@@ -30,6 +30,7 @@
 	#include <GLee.h>
 #elif __APPLE__
 	#include <OpenGL/OpenGL.h>
+	#include <OpenGL/gl.h>
 #elif linux
 	#include <GLee.h>
 #endif

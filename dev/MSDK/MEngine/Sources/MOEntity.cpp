@@ -270,14 +270,14 @@ bool MOEntity::isAnimationOver(void)
 
 			if(m_animationSpeed >= 0)
 			{
-				if(m_currentFrame >= animRange->end)
+				if((m_currentFrame+m_animationSpeed) >= (animRange->end+1))
 					return true;
 				else
 					return false;
 			}
 			else
 			{
-				if(m_currentFrame <= animRange->start)
+				if((m_currentFrame+m_animationSpeed) <= animRange->start)
 					return true;
 				else
 					return false;

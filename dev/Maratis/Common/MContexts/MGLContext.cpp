@@ -35,6 +35,7 @@
 
 #ifdef __APPLE__
 	#include <OpenGL/OpenGL.h>
+    #include <OpenGL/gl.h>
 #else
 	#include <GLee.h>
 #endif
