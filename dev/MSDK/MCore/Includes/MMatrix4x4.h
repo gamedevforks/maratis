@@ -80,7 +80,25 @@ public:
 	}
 
 	MVector4 operator * (const MVector4 mat) const;
-	MVector3 operator * (const MVector3 mat) const;
+	inline MVector3 operator * (const MVector3 mat) const
+	{
+		return MVector3(
+		  entries[0]*mat.x
+		+ entries[4]*mat.y
+		+ entries[8]*mat.z
+		+ entries[12],
+
+		  entries[1]*mat.x
+		+ entries[5]*mat.y
+		+ entries[9]*mat.z
+		+ entries[13],
+
+		  entries[2]*mat.x
+		+ entries[6]*mat.y
+		+ entries[10]*mat.z
+		+ entries[14]
+		);
+	}
 
 	float & operator () (int col, int row){
 		return entries[row*4+col];
@@ -127,12 +145,20 @@ public:
 
 	float getEntry(int position) const;
 
-	MVector3 getRotatedVector3(const MVector3 & vec) const;
+	MVector3 getRotatedVector3(const MVector3 & vec) const
+	{
+		return MVector3(
+			entries[0]*vec.x + entries[4]*vec.y + entries[8]*vec.z,
+			entries[1]*vec.x + entries[5]*vec.y + entries[9]*vec.z,
+			entries[2]*vec.x + entries[6]*vec.y + entries[10]*vec.z
+		);
+	}
+	
 	MVector3 getInverseRotatedVector3(const MVector3 & vec) const;
 	MVector3 getTranslatedVector3(const MVector3 & vec) const;
 	MVector3 getInversetranslatedVector3(const MVector3 & vec) const;
 
-	MVector3 getTranslationPart(void){ return MVector3(entries[12], entries[13], entries[14]); }
+	inline MVector3 getTranslationPart(void) const { return MVector3(entries[12], entries[13], entries[14]); }
 
 	MVector3 getEulerAngles(void) const;
 

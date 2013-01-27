@@ -100,7 +100,7 @@ public:
 	inline void setIntensity(float intensity){ m_intensity = intensity; }
 	inline void setColor(const MVector3 & color){ m_color = color; }
 	inline float getIntensity(void){ return m_intensity; }
-	inline MVector3 * getColor(void){ return &m_color; }
+	inline MVector3 getColor(void) const { return m_color; }
 	inline MVector3 getFinalColor(void) const { return m_color * m_intensity; }
 
 	// spot

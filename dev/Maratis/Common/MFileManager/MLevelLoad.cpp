@@ -726,8 +726,8 @@ bool M_loadLevel(const char * filename, void * data, const bool clearData)
 			TiXmlElement * boxNode = entityNode->FirstChildElement("BoundingBox");
 			if(boxNode)
 			{
-				readFloatValues(boxNode, "min", *entity->getBoundingBox()->getMin(), 3);
-				readFloatValues(boxNode, "max", *entity->getBoundingBox()->getMax(), 3);
+				readFloatValues(boxNode, "min", entity->getBoundingBox()->min, 3);
+				readFloatValues(boxNode, "max", entity->getBoundingBox()->max, 3);
 			}
 
 			// anim

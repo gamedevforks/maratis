@@ -99,7 +99,6 @@ void MEngine::setLevel(MLevel * level)
 
 void MEngine::updateRequests(void)
 {
-	// see if we should load requested scene or level
 	loadLevelIfRequested();
 	if(m_level)
 		m_level->changeCurrentSceneIfRequested();

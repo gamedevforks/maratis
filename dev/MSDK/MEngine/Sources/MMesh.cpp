@@ -502,20 +502,20 @@ void MMesh::updateBoundingBox(void)
 {
 	if(m_subMeshsNumber > 0)
 	{
-		MVector3 * min = m_boundingBox.getMin();
-		MVector3 * max = m_boundingBox.getMax();
+		MVector3 * min = &m_boundingBox.min;
+		MVector3 * max = &m_boundingBox.max;
 
 		MBox3d * box = m_subMeshs[0].getBoundingBox();
-		(*min) = *box->getMin();
-		(*max) = *box->getMax();
+		(*min) = box->min;
+		(*max) = box->max;
 
 		unsigned int i;
 		for(i=1; i<m_subMeshsNumber; i++)
 		{
 			box = m_subMeshs[i].getBoundingBox();
 
-			MVector3 * subMin = box->getMin();
-			MVector3 * subMax = box->getMax();
+			MVector3 * subMin = &box->min;
+			MVector3 * subMax = &box->max;
 
 			min->x = MIN(min->x, subMin->x);
 			min->y = MIN(min->y, subMin->y);

@@ -42,7 +42,6 @@ m_normalsNumber(0),
 m_vertices(NULL),
 m_normals(NULL)
 {
-    MLOG(6, "MFixedRenderer creation...");
 }
 
 MFixedRenderer::~MFixedRenderer(void)
@@ -154,9 +153,9 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 		M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
 		M_BLENDING_MODES blendMode = material->getBlendMode();
 		M_CULL_MODES cullMode = display->getCullMode();
-		MVector3 * diffuse = material->getDiffuse();
-		MVector3 * specular = material->getSpecular();
-		MVector3 * emit = material->getEmit();
+		MVector3 diffuse = material->getDiffuse();
+		MVector3 specular = material->getSpecular();
+		MVector3 emit = material->getEmit();
 		float shininess = material->getShininess();
 
 		// get current fog color
@@ -235,10 +234,10 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			}
 
 			// Material
-			render->setMaterialDiffuse(MVector4(diffuse->x, diffuse->y, diffuse->z, opacity));
-			render->setMaterialSpecular(MVector4(*specular));
+			render->setMaterialDiffuse(MVector4(diffuse.x, diffuse.y, diffuse.z, opacity));
+			render->setMaterialSpecular(MVector4(specular));
 			render->setMaterialAmbient(MVector4());
-			render->setMaterialEmit(MVector4(*emit));
+			render->setMaterialEmit(MVector4(emit));
 			render->setMaterialShininess(shininess);
 
 			// switch to texture matrix mode
@@ -287,10 +286,10 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 				// texture matrix
 				render->loadIdentity();
 				render->translate(MVector2(0.5f, 0.5f));
-				render->scale(*texture->getTexScale());
+				render->scale(texture->getTexScale());
 				render->rotate(MVector3(0, 0, -1), texture->getTexRotate());
 				render->translate(MVector2(-0.5f, -0.5f));
-				render->translate(*texture->getTexTranslate());
+				render->translate(texture->getTexTranslate());
 
 				// texture coords
 				render->enableTexCoordArray();
@@ -582,7 +581,7 @@ void MFixedRenderer::drawText(MOText * textObj)
 	render->disableCullFace();
 	render->setDepthMask(0);
 
-	render->setColor4(*textObj->getColor());
+	render->setColor4(textObj->getColor());
 	render->setBlendingMode(M_BLENDING_ALPHA);
 
 	static MVector2 vertices[4];
@@ -806,7 +805,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 								MVector3(localPos + localRadius)
 								);
 
-				if(! entityBox->isInCollisionWith(&lightBox))
+				if(! entityBox->isInCollisionWith(lightBox))
 					continue;
 
 				MEntityLight * entityLight = &entityLights[entityLightsNumber];
@@ -855,8 +854,8 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				// check if submesh visible
 				if(sSize > 1)
 				{
-					MVector3 * min = box->getMin();
-					MVector3 * max = box->getMax();
+					MVector3 * min = &box->min;
+					MVector3 * max = &box->max;
 
 					MVector3 points[8] = {
 						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -874,7 +873,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				}
 
 				// subMesh center
-				MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+				MVector3 center = box->min + (box->max - box->min)*0.5f;
 				center = entity->getTransformedVector(center);
 
 				// sort entity lights
@@ -882,7 +881,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				for(l=0; l<entityLightsNumber; l++)
 				{
 					MEntityLight * entityLight = &entityLights[l];
-					if(! box->isInCollisionWith(&entityLight->lightBox))
+					if(! box->isInCollisionWith(entityLight->lightBox))
 						continue;
 
 					MOLight * light = entityLight->light;
@@ -987,7 +986,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 			// center
 			MBox3d * box = text->getBoundingBox();
-			MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+			MVector3 center = box->min + (box->max - box->min)*0.5f;
 			center = text->getTransformedVector(center);
 
 			// z distance to camera

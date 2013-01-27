@@ -23,7 +23,7 @@ class CompilationFlags:
             # compilation flags for c++
             self.CppCommonFlags  = '-arch i386 -arch x86_64 -mmacosx-version-min=10.6'
             self.CppDebugFlags   = '-g'
-            self.CppReleaseFlags = '-Os'
+            self.CppReleaseFlags = '-O3 -msse2'
             # preprocessor definitions
             self.CppCommonDefines  = 'OSX'
             self.CppDebugDefines   = '__Debug__'
@@ -32,7 +32,7 @@ class CompilationFlags:
 		    # compilation flags for c++ (g++)
             self.CppCommonFlags  = '-mwin32' # -mno-cygwin : The -mno-cygwin flag has been removed; use a mingw-targeted cross-compiler to build for mingw.
             self.CppDebugFlags   = '-g'
-            self.CppReleaseFlags = '-Os'
+            self.CppReleaseFlags = '-O3 -msse2'
             # preprocessor definitions
 			# choose here between a WIN32 build or a POSIX LINUX like build :
 			# both compile but POSIX build have still perhaps some link errors to be fixed and needs a X server
@@ -43,7 +43,7 @@ class CompilationFlags:
             # compilation flags for c++
             self.CppCommonFlags  = '-fPIC'
             self.CppDebugFlags   = '-g'
-            self.CppReleaseFlags = '-Os'
+            self.CppReleaseFlags = '-O3 -msse2'
             # preprocessor definitions
             self.CppCommonDefines  = 'LINUX'
             self.CppDebugDefines   = '__Debug__'

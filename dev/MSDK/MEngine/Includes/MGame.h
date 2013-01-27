@@ -43,10 +43,6 @@ public:
 	MGame(void);
 	virtual ~MGame(void);
 
-private:
-
-	static MOCamera * getCurrentCamera(MScene * scene);
-
 public:
 
 	// is running

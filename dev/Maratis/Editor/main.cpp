@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	// create window
 	if(! window->create("Maratis", 1024,768, 32, false))
 	{
-		MLOG(4, "cannot create window");
+		MLOG_ERROR("cannot create window");
 		return 0;
 	}
 
@@ -104,31 +104,20 @@ int main(int argc, char **argv)
 
 	
 	// init Maratis (first time call constructor)
-    MLOG(6, "init Maratis...");
 	Maratis * maratis = Maratis::getInstance();
-    if(! maratis)
-	{
-        MLOG(4, "cannot get the Maratis instance");
-		return 0;
-	}
 	
 	// rendering context
 	MRenderingContext * render = engine->getRenderingContext();
-	MLOG(5, "Render version : " << render->getRendererVersion());
+	MLOG_INFO("Render version : " << render->getRendererVersion());
 	
 	
 	// init gui
-    MLOG(5, "init GUI...");
 	MGui * gui = MGui::getInstance();
-    if(! gui)
-        MLOG(4, "cannot get MGui instance");
-	
 	gui->setRenderingContext(render);
 	gui->addFont(new MGuiTextureFont("font/default.tga"));
 
 	
 	// init MaratisUI
-    MLOG(5, "init Maratis UI...")
 	MaratisUI * UI = MaratisUI::getInstance();
 	window->setPointerEvent(MaratisUI::windowEvents);
 
@@ -137,7 +126,7 @@ int main(int argc, char **argv)
 		MImage image;
 		if(! M_loadImage("gui/Title.png", &image))
 		{
-            MLOG(4, "cant load title image");
+            MLOG_ERROR("cant load title image");
             return 0;
         }
 
@@ -172,8 +161,6 @@ int main(int argc, char **argv)
 	int f = 0;
 	int t = 0;
 
-	
-    MLOG(7, "entering main loop...");
 	
 	// on events
 	while(window->isActive())

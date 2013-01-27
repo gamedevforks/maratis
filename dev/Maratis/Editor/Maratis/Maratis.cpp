@@ -48,14 +48,14 @@
 #include <MLoaders/MBinFontLoader.h>
 #include <MLoaders/MBinMeshLoader.h>
 
-#include <MFileManager/MLevelLoad.h>
 #include <MBehaviors/MBLookAt.h>
 #include <MBehaviors/MBFollow.h>
 #include <MScript/MScript.h>
 #include <MInput/MInput.h>
+#include <MFileManager/MLevelLoad.h>
 #include <MFileManager/MLevelSave.h>
 #include <MFileManager/MMeshLoad.h>
-#include <MFileManager/MLevelLoad.h>
+#include <MFileManager/MMeshSave.h>
 #include <MFileManager/MPackageManagerNPK.h>
 #include <MProject/MProject.h>
 #include <MRenderers/MStandardRenderer.h>
@@ -247,8 +247,17 @@ Maratis::~Maratis(void)
 
 void Maratis::publish(void)
 {
-	MPublisher * publisher = MPublisher::getInstance();
-	publisher->publish(m_currentProject);
+	MaratisUI * UI = MaratisUI::getInstance();
+	
+	if(strcmp(m_currentProject, "") != 0)
+	{
+		MPublisher * publisher = MPublisher::getInstance();
+		publisher->publish(m_currentProject);
+	}
+	else
+	{
+		UI->setPopupButton("you need to open a project to publish", NULL);
+	}
 }
 
 void Maratis::changeRenderer(const char * name)
@@ -990,7 +999,6 @@ void Maratis::okNewProject(const char * filename)
 	MWindow * window = MWindow::getInstance();
 	Maratis * maratis = Maratis::getInstance();
 
-	printf("%s\n", filename);
 
 	char file[256];
 	fileExtension(file, filename, ".mproj");
@@ -1028,6 +1036,25 @@ void Maratis::okNewProject(const char * filename)
 		maratis->newLevel();
 		maratis->loadGamePlugin();
 	}
+}
+
+void Maratis::importExternal(void)
+{
+	MaratisUI * UI = MaratisUI::getInstance();
+
+	if(strcmp(m_currentProject, "") != 0)
+	{
+		UI->openFileBrowser(NULL, "", "import models", okImportExternal); // .dae, .obj, .x, .xml(ogre), .md3...
+	}
+	else
+	{
+		UI->setPopupButton("you need to open a project to import external models", NULL);
+	}
+}
+
+void Maratis::okImportExternal(const char * filename)
+{
+	M_importAssimpMeshes(filename);
 }
 
 void Maratis::newProject(void)
@@ -1425,8 +1452,8 @@ void Maratis::drawBoundingBox(MBox3d * box)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 
-	MVector3 * min = box->getMin();
-	MVector3 * max = box->getMax();
+	MVector3 * min = &box->min;
+	MVector3 * max = &box->max;
 
 	beginDraw(M_PRIMITIVE_LINES);
 
@@ -1496,7 +1523,7 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 	MVector3 localDest = iMatrix * dest;
 
 	MBox3d * box = mesh->getBoundingBox();
-	if(! isEdgeToBoxCollision(localOrigin, localDest, *box->getMin(), *box->getMax()))
+	if(! isEdgeToBoxCollision(localOrigin, localDest, box->min, box->max))
 		return false;
 
 	bool raytraced = false;
@@ -1526,7 +1553,7 @@ bool getNearestRaytracedDistance(MMesh * mesh, MMatrix4x4 * matrix, const MVecto
 			vertices = skinVertices;
 		}
 
-		if(isEdgeToBoxCollision(localOrigin, localDest, *box->getMin(), *box->getMax()))
+		if(isEdgeToBoxCollision(localOrigin, localDest, box->min, box->max))
 		{
 			unsigned int d;
 			unsigned int dSize = subMesh->getDisplaysNumber();
@@ -1767,14 +1794,14 @@ MObject3d * Maratis::getNearestObject(MScene * scene, const MVector3 & rayO, con
             case M_OBJECT3D_TEXT:
 			{
 				MOText * text = (MOText*)object;
-				MVector3 min = *text->getBoundingBox()->getMin();
-				MVector3 max = *text->getBoundingBox()->getMax();
+				MVector3 min = text->getBoundingBox()->min;
+				MVector3 max = text->getBoundingBox()->max;
 
 				if((min.x == 0 && max.x == 0 && min.y == 0 && max.y == 0) || (! text->isActive()))
 				{
 					m_emptyText.setFontRef(text->getFontRef());
-					min = *m_emptyText.getBoundingBox()->getMin();
-					max = *m_emptyText.getBoundingBox()->getMax();
+					min = m_emptyText.getBoundingBox()->min;
+					max = m_emptyText.getBoundingBox()->max;
 				}
 
 				MMatrix4x4 scaleMatrix;
@@ -1872,7 +1899,7 @@ void Maratis::focusSelection(void)
 					maxScale = MAX(maxScale, scale.y);
 					maxScale = MAX(maxScale, scale.z);
 
-					float radius = (*pbox->getMin() - *pbox->getMax()).getLength() * 1.5f * maxScale;
+					float radius = (pbox->min - pbox->max).getLength() * 1.5f * maxScale;
 					if(radius > distance)
 						distance = radius;
 				}
@@ -4100,8 +4127,8 @@ void Maratis::drawMainView(MScene * scene)
 		if(! text->isActive())
 			text->updateMatrix();
 
-		MVector3 min = *text->getBoundingBox()->getMin();
-		MVector3 max = *text->getBoundingBox()->getMax();
+		MVector3 min = text->getBoundingBox()->min;
+		MVector3 max = text->getBoundingBox()->max;
 
 		if((min.x == 0 && max.x == 0 && min.y == 0 && max.y == 0) || (! text->isActive()))
 		{

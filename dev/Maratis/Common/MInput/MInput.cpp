@@ -235,7 +235,7 @@ void MInput::beginTouch(int touchID, MVector2 touchPoint)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         data->touchPoint = touchPoint;
@@ -248,7 +248,7 @@ void MInput::updateTouch(int touchID, MVector2 touchPoint)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
@@ -261,7 +261,7 @@ void MInput::endTouch(int touchID, MVector2 touchPoint)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
@@ -274,7 +274,7 @@ void MInput::cancelTouch(int touchID, MVector2 touchPoint)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         data->lastTouchPoint = data->touchPoint;
@@ -287,7 +287,7 @@ MVector2 MInput::getTouchPosition(int touchID)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         
@@ -304,7 +304,7 @@ MVector2 MInput::getLastTouchPosition(int touchID)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         if (data->phase != M_TOUCH_NONE)
@@ -320,7 +320,7 @@ M_TOUCH_PHASE MInput::getTouchPhase(int touchID)
 {
     map<int, TouchData>::iterator iter = m_touches.find(touchID);
     
-    if (iter != m_touches.end())
+    if(iter != m_touches.end())
     {
         TouchData* data = &(iter->second);
         
@@ -337,7 +337,7 @@ void MInput::flush(void)
 		mit (m_keys.begin()),
 		mend(m_keys.end());
 
-	for(; mit!=mend; ++mit)
+	for(; mit!=mend; mit++)
 	{
 		if(mit->second == 1)
 			mit->second = 2;

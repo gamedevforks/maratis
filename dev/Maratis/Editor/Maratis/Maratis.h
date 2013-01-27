@@ -197,6 +197,7 @@ private:
 	static void okLoadProject(const char * filename);
 	static void okLoadLevel(const char * filename);
 	static void okSaveAs(const char * filename);
+	static void okImportExternal(const char * filename);
 	
 public:
 
@@ -240,6 +241,9 @@ public:
 	void loadLevel(void);
 	void save(void);
 	void saveAs(void);
+	
+	// import
+	void importExternal(void);
 
 	// delete selected objects
 	void deleteSelectedObjects(void);

@@ -92,8 +92,6 @@ MFontRef * MLevel::loadFont(const char * filename)
 
 MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 {
-    MLOG(6, "MLevel load mesh " << (filename?filename:"NULL"));
-	
 	unsigned int i;
 	unsigned int size = m_meshManager.getRefsNumber();
 	for(i=0; i<size; i++)

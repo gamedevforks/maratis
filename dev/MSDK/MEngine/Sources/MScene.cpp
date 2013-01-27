@@ -135,6 +135,20 @@ MOText * MScene::addNewText(const MOText & text)
 	return newText;
 }
 
+MOCamera * MScene::getCurrentCamera(void)
+{
+	unsigned int cSize = getCamerasNumber();
+	if(cSize > 0)
+	{
+		if(m_currentCamera < cSize)
+			return getCameraByIndex(m_currentCamera);
+		else
+			return getCameraByIndex(0);
+	}
+	
+	return NULL;
+}
+
 void MScene::setName(const char * name)
 {
 	m_name.set(name);
@@ -159,12 +173,12 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 	{
 	default:
 	case M_COLLISION_SHAPE_BOX:
-		physics->createBoxShape(shapeId, (*box->getMax() - *box->getMin())*scale*0.5f);
+		physics->createBoxShape(shapeId, (box->max - box->min)*scale*0.5f);
 		break;
 
 	case M_COLLISION_SHAPE_SPHERE:
 		{
-			MVector3 vec = ((*box->getMax()) - (*box->getMin()))*scale*0.5f;
+			MVector3 vec = (box->max - box->min)*scale*0.5f;
 			float radius = vec.x;
 			radius = MAX(radius, vec.y);
 			radius = MAX(radius, vec.z);
@@ -174,7 +188,7 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 
 	case M_COLLISION_SHAPE_CONE:
 		{
-			MVector3 vec = ((*box->getMax()) - (*box->getMin()))*scale;
+			MVector3 vec = (box->max - box->min)*scale;
 			float height = vec.y;
 			float radius = vec.x*0.5f;
 			radius = MAX(radius, vec.z*0.5f);
@@ -184,7 +198,7 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 
 	case M_COLLISION_SHAPE_CAPSULE:
 		{
-			MVector3 vec = ((*box->getMax()) - (*box->getMin()))*scale;
+			MVector3 vec = (box->max - box->min)*scale;
 			float height = vec.y;
 			float radius = vec.x*0.5f;
 			radius = MAX(radius, vec.z*0.5f);
@@ -194,7 +208,7 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 
 	case M_COLLISION_SHAPE_CYLINDER:
 		{
-			MVector3 vec = ((*box->getMax()) - (*box->getMin()))*scale;
+			MVector3 vec = (box->max - box->min)*scale;
 			float height = vec.y;
 			float radius = vec.x*0.5f;
 			radius = MAX(radius, vec.z*0.5f);

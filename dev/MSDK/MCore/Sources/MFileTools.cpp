@@ -50,42 +50,42 @@
     #include <unistd.h>
 #endif
 
-static MFileOpenHook* s_fileOpenHook = 0;
+static MFileOpenHook * s_fileOpenHook = 0;
 
 
 
 bool copyFile(const char * inFilename, const char * outFilename)
 {
-	FILE * in = fopen(inFilename, "rb");
+	MFile * in = M_fopen(inFilename, "rb");
 	if(! in)
 	{
 		printf("unable to read %s file\n", inFilename);
 		return false;
 	}
 
-	FILE * out = fopen(outFilename, "wb");
+	MFile * out = M_fopen(outFilename, "wb");
 	if(! out)
 	{
 		printf("unable to create %s file\n", outFilename);
-		fclose(in);
+		M_fclose(in);
 		return false;
 	}
 
 	size_t n;
     char buffer[BUFSIZ];
 
-    while((n = fread(buffer, sizeof(char), sizeof(buffer), in)) > 0)
+    while((n = M_fread(buffer, sizeof(char), sizeof(buffer), in)) > 0)
     {
-        if(fwrite(buffer, sizeof(char), n, out) != n)
+        if(M_fwrite(buffer, sizeof(char), n, out) != n)
             printf("write failed\n");
     }
 
-	fclose(in);
-	fclose(out);
+	M_fclose(in);
+	M_fclose(out);
 	return true;
 }
 
-bool createDirectoryInternal(const char* filename)
+bool createDirectoryInternal(const char * filename)
 {
 	if(mkdir(filename) != -1)
 		return true;
@@ -95,7 +95,7 @@ bool createDirectoryInternal(const char* filename)
 
 bool createDirectory(const char * filename, bool recursive)
 {
-	if(!recursive)
+	if(! recursive)
 		return createDirectoryInternal(filename);
 
     char* pp;
@@ -109,15 +109,15 @@ bool createDirectory(const char * filename, bool recursive)
     {
         if (sp != pp)
         {
-            /* Neither root nor double slash in path */
+            // Neither root nor double slash in path
             *sp = '\0';
             status = createDirectoryInternal(copypath);
             *sp = '/';
         }
         pp = sp + 1;
     }
+	
     return createDirectoryInternal(filename);
-
 }
 
 bool isFileExist(const char * filename)
@@ -292,7 +292,7 @@ bool readDirectory(const char * filename, vector<string> * files, bool hiddenFil
     return true;
 }
 
-void M_registerFileOpenHook(MFileOpenHook* hook)
+void M_registerFileOpenHook(MFileOpenHook * hook)
 {		
 	s_fileOpenHook = hook;
 }
@@ -302,9 +302,9 @@ MFileOpenHook* M_getFileOpenHook()
 	return s_fileOpenHook;
 }
 
-MFile* M_fopen(const char* path, const char* mode)
+MFile * M_fopen(const char * path, const char * mode)
 {
-	MFile* rtn;
+	MFile * rtn;
 	if(s_fileOpenHook)
 		rtn = s_fileOpenHook->open(path, mode);
 	else
@@ -320,7 +320,7 @@ MFile* M_fopen(const char* path, const char* mode)
 	return rtn;
 }
 
-int M_fclose(MFile* stream)
+int M_fclose(MFile * stream)
 {
 	int rtn = 0;
 
@@ -332,7 +332,7 @@ int M_fclose(MFile* stream)
 	return rtn;
 }
 
-size_t M_fread(void* dest, size_t size, size_t count, MFile* stream)
+size_t M_fread(void * dest, size_t size, size_t count, MFile * stream)
 {
 	if(stream)
 		return stream->read(dest, size, count);
@@ -340,7 +340,7 @@ size_t M_fread(void* dest, size_t size, size_t count, MFile* stream)
 	return 0;
 }
 
-size_t M_fwrite(const void* str, size_t size, size_t count, MFile* stream)
+size_t M_fwrite(const void * str, size_t size, size_t count, MFile * stream)
 {
 	if(stream)
 		return stream->write(str, size, count);
@@ -348,7 +348,7 @@ size_t M_fwrite(const void* str, size_t size, size_t count, MFile* stream)
 	return 0;
 }
 
-int M_fprintf(MFile *stream, const char *format, ...)
+int M_fprintf(MFile * stream, const char * format, ...)
 {
 	va_list args;
 	if(stream)
@@ -360,7 +360,7 @@ int M_fprintf(MFile *stream, const char *format, ...)
 	return 0;
 }
 
-int M_fseek(MFile *stream, long offset, int whence)
+int M_fseek(MFile * stream, long offset, int whence)
 {
 	if(stream)
 		return stream->seek(offset, whence);
@@ -368,7 +368,7 @@ int M_fseek(MFile *stream, long offset, int whence)
 	return 0;
 }
 
-long M_ftell(MFile *stream)
+long M_ftell(MFile * stream)
 {
 	if(stream)
 		return stream->tell();
@@ -376,7 +376,7 @@ long M_ftell(MFile *stream)
 	return 0;
 }
 
-void M_rewind(MFile *stream)
+void M_rewind(MFile * stream)
 {
 	if(stream)
 		stream->rewind();

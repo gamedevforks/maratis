@@ -69,7 +69,6 @@ void draw(void)
 // main
 int main(int argc, char **argv)
 {
-	MLOG(5, "main: " << argc << " args...");
 	setlocale(LC_NUMERIC, "C");
 
 	unsigned int width = 1024;
@@ -94,7 +93,7 @@ int main(int argc, char **argv)
 	// create window
 	if(! window->create("Maratis", width, height, 32, fullscreen == 1))
     {
-		MLOG(3, "cannot create window");
+		MLOG_ERROR("cannot create window");
 		return 0;
 	}
 
@@ -105,7 +104,6 @@ int main(int argc, char **argv)
 	// set current directory
 	char rep[256];
 	getRepertory(rep, argv[0]);
-	MLOG(5, "current repertory: " << rep);
 	window->setCurrentDirectory(rep);
 
 	

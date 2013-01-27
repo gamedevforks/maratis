@@ -45,20 +45,6 @@ MGame::~MGame(void)
 		render->deleteFrameBuffer(&s_renderBufferId);
 }
 
-MOCamera * MGame::getCurrentCamera(MScene * scene)
-{
-	if(scene->getCamerasNumber() > 0)
-	{
-		unsigned int currentCamera = scene->getCurrentCamera();
-		if(currentCamera < scene->getCamerasNumber())
-			return scene->getCameraByIndex(currentCamera);
-		else
-			return scene->getCameraByIndex(0);
-	}
-
-	return NULL;
-}
-
 void MGame::update(void)
 {
 	MEngine * engine = MEngine::getInstance();
@@ -91,7 +77,7 @@ void MGame::update(void)
 	scene->updateObjectsMatrices();
 
 	// update scene layer
-	MOCamera * camera = getCurrentCamera(scene);
+	MOCamera * camera = scene->getCurrentCamera();
 	if(camera)
 	{
 		unsigned int sceneLayerId = camera->getSceneLayer();
@@ -204,7 +190,7 @@ void MGame::draw(void)
 	}
 	else
 	{
-		MOCamera * camera = getCurrentCamera(scene);
+		MOCamera * camera = scene->getCurrentCamera();
 
 		// draw current scene
 		if(! camera->getRenderColorTexture())
@@ -223,7 +209,7 @@ void MGame::draw(void)
 		if(sceneLayerId > 0 && sceneLayerId <= level->getScenesNumber())
 		{
 			MScene * sceneLayer = level->getSceneByIndex(sceneLayerId-1);
-			MOCamera * layerCamera = getCurrentCamera(sceneLayer);
+			MOCamera * layerCamera = sceneLayer->getCurrentCamera();
 			if(layerCamera)
 			{
 				layerCamera->enable();

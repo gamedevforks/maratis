@@ -1141,7 +1141,7 @@ int getGravity(lua_State * L)
 		scene = level->getSceneByIndex(sceneId);
 	}
 	
-	pushFloatArray(L, *scene->getGravity(), 3);
+	pushFloatArray(L, scene->getGravity(), 3);
 
 	return 1;
 }
@@ -1195,7 +1195,7 @@ int changeCurrentCamera(lua_State * L)
 			{
 				if(object == (MObject3d *)scene->getCameraByIndex(i))
 				{
-					scene->setCurrentCamera(i);
+					scene->setCurrentCameraId(i);
 					break;
 				}
 			}
@@ -2154,7 +2154,7 @@ int getLightColor(lua_State * L)
 		if(object->getType() == M_OBJECT3D_LIGHT)
 		{
 			MOLight * light = (MOLight*)object;
-			pushFloatArray(L, *light->getColor(), 3);
+			pushFloatArray(L, light->getColor(), 3);
 			return 1;
 		}
 	}
@@ -3270,8 +3270,8 @@ int getTextColor(lua_State * L)
 	{
 		if(object->getType() == M_OBJECT3D_TEXT)
 		{
-			MVector4 * color = ((MOText *)object)->getColor();
-			script->pushFloatArray(*color, 4);
+			MVector4 color = ((MOText *)object)->getColor();
+			script->pushFloatArray(color, 4);
 			return 1;
 		}
 	}

@@ -95,7 +95,7 @@ public:
 
 	// gravity
 	inline void setGravity(const MVector3 & gravity){ m_gravity = gravity; }
-	inline MVector3 * getGravity(void){ return &m_gravity; }
+	inline MVector3 getGravity(void) const { return m_gravity; }
 
 	// sounds
 	void playLoopSounds(void);
@@ -125,8 +125,9 @@ public:
 	inline unsigned int getTextsNumber(void){ return m_texts.size(); }
 
 	// current camera
-	inline void setCurrentCamera(unsigned int id){ m_currentCamera = id; }
-	inline unsigned int getCurrentCamera(void){ return m_currentCamera; }
+	inline void setCurrentCameraId(unsigned int id){ m_currentCamera = id; }
+	inline unsigned int getCurrentCameraId(void){ return m_currentCamera; }
+	MOCamera * getCurrentCamera(void);
 
 	// current frame
 	inline void setCurrentFrame(int currentFrame){ m_currentFrame = currentFrame; }

@@ -202,19 +202,24 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			M_TEX_GEN_MODES genMode = texture->getGenMode();
 			M_WRAP_MODES UWrapMode = texture->getUWrapMode();
 			M_WRAP_MODES VWrapMode = texture->getVWrapMode();
-			MVector2 * texTranslate = texture->getTexTranslate();
-			MVector2 * texScale = texture->getTexScale();
+			MVector2 texTranslate = texture->getTexTranslate();
+			MVector2 texScale = texture->getTexScale();
 			float texRotate = texture->getTexRotate();
 			
 			// texture ref
 			writeDataRef(file, textureRef, rep);
+			if(textureRef)
+			{
+				bool mipmap = textureRef->isMipmapEnabled();
+				M_fwrite(&mipmap, sizeof(bool), 1, file);
+			}
 			
 			// data
 			M_fwrite(&genMode, sizeof(M_TEX_GEN_MODES), 1, file);
 			M_fwrite(&UWrapMode, sizeof(M_WRAP_MODES), 1, file);
 			M_fwrite(&VWrapMode, sizeof(M_WRAP_MODES), 1, file);
-			M_fwrite(texTranslate, sizeof(MVector2), 1, file);
-			M_fwrite(texScale, sizeof(MVector2), 1, file);
+			M_fwrite(&texTranslate, sizeof(MVector2), 1, file);
+			M_fwrite(&texScale, sizeof(MVector2), 1, file);
 			M_fwrite(&texRotate, sizeof(float), 1, file);
 		}
 	}
@@ -233,10 +238,10 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			float shininess = material->getShininess();
 			float customValue = material->getCustomValue();
 			M_BLENDING_MODES blendMode = material->getBlendMode();
-			MVector3 * emit = material->getEmit();
-			MVector3 * diffuse = material->getDiffuse();
-			MVector3 * specular = material->getSpecular();
-			MVector3 * customColor = material->getCustomColor();
+			MVector3 emit = material->getEmit();
+			MVector3 diffuse = material->getDiffuse();
+			MVector3 specular = material->getSpecular();
+			MVector3 customColor = material->getCustomColor();
 			MFXRef * FXRef = material->getFXRef();
 			MFXRef * ZFXRef = material->getZFXRef();
 			
@@ -270,10 +275,10 @@ bool exportMeshBin(const char * filename, MMesh * mesh)
 			M_fwrite(&shininess, sizeof(float), 1, file);
 			M_fwrite(&customValue, sizeof(float), 1, file);
 			M_fwrite(&blendMode, sizeof(M_BLENDING_MODES), 1, file);
-			M_fwrite(emit, sizeof(MVector3), 1, file);
-			M_fwrite(diffuse, sizeof(MVector3), 1, file);
-			M_fwrite(specular, sizeof(MVector3), 1, file);
-			M_fwrite(customColor, sizeof(MVector3), 1, file);
+			M_fwrite(&emit, sizeof(MVector3), 1, file);
+			M_fwrite(&diffuse, sizeof(MVector3), 1, file);
+			M_fwrite(&specular, sizeof(MVector3), 1, file);
+			M_fwrite(&customColor, sizeof(MVector3), 1, file);
 			
 			// textures pass
 			unsigned int t, texturesPassNumber = material->getTexturesPassNumber();

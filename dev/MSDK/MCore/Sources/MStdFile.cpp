@@ -34,8 +34,9 @@
 
 const void frewind(FILE * file){ rewind(file); }
 
+
 MStdFile::MStdFile(): m_file(0) {}
-MStdFile::MStdFile(const char* path, const char* mode) : m_file(0)
+MStdFile::MStdFile(const char * path, const char * mode) : m_file(0)
 {
 	open(path, mode);
 }
@@ -45,15 +46,17 @@ MStdFile::~MStdFile()
 	close();
 }
 
-MStdFile * MStdFile::getNew(const char* path, const char* mode){
+MStdFile * MStdFile::getNew(const char * path, const char * mode)
+{
 	return new MStdFile(path, mode);
 }
 
-void MStdFile::destroy(void){
+void MStdFile::destroy(void)
+{
 	delete this;
 }
 
-void MStdFile::open(const char* path, const char* mode)
+void MStdFile::open(const char * path, const char * mode)
 {
 	close();
 	m_file = fopen(path, mode);
@@ -67,41 +70,36 @@ int MStdFile::close()
 		rtn = fclose(m_file);
 		m_file = 0;
 	}
-
 	return rtn;
 }
 
-size_t MStdFile::read(void* dest, size_t size, size_t count)
+size_t MStdFile::read(void * dest, size_t size, size_t count)
 {
 	if(m_file)
 		return fread(dest, size, count, m_file);
-
 	return 0;
 }
 
-size_t MStdFile::write(const void* str, size_t size, size_t count)
+size_t MStdFile::write(const void * str, size_t size, size_t count)
 {
 	if(m_file)
 		return fwrite(str, size, count, m_file);
-
 	return 0;
 }
 
-int MStdFile::print(const char* format, ...)
+int MStdFile::print(const char * format, ...)
 {
 	va_list args;
 	va_start(args, format);
 	int rtn = print(format, args);
 	va_end(args);
-
 	return rtn;
 }
 
-int MStdFile::print(const char* format, va_list args)
+int MStdFile::print(const char * format, va_list args)
 {
 	if(m_file)
 		return vfprintf(m_file, format, args);
-
 	return 0;
 }
 
@@ -109,7 +107,6 @@ int MStdFile::seek(long offset, int whence)
 {
 	if(m_file)
 		return fseek(m_file, offset, whence);
-
 	return 0;
 }
 
@@ -117,7 +114,6 @@ long MStdFile::tell()
 {
 	if(m_file)
 		return ftell(m_file);
-
 	return 0;
 }
 

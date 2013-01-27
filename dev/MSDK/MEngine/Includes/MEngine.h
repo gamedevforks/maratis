@@ -201,12 +201,12 @@ private:
 	// renderer
 	MRenderer * m_renderer;
 
-	// stores the name of the level to load when loading is save (at the end of the logic loop)
+	// stores the name of the level to load when loading is save
 	char * m_requestedLevelToLoad;
 	
 private:
 	
-	void loadLevelIfRequested(); // Checks if a level was requested to be loaded and loads it, called in the end of the logic loop
+	void loadLevelIfRequested(); // Checks if a level was requested to be loaded and loads it
 	
 public:
 
@@ -255,8 +255,8 @@ public:
 
 	// level
 	void setLevel(MLevel * level);
-	bool loadLevel(const char * filename); // loads level immediately (not safe from Lua!)
-	void requestLoadLevel(const char * filename); // will load level at the end of the logic loop (safe from Lua)
+	bool loadLevel(const char * filename); // loads level immediately
+	void requestLoadLevel(const char * filename); // send a request to load a level
 	bool doesLevelExist(const char * filename);
 	inline MLevel * getLevel(void){ return m_level; }
 

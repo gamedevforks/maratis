@@ -49,7 +49,6 @@ m_normals(NULL),
 m_tangents(NULL),
 m_FXsNumber(0)
 {
-    MLOG(6, "MStandardRenderer creation...");
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 
 	// default FXs
@@ -80,7 +79,6 @@ m_FXsNumber(0)
 	render->setTextureVWrapMode(M_WRAP_REPEAT);
 
 	render->sendTextureImage(&image, 1, 1, 0);
-    MLOG(6, "MStandardRenderer creation ok");
 }
 
 MStandardRenderer::~MStandardRenderer(void)
@@ -345,9 +343,9 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
 		M_BLENDING_MODES blendMode = material->getBlendMode();
 		M_CULL_MODES cullMode = display->getCullMode();
-		MVector3 * diffuse = material->getDiffuse();
-		MVector3 * specular = material->getSpecular();
-		MVector3 * emit = material->getEmit();
+		MVector3 diffuse = material->getDiffuse();
+		MVector3 specular = material->getSpecular();
+		MVector3 emit = material->getEmit();
 		float shininess = material->getShininess();
 
 		// get current fog color
@@ -510,8 +508,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 					LightActive[i] = (lightDiffuse.w > 0.0f);
 					LightSpotCosCutoff[i] = cosf(spotAngle*DEG_TO_RAD);
-					LightDiffuseProduct[i] = (*diffuse) * MVector3(lightDiffuse);
-					LightSpecularProduct[i] = (*specular) * MVector3(lightDiffuse);
+					LightDiffuseProduct[i] = (diffuse) * MVector3(lightDiffuse);
+					LightSpecularProduct[i] = (specular) * MVector3(lightDiffuse);
 					LightPosition[i] = (*cameraViewMatrix) * MVector4(LightPosition[i]);
 					LightSpotDirection[i] = (cameraViewMatrix->getRotatedVector3(LightSpotDirection[i])).getNormalized();
 				}
@@ -630,10 +628,10 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				MMatrix4x4 * texMatrix = &TextureMatrix[t];
 				texMatrix->loadIdentity();
 				texMatrix->translate(MVector2(0.5f, 0.5f));
-				texMatrix->scale(*texture->getTexScale());
+				texMatrix->scale(texture->getTexScale());
 				texMatrix->rotate(MVector3(0, 0, -1), texture->getTexRotate());
 				texMatrix->translate(MVector2(-0.5f, -0.5f));
-				texMatrix->translate(*texture->getTexTranslate());
+				texMatrix->translate(texture->getTexTranslate());
 
 				// texture coords
 				char name[16];
@@ -677,7 +675,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				render->sendUniformFloat(fxId, "FogEnd", &FogEnd);
 				render->sendUniformFloat(fxId, "FogScale", &FogScale);
 
-				render->sendUniformVec3(fxId, "MaterialEmit", *emit);
+				render->sendUniformVec3(fxId, "MaterialEmit", emit);
 				render->sendUniformFloat(fxId, "MaterialShininess", &shininess);
 
 				render->sendUniformVec4(fxId, "LightPosition", LightPosition[0], 4);
@@ -1100,7 +1098,7 @@ void MStandardRenderer::drawText(MOText * textObj)
 	render->sendUniformInt(fxId, "Texture0", &id);
 
 	// Color
-	render->sendUniformVec4(fxId, "Color", *textObj->getColor());
+	render->sendUniformVec4(fxId, "Color", textObj->getColor());
 
 	// Vertex
 	render->getAttribLocation(fxId, "Vertex", &vertAttribIndex);
@@ -1209,7 +1207,7 @@ void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEnti
 	MBox3d * box = subMesh->getBoundingBox();
 
 	// subMesh center
-	MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+	MVector3 center = box->min + (box->max - box->min)*0.5f;
 	center = entity->getTransformedVector(center);
 
 	// entity min scale
@@ -1246,7 +1244,7 @@ void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEnti
 			MVector3(localPos + localRadius)
 		);
 
-		if(! box->isInCollisionWith(&lightBox))
+		if(! box->isInCollisionWith(lightBox))
 			continue;
 
 		MEntityLight * entityLight = &m_entityLights[lightsNumber];
@@ -1473,8 +1471,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 					// compute entities visibility
 					MBox3d * box = entity->getBoundingBox();
-					MVector3 * min = box->getMin();
-					MVector3 * max = box->getMax();
+					MVector3 * min = &box->min;
+					MVector3 * max = &box->max;
 
 					MVector3 points[8] = {
 						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -1559,8 +1557,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 						// check if submesh visible
 						if(sSize > 1)
 						{
-							MVector3 * min = box->getMin();
-							MVector3 * max = box->getMax();
+							MVector3 * min = &box->min;
+							MVector3 * max = &box->max;
 
 							MVector3 points[8] = {
 								entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -1671,6 +1669,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 		if(! entity->isVisible())
 		{
+			/*
+			// TODO : optimize and add a tag to desactivate it
 			if(mesh)
 			{
 				MArmature * armature = mesh->getArmature();
@@ -1692,11 +1692,10 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 						armature->updateBonesSkinMatrix();
 					}
 
-					// TODO : optimize and add a tag to desactivate it
 					updateSkinning(mesh, armature);
 					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 				}
-			}
+			}*/
 
 			continue;
 		}
@@ -1713,8 +1712,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				// check if submesh visible
 				if(sSize > 1)
 				{
-					MVector3 * min = box->getMin();
-					MVector3 * max = box->getMax();
+					MVector3 * min = &box->min;
+					MVector3 * max = &box->max;
 
 					MVector3 points[8] = {
 						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -1732,7 +1731,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				}
 
 				// subMesh center
-				MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+				MVector3 center = box->min + (box->max - box->min)*0.5f;
 				center = entity->getTransformedVector(center);
 
 				// z distance
@@ -1791,7 +1790,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 			// center
 			MBox3d * box = text->getBoundingBox();
-			MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+			MVector3 center = box->min + (box->max - box->min)*0.5f;
 			center = text->getTransformedVector(center);
 
 			// z distance to camera

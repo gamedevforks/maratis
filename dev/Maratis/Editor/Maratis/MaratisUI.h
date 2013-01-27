@@ -32,7 +32,7 @@
 #include <MGui.h>
 
 #include "Maratis.h"
-//enum M_TRANSFORM_MODE;
+
 
 class MaratisUI
 {
@@ -80,6 +80,7 @@ public:
 	float m_editSpotExponent;
 	float m_editShadowBias;
 	float m_editShadowBlur;
+	MVector3 m_editLightColor;
 	unsigned int m_editShadowQuality;
 
 	// sound
@@ -93,7 +94,11 @@ public:
 	// text
 	float m_editSize;
 	MString m_editText;
+	MVector4 m_editTextColor;
 
+	// scene
+	MVector3 m_editGravity;
+	
 	// transform
 	MString		m_editParent;
 	MVector3	m_editPosition;
@@ -447,6 +452,7 @@ public:
 	static void saveAsEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void newProjectEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void openProjectEvents(MGuiButton * button, MGuiEvent * guiEvents);
+	static void importExternalEvents(MGuiButton * button, MGuiEvent * guiEvents);
 	static void publishEvents(MGuiButton * button, MGuiEvent * guiEvents);
 
 	// edit menu buttons

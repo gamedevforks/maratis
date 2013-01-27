@@ -148,32 +148,32 @@ void MOEntity::changeAnimation(unsigned int animationId)
 	if(animationId >= mesh->getAnimsRangesNumber())
 		return;
 
+	bool init = false;
+	
 	// change anim
 	if(animationId != m_animationId)
 	{
-		m_currentLoop = 0;
 		m_animationId = animationId;
-		MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
-
-		if(m_animationSpeed >= 0)
-			m_currentFrame = (float)animRange->start;
-		else
-			m_currentFrame = (float)animRange->end;
-
-		return;
+		init = true;
 	}
-
-	// restart stopped anim
-	MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
-	if(m_currentLoop == animRange->loops)
+	else
 	{
-		m_currentLoop = 0;
+		// or restart stopped anim
+		MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
+		if(m_currentLoop == animRange->loops)
+			init = true;
+	}
+	
+	if(init)
+	{
 		MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
 		
 		if(m_animationSpeed >= 0)
-			m_currentFrame = (float)animRange->start;
+			m_currentFrame = animRange->start;
 		else
-			m_currentFrame = (float)animRange->end;
+			m_currentFrame = animRange->end;
+		
+		m_currentLoop = 0;
 	}
 }
 
@@ -240,8 +240,8 @@ void MOEntity::updateVisibility(MOCamera * camera)
 
 	MFrustum * frustum = camera->getFrustum();
 
-	MVector3 * min = m_boundingBox.getMin();
-	MVector3 * max = m_boundingBox.getMax();
+	MVector3 * min = &m_boundingBox.min;
+	MVector3 * max = &m_boundingBox.max;
 
 	MVector3 points[8] = {
 		getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -263,72 +263,59 @@ bool MOEntity::isAnimationOver(void)
 	MMesh * mesh = getMesh();
 	if(mesh)
 	{
-		// anim
 		if(mesh->getAnimsRangesNumber() > 0)
 		{
 			MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
-
-			if(m_animationSpeed >= 0)
-			{
-				if((m_currentFrame+m_animationSpeed) >= (animRange->end+1))
-					return true;
-				else
-					return false;
-			}
+			
+			// end loops
+			if(animRange->loops >= 0 && m_currentLoop == animRange->loops)
+				return true;
+			
+			// next frame
+			float nextFrame = m_currentFrame + m_animationSpeed;
+			
+			if(m_animationSpeed > 0)
+				return (nextFrame >= (animRange->end + 1));
 			else
-			{
-				if((m_currentFrame+m_animationSpeed) <= animRange->start)
-					return true;
-				else
-					return false;
-			}
+				return (nextFrame <= animRange->start);
 		}
 	}
-
-	return true;
+	
+	return false;
 }
 
 void MOEntity::update(void)
-{
+{	
 	MMesh * mesh = getMesh();
 	if(mesh)
 	{
 		// anim
-		if(mesh->getAnimsRangesNumber() > 0)
+		if(mesh->getAnimsRangesNumber() > 0 && m_animationSpeed > 0)
 		{
 			MAnimRange * animRange = &mesh->getAnimsRanges()[m_animationId];
 
+			// end loop
+			if(animRange->loops >= 0 && m_currentLoop == animRange->loops)
+				return;
+			
+			// next frame
+			float nextFrame = m_currentFrame + m_animationSpeed;
+		
 			// update current frame
 			if(animRange->loops < 0)
 			{
-				m_currentFrame += m_animationSpeed;
-				m_currentFrame = loopFloat(m_currentFrame, (float)animRange->start, (float)animRange->end + 1);
+				m_currentFrame = loopFloat(nextFrame, animRange->start, (animRange->end + 1));
 			}
-			else if(m_currentLoop < animRange->loops)
+			else
 			{
-				m_currentFrame += m_animationSpeed;
-				
-				if(m_animationSpeed >= 0)
+				if(isAnimationOver())
 				{
-					if(m_currentFrame > animRange->end)
-					{
-						m_currentLoop++;
-						if(m_currentLoop == animRange->loops)
-							m_currentFrame = (float)animRange->end;
-						else
-							m_currentFrame = loopFloat(m_currentFrame, (float)animRange->start, (float)animRange->end + 1);
-					}
+					m_currentLoop++;
 				}
-				else // support backward animation
+				
+				if(m_currentLoop < animRange->loops)
 				{
-					if(m_currentFrame < animRange->start)
-					{
-						m_currentLoop++;
-						if(m_currentLoop == animRange->loops)
-							m_currentFrame = (float)animRange->start;
-						else
-							m_currentFrame = loopFloat(m_currentFrame, (float)animRange->start, (float)animRange->end + 1);
-					}
+					m_currentFrame = loopFloat(nextFrame, animRange->start, (animRange->end + 1));
 				}
 			}
 		}

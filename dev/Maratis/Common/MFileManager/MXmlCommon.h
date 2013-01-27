@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MEngine
-// MVBox3d.h
+// Maratis
+// MXmlCommon.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -28,23 +28,20 @@
 //========================================================================
 
 
-#ifndef _M_BOX3D_H
-#define _M_BOX3D_H
+#ifndef _M_XML_COMMON_H
+#define _M_XML_COMMON_H
 
-
-class M_ENGINE_EXPORT MBox3d
-{
-public:
-
-	MBox3d(void);
-	MBox3d(const MBox3d & box);
-	MBox3d(const MVector3 & _min, const MVector3 & _max);
-
-	MVector3 min;
-	MVector3 max;
-
-	void initFromPoints(const MVector3 * points, unsigned int pointsNumber);
-	bool isInCollisionWith(const MBox3d & box);
-};
+void openNode(MFile * file, const char * name, unsigned int tab, const char * sep = NULL);
+void closeNode(MFile * file, const char * name, unsigned int tab, const char * sep = NULL);
+void openAttributeNode(MFile * file, const char * name, unsigned int tab);
+void closeAttributeNode(MFile * file, const char * sep = NULL);
+void closeNodeAttributes(MFile * file, const char * sep = NULL);
+void writeBool(MFile * file, const char * name, bool variable, const char * sep = NULL);
+void writeString(MFile * file, const char * name, const char * string, const char * sep = NULL);
+void writeInt(MFile * file, const char * name, int variable, const char * sep = NULL);
+void writeFloat(MFile * file, const char * name, float variable, const char * sep = NULL);
+void writeFloatValues(MFile * file, const char * name, float * vector, unsigned int size, const char * sep = NULL);
+void writeFilename(MFile * file, const char * name, const char * filename, const char * workingDirectory = NULL, const char * sep = NULL);
+void writeVariable(MFile * file, MVariable * variable, const char * workingDirectory = NULL, const char * sep = NULL);
 
 #endif

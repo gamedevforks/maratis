@@ -117,8 +117,6 @@ static bool readDataRef(MFile * file, char * filename, const char * rep)
 // Mesh bin loading
 bool M_loadBinMesh(const char * filename, void * data)
 {
-    MLOG(7, "M_loadBinMesh " << (filename?filename:"NULL"));
-	
 	char rep[256], path[256];
 	bool state;
 
@@ -126,7 +124,7 @@ bool M_loadBinMesh(const char * filename, void * data)
 	MFile * file = M_fopen(filename, "rb");
 	if(! file)
 	{
-		MLOG(7, "Can't read file " << (filename?filename:"NULL"));
+		MLOG_WARNING("Can't read file " << (filename?filename:"NULL"));
 		return false;
 	}
 
@@ -204,14 +202,17 @@ bool M_loadBinMesh(const char * filename, void * data)
 				M_TEX_GEN_MODES genMode;
 				M_WRAP_MODES UWrapMode;
 				M_WRAP_MODES VWrapMode;
-				MVector2 * texTranslate = texture->getTexTranslate();
-				MVector2 * texScale = texture->getTexScale();
+				MVector2 texTranslate;
+				MVector2 texScale;
 				float texRotate;
 
 				// texture ref
 				if(readDataRef(file, path, rep))
 				{
-					MTextureRef * textureRef = level->loadTexture(path);
+					bool mipmap;
+					M_fread(&mipmap, sizeof(bool), 1, file);
+					
+					MTextureRef * textureRef = level->loadTexture(path, mipmap);
 					texture->setTextureRef(textureRef);
 				}
 
@@ -219,14 +220,16 @@ bool M_loadBinMesh(const char * filename, void * data)
 				M_fread(&genMode, sizeof(M_TEX_GEN_MODES), 1, file);
 				M_fread(&UWrapMode, sizeof(M_WRAP_MODES), 1, file);
 				M_fread(&VWrapMode, sizeof(M_WRAP_MODES), 1, file);
-				M_fread(texTranslate, sizeof(MVector2), 1, file);
-				M_fread(texScale, sizeof(MVector2), 1, file);
+				M_fread(&texTranslate, sizeof(MVector2), 1, file);
+				M_fread(&texScale, sizeof(MVector2), 1, file);
 				M_fread(&texRotate, sizeof(float), 1, file);
 
 				texture->setGenMode(genMode);
 				texture->setUWrapMode(UWrapMode);
 				texture->setVWrapMode(VWrapMode);
 				texture->setTexRotate(texRotate);
+				texture->setTexTranslate(texTranslate);
+				texture->setTexScale(texScale);
 			}
 		}
 	}
@@ -249,11 +252,9 @@ bool M_loadBinMesh(const char * filename, void * data)
 				float shininess;
 				float customValue;
 				M_BLENDING_MODES blendMode;
-				MVector3 * emit = material->getEmit();
-				MVector3 * diffuse = material->getDiffuse();
-				MVector3 * specular = material->getSpecular();
-				MVector3 * customColor = material->getCustomColor();
+				MVector3 emit, diffuse, specular, customColor;
 
+				
 				// FX ref
 				M_fread(&state, sizeof(bool), 1, file);
 				if(state)
@@ -298,16 +299,20 @@ bool M_loadBinMesh(const char * filename, void * data)
 				M_fread(&shininess, sizeof(float), 1, file);
 				M_fread(&customValue, sizeof(float), 1, file);
 				M_fread(&blendMode, sizeof(M_BLENDING_MODES), 1, file);
-				M_fread(emit, sizeof(MVector3), 1, file);
-				M_fread(diffuse, sizeof(MVector3), 1, file);
-				M_fread(specular, sizeof(MVector3), 1, file);
-				M_fread(customColor, sizeof(MVector3), 1, file);
+				M_fread(&emit, sizeof(MVector3), 1, file);
+				M_fread(&diffuse, sizeof(MVector3), 1, file);
+				M_fread(&specular, sizeof(MVector3), 1, file);
+				M_fread(&customColor, sizeof(MVector3), 1, file);
 
 				material->setType(type);
 				material->setOpacity(opacity);
 				material->setShininess(shininess);
 				material->setCustomValue(customValue);
 				material->setBlendMode(blendMode);
+				material->setEmit(emit);
+				material->setDiffuse(diffuse);
+				material->setSpecular(specular);
+				material->setCustomColor(customColor);
 
 				// textures pass
 				unsigned int t, texturesPassNumber;

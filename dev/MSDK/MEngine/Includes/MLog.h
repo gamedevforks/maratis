@@ -35,11 +35,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-// to do : add syslog support
 
-#ifdef __CYGWIN__
-//#include <syslog.h>
-#endif
 
 /* Log function compatible with the syslog standard, usefull for filtering logs, and logging networkly (todo).
 	0	Emergency	emerg (panic)	System is unusable.	A "panic" condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call.
@@ -51,22 +47,35 @@
 	6	Informational	info	Informational messages.	Normal operational messages - may be harvested for reporting, measuring throughput, etc. - no action required.
 	7	Debug	debug	Debug-level messages.	Info useful to developers for debugging the application, not useful during operations.
 */
-// For the moment let s just simply log if the message has a severity lower than the env variable
-// to do : add __FUNCTION__ or __func__, __line__, __file__...
+
+
+// for the moment let s just simply log if the message has a severity lower than the env variable
 #define MLOG(severity, USERMESSAGE) { MLog::m_stringstream.str(std::string("")); MLog::m_stringstream<<USERMESSAGE; MLog::m_string=MLog::m_stringstream.str(); MLog::log(severity, __FUNCTION__, __FILE__, __LINE__); }
+
+// common helpers
+#define MLOG_ERROR(USERMESSAGE) MLOG(3, USERMESSAGE)
+#define MLOG_WARNING(USERMESSAGE) MLOG(4, USERMESSAGE)
+#define MLOG_INFO(USERMESSAGE) MLOG(6, USERMESSAGE)
+#define MLOG_DEBUG(USERMESSAGE) MLOG(7, USERMESSAGE)
+
 
 class M_ENGINE_EXPORT MLog
 {
-	static MLog* m_instance; // singleton
-	static std::fstream m_logfstream;
-	static int m_desired_loglevel;
+private:
+	
 	// private constructor
 	MLog();
 	~MLog();
-	public:
-		static std::stringstream m_stringstream;
-		static std::string m_string;
-		static void log(int severity, const char* func, const char* fil, const int &line_no);
+	
+	static MLog * m_instance;
+	static fstream m_logfstream;
+	static int m_desired_loglevel;
+	
+public:
+	
+	static stringstream m_stringstream;
+	static string m_string;
+	static void log(int severity, const char * func, const char * fil, const int & line_no);
 };
 
 #endif

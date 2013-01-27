@@ -30,8 +30,8 @@
 #ifndef _M_PACKAGE_MANAGER_H
 #define _M_PACKAGE_MANAGER_H
 
-typedef void* MPackageEnt;
-typedef void* MPackage;
+typedef void * MPackageEnt;
+typedef void * MPackage;
 
 /*--------------------------------------------------------------------------------
  * MPackageManager
@@ -51,17 +51,17 @@ public:
 	// accessors for loading
 	// will add a package to the package list and
 	// allow searching for files within it
-	virtual MPackage	loadPackage(const char* packageName) = 0;
-	virtual MPackageEnt findEntity(const char* name) = 0;
+	virtual MPackage	loadPackage(const char * packageName) = 0;
+	virtual MPackageEnt findEntity(const char * name) = 0;
 	virtual void		offlinePackage(MPackage package) = 0;
 	virtual void		unloadPackage(MPackage package) = 0;
 
 	// accessors for publishing.
 	// this will not add to the package list
 	// handling these packages will be your own task
-	virtual MPackage	openPackage(const char* packageName) = 0;
+	virtual MPackage	openPackage(const char * packageName) = 0;
 	virtual void		closePackage(MPackage package) = 0;
-	virtual MPackageEnt addFileToPackage(const char* filename, MPackage package, const char* entityName) = 0;
+	virtual MPackageEnt addFileToPackage(const char * filename, MPackage package, const char * entityName) = 0;
 	virtual MPackage	mountPackage(MPackage package) = 0;
 };
 

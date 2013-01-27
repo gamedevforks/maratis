@@ -87,8 +87,11 @@ void sortFloatList(float floatList[], int start, int end)
 
 float loopFloat(float val, float min, float max)
 {
+	if(val >= min && val < max)
+		return val;
+	
 	float d = max - min;
-	if(d<=0)
+	if(d <= 0)
 		return min;
 	
 	float v = (val - min) / d;

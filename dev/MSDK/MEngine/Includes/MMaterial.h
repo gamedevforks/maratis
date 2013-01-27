@@ -135,10 +135,10 @@ public:
 	inline float getOpacity(void){ return m_opacity; }
 	inline float getShininess(void){ return m_shininess; }
 	inline float getCustomValue(void){ return m_customValue; }
-	inline MVector3 * getEmit(void){ return &m_emit; }
-	inline MVector3 * getDiffuse(void){ return &m_diffuse; }
-	inline MVector3 * getSpecular(void){ return &m_specular; }
-	inline MVector3 * getCustomColor(void){ return &m_customColor; }
+	inline MVector3 getEmit(void) const { return m_emit; }
+	inline MVector3 getDiffuse(void) const { return m_diffuse; }
+	inline MVector3 getSpecular(void) const { return m_specular; }
+	inline MVector3 getCustomColor(void) const { return m_customColor; }
 
 	// textures pass
 	void allocTexturesPass(unsigned int size);

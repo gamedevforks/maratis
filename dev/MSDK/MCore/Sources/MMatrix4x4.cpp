@@ -408,26 +408,6 @@ MMatrix4x4 MMatrix4x4::operator - (void) const
 	return result;
 }
 
-MVector3 MMatrix4x4::operator * (const MVector3 mat) const
-{
-	return MVector3(
-		  entries[0]*mat.x
-		+ entries[4]*mat.y
-		+ entries[8]*mat.z
-		+ entries[12],
-
-		  entries[1]*mat.x
-		+ entries[5]*mat.y
-		+ entries[9]*mat.z
-		+ entries[13],
-
-		  entries[2]*mat.x
-		+ entries[6]*mat.y
-		+ entries[10]*mat.z
-		+ entries[14]
-	);
-}
-
 MVector4 MMatrix4x4::operator * (const MVector4 mat) const
 {
 	// if bottom row is (0, 0, 0, 1)
@@ -473,15 +453,6 @@ MVector4 MMatrix4x4::operator * (const MVector4 mat) const
 		+ entries[7]*mat.y
 		+ entries[11]*mat.z
 		+ entries[15]*mat.w
-	);
-}
-
-MVector3 MMatrix4x4::getRotatedVector3(const MVector3 & vec) const
-{
-	return MVector3(
-		entries[0]*vec.x + entries[4]*vec.y + entries[8]*vec.z,
-		entries[1]*vec.x + entries[5]*vec.y + entries[9]*vec.z,
-		entries[2]*vec.x + entries[6]*vec.y + entries[10]*vec.z
 	);
 }
 

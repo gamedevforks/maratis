@@ -44,10 +44,8 @@ enum M_COLLISION_SHAPE_TYPE
 	M_COLLISION_SHAPE_TRIANGLE_MESH
 };
 
-class MPhysicsConstraint
+struct MPhysicsConstraint
 {
-public:
-	
 	MPhysicsConstraint(void);
 	MPhysicsConstraint(const MPhysicsConstraint & constraint);
 	
@@ -184,8 +182,8 @@ public:
 	bool isInvisible(void){ return m_isInvisible; }
 
 	// mesh
-	void setMeshRef(MMeshRef * meshRef);
 	MMesh * getMesh(void);
+	void setMeshRef(MMeshRef * meshRef);
 	inline MMeshRef * getMeshRef(void){ return m_meshRef; }
 
 	// animation

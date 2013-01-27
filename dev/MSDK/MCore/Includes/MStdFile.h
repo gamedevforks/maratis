@@ -44,17 +44,17 @@ private:
 public:
 	
 	MStdFile();
-	MStdFile(const char* path, const char* mode);
+	MStdFile(const char * path, const char * mode);
 	~MStdFile();
 	
-	static MStdFile * getNew(const char* path, const char* mode);
+	static MStdFile * getNew(const char * path, const char * mode);
 	
-	void	open(const char* path, const char* mode);
+	void	open(const char * path, const char * mode);
 	int		close();
 	size_t	read(void* dest, size_t size, size_t count);
-	size_t	write(const void* str, size_t size, size_t count);
-	int		print(const char* format, ...);
-	int		print(const char* format, va_list args);
+	size_t	write(const void * str, size_t size, size_t count);
+	int		print(const char * format, ...);
+	int		print(const char * format, va_list args);
 	int		seek(long offset, int whence);
 	long	tell();
 	void	rewind();

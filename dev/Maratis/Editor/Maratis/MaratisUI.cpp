@@ -350,11 +350,11 @@ void MaratisUI::editScene(void)
 	position += MVector2(0, ySpace*2);
 
 	// gravity
-	MVector3 * gravity = scene->getGravity();
+	m_editGravity = scene->getGravity();
 	addVariableName(m_editWin, "gravity", &position);
-	addValue(m_editWin, "x", M_VAR_FLOAT, &gravity->x, &position);
-	addValue(m_editWin, "y", M_VAR_FLOAT, &gravity->y, &position);
-	addValue(m_editWin, "z", M_VAR_FLOAT, &gravity->z, &position);
+	addValue(m_editWin, "x", M_VAR_FLOAT, &m_editGravity.x, &position);
+	addValue(m_editWin, "y", M_VAR_FLOAT, &m_editGravity.y, &position);
+	addValue(m_editWin, "z", M_VAR_FLOAT, &m_editGravity.z, &position);
 	position += MVector2(0, ySpace);
 
 	m_editWin->resizeScroll();
@@ -735,10 +735,11 @@ void MaratisUI::editObject(MObject3d * object)
 					addValue(m_editWin, "", M_VAR_FLOAT, &m_editRadius, &position);
 					position += MVector2(0, ySpace);
 
+					m_editLightColor = light->getColor();
 					addVariableName(m_editWin, "color", &position);
-					addValue(m_editWin, "r", M_VAR_FLOAT, &light->getColor()->x, &position);
-					addValue(m_editWin, "v", M_VAR_FLOAT, &light->getColor()->y, &position);
-					addValue(m_editWin, "b", M_VAR_FLOAT, &light->getColor()->z, &position);
+					addValue(m_editWin, "r", M_VAR_FLOAT, &m_editLightColor.x, &position);
+					addValue(m_editWin, "v", M_VAR_FLOAT, &m_editLightColor.y, &position);
+					addValue(m_editWin, "b", M_VAR_FLOAT, &m_editLightColor.z, &position);
 					position += MVector2(0, ySpace);
 
 					m_editIntensity = light->getIntensity();
@@ -974,11 +975,12 @@ void MaratisUI::editObject(MObject3d * object)
 					position += MVector2(0, ySpace*2);
 
 					// color
+					m_editTextColor = text->getColor();
 					addVariableName(m_editWin, "color", &position);
-					addValue(m_editWin, "r", M_VAR_FLOAT, &text->getColor()->x, &position);
-					addValue(m_editWin, "v", M_VAR_FLOAT, &text->getColor()->y, &position);
-					addValue(m_editWin, "b", M_VAR_FLOAT, &text->getColor()->z, &position);
-					addValue(m_editWin, "a", M_VAR_FLOAT, &text->getColor()->w, &position);
+					addValue(m_editWin, "r", M_VAR_FLOAT, &m_editTextColor.x, &position);
+					addValue(m_editWin, "v", M_VAR_FLOAT, &m_editTextColor.y, &position);
+					addValue(m_editWin, "b", M_VAR_FLOAT, &m_editTextColor.z, &position);
+					addValue(m_editWin, "a", M_VAR_FLOAT, &m_editTextColor.w, &position);
 					position += MVector2(0, ySpace);
 
 					//text
@@ -1655,15 +1657,14 @@ void MaratisUI::createGUI(void)
 
 	// file menu
 	MGuiMenu * fileMenu = new MGuiMenu(
-                                       MVector2(x, 9),
-                                       MVector2(64, 32),
-                                       normalColor,
-                                       NULL);
+		MVector2(x, 9),
+		MVector2(64, 32),
+        normalColor,
+        NULL);
 
 	x += 8;
 
-	MGuiText * fileText = new MGuiText(
-                                       "File", MVector2(x, 17), 16, MVector4(1, 1, 1, 1));
+	MGuiText * fileText = new MGuiText("File", MVector2(x, 17), 16, MVector4(1, 1, 1, 1));
 
 	fileMenu->setHighLightColor(highLightColor);
 	fileMenu->setPressedColor(pressColor);
@@ -1676,14 +1677,17 @@ void MaratisUI::createGUI(void)
 	addTextButtonToMenu(fileMenu, " Open Level", MVector2(0, 80), openLevelEvents);
 	addTextButtonToMenu(fileMenu, " Save", MVector2(0, 110), saveEvents);
 	addTextButtonToMenu(fileMenu, " Save as", MVector2(0, 130), saveAsEvents);
-    addTextButtonToMenu(fileMenu, " Publish Project", MVector2(0, 160), publishEvents);
+	
+	addTextButtonToMenu(fileMenu, " Import Models", MVector2(0, 160), importExternalEvents);
+	
+    addTextButtonToMenu(fileMenu, " Publish Project", MVector2(0, 190), publishEvents);
 
-	addTextButtonToMenu(fileMenu, " Quit", MVector2(0, 190), quitEvents);
+	addTextButtonToMenu(fileMenu, " Quit", MVector2(0, 220), quitEvents);
 
-	addTextToMenu(fileMenu, "Ctrl O ", MVector2(120, 80));
-	addTextToMenu(fileMenu, "Ctrl S ", MVector2(120, 110));
-	addTextToMenu(fileMenu, "Ctrl Q ", MVector2(120, 190));
-	addTextToMenu(fileMenu, "", MVector2(0, 200));
+	addTextToMenu(fileMenu, "Ctrl O ", MVector2(155, 80));
+	addTextToMenu(fileMenu, "Ctrl S ", MVector2(155, 110));
+	addTextToMenu(fileMenu, "Ctrl Q ", MVector2(155, 220));
+	addTextToMenu(fileMenu, "", MVector2(0, 240));
 
 	fileMenu->getWindowMenu()->setShadow(true);
 	fileMenu->getWindowMenu()->setNormalColor(menuColor);
@@ -2377,7 +2381,11 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 	Maratis * maratis = Maratis::getInstance();
 	MaratisUI * UI = MaratisUI::getInstance();
 	MObject3d * object = UI->getEditedObject();
+	
+	MLevel * level = MEngine::getInstance()->getLevel();
+	MScene * scene = level->getCurrentScene();
 
+	
 	switch(guiEvents->type)
 	{
 			
@@ -2444,6 +2452,9 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 				object->setScale(UI->m_editScale);
 			}
 
+			// light color
+			else if(edit->getVariablePointer() == &UI->m_editLightColor)
+				((MOLight *)object)->setColor(UI->m_editLightColor);
             // radius
 			else if(edit->getVariablePointer() == &UI->m_editRadius)
 				((MOLight *)object)->setRadius(UI->m_editRadius);
@@ -2525,11 +2536,16 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             else if(edit->getVariablePointer() == &UI->m_editAngularFactor)
 				((MOEntity *)object)->getPhysicsProperties()->setAngularFactor(UI->m_editAngularFactor);
 
+			// text color
+			else if(edit->getVariablePointer() == &UI->m_editTextColor)
+				((MOText *)object)->setColor(UI->m_editTextColor);
             // text size
             else if(edit->getVariablePointer() == &UI->m_editSize)
 				((MOText *)object)->setSize(UI->m_editSize);
-			// else if(edit->getVariablePointer() == &UI->m_editText)
-			//   ((MOText *)object)->setText(UI->m_editText.getData());
+			
+			// gravity
+            else if(edit->getVariablePointer() == &UI->m_editGravity)
+				scene->setGravity(UI->m_editGravity);
 
             break;
         case MGUI_EVENT_DRAW:
@@ -3970,6 +3986,21 @@ void MaratisUI::publishEvents(MGuiButton * button, MGuiEvent * guiEvents)
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
             maratis->publish();
+            break;
+
+        default:
+            break;
+	}
+}
+
+// import external
+void MaratisUI::importExternalEvents(MGuiButton * button, MGuiEvent * guiEvents)
+{
+	Maratis * maratis = Maratis::getInstance();
+	switch(guiEvents->type)
+	{
+        case MGUI_EVENT_MOUSE_BUTTON_UP:
+            maratis->importExternal();
             break;
 
         default:

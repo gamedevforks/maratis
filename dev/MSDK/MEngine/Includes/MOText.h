@@ -105,7 +105,7 @@ public:
 
 	// color
 	inline void setColor(const MVector4 & color){ m_color = color; }
-	inline MVector4 * getColor(void){ return &m_color; }
+	inline MVector4 getColor(void) const { return m_color; }
 
 	// bounding box
 	inline MBox3d * getBoundingBox(void){ return &m_boundingBox; }

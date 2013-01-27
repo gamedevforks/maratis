@@ -33,8 +33,7 @@
 
 MString::MString(void):
 m_data(NULL)
-{
-}
+{}
 
 MString::MString(const char * data):
 m_data(NULL)

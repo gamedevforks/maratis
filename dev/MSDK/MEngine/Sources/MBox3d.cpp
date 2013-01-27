@@ -35,18 +35,18 @@ MBox3d::MBox3d(void)
 {}
 
 MBox3d::MBox3d(const MBox3d & box):
-m_min(box.m_min),
-m_max(box.m_max)
+min(box.min),
+max(box.max)
 {}
 
-MBox3d::MBox3d(const MVector3 & min, const MVector3 & max):
-m_min(min),
-m_max(max)
+MBox3d::MBox3d(const MVector3 & _min, const MVector3 & _max):
+min(_min),
+max(_max)
 {}
 
-bool MBox3d::isInCollisionWith(MBox3d * box)
+bool MBox3d::isInCollisionWith(const MBox3d & box)
 {
-	if(! isBoxToBoxCollision(m_min, m_max, *box->getMin(), *box->getMax()))
+	if(! isBoxToBoxCollision(min, max, box.min, box.max))
 		return false;
 
 	return true;
@@ -56,24 +56,21 @@ void MBox3d::initFromPoints(const MVector3 * points, unsigned int pointsNumber)
 {
 	if(pointsNumber > 0)
 	{
-		MVector3 * min = getMin();
-		MVector3 * max = getMax();
-
 		const MVector3 * point = &points[0];
-		(*min) = (*max) = (*point);
+		min = max = (*point);
 
 		unsigned int i;
 		for(i=1; i<pointsNumber; i++)
 		{
 			point = &points[i];
 
-			min->x = MIN(min->x, point->x);
-			min->y = MIN(min->y, point->y);
-			min->z = MIN(min->z, point->z);
+			min.x = MIN(min.x, point->x);
+			min.y = MIN(min.y, point->y);
+			min.z = MIN(min.z, point->z);
 
-			max->x = MAX(max->x, point->x);
-			max->y = MAX(max->y, point->y);
-			max->z = MAX(max->z, point->z);
+			max.x = MAX(max.x, point->x);
+			max.y = MAX(max.y, point->y);
+			max.z = MAX(max.z, point->z);
 		}
 	}
 }

@@ -27,10 +27,37 @@
 //
 //========================================================================
 
-
 #include "../Includes/MEngine.h"
 
 
+// blend matrices optim
+#ifdef __SSE2__
+#include <mmintrin.h>
+#include <xmmintrin.h>
+
+static void blendMatrices(MMatrix4x4 * matrix, const MMatrix4x4 * skinMatrix, const float weight)
+{
+	__m128 w = _mm_set1_ps(weight);
+				
+	for(int i=0; i<16; i+=4)
+	{
+		__m128 a = _mm_loadu_ps(matrix->entries + i);
+		__m128 b = _mm_loadu_ps(skinMatrix->entries + i);
+		__m128 c = _mm_mul_ps(b, w);
+		__m128 d = _mm_add_ps(a, c);
+		_mm_storeu_ps(matrix->entries + i, d);
+	}
+}
+#else
+static void blendMatrices(MMatrix4x4 * matrix, const MMatrix4x4 * skinMatrix, const float weight)
+{
+	for(int i=0; i<16; i++)
+		matrix->entries[i] += skinMatrix->entries[i] * weight;
+}
+#endif
+
+
+// animation
 bool animateFloat(MKey * keys, unsigned int keysNumber, float t, float * value)
 {
 	// no keys
@@ -383,114 +410,87 @@ void animateMaterials(MMesh * mesh, MMaterialsAnim * materialsAnim, float t)
 	}
 }
 
+
+// skinning
 void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 * baseVertices, const MVector3 * baseNormals, const MVector3 * baseTangents, MVector3 * vertices, MVector3 * normals, MVector3 * tangents)
 {
+	MMatrix4x4 matrix;
+
 	unsigned int p;
 	unsigned int pSize = skinData->getPointsNumber();
-	if (baseTangents && baseNormals)
+	if(baseTangents && baseNormals)
 	{
-		for (p = 0; p < pSize; p++)
+		for(p = 0; p < pSize; p++)
 		{
 			MSkinPoint * point = skinData->getPoint(p);
-			unsigned short * bonesIds = point->getBonesIds();
-			float * bonesWeights = point->getBonesWeights();
+			const unsigned short * bonesIds = point->getBonesIds();
+			const float * bonesWeights = point->getBonesWeights();
 			
 			unsigned int vertexId = point->getVertexId();
-			unsigned int bSize = point->getBonesNumber();
+			unsigned int b, bSize = point->getBonesNumber();
 			
-			if (bSize > 1) // weighted skin
+			memset(matrix.entries, 0, sizeof(float)*16);
+			
+			for(b=0; b<bSize; b++)
 			{
-				MOBone * bone = armature->getBone(bonesIds[0]);
-				MMatrix4x4 matrix((*bone->getSkinMatrix()) * bonesWeights[0]);
-				
-				unsigned int b;
-				for(b=1; b<bSize; b++)
-				{
-					MOBone * bone = armature->getBone(bonesIds[b]);
-					matrix += (*bone->getSkinMatrix()) * bonesWeights[b];
-				}
-				
-				vertices[vertexId] = matrix * baseVertices[vertexId];
-				normals[vertexId] = matrix.getRotatedVector3(baseNormals[vertexId]);
-				tangents[vertexId] = matrix.getRotatedVector3(baseTangents[vertexId]);
+				MOBone * bone = armature->getBone(bonesIds[b]);
+				blendMatrices(&matrix, bone->getSkinMatrix(), bonesWeights[b]);
 			}
-			else if (bSize == 1) // simple skin
-			{
-				MOBone * bone = armature->getBone(bonesIds[0]);
-				vertices[vertexId] = (*bone->getSkinMatrix()) * baseVertices[vertexId];
-				normals[vertexId] = bone->getSkinMatrix()->getRotatedVector3(baseNormals[vertexId]);
-				tangents[vertexId] = bone->getSkinMatrix()->getRotatedVector3(baseTangents[vertexId]);
-			}
+			
+			vertices[vertexId] = matrix * baseVertices[vertexId];
+			normals[vertexId] = matrix.getRotatedVector3(baseNormals[vertexId]);
+			tangents[vertexId] = matrix.getRotatedVector3(baseTangents[vertexId]);
 		}
 	}
-	else if (baseNormals)
+	else if(baseNormals)
 	{
-		for (p = 0; p < pSize; p++)
+		for(p = 0; p < pSize; p++)
 		{
 			MSkinPoint * point = skinData->getPoint(p);
-			unsigned short * bonesIds = point->getBonesIds();
-			float * bonesWeights = point->getBonesWeights();
-
-			unsigned int vertexId = point->getVertexId();
-			unsigned int bSize = point->getBonesNumber();
+			const unsigned short * bonesIds = point->getBonesIds();
+			const float * bonesWeights = point->getBonesWeights();
 			
-			if (bSize > 1) // weighted skin
+			unsigned int vertexId = point->getVertexId();
+			unsigned int b, bSize = point->getBonesNumber();
+			
+			memset(matrix.entries, 0, sizeof(float)*16);
+			
+			for(b=0; b<bSize; b++)
 			{
-				MOBone * bone = armature->getBone(bonesIds[0]);
-				MMatrix4x4 matrix((*bone->getSkinMatrix()) * bonesWeights[0]);
-
-				unsigned int b;
-				for(b=1; b<bSize; b++)
-				{
-					MOBone * bone = armature->getBone(bonesIds[b]);
-					matrix += (*bone->getSkinMatrix()) * bonesWeights[b];
-				}
-
-				vertices[vertexId] = matrix * baseVertices[vertexId];
-				normals[vertexId] = matrix.getRotatedVector3(baseNormals[vertexId]);
+				MOBone * bone = armature->getBone(bonesIds[b]);
+				blendMatrices(&matrix, bone->getSkinMatrix(), bonesWeights[b]);
 			}
-			else if (bSize == 1) // simple skin
-			{
-				MOBone * bone = armature->getBone(bonesIds[0]);
-				vertices[vertexId] = (*bone->getSkinMatrix()) * baseVertices[vertexId];
-				normals[vertexId] = bone->getSkinMatrix()->getRotatedVector3(baseNormals[vertexId]);
-			}
+			
+			vertices[vertexId] = matrix * baseVertices[vertexId];
+			normals[vertexId] = matrix.getRotatedVector3(baseNormals[vertexId]);
 		}
 	}
 	else
 	{
-		for (p = 0; p < pSize; p++)
+		for(p = 0; p < pSize; p++)
 		{
 			MSkinPoint * point = skinData->getPoint(p);
-			unsigned short * bonesIds = point->getBonesIds();
-			float * bonesWeights = point->getBonesWeights();
-
-			unsigned int vertexId = point->getVertexId();
-			unsigned int bSize = point->getBonesNumber();
+			const unsigned short * bonesIds = point->getBonesIds();
+			const float * bonesWeights = point->getBonesWeights();
 			
-			if (bSize > 1) // weighted skin
+			unsigned int vertexId = point->getVertexId();
+			unsigned int b, bSize = point->getBonesNumber();
+			
+			memset(matrix.entries, 0, sizeof(float)*16);
+			
+			for(b=0; b<bSize; b++)
 			{
-				MOBone * bone = armature->getBone(bonesIds[0]);
-				MMatrix4x4 matrix((*bone->getSkinMatrix()) * bonesWeights[0]);
-
-				unsigned int b;
-				for(b=1; b<bSize; b++)
-				{
-					MOBone * bone = armature->getBone(bonesIds[b]);
-					matrix += (*bone->getSkinMatrix()) * bonesWeights[b];
-				}
-
-				vertices[vertexId] = matrix * baseVertices[vertexId];
+				MOBone * bone = armature->getBone(bonesIds[b]);
+				blendMatrices(&matrix, bone->getSkinMatrix(), bonesWeights[b]);
 			}
-			else if (bSize == 1) // simple skin
-			{
-				MOBone * bone = armature->getBone(bonesIds[0]);
-				vertices[vertexId] = (*bone->getSkinMatrix()) * baseVertices[vertexId];
-			}
+			
+			vertices[vertexId] = matrix * baseVertices[vertexId];
 		}
 	}
 }
 
+
+// simple raytracing
 bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size)
 {
 	switch(indicesType)
@@ -499,7 +499,7 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 		{
 			unsigned int v;
 			unsigned short * idx = (unsigned short *)indices;
-			for (v = 0; v < size; v += 3)
+			for(v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -519,7 +519,7 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 		{
 			unsigned int v;
 			unsigned int * idx = (unsigned int *)indices;
-			for (v = 0; v < size; v += 3)
+			for(v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -559,7 +559,7 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 		{
 			unsigned int v;
 			unsigned short * idx = (unsigned short *)indices;
-			for (v = 0; v < size; v += 3)
+			for(v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];
@@ -593,7 +593,7 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 		{
 			unsigned int v;
 			unsigned int * idx = (unsigned int *)indices;
-			for (v = 0; v < size; v += 3)
+			for(v = 0; v < size; v += 3)
 			{
 				const MVector3 * v1 = &vertices[idx[v]];
 				const MVector3 * v2 = &vertices[idx[v+1]];

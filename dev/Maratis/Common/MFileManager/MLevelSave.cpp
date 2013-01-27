@@ -30,80 +30,19 @@
 
 #include <MEngine.h>
 #include "MLevelSave.h"
+#include "MXmlCommon.h"
+
 
 static char rep[256];
 
 
-void openNode(FILE * file, const char * name, unsigned int tab)
-{
-	for(unsigned int i=0; i<tab; i++)
-		fprintf(file, "\t");
-	fprintf(file, "<%s>", name);
-}
-
-void closeNode(FILE * file, const char * name, unsigned int tab)
-{
-	for(unsigned int i=0; i<tab; i++)
-		fprintf(file, "\t");
-	fprintf(file, "</%s>", name);
-}
-
-void openAttributeNode(FILE * file, const char * name, unsigned int tab)
-{
-	for(unsigned int i=0; i<tab; i++)
-		fprintf(file, "\t");
-	fprintf(file, "<%s ", name);
-}
-
-void closeAttributeNode(FILE * file)
-{
-	fprintf(file, " />");
-}
-
-void writeBool(FILE * file, const char * name, bool variable)
-{
-	fprintf(file, "%s=\"", name);
-	if(variable)
-		fprintf(file, "true");
-	else
-		fprintf(file, "false");
-	fprintf(file, "\"");
-}
-
-void writeString(FILE * file, const char * name, const char * string)
-{
-	fprintf(file, "%s=\"%s\"", name, string);
-}
-
-void writeInt(FILE * file, const char * name, int variable)
-{
-	fprintf(file, "%s=\"%d\"", name, variable);
-}
-
-void writeFloat(FILE * file, const char * name, float variable)
-{
-	fprintf(file, "%s=\"%f\"", name, variable);
-}
-
-void writeFloatValues(FILE * file, const char * name, float * vector, unsigned int size)
-{
-	fprintf(file, "%s=\"", name);
-	for(unsigned int i=0; i<size; i++)
-	{
-		if(i>0) fprintf(file, " ");
-		fprintf(file, "%f", *vector);
-		vector++;
-	}
-	fprintf(file, "\"");
-}
-
-void writePhysics(FILE * file, MPhysicsProperties * physicsProperties)
+void writePhysics(MFile * file, MPhysicsProperties * physicsProperties)
 {
 	openAttributeNode(file, "physics", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// shape
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	switch(physicsProperties->getCollisionShape())
 	{
 	case M_COLLISION_SHAPE_BOX:
@@ -128,202 +67,202 @@ void writePhysics(FILE * file, MPhysicsProperties * physicsProperties)
 		writeString(file, "shape", "TriangleMesh");
 		break;
 	}
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// ghost
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "ghost", physicsProperties->isGhost());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// mass
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "mass", physicsProperties->getMass());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// friction
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "friction", physicsProperties->getFriction());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// restitution
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "restitution", physicsProperties->getRestitution());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// linearDamping
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "linearDamping", physicsProperties->getLinearDamping());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// angularDamping
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "angularDamping", physicsProperties->getAngularDamping());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// angularFactor
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "angularFactor", physicsProperties->getAngularFactor());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// linearFactor
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloatValues(file, "linearFactor", *physicsProperties->getLinearFactor(), 3);
 	
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 	
 	// constraint
 	MPhysicsConstraint * constraint = physicsProperties->getConstraint();
 	if(constraint)
 	{
 		openAttributeNode(file, "constraint", 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// parent
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeString(file, "parent", constraint->parentName.getData());
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// pivot
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloatValues(file, "pivot", constraint->pivot, 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// lowerLinearLimit
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloatValues(file, "lowerLinearLimit", constraint->lowerLinearLimit, 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// upperLinearLimit
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloatValues(file, "upperLinearLimit", constraint->upperLinearLimit, 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// lowerAngularLimit
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloatValues(file, "lowerAngularLimit", constraint->lowerAngularLimit, 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// upperAngularLimit
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloatValues(file, "upperAngularLimit", constraint->upperAngularLimit, 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// disableParentCollision
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeBool(file, "disableParentCollision", constraint->disableParentCollision);
 		
 		closeAttributeNode(file);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 	}
 }
 
-void writeCameraProperties(FILE * file, MOCamera * camera)
+void writeCameraProperties(MFile * file, MOCamera * camera)
 {
 	openAttributeNode(file, "properties", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// clearColor
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloatValues(file, "clearColor", *camera->getClearColor(), 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// ortho
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "ortho", camera->isOrtho());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// fov
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "fov", camera->getFov());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// clippingNear
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "clippingNear", camera->getClippingNear());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// clippingFar
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "clippingFar", camera->getClippingFar());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// fog
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "fog", camera->hasFog());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// fogDistance
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "fogDistance", camera->getFogDistance());
 
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeEntityProperties(FILE * file, MOEntity * entity)
+void writeEntityProperties(MFile * file, MOEntity * entity)
 {
 	openAttributeNode(file, "properties", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// invisible
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "invisible", entity->isInvisible());
 
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeSoundProperties(FILE * file, MOSound * sound)
+void writeSoundProperties(MFile * file, MOSound * sound)
 {
 	openAttributeNode(file, "properties", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// loop
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "loop", sound->isLooping());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// pitch
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "pitch", sound->getPitch());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// gain
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "gain", sound->getGain());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// radius
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "radius", sound->getRadius());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// rolloff
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "rolloff", sound->getRolloff());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 	
 	// relative
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "relative", sound->isRelative());
 	
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeTextProperties(FILE * file, MOText * text)
+void writeTextProperties(MFile * file, MOText * text)
 {
 	openAttributeNode(file, "properties", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// size
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "size", text->getSize());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// align
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	switch(text->getAlign())
 	{
 	case M_ALIGN_LEFT:
@@ -336,168 +275,168 @@ void writeTextProperties(FILE * file, MOText * text)
 		writeString(file, "align", "Center");
 		break;
 	}
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// color
-	fprintf(file, "\t\t\t\t");
-	writeFloatValues(file, "color", *text->getColor(), 4);
+	M_fprintf(file, "\t\t\t\t");
+	writeFloatValues(file, "color", text->getColor(), 4);
 
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// text
 	if(text->getText())
 	{
 		openNode(file, "textData", 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 
-		fprintf(file, "\t\t\t\t<![CDATA[");
-		fprintf(file, "%s", text->getText());
-		fprintf(file, "]]>");
-		fprintf(file, "\n");
+		M_fprintf(file, "\t\t\t\t<![CDATA[");
+		M_fprintf(file, "%s", text->getText());
+		M_fprintf(file, "]]>");
+		M_fprintf(file, "\n");
 
 		closeNode(file, "textData", 3);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 	}
 }
 
-void writeSceneProperties(FILE * file, MScene * scene)
+void writeSceneProperties(MFile * file, MScene * scene)
 {
 	openAttributeNode(file, "properties", 2);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// data mode
 	M_DATA_MODES dataMode = scene->getDataMode();
 	switch(dataMode)
 	{
 	case M_DATA_STATIC:
-		fprintf(file, "\t\t\t");
+		M_fprintf(file, "\t\t\t");
 		writeString(file, "data", "Static");
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		break;
 	case M_DATA_DYNAMIC:
-		fprintf(file, "\t\t\t");
+		M_fprintf(file, "\t\t\t");
 		writeString(file, "data", "Dynamic");
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		break;
 	case M_DATA_STREAM:
-		fprintf(file, "\t\t\t");
+		M_fprintf(file, "\t\t\t");
 		writeString(file, "data", "Stream");
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		break;
 	}
 
 	// gravity
-	fprintf(file, "\t\t\t");
-	writeFloatValues(file, "gravity", *scene->getGravity(), 3);
+	M_fprintf(file, "\t\t\t");
+	writeFloatValues(file, "gravity", scene->getGravity(), 3);
 
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeLightProperties(FILE * file, MOLight * light)
+void writeLightProperties(MFile * file, MOLight * light)
 {
 	openAttributeNode(file, "properties", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// radius
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "radius", light->getRadius());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// color
-	fprintf(file, "\t\t\t\t");
-	writeFloatValues(file, "color", *light->getColor(), 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\t\t\t\t");
+	writeFloatValues(file, "color", light->getColor(), 3);
+	M_fprintf(file, "\n");
 
 	// intensity
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "intensity", light->getIntensity());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// spotAngle
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "spotAngle", light->getSpotAngle());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// spotExponent
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloat(file, "spotExponent", light->getSpotExponent());
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 	
 	// shadow
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeBool(file, "shadow", light->isCastingShadow());
 	
 	if(light->isCastingShadow())
 	{
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		
 		// shadow bias
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloat(file, "shadowBias", light->getShadowBias());
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 	
 		// shadow blur
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeFloat(file, "shadowBlur", light->getShadowBlur());
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 	
 		// shadow quality
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeInt(file, "shadowQuality", light->getShadowQuality());
 	}
 	
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeObjectTransform(FILE * file, MObject3d * object)
+void writeObjectTransform(MFile * file, MObject3d * object)
 {
 	openAttributeNode(file, "active", 3);
 	writeBool(file, "value", object->isActive());
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	openAttributeNode(file, "transform", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// parent
 	MObject3d * parent = object->getParent();
 	if(parent)
 	{
-		fprintf(file, "\t\t\t\t");
+		M_fprintf(file, "\t\t\t\t");
 		writeString(file, "parent", parent->getName());
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 	}
 
 	// position
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloatValues(file, "position", object->getPosition(), 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// rotation
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	MVector3 rotation = object->getEulerRotation();
 	writeFloatValues(file, "rotation", rotation, 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	// scale
-	fprintf(file, "\t\t\t\t");
+	M_fprintf(file, "\t\t\t\t");
 	writeFloatValues(file, "scale", object->getScale(), 3);
 
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeBehavior(FILE * file, MBehavior * behavior)
+void writeBehavior(MFile * file, MBehavior * behavior)
 {
 	openAttributeNode(file, "Behavior", 3);
 	writeString(file, "name", behavior->getName());
-	fprintf(file, ">\n");
+	M_fprintf(file, ">\n");
 
 	openAttributeNode(file, "properties", 4);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	unsigned int i;
 	unsigned int size = behavior->getVariablesNumber();
@@ -509,60 +448,21 @@ void writeBehavior(FILE * file, MBehavior * behavior)
 		if(varType == M_VARIABLE_NULL)
 			continue;
 
-		const char * name = variable.getName();
-
-		fprintf(file, "\t\t\t\t\t");
-
-		switch(variable.getType())
-		{
-		case M_VARIABLE_BOOL:
-			writeBool(file, name, *((bool*)variable.getPointer()));
-			break;
-		case M_VARIABLE_INT:
-		case M_VARIABLE_UINT:
-			writeInt(file, name, *((int*)variable.getPointer()));
-			break;
-		case M_VARIABLE_FLOAT:
-			writeFloat(file, name, *((float*)variable.getPointer()));
-			break;
-		case M_VARIABLE_STRING:
-			writeString(file, name, ((MString*)variable.getPointer())->getData());
-			break;
-		case M_VARIABLE_VEC2:
-			writeFloatValues(file, name, *((MVector2*)variable.getPointer()), 2);
-			break;
-		case M_VARIABLE_VEC3:
-			writeFloatValues(file, name, *((MVector3*)variable.getPointer()), 3);
-			break;
-		case M_VARIABLE_VEC4:
-			writeFloatValues(file, name, *((MVector4*)variable.getPointer()), 4);
-			break;
-		case M_VARIABLE_TEXTURE_REF:
-			{
-				MTextureRef * textureRef = *(MTextureRef **)variable.getPointer();
-				if(textureRef)
-				{
-					char filename[256];
-					getLocalFilename(filename, rep, textureRef->getFilename());
-					writeString(file, name, filename);
-				}
-				
-				break;
-			}
-		}
+		M_fprintf(file, "\t\t\t\t\t");
+        writeVariable(file, &variable, rep);
 
 		if((i+1) < size)
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 	}
 
 	closeAttributeNode(file);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 
 	closeNode(file, "Behavior", 3);
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 }
 
-void writeBehaviors(FILE * file, MObject3d * object)
+void writeBehaviors(MFile * file, MObject3d * object)
 {
 	unsigned int i;
 	unsigned int size = object->getBehaviorsNumber();
@@ -575,7 +475,7 @@ void writeBehaviors(FILE * file, MObject3d * object)
 
 bool xmlLevelSave(MLevel * level, const char * filename)
 {
-	FILE * file = fopen(filename, "wt");
+	MFile * file = M_fopen(filename, "wt");
 	if(! file)
 		return false;
 
@@ -585,14 +485,14 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 	getRepertory(rep, filename);
 
 	openNode(file, "Maratis version=\"3.0\"", 0);
-	fprintf(file, "\n\n");
+	M_fprintf(file, "\n\n");
 	openNode(file, "Level", 0);
-	fprintf(file, "\n\n");
+	M_fprintf(file, "\n\n");
 
 	openAttributeNode(file, "properties", 1);
 	writeInt(file, "currentScene", level->getCurrentSceneId());
 	closeAttributeNode(file);
-	fprintf(file, "\n\n");
+	M_fprintf(file, "\n\n");
 
 	// scenes
 	unsigned int i;
@@ -603,7 +503,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 
 		openAttributeNode(file, "Scene", 1);
 		writeString(file, "name", scene->getName());
-		fprintf(file, ">\n\n");
+		M_fprintf(file, ">\n\n");
 		
 		// script
 		if(scene->getScriptFilename())
@@ -615,13 +515,13 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 				openAttributeNode(file, "script", 2);
 				writeString(file, "file", localFile);
 				closeAttributeNode(file);
-				fprintf(file, "\n");
+				M_fprintf(file, "\n");
 			}
 		}
 
 		// properties
 		writeSceneProperties(file, scene);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 
 		// lights
 		unsigned int l;
@@ -632,7 +532,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 
 			openAttributeNode(file, "Light", 2);
 			writeString(file, "name", light->getName());
-			fprintf(file, ">\n");
+			M_fprintf(file, ">\n");
 
 			// transform
 			writeObjectTransform(file, light);
@@ -644,7 +544,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 			writeBehaviors(file, light);
 
 			closeNode(file, "Light", 2);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 		}
 
 		// cameras
@@ -656,7 +556,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 
 			openAttributeNode(file, "Camera", 2);
 			writeString(file, "name", camera->getName());
-			fprintf(file, ">\n");
+			M_fprintf(file, ">\n");
 
 			// transform
 			writeObjectTransform(file, camera);
@@ -668,7 +568,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 			writeBehaviors(file, camera);
 
 			closeNode(file, "Camera", 2);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 		}
 
 		// sound
@@ -694,11 +594,11 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 			if(soundFile)
 			{
 				getLocalFilename(localFile, rep, soundFile);
-				fprintf(file, " ");
+				M_fprintf(file, " ");
 				writeString(file, "file", localFile);
 			}
 
-			fprintf(file, ">\n");
+			M_fprintf(file, ">\n");
 
 			// transform
 			writeObjectTransform(file, sound);
@@ -710,7 +610,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 			writeBehaviors(file, sound);
 
 			closeNode(file, "Sound", 2);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 		}
 
 		// entities
@@ -733,26 +633,26 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 				if(meshFile)
 				{
 					getLocalFilename(localFile, rep, meshFile);
-					fprintf(file, " ");
+					M_fprintf(file, " ");
 					writeString(file, "file", localFile);
 				}
 			}
 
-			fprintf(file, ">\n");
+			M_fprintf(file, ">\n");
 
 			// bounding box
 			openAttributeNode(file, "BoundingBox", 3);
-			writeFloatValues(file, "min", *entity->getBoundingBox()->getMin(), 3);
-			fprintf(file, " ");
-			writeFloatValues(file, "max", *entity->getBoundingBox()->getMax(), 3);
+			writeFloatValues(file, "min", entity->getBoundingBox()->min, 3);
+			M_fprintf(file, " ");
+			writeFloatValues(file, "max", entity->getBoundingBox()->max, 3);
 			closeAttributeNode(file);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 
 			// anim
 			openAttributeNode(file, "anim", 3);
 			writeInt(file, "id", (int)entity->getAnimationId());
 			closeAttributeNode(file);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 
 			// transform
 			writeObjectTransform(file, entity);
@@ -769,7 +669,7 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 			writeBehaviors(file, entity);
 
 			closeNode(file, "Entity", 2);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 		}
 
 		// text
@@ -793,12 +693,12 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 				if(fontFile)
 				{
 					getLocalFilename(localFile, rep, fontFile);
-					fprintf(file, " ");
+					M_fprintf(file, " ");
 					writeString(file, "file", localFile);
 				}
 			}
 
-			fprintf(file, ">\n");
+			M_fprintf(file, ">\n");
 
 			// transform
 			writeObjectTransform(file, text);
@@ -810,20 +710,20 @@ bool xmlLevelSave(MLevel * level, const char * filename)
 			writeBehaviors(file, text);
 
 			closeNode(file, "Text", 2);
-			fprintf(file, "\n");
+			M_fprintf(file, "\n");
 		}
 
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 		closeNode(file, "Scene", 1);
-		fprintf(file, "\n");
+		M_fprintf(file, "\n");
 	}
 
 
-	fprintf(file, "\n");
+	M_fprintf(file, "\n");
 	closeNode(file, "Level", 0);
-	fprintf(file, "\n\n");
+	M_fprintf(file, "\n\n");
 	closeNode(file, "Maratis", 0);
 
-	fclose(file);
+	M_fclose(file);
 	return true;
 }

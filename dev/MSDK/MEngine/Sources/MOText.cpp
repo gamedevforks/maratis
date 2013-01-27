@@ -105,8 +105,8 @@ void MOText::updateLinesOffset(void)
 	float max = 0;
 
 	// bounding box
-	MVector3 * boxMin = m_boundingBox.getMin();
-	MVector3 * boxMax = m_boundingBox.getMax();
+	MVector3 * boxMin = &m_boundingBox.min;
+	MVector3 * boxMax = &m_boundingBox.max;
 	
 	// clear lines
 	m_linesOffset.clear();
@@ -214,8 +214,8 @@ void MOText::prepare(void)
 		return;
 	}
 
-	MVector3 * min = m_boundingBox.getMin();
-	MVector3 * max = m_boundingBox.getMax();
+	MVector3 * min = &m_boundingBox.min;
+	MVector3 * max = &m_boundingBox.max;
 
 	(*min) = (*max) = MVector3(0, 0, 0);
 
@@ -279,8 +279,8 @@ void MOText::updateVisibility(MOCamera * camera)
 {
 	MFrustum * frustum = camera->getFrustum();
 
-	MVector3 * min = m_boundingBox.getMin();
-	MVector3 * max = m_boundingBox.getMax();
+	MVector3 * min = &m_boundingBox.min;
+	MVector3 * max = &m_boundingBox.max;
 
 	MVector3 points[8] = {
 		getTransformedVector(MVector3(min->x, min->y, min->z)),

@@ -44,10 +44,6 @@ public:
 
 	// copy constructor
 	MObject3d(const MObject3d & object);
-
-protected:
-
-	void clearObject3d(void);
 	
 protected:
 
@@ -78,9 +74,12 @@ protected:
 
 private:
 
-	// childs
 	void removeChild(MObject3d * child);
 
+protected:
+	
+	void clearObject3d(void);
+	
 public:
 
 	// matrices

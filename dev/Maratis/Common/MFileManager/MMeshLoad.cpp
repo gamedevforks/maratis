@@ -29,7 +29,6 @@
 
 
 #include <MEngine.h>
-#include <MLog.h>
 #include <tinyxml.h>
 
 #include "MMeshLoad.h"
@@ -661,7 +660,7 @@ bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory)
 
 bool xmlMeshLoad(const char * filename, void * data)
 {
-    MLOG(7, "xmlMeshLoad " << filename?filename:"NULL");
+    MLOG_DEBUG("xmlMeshLoad " << filename?filename:"NULL");
 	
 	MLevel * level = MEngine::getInstance()->getLevel();
 
@@ -669,7 +668,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
 	{
-	    MLOG(4, "TiXmlDocument load failed : " << doc.ErrorDesc() << " line " << doc.ErrorRow());
+	    MLOG_WARNING("TiXmlDocument load failed : " << doc.ErrorDesc() << " line " << doc.ErrorRow());
 	    return false;
 	}
 
@@ -681,13 +680,13 @@ bool xmlMeshLoad(const char * filename, void * data)
 	pRootNode = hDoc.FirstChildElement().Element();
 	if(! pRootNode)
 	{
-	    MLOG(4, "Cannot find any root node");
+	    MLOG_WARNING("Cannot find any root node");
 	    return false;
 	}
 
 	if(strcmp(pRootNode->Value(), "Maratis") != 0)
 	{
-	    MLOG(4, "Cannot find Maratis root node");
+	    MLOG_WARNING("Cannot find Maratis root node");
 	    return false;
 	}
 
@@ -698,7 +697,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * pMeshNode = pRootNode->FirstChildElement("Mesh");
 	if(! pMeshNode)
 	{
-	    MLOG(4, "Cannot find a Mesh node");
+	    MLOG_WARNING("Cannot find a Mesh node");
 	    return false;
 	}
 
@@ -728,7 +727,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * texturesNode = pMeshNode->FirstChildElement("Textures");
 	if(texturesNode)
 	{
-	    MLOG(7, "entering Textures node");
+	    MLOG_DEBUG("entering Textures node");
 		
 		unsigned int numTextures = 0;
 		texturesNode->QueryUIntAttribute("num", &numTextures);
@@ -787,18 +786,20 @@ bool xmlMeshLoad(const char * filename, void * data)
 			TiXmlElement * translateNode = textureNode->FirstChildElement("translate");
 			if(translateNode)
 			{
-				MVector2 * translate = texture->getTexTranslate();
-				translateNode->QueryFloatAttribute("x", &translate->x);
-				translateNode->QueryFloatAttribute("y", &translate->y);
+				MVector2 translate = texture->getTexTranslate();
+				translateNode->QueryFloatAttribute("x", &translate.x);
+				translateNode->QueryFloatAttribute("y", &translate.y);
+				texture->setTexTranslate(translate);
 			}
 
 			// scale
 			TiXmlElement * scaleNode = textureNode->FirstChildElement("scale");
 			if(scaleNode)
 			{
-				MVector2 * scale = texture->getTexScale();
-				scaleNode->QueryFloatAttribute("x", &scale->x);
-				scaleNode->QueryFloatAttribute("y", &scale->y);
+				MVector2 scale = texture->getTexScale();
+				scaleNode->QueryFloatAttribute("x", &scale.x);
+				scaleNode->QueryFloatAttribute("y", &scale.y);
+				texture->setTexScale(scale);
 			}
 
 			// rotate
@@ -817,7 +818,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * materialsNode = pMeshNode->FirstChildElement("Materials");
 	if(materialsNode)
 	{
-	    MLOG(7, "entering Materials node");
+	    MLOG_DEBUG("entering Materials node");
 		
 		unsigned int numMaterials = 0;
 		materialsNode->QueryUIntAttribute("num", &numMaterials);
@@ -834,10 +835,10 @@ bool xmlMeshLoad(const char * filename, void * data)
 			material->setType(type);
 
 			float opacity=1, shininess=0, customValue=0;
-			MVector3 * diffuseColor = material->getDiffuse();
-			MVector3 * specularColor = material->getSpecular();
-			MVector3 * emitColor = material->getEmit();
-			MVector3 * customColor = material->getCustomColor();
+			MVector3 diffuseColor;
+			MVector3 specularColor;
+			MVector3 emitColor;
+			MVector3 customColor;
 
 			// blend
 			int blendType = 0;
@@ -880,33 +881,37 @@ bool xmlMeshLoad(const char * filename, void * data)
 			// diffuseColor
 			TiXmlElement * diffuseColorNode = materialNode->FirstChildElement("diffuseColor");
 			if(diffuseColorNode){
-				diffuseColorNode->QueryFloatAttribute("r", &diffuseColor->x);
-				diffuseColorNode->QueryFloatAttribute("g", &diffuseColor->y);
-				diffuseColorNode->QueryFloatAttribute("b", &diffuseColor->z);
+				diffuseColorNode->QueryFloatAttribute("r", &diffuseColor.x);
+				diffuseColorNode->QueryFloatAttribute("g", &diffuseColor.y);
+				diffuseColorNode->QueryFloatAttribute("b", &diffuseColor.z);
+				material->setDiffuse(diffuseColor);
 			}
 
 			// specularColor
 			TiXmlElement * specularColorNode = materialNode->FirstChildElement("specularColor");
 			if(specularColorNode){
-				specularColorNode->QueryFloatAttribute("r", &specularColor->x);
-				specularColorNode->QueryFloatAttribute("g", &specularColor->y);
-				specularColorNode->QueryFloatAttribute("b", &specularColor->z);
+				specularColorNode->QueryFloatAttribute("r", &specularColor.x);
+				specularColorNode->QueryFloatAttribute("g", &specularColor.y);
+				specularColorNode->QueryFloatAttribute("b", &specularColor.z);
+				material->setSpecular(specularColor);
 			}
 
 			// emitColor
 			TiXmlElement * emitColorNode = materialNode->FirstChildElement("emitColor");
 			if(emitColorNode){
-				emitColorNode->QueryFloatAttribute("r", &emitColor->x);
-				emitColorNode->QueryFloatAttribute("g", &emitColor->y);
-				emitColorNode->QueryFloatAttribute("b", &emitColor->z);
+				emitColorNode->QueryFloatAttribute("r", &emitColor.x);
+				emitColorNode->QueryFloatAttribute("g", &emitColor.y);
+				emitColorNode->QueryFloatAttribute("b", &emitColor.z);
+				material->setEmit(emitColor);
 			}
 
 			// customColor
 			TiXmlElement * customColorNode = materialNode->FirstChildElement("customColor");
 			if(customColorNode){
-				customColorNode->QueryFloatAttribute("r", &customColor->x);
-				customColorNode->QueryFloatAttribute("g", &customColor->y);
-				customColorNode->QueryFloatAttribute("b", &customColor->z);
+				customColorNode->QueryFloatAttribute("r", &customColor.x);
+				customColorNode->QueryFloatAttribute("g", &customColor.y);
+				customColorNode->QueryFloatAttribute("b", &customColor.z);
+				material->setCustomColor(customColor);
 			}
 
 			// TexturesPass
@@ -921,7 +926,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 				TiXmlElement * texturePassNode = texturesPassNode->FirstChildElement("texturePass");
 				for(texturePassNode; texturePassNode; texturePassNode=texturePassNode->NextSiblingElement("texturePass"))
 				{
-					int textureId = 0;
+					int textureId = -1;
 					unsigned int mapChannel = 0;
 
 					const char * mode = texturePassNode->Attribute("mode");
@@ -1027,7 +1032,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * bonesNode = pMeshNode->FirstChildElement("Bones");
 	if(bonesNode)
 	{
-	    MLOG(7, "entering Bones node");
+	    MLOG_DEBUG("entering Bones node");
 		
 		MArmature * armature = mesh->createArmature();
 
@@ -1117,8 +1122,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 	TiXmlElement * boundingBoxNode = pMeshNode->FirstChildElement("BoundingBox");
 	if(boundingBoxNode)
 	{
-		MVector3 * min = mesh->getBoundingBox()->getMin();
-		MVector3 * max = mesh->getBoundingBox()->getMax();
+		MVector3 * min = &mesh->getBoundingBox()->min;
+		MVector3 * max = &mesh->getBoundingBox()->max;
 
 		boundingBoxNode->QueryFloatAttribute("minx", &min->x);
 		boundingBoxNode->QueryFloatAttribute("miny", &min->y);
@@ -1139,8 +1144,8 @@ bool xmlMeshLoad(const char * filename, void * data)
 		boundingBoxNode = SubMeshNode->FirstChildElement("BoundingBox");
 		if(boundingBoxNode)
 		{
-			MVector3 * min = subMesh->getBoundingBox()->getMin();
-			MVector3 * max = subMesh->getBoundingBox()->getMax();
+			MVector3 * min = &subMesh->getBoundingBox()->min;
+			MVector3 * max = &subMesh->getBoundingBox()->max;
 
 			boundingBoxNode->QueryFloatAttribute("minx", &min->x);
 			boundingBoxNode->QueryFloatAttribute("miny", &min->y);
@@ -1273,15 +1278,16 @@ bool xmlMeshLoad(const char * filename, void * data)
 			TiXmlElement * colorNode = colorsNode->FirstChildElement("color");
 			for(colorNode; colorNode; colorNode=colorNode->NextSiblingElement("color"))
 			{
-				float x, y, z;
+				float x = 1, y = 1, z = 1, w = 1;
 				colorNode->QueryFloatAttribute("x", &x);
 				colorNode->QueryFloatAttribute("y", &y);
 				colorNode->QueryFloatAttribute("z", &z);
+				colorNode->QueryFloatAttribute("w", &w);
 
 				colors->r = (unsigned char)x*255;
 				colors->g = (unsigned char)y*255;
 				colors->b = (unsigned char)z*255;
-				colors->a = 255;
+				colors->a = (unsigned char)w*255;;
 
 				colors++;
 			}
@@ -1424,7 +1430,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 		subMeshs++;
 	}
 
-    MLOG(6, "xmlMeshLoad success: "<<numSubMeshs<<" submeshs found");
+    MLOG_DEBUG("xmlMeshLoad success: "<<numSubMeshs<<" submeshs found");
 	
 	return true;
 }

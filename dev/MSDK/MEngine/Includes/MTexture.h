@@ -97,8 +97,8 @@ public:
 	inline void setTexScale(const MVector2 & texScale){ m_texScale = texScale; }
 	inline void setTexRotate(float texRotate){ m_texRotate = texRotate; }
 
-	inline MVector2 * getTexTranslate(void){ return &m_texTranslate; }
-	inline MVector2 * getTexScale(void){ return &m_texScale; }
+	inline MVector2 getTexTranslate(void) const { return m_texTranslate; }
+	inline MVector2 getTexScale(void) const { return m_texScale; }
 	inline float getTexRotate(void){ return m_texRotate; }
 };
 

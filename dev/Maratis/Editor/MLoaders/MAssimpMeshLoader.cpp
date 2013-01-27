@@ -32,6 +32,9 @@
 #include <assimp/postprocess.h>
 
 #include <MEngine.h>
+
+#include <MFileManager/MMeshSave.h>
+
 #include "MAssimpMeshLoader.h"
 
 
@@ -49,8 +52,15 @@ struct SkinData
 	vector<BoneData> bones;
 };
 
+struct NodeInfos
+{
+	unsigned int nbKeyPos;
+	unsigned int nbKeyRot;
+	unsigned int nbKeyScale;
+};
 
-void countNodes(const aiScene * scene, const aiNode * nd, unsigned int * count, unsigned int * bonesCount)
+
+static void countMeshs(const aiScene * scene, const aiNode * nd, unsigned int * count)
 {
 	for(unsigned int m=0; m<nd->mNumMeshes; m++)
 	{
@@ -58,18 +68,23 @@ void countNodes(const aiScene * scene, const aiNode * nd, unsigned int * count, 
 		if(nodeMesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE)
 			(*count)++;
 	}
-
-	(*bonesCount)++;
 	
 	for(unsigned int n=0; n<nd->mNumChildren; n++)
-		countNodes(scene, nd->mChildren[n], count, bonesCount);
+		countMeshs(scene, nd->mChildren[n], count);
 }
 
 
-void createArmature(const aiScene * scene, const aiNode * nd, MArmature * armature, MOBone * parent, const MMatrix4x4 & parentMatrix)
-{	
-	printf("add bone %s %d\n", nd->mName.data, nd->mNumMeshes);
+static void countNodes(const aiScene * scene, const aiNode * nd, unsigned int * bonesCount)
+{
+	(*bonesCount)++;
 	
+	for(unsigned int n=0; n<nd->mNumChildren; n++)
+		countNodes(scene, nd->mChildren[n], bonesCount);
+}
+
+
+static void createArmature(const aiScene * scene, const aiNode * nd, MArmature * armature, MOBone * parent, const MMatrix4x4 & parentMatrix)
+{	
 	aiMatrix4x4 nodeMat = nd->mTransformation;
 	aiTransposeMatrix4(&nodeMat);
 	
@@ -96,7 +111,7 @@ void createArmature(const aiScene * scene, const aiNode * nd, MArmature * armatu
 		createArmature(scene, nd->mChildren[n], armature, bone, globalMatrix);
 }
 
-void initBones(const aiScene * scene, const aiMesh * nodeMesh, MMesh * mesh, MSubMesh * subMesh)
+static void initBones(const aiScene * scene, const aiMesh * nodeMesh, MMesh * mesh, MSubMesh * subMesh)
 {
 	MArmature * armature = mesh->getArmature();
 	
@@ -193,7 +208,7 @@ void initBones(const aiScene * scene, const aiMesh * nodeMesh, MMesh * mesh, MSu
 }
 
 
-void createSubMesh(const aiScene * scene, const aiNode * nd, MMesh * mesh, MSubMesh * subMeshs, unsigned int * count, const MMatrix4x4 & parentMatrix)
+static void createSubMesh(const aiScene * scene, const aiNode * nd, MMesh * mesh, MSubMesh * subMeshs, unsigned int * count, const MMatrix4x4 & parentMatrix)
 {
 	aiMatrix4x4 nodeMat = nd->mTransformation;
 	aiTransposeMatrix4(&nodeMat);
@@ -330,7 +345,7 @@ void createSubMesh(const aiScene * scene, const aiNode * nd, MMesh * mesh, MSubM
 }
 
 
-int getMaratisTick(double tick, double tickPerSec)
+static int getMaratisTick(double tick, double tickPerSec)
 {
 	if(tickPerSec == 0)
 		return (int)tick;
@@ -338,40 +353,20 @@ int getMaratisTick(double tick, double tickPerSec)
 	return (int)((tick/tickPerSec)*60.0);
 }
 
-bool M_loadAssimpMesh(const char * filename, void * data)
-{
-	const aiScene * scene = aiImportFile(filename,
-		aiProcess_CalcTangentSpace |
-		aiProcess_ImproveCacheLocality |
-		aiProcess_LimitBoneWeights |
-		aiProcess_RemoveRedundantMaterials |
-		aiProcess_SplitLargeMeshes |
-		aiProcess_Triangulate |
-		aiProcess_SortByPType
-	);
-	
-	if(! scene)
-		return false;
 
-	if(! scene->mRootNode)
-		return false;
-	
-	
+
+
+
+
+void readAssimpMesh(const char * filename, const aiScene * scene, const aiNode * node, MMesh * mesh, const char * meshRep, bool rotate90, bool ignoreNodeMatrix = false)
+{
 	unsigned int i;
-	char meshRep[256];
 	char globalPath[256];
 	
 	
-	// level
-	level = engine->getLevel();
-	
-	// get mesh
-	MMesh * mesh = (MMesh *)data;
+	// clear mesh
 	mesh->clear();
 	
-	// mesh rep
-	getRepertory(meshRep, filename);
-
 	
 	// textures
 	unsigned int nb_textures = 0;
@@ -406,6 +401,8 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 		
 		float value;
 		aiColor4D color;
+		
+		material->setType(1);
 		
 		if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &color))
 			material->setDiffuse(MVector3(color.r, color.g, color.b));
@@ -518,13 +515,22 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 
 	// subMeshs
 	unsigned int nb_subMeshs = 0, nb_bones = 0;
-	countNodes(scene, scene->mRootNode, &nb_subMeshs, &nb_bones);
+	countMeshs(scene, node, &nb_subMeshs);
+	countNodes(scene, scene->mRootNode, &nb_bones);
 	
 	if(nb_subMeshs > 0)
 	{
 		MMatrix4x4 rootMatrix;
-		if(strstr(filename, ".blend") == 0 && strstr(filename, ".stl") == 0) // rotate 90
+		if(rotate90)
 			rootMatrix.rotate(MVector3(1, 0, 0), 90);
+		
+		if(ignoreNodeMatrix)
+		{
+			aiMatrix4x4 nodeMat = node->mTransformation;
+			aiTransposeMatrix4(&nodeMat);
+	
+			rootMatrix = rootMatrix * MMatrix4x4((float*)&nodeMat).getInverse();
+		}
 		
 		// create armature
 		if(nb_bones > 0)
@@ -540,7 +546,7 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 		MSubMesh * subMeshs = mesh->allocSubMeshs(nb_subMeshs);
 	
 		unsigned int count = 0;
-		createSubMesh(scene, scene->mRootNode, mesh, subMeshs, &count, rootMatrix);
+		createSubMesh(scene, node, mesh, subMeshs, &count, rootMatrix);
 	}
 	
 	
@@ -549,24 +555,80 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 	{
 		MArmature * armature = mesh->getArmature();
 		
-		string aafilename = string(filename) + ".maa";
-		MArmatureAnimRef * armatureAnimRef = level->loadArmatureAnim(aafilename.c_str());
+		
+		char maaName[256];
+		sprintf(maaName, "%s.maa", filename);
+		
+		
+		MArmatureAnim * armatureAnim = MArmatureAnim::getNew();
+		
+		MArmatureAnimRef * armatureAnimRef = MArmatureAnimRef::getNew(armatureAnim, maaName);
+		level->getArmatureAnimManager()->addRef(armatureAnimRef);
 		mesh->setArmatureAnimRef(armatureAnimRef);
 		
 		MAnimRange * animRanges = mesh->allocAnimsRanges(scene->mNumAnimations);
 		
 		
 		// armature anim
-		MArmatureAnim * armatureAnim = mesh->getArmatureAnim();
 		if(armatureAnim)
 		{
+			unsigned int a, aSize = scene->mNumAnimations;
+		
 			MObject3dAnim * bonesAnim = armatureAnim->allocBonesAnim(armature->getBonesNumber());
 		
 			
+			// node infos (for multiple anims merging)
+			map <string, NodeInfos> nodesInfos;
+			for(a=0; a<aSize; a++)
+			{
+				aiAnimation * anim = scene->mAnimations[a];
+			
+				unsigned int c, cSize;
+				for(c=0; c<anim->mNumChannels; c++)
+				{
+					aiNodeAnim * channel = anim->mChannels[c];
+					NodeInfos * infos = &(nodesInfos[channel->mNodeName.data]);
+					
+					infos->nbKeyPos += channel->mNumPositionKeys;
+					infos->nbKeyRot	+= channel->mNumRotationKeys;
+					infos->nbKeyScale += channel->mNumScalingKeys;
+				}
+			}
+			
+			
+			// alloc keys
+			{
+				map<string, NodeInfos>::iterator
+					mit (nodesInfos.begin()),
+					mend(nodesInfos.end());
+
+				for(; mit!=mend; mit++)
+				{
+					unsigned int boneId;
+					if(armature->getBoneId(mit->first.c_str(), &boneId))
+					{
+						MObject3dAnim * boneAnim = &(bonesAnim[boneId]);
+					
+						if(mit->second.nbKeyPos > 0)
+							boneAnim->allocPositionKeys(mit->second.nbKeyPos);
+						
+						if(mit->second.nbKeyRot > 0)
+							boneAnim->allocRotationKeys(mit->second.nbKeyRot);
+							
+						if(mit->second.nbKeyScale > 0)
+							boneAnim->allocScaleKeys(mit->second.nbKeyScale);
+							
+						mit->second.nbKeyPos = 0;
+						mit->second.nbKeyRot = 0;
+						mit->second.nbKeyScale = 0;
+					}
+				}
+			}
+			
+			
 			// anims
 			int prevT = 0;
-			unsigned int a=0, aSize = scene->mNumAnimations;
-			//for(a=0; a<aSize; a++)
+			for(a=0; a<aSize; a++)
 			{
 				aiAnimation * anim = scene->mAnimations[a];
 			
@@ -578,6 +640,8 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 				for(c=0; c<anim->mNumChannels; c++)
 				{
 					aiNodeAnim * channel = anim->mChannels[c];
+					NodeInfos * infos = &(nodesInfos[channel->mNodeName.data]);
+
 				
 					unsigned int boneId;
 					if(armature->getBoneId(channel->mNodeName.data, &boneId))
@@ -586,16 +650,16 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 						
 						MObject3dAnim * boneAnim = &(bonesAnim[boneId]);
 						
-						MKey * posKeys = boneAnim->allocPositionKeys(channel->mNumPositionKeys);
-						MKey * rotKeys = boneAnim->allocRotationKeys(channel->mNumRotationKeys);
-						MKey * scaleKeys = boneAnim->allocScaleKeys(channel->mNumScalingKeys);
+						MKey * posKeys = boneAnim->getPositionKeys();
+						MKey * rotKeys = boneAnim->getRotationKeys();
+						MKey * scaleKeys = boneAnim->getScaleKeys();
 						
 						
 						// pos
 						for(k=0; k<channel->mNumPositionKeys; k++)
 						{
-							posKeys[k].setT(prevT + getMaratisTick(channel->mPositionKeys[k].mTime, anim->mTicksPerSecond));
-							*(posKeys[k].createVector3Data()) = MVector3(
+							posKeys[infos->nbKeyPos+k].setT(prevT + getMaratisTick(channel->mPositionKeys[k].mTime, anim->mTicksPerSecond));
+							*(posKeys[infos->nbKeyPos+k].createVector3Data()) = MVector3(
 								channel->mPositionKeys[k].mValue.x,
 								channel->mPositionKeys[k].mValue.y,
 								channel->mPositionKeys[k].mValue.z
@@ -605,8 +669,8 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 						// rot
 						for(k=0; k<channel->mNumRotationKeys; k++)
 						{
-							rotKeys[k].setT(prevT + getMaratisTick(channel->mRotationKeys[k].mTime, anim->mTicksPerSecond));
-							*(rotKeys[k].createQuaternionData()) = MQuaternion(
+							rotKeys[infos->nbKeyRot+k].setT(prevT + getMaratisTick(channel->mRotationKeys[k].mTime, anim->mTicksPerSecond));
+							*(rotKeys[infos->nbKeyRot+k].createQuaternionData()) = MQuaternion(
 								channel->mRotationKeys[k].mValue.x,
 								channel->mRotationKeys[k].mValue.y,
 								channel->mRotationKeys[k].mValue.z,
@@ -617,23 +681,191 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 						// scale
 						for(k=0; k<channel->mNumScalingKeys; k++)
 						{
-							scaleKeys[k].setT(prevT + getMaratisTick(channel->mScalingKeys[k].mTime, anim->mTicksPerSecond));
-							*(scaleKeys[k].createVector3Data()) = MVector3(
+							scaleKeys[infos->nbKeyScale+k].setT(prevT + getMaratisTick(channel->mScalingKeys[k].mTime, anim->mTicksPerSecond));
+							*(scaleKeys[infos->nbKeyScale+k].createVector3Data()) = MVector3(
 								channel->mScalingKeys[k].mValue.x,
 								channel->mScalingKeys[k].mValue.y,
 								channel->mScalingKeys[k].mValue.z
 							);
 						}
+						
+						
+						infos->nbKeyPos += channel->mNumPositionKeys;
+						infos->nbKeyRot	+= channel->mNumRotationKeys;
+						infos->nbKeyScale += channel->mNumScalingKeys;
 					}
 				}
 				
-				prevT = animRanges[a].end;
+				prevT = animRanges[a].end + 1;
 			}
 		}
 	}
 	
 	
 	mesh->updateBoundingBox();
+}
+
+
+bool M_loadAssimpMesh(const char * filename, void * data)
+{
+	const aiScene * scene = aiImportFile(filename,
+		aiProcess_CalcTangentSpace |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights |
+		aiProcess_RemoveRedundantMaterials |
+		aiProcess_SplitLargeMeshes |
+		aiProcess_Triangulate |
+		aiProcess_SortByPType
+	);
+	
+	if(! scene)
+		return false;
+
+	if(! scene->mRootNode)
+		return false;
+	
+
+	char meshRep[256];
+	
+	
+	// level
+	level = engine->getLevel();
+	
+	// get mesh
+	MMesh * mesh = (MMesh *)data;
+	
+	// mesh rep
+	getRepertory(meshRep, filename);
+
+	// source name
+	char sourceName[256];
+	getLocalFilename(sourceName, meshRep, filename);
+	
+	// rotate 90
+	bool rotate90 = false;
+	if(strstr(filename, ".blend") == 0 && strstr(filename, ".stl") == 0)
+		rotate90 = true;
+
+	// read assimp root node
+	readAssimpMesh(sourceName, scene, scene->mRootNode, mesh, meshRep, rotate90);
+	
+	aiReleaseImport(scene);
+	return true;
+}
+
+
+bool M_importAssimpMeshes(const char * filename)
+{
+	const aiScene * scene = aiImportFile(filename,
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_GenNormals |
+		aiProcess_CalcTangentSpace |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights |
+		aiProcess_RemoveRedundantMaterials |
+		aiProcess_SplitLargeMeshes |
+		aiProcess_Triangulate |
+		aiProcess_SortByPType
+	);
+	
+	if(! scene)
+		return false;
+
+	if(! scene->mRootNode)
+		return false;
+	
+	
+	char meshRep[256];
+	
+	
+	// level
+	level = engine->getLevel();
+	MScene * curScene = level->getCurrentScene();
+	
+	// mesh rep
+	getRepertory(meshRep, filename);
+	
+	// working dir
+	const char * workingDirectory = engine->getSystemContext()->getWorkingDirectory();
+
+	// source name
+	char sourceName[256];
+	getLocalFilename(sourceName, meshRep, filename);	
+
+	// mesh export dir
+	char exportDir[256];
+	getGlobalFilename(exportDir, workingDirectory, (string("meshs/") + string(sourceName)).c_str());
+	if(! isDirectory(exportDir))
+	{
+		if(! createDirectory(exportDir))
+		{
+			MLOG_ERROR("impossible to import " << filename);
+			aiReleaseImport(scene);
+			return false;
+		}
+	}
+	
+
+	// read assimp main nodes
+	for(unsigned int n=0; n<scene->mRootNode->mNumChildren; n++)
+	{
+		aiNode * node = scene->mRootNode->mChildren[n];
+	
+		// transform
+		aiMatrix4x4 nodeMat = node->mTransformation;
+		aiTransposeMatrix4(&nodeMat);
+	
+		MMatrix4x4 matrix = MMatrix4x4((float*)&nodeMat);
+	
+		MVector3 pos = matrix.getTranslationPart();
+		MVector3 rot = matrix.getEulerAngles();
+		MVector3 scale = matrix.getScale();
+	
+		// name
+		char meshName[256];
+		getGlobalFilename(meshName, exportDir, (string(node->mName.data) + string(".mesh")).c_str());
+		
+	
+		// mesh
+		MMeshRef * meshRef = level->loadMesh(meshName);
+		MMesh * mesh = meshRef->getMesh();
+		
+		readAssimpMesh(node->mName.data, scene, node, mesh, meshRep, 0, 1);
+		
+		if(mesh->getSubMeshsNumber() > 0)
+		{
+			// entity
+			MOEntity * entity = curScene->addNewEntity(meshRef);
+			entity->setName(node->mName.data);
+			entity->setPosition(pos);
+			entity->setEulerRotation(rot);
+			entity->setScale(scale);
+		
+			// save
+			MArmatureAnimRef * maaRef = mesh->getArmatureAnimRef();
+			//MMaterialsAnimRef * mmaRef = mesh->getMaterialsAnimRef();
+			//MTexturesAnimRef * mtaRef = mesh->getTexturesAnimRef();
+		
+			xmlMeshSave(meshName, mesh);
+		
+			if(maaRef)
+			{
+				if(maaRef->getArmatureAnim())
+				{
+					getGlobalFilename(meshName, exportDir, (string(node->mName.data) + string(".maa")).c_str());
+					xmlArmatureAnimSave(meshName, maaRef->getArmatureAnim());
+				}
+			}
+			
+			// not supported by assimp yet
+			//xmlTexturesAnimSave(const char * filename, MTexturesAnim * anim);
+			//xmlMaterialsAnimSave(const char * filename, MMaterialsAnim * anim);
+		}
+	}
+	
+	
+	// todo: add lights / cameras
+	
 	
 	aiReleaseImport(scene);
 	return true;

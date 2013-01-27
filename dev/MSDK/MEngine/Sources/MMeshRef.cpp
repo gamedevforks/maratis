@@ -68,5 +68,5 @@ void MMeshRef::update(void)
 		m_mesh = MMesh::getNew();
 
 	if(! engine->getMeshLoader()->loadData(getFilename(), m_mesh))
-		MLOG(4, "Cannot load data " << getFilename());
+		MLOG_WARNING("Cannot load data " << getFilename());
 }
