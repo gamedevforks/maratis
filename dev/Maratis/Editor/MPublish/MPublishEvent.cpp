@@ -192,33 +192,45 @@ class MPublishEventMeshsPackage : public MPublishEvent
 		{
 			bool binarized = false;
 			
+			if(strstr(files[i].c_str(), "._bin") != 0)
+				continue;
+			
 			// export bin
 			if(strstr(files[i].c_str(), ".mesh") != 0)
 			{
 				if(engine->getMeshLoader()->loadData(files[i].c_str(), mesh))
-					binarized = exportMeshBin((files[i] + ".bin").c_str(), mesh);
+					binarized = exportMeshBin((files[i] + "._bin").c_str(), mesh);
 			}
 			else if (strstr(files[i].c_str(), ".maa") != 0)
 			{
 				if(engine->getArmatureAnimLoader()->loadData(files[i].c_str(), armAnim))
-					binarized = exportArmatureAnimBin((files[i] + ".bin").c_str(), armAnim);
+					binarized = exportArmatureAnimBin((files[i] + "._bin").c_str(), armAnim);
 			}
 			else if (strstr(files[i].c_str(), ".mma") != 0)
 			{
 				if(engine->getMaterialsAnimLoader()->loadData(files[i].c_str(), matAnim))
-					binarized = exportMaterialsAnimBin((files[i] + ".bin").c_str(), matAnim);
+					binarized = exportMaterialsAnimBin((files[i] + "._bin").c_str(), matAnim);
 			}
 			else if (strstr(files[i].c_str(), ".mta") != 0)
 			{
 				if(engine->getTexturesAnimLoader()->loadData(files[i].c_str(), texAnim))
-					binarized = exportTexturesAnimBin((files[i] + ".bin").c_str(), texAnim);
+					binarized = exportTexturesAnimBin((files[i] + "._bin").c_str(), texAnim);
 			}
 			else
 			{
-				// try to binarise unknow format
+				// try to export unknow format
 				if(engine->getMeshLoader()->loadData(files[i].c_str(), mesh))
 				{
-					binarized = exportMeshBin((files[i] + ".bin").c_str(), mesh);
+					binarized = exportMeshBin((files[i] + "._bin").c_str(), mesh);
+					
+					// try to export animation
+					MArmatureAnimRef * maaRef = mesh->getArmatureAnimRef();
+					if(maaRef)
+					{
+						exportArmatureAnimBin((files[i] + ".maa._bin").c_str(), maaRef->getArmatureAnim());
+						getLocalFilename(localFilename, system->getWorkingDirectory(), (files[i] + ".maa").c_str());
+						packageManager->addFileToPackage((files[i] + ".maa._bin").c_str(), package, localFilename);
+					}
 				}
 			}
 
@@ -228,7 +240,7 @@ class MPublishEventMeshsPackage : public MPublishEvent
 			getLocalFilename(localFilename, system->getWorkingDirectory(), files[i].c_str());
 			
 			if(binarized)
-				packageManager->addFileToPackage((files[i] + ".bin").c_str(), package, localFilename); // pack bin file
+				packageManager->addFileToPackage((files[i] + "._bin").c_str(), package, localFilename); // pack bin file
 			else
 				packageManager->addFileToPackage(files[i].c_str(), package, localFilename); // pack original file
 		}
@@ -243,7 +255,10 @@ class MPublishEventMeshsPackage : public MPublishEvent
 
 		// remove bin
 		for(int i = 0; i < files.size(); ++i)
-			remove((files[i] + ".bin").c_str());
+		{
+			remove((files[i] + "._bin").c_str());
+			remove((files[i] + ".maa._bin").c_str());
+		}
 
 		// restore level
 		engine->setLevel(currentLevel);
@@ -261,10 +276,6 @@ M_PUBLISH_EVENT_IMPLEMENT(MPublishEventMeshsPackage);
  *-------------------------------------------------------------------------------*/
 static void embedProject(const char * src, const char * dest, const char * game, const char * level, const char * renderer)
 {
-	printf("%s\n", game);
-	printf("%s\n", level);
-	printf("%s\n", renderer);
-
 	FILE* fp = 0;
 	fp = fopen(src, "rb");
 	if(! fp)

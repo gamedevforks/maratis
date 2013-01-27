@@ -145,7 +145,7 @@ public:
 
 	float getEntry(int position) const;
 
-	MVector3 getRotatedVector3(const MVector3 & vec) const
+	inline MVector3 getRotatedVector3(const MVector3 & vec) const
 	{
 		return MVector3(
 			entries[0]*vec.x + entries[4]*vec.y + entries[8]*vec.z,

@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 				{
 					update();
 					draw();
-					previousFrame += steps;
+					previousFrame = frame;
 					continue;
 				}
 

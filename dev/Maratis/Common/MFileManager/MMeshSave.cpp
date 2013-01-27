@@ -658,6 +658,7 @@ bool xmlMeshSave(const char * filename, MMesh * mesh)
 				closeNode(file, "Normals", 2, "\n");
 			}
 			
+			/*
 			// tangents
 			if(tangents)
 			{
@@ -673,7 +674,7 @@ bool xmlMeshSave(const char * filename, MMesh * mesh)
 					closeAttributeNode(file, "\n");
 				}
 				closeNode(file, "Tangents", 2, "\n");
-			}
+			}*/
 			
 			// texCoords
 			if(texCoords)

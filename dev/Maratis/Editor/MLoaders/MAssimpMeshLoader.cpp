@@ -354,11 +354,7 @@ static int getMaratisTick(double tick, double tickPerSec)
 }
 
 
-
-
-
-
-void readAssimpMesh(const char * filename, const aiScene * scene, const aiNode * node, MMesh * mesh, const char * meshRep, bool rotate90, bool ignoreNodeMatrix = false)
+void readAssimpMesh(const char * filename, const aiScene * scene, const aiNode * node, MMesh * mesh, const char * meshRep, bool rotate90)
 {
 	unsigned int i;
 	char globalPath[256];
@@ -524,14 +520,6 @@ void readAssimpMesh(const char * filename, const aiScene * scene, const aiNode *
 		if(rotate90)
 			rootMatrix.rotate(MVector3(1, 0, 0), 90);
 		
-		if(ignoreNodeMatrix)
-		{
-			aiMatrix4x4 nodeMat = node->mTransformation;
-			aiTransposeMatrix4(&nodeMat);
-	
-			rootMatrix = rootMatrix * MMatrix4x4((float*)&nodeMat).getInverse();
-		}
-		
 		// create armature
 		if(nb_bones > 0)
 		{
@@ -544,9 +532,27 @@ void readAssimpMesh(const char * filename, const aiScene * scene, const aiNode *
 		
 		// create subMeshs
 		MSubMesh * subMeshs = mesh->allocSubMeshs(nb_subMeshs);
-	
+		
 		unsigned int count = 0;
 		createSubMesh(scene, node, mesh, subMeshs, &count, rootMatrix);
+	}
+	
+	
+	// do we need armature
+	{
+		bool skinning = false;
+		unsigned int s, sSize = mesh->getSubMeshsNumber();
+		for(s=0; s<sSize; s++)
+		{
+			if(mesh->getSubMeshs()[s].getSkinData())
+			{
+				skinning = true;
+				break;
+			}
+		}
+		
+		if(! skinning)
+			mesh->clearArmature();
 	}
 	
 	
@@ -708,15 +714,7 @@ void readAssimpMesh(const char * filename, const aiScene * scene, const aiNode *
 
 bool M_loadAssimpMesh(const char * filename, void * data)
 {
-	const aiScene * scene = aiImportFile(filename,
-		aiProcess_CalcTangentSpace |
-		aiProcess_ImproveCacheLocality |
-		aiProcess_LimitBoneWeights |
-		aiProcess_RemoveRedundantMaterials |
-		aiProcess_SplitLargeMeshes |
-		aiProcess_Triangulate |
-		aiProcess_SortByPType
-	);
+	const aiScene * scene = aiImportFile(filename, 0);
 	
 	if(! scene)
 		return false;
@@ -724,8 +722,23 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 	if(! scene->mRootNode)
 		return false;
 	
-
-	char meshRep[256];
+	
+	// post process
+	unsigned int ppFlags = 
+		aiProcess_CalcTangentSpace |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights |
+		aiProcess_RemoveRedundantMaterials |
+		aiProcess_SplitLargeMeshes |
+		aiProcess_Triangulate |
+		aiProcess_SortByPType |
+		aiProcess_OptimizeMeshes;
+		
+	if(scene->mNumMeshes > 64)
+		ppFlags = ppFlags | aiProcess_OptimizeGraph;
+	
+	if(! aiApplyPostProcessing(scene, ppFlags))
+			return false;
 	
 	
 	// level
@@ -735,6 +748,7 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 	MMesh * mesh = (MMesh *)data;
 	
 	// mesh rep
+	char meshRep[256];
 	getRepertory(meshRep, filename);
 
 	// source name
@@ -756,17 +770,7 @@ bool M_loadAssimpMesh(const char * filename, void * data)
 
 bool M_importAssimpMeshes(const char * filename)
 {
-	const aiScene * scene = aiImportFile(filename,
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_GenNormals |
-		aiProcess_CalcTangentSpace |
-		aiProcess_ImproveCacheLocality |
-		aiProcess_LimitBoneWeights |
-		aiProcess_RemoveRedundantMaterials |
-		aiProcess_SplitLargeMeshes |
-		aiProcess_Triangulate |
-		aiProcess_SortByPType
-	);
+	const aiScene * scene = aiImportFile(filename, 0);
 	
 	if(! scene)
 		return false;
@@ -775,7 +779,22 @@ bool M_importAssimpMeshes(const char * filename)
 		return false;
 	
 	
-	char meshRep[256];
+	// post process
+	unsigned int ppFlags = 
+		aiProcess_CalcTangentSpace |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights |
+		aiProcess_RemoveRedundantMaterials |
+		aiProcess_SplitLargeMeshes |
+		aiProcess_Triangulate |
+		aiProcess_SortByPType |
+		aiProcess_OptimizeMeshes;
+		
+	if(scene->mNumMeshes > 64)
+		ppFlags = ppFlags | aiProcess_OptimizeGraph;
+	
+	if(! aiApplyPostProcessing(scene, ppFlags))
+			return false;
 	
 	
 	// level
@@ -783,6 +802,7 @@ bool M_importAssimpMeshes(const char * filename)
 	MScene * curScene = level->getCurrentScene();
 	
 	// mesh rep
+	char meshRep[256];
 	getRepertory(meshRep, filename);
 	
 	// working dir
@@ -805,66 +825,54 @@ bool M_importAssimpMeshes(const char * filename)
 		}
 	}
 	
-
-	// read assimp main nodes
-	for(unsigned int n=0; n<scene->mRootNode->mNumChildren; n++)
-	{
-		aiNode * node = scene->mRootNode->mChildren[n];
 	
-		// transform
-		aiMatrix4x4 nodeMat = node->mTransformation;
-		aiTransposeMatrix4(&nodeMat);
-	
-		MMatrix4x4 matrix = MMatrix4x4((float*)&nodeMat);
-	
-		MVector3 pos = matrix.getTranslationPart();
-		MVector3 rot = matrix.getEulerAngles();
-		MVector3 scale = matrix.getScale();
-	
-		// name
-		char meshName[256];
-		getGlobalFilename(meshName, exportDir, (string(node->mName.data) + string(".mesh")).c_str());
-		
-	
-		// mesh
-		MMeshRef * meshRef = level->loadMesh(meshName);
-		MMesh * mesh = meshRef->getMesh();
-		
-		readAssimpMesh(node->mName.data, scene, node, mesh, meshRep, 0, 1);
-		
-		if(mesh->getSubMeshsNumber() > 0)
-		{
-			// entity
-			MOEntity * entity = curScene->addNewEntity(meshRef);
-			entity->setName(node->mName.data);
-			entity->setPosition(pos);
-			entity->setEulerRotation(rot);
-			entity->setScale(scale);
-		
-			// save
-			MArmatureAnimRef * maaRef = mesh->getArmatureAnimRef();
-			//MMaterialsAnimRef * mmaRef = mesh->getMaterialsAnimRef();
-			//MTexturesAnimRef * mtaRef = mesh->getTexturesAnimRef();
-		
-			xmlMeshSave(meshName, mesh);
-		
-			if(maaRef)
-			{
-				if(maaRef->getArmatureAnim())
-				{
-					getGlobalFilename(meshName, exportDir, (string(node->mName.data) + string(".maa")).c_str());
-					xmlArmatureAnimSave(meshName, maaRef->getArmatureAnim());
-				}
-			}
+	// rotate 90
+	bool rotate90 = false;
+	if(strstr(filename, ".blend") == 0 && strstr(filename, ".stl") == 0)
+		rotate90 = true;
 			
-			// not supported by assimp yet
-			//xmlTexturesAnimSave(const char * filename, MTexturesAnim * anim);
-			//xmlMaterialsAnimSave(const char * filename, MMaterialsAnim * anim);
+	
+	char nodeName[256];
+	sprintf(nodeName, "%s.root", sourceName);
+	
+	char meshName[256];
+	getGlobalFilename(meshName, exportDir, "root.mesh");
+	
+	
+	// mesh
+	MMeshRef * meshRef = level->loadMesh(meshName);
+	MMesh * mesh = meshRef->getMesh();
+
+	// read assimp root node
+	readAssimpMesh("root", scene, scene->mRootNode, mesh, meshRep, rotate90);
+	
+	
+	// add to scene and save xml mesh
+	if(mesh->getSubMeshsNumber() > 0)
+	{
+		MOEntity * entity = curScene->addNewEntity(meshRef);
+		entity->setName(nodeName);
+		
+		// save
+		MArmatureAnimRef * maaRef = mesh->getArmatureAnimRef();
+		//MMaterialsAnimRef * mmaRef = mesh->getMaterialsAnimRef();
+		//MTexturesAnimRef * mtaRef = mesh->getTexturesAnimRef();
+		
+		xmlMeshSave(meshName, mesh);
+		
+		if(maaRef)
+		{
+			if(maaRef->getArmatureAnim())
+			{
+				getGlobalFilename(meshName, exportDir, "root.maa");
+				xmlArmatureAnimSave(meshName, maaRef->getArmatureAnim());
+			}
 		}
+			
+		// not supported by assimp
+		//xmlTexturesAnimSave(const char * filename, MTexturesAnim * anim);
+		//xmlMaterialsAnimSave(const char * filename, MMaterialsAnim * anim);
 	}
-	
-	
-	// todo: add lights / cameras
 	
 	
 	aiReleaseImport(scene);
