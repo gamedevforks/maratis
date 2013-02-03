@@ -89,16 +89,21 @@ MVector3 MOCamera::getProjectedPoint(const MVector3 & point) const
 
 MVector3 MOCamera::getUnProjectedPoint(const MVector3 & point) const
 {
-	MVector3 nPoint;
+	MVector4 nPoint;
 
 	nPoint.x = (2 * ((point.x - m_currentViewport[0]) / ((float)m_currentViewport[2]))) - 1;
 	nPoint.y = (2 * ((point.y - m_currentViewport[1]) / ((float)m_currentViewport[3]))) - 1;
 	nPoint.z = (2 * point.z) - 1;
+	nPoint.w = 1;
 
-	MVector3 v = m_currentProjMatrix.getInverse() * nPoint;
-	v = m_currentViewMatrix.getInverse() * v;
-
-	return v;
+	MMatrix4x4 matrix = (m_currentProjMatrix * m_currentViewMatrix).getInverse();
+	MVector4 v = matrix * nPoint;
+	
+	if(v.w == 0)
+		return getTransformedPosition();
+	
+	float iw = 1.0f / v.w;
+	return MVector3(v.x, v.y, v.z)*iw;
 }
 
 void MOCamera::updateListener(void)

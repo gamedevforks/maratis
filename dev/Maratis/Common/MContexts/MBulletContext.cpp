@@ -523,8 +523,8 @@ bool MBulletContext::isObjectsCollision(unsigned int object1Id, unsigned int obj
 
 bool MBulletContext::isRayHit(const MVector3 & start, const MVector3 & end, unsigned int * objectId, MVector3 * point, MVector3 * normal)
 {
-	m_dynamicsWorld->updateAabbs();
-	m_dynamicsWorld->computeOverlappingPairs();
+	//m_dynamicsWorld->updateAabbs();
+	//m_dynamicsWorld->computeOverlappingPairs();
 	
 	btVector3 bstart(start.x, start.y, start.z);
 	btVector3 bend(end.x, end.y, end.z);

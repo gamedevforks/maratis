@@ -1611,7 +1611,7 @@ void MaratisUI::setPopupButton(const char * text, void (* buttonPointerEvent)(MG
 	if((pY + sY) >  window->getHeight())
 		pY = window->getHeight() - sY;
 
-	m_popupWin->setPosition(MVector2(pX, pY));
+	m_popupWin->setPosition(MVector2(pX-1, pY-1));
 }
 
 void MaratisUI::createGUI(void)

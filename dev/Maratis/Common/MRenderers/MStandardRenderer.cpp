@@ -449,6 +449,9 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 		// FX pipeline
 		{
+			static unsigned int attribList[64];
+			unsigned int attribListNb = 0;
+		
 			int attribIndex;
 			MMatrix4x4 * cameraViewMatrix = m_currentCamera->getCurrentViewMatrix();
 			MMatrix4x4 * cameraProjMatrix = m_currentCamera->getCurrentProjMatrix();
@@ -535,6 +538,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 3, 0);
 				else			render->setAttribPointer(attribIndex, M_FLOAT, 3, vertices);
 				render->enableAttribArray(attribIndex);
+				attribList[attribListNb] = attribIndex; attribListNb++;
 			}
 
 			if(! basicFX)
@@ -550,6 +554,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 						if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 3, (void*)offset);
 						else			render->setAttribPointer(attribIndex, M_FLOAT, 3, normals);
 						render->enableAttribArray(attribIndex);
+						attribList[attribListNb] = attribIndex; attribListNb++;
 					}
 					
 					offset += sizeof(MVector3)*subMesh->getNormalsSize();
@@ -564,6 +569,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 						if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 3, (void*)offset);
 						else			render->setAttribPointer(attribIndex, M_FLOAT, 3, tangents);
 						render->enableAttribArray(attribIndex);
+						attribList[attribListNb] = attribIndex; attribListNb++;
 					}
 					
 					offset += sizeof(MVector3)*subMesh->getTangentsSize();
@@ -584,6 +590,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 						if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_UBYTE, 3, (void*)offset, true);
 						else			render->setAttribPointer(attribIndex, M_UBYTE, 3, colors, true);
 						render->enableAttribArray(attribIndex);
+						attribList[attribListNb] = attribIndex; attribListNb++;
 					}
 				}
 			}
@@ -642,6 +649,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 					if(*vboId1 > 0)	render->setAttribPointer(attribIndex, M_FLOAT, 2, (void*)(textureArrayOffset + sizeof(MVector2)*offset));
 					else			render->setAttribPointer(attribIndex, M_FLOAT, 2, texCoords + offset);
 					render->enableAttribArray(attribIndex);
+					attribList[attribListNb] = attribIndex; attribListNb++;
 				}
 			}
 
@@ -748,8 +756,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 
 			// disable attribs
-			for(int i=0; i<16; i++)
-				render->disableAttribArray(i);
+			for(int i=0; i<attribListNb; i++)
+				render->disableAttribArray(attribList[i]);
 
 			// restore textures
 			for(int t=(int)(id-1); t>=0; t--)

@@ -885,6 +885,11 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 		GLint sync = 1;
 		[context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
 	}
+	/*else
+	{
+		GLint sync = 0;
+		[context setValues:&sync forParameter:NSOpenGLCPSwapInterval];
+	}*/
 	
 	// window scale
 	NSRect contentRect = [window contentRectForFrameRect:[window frame]];

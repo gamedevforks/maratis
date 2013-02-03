@@ -415,6 +415,29 @@ int getScene(lua_State * L)
 	return 0;
 }
 
+int getCurrentCamera(lua_State * L)
+{
+	MLevel * level = MEngine::getInstance()->getLevel();
+	MScene * scene = level->getCurrentScene();
+	
+
+	int nbArguments = lua_gettop(L);
+	if(nbArguments == 1)
+	{
+		unsigned int sceneId = lua_tointeger(L, 0);
+		scene = level->getSceneByIndex(sceneId);
+	}
+
+	MOCamera * camera = scene->getCurrentCamera();
+	if(camera)
+	{
+		lua_pushinteger(L, (lua_Integer)camera);
+		return 1;
+	}
+
+	return 0;
+}
+
 int getObject(lua_State * L)
 {
 	MLevel * level = MEngine::getInstance()->getLevel();
@@ -540,6 +563,74 @@ int getChilds(lua_State * L)
 		
 		delete [] childs;
 		return 1;
+	}
+	
+	return 0;
+}
+
+int getProjectedPoint(lua_State * L)
+{
+	if(! isFunctionOk(L, "getProjectedPoint", 2))
+		return 0;
+	
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	
+	unsigned int width = 0;
+	unsigned int height = 0;
+	system->getScreenSize(&width, &height);
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_CAMERA)
+		{
+			MVector3 vec;
+			if(getVector3(L, 2, &vec))
+			{
+				MOCamera * camera = (MOCamera *)object;
+				MVector3 result = camera->getProjectedPoint(vec);
+				result.x = result.x/(float)width;
+				result.y = 1.0f - (result.y/(float)height);
+				pushFloatArray(L, result, 3);
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int getUnProjectedPoint(lua_State * L)
+{
+	if(! isFunctionOk(L, "getUnProjectedPoint", 2))
+		return 0;
+	
+	MEngine * engine = MEngine::getInstance();
+	MSystemContext * system = engine->getSystemContext();
+	
+	unsigned int width = 0;
+	unsigned int height = 0;
+	system->getScreenSize(&width, &height);
+	
+	MObject3d * object;
+	lua_Integer id = lua_tointeger(L, 1);
+	
+	if((object = getObject3d(id)))
+	{
+		if(object->getType() == M_OBJECT3D_CAMERA)
+		{
+			MVector3 vec;
+			if(getVector3(L, 2, &vec))
+			{
+				MOCamera * camera = (MOCamera *)object;
+				MVector3 result = camera->getUnProjectedPoint(MVector3(vec.x*width, (1-vec.y)*height, vec.z));
+				pushFloatArray(L, result, 3);
+				return 1;
+			}
+		}
 	}
 	
 	return 0;
@@ -1838,6 +1929,9 @@ int isCollisionBetween(lua_State * L)
 
 int rayHit(lua_State * L)
 {
+	MLevel * level = MEngine::getInstance()->getLevel();
+	MScene * scene = level->getCurrentScene();
+
 	if(! isFunctionOk(L, "rayHit", 2))
 		return 0;
 	
@@ -1878,6 +1972,22 @@ int rayHit(lua_State * L)
 			else
 			{
 				pushFloatArray(L, point, 3);
+				
+				unsigned int e, eSize = scene->getEntitiesNumber();
+				for(e=0; e<eSize; e++)
+				{
+					MOEntity * entity = scene->getEntityByIndex(e);
+					MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+					if(phyProps)
+					{
+						if(phyProps->getCollisionObjectId() == collisionObjId)
+						{
+							lua_pushinteger(L, (lua_Integer)entity);
+							return 2;
+						}
+					}
+				}
+				
 				return 1;
 			}
 		}
@@ -3401,6 +3511,7 @@ void MScript::init(void)
 	lua_register(m_state, "getClone",	 getClone);
 	lua_register(m_state, "getParent",	 getParent);
 	lua_register(m_state, "getChilds",	 getChilds);
+	lua_register(m_state, "getCurrentCamera",    getCurrentCamera);
 	
 	// object
 	lua_register(m_state, "rotate",					rotate);
@@ -3540,6 +3651,8 @@ void MScript::init(void)
 	lua_register(m_state, "disableCameraLayer",	    disableCameraLayer);
 	lua_register(m_state, "enableRenderToTexture",  enableRenderToTexture);
 	lua_register(m_state, "disableRenderToTexture", disableRenderToTexture);
+	lua_register(m_state, "getProjectedPoint",		getProjectedPoint);
+	lua_register(m_state, "getUnProjectedPoint",	getUnProjectedPoint);
 
 	// text
 	lua_register(m_state, "getText", getText);
