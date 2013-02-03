@@ -139,7 +139,7 @@ static int getMaterialId(MMesh * mesh, MMaterial * material)
 // Mesh bin export
 bool exportMeshBin(const char * filename, MMesh * mesh)
 {
-	int version = 1;
+	int version = 2;
 	char rep[256];
 	bool state;
 	

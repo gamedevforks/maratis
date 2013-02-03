@@ -209,8 +209,9 @@ bool M_loadBinMesh(const char * filename, void * data)
 				// texture ref
 				if(readDataRef(file, path, rep))
 				{
-					bool mipmap;
-					M_fread(&mipmap, sizeof(bool), 1, file);
+					bool mipmap = true;
+					if(version >= 2)
+						M_fread(&mipmap, sizeof(bool), 1, file);
 					
 					MTextureRef * textureRef = level->loadTexture(path, mipmap);
 					texture->setTextureRef(textureRef);
