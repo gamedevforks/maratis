@@ -14,7 +14,7 @@ class CompilationFlags:
             # compilation flags for c++ (msvc compiler)
             self.CppCommonFlags  = '/EHsc /nologo /GR /FC'
             self.CppDebugFlags   = '/Z7 /W4 /Od /MDd'
-            self.CppReleaseFlags = '/W1 /O2 /Ot /MD'
+            self.CppReleaseFlags = '/W1 /O2 /Ot /MD /arch:SSE2'
             # preprocessor definitions
             self.CppCommonDefines  = 'WIN32 _MBCS'
             self.CppDebugDefines   = '_DEBUG __Debug__'
