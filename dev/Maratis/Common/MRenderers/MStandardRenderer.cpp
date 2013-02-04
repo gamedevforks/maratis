@@ -475,7 +475,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			static int ShadowMaps[4];
 			static int Texture[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 			static MMatrix4x4 TextureMatrix[8];
-			static MMatrix4x4 ModelViewMatrix;
+			//static MMatrix4x4 ModelViewMatrix;
 			static MMatrix4x4 ProjModelViewMatrix;
 			static MMatrix4x4 NormalMatrix;
 
@@ -484,8 +484,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 			AlphaTest = (blendMode != M_BLENDING_ALPHA);
 
 			// Matrix
-			render->getModelViewMatrix(&ModelViewMatrix);
-			ProjModelViewMatrix = (*cameraProjMatrix) * ModelViewMatrix;
+			//render->getModelViewMatrix(&ModelViewMatrix);
+			ProjModelViewMatrix = (*cameraProjMatrix) * m_currModelViewMatrix;
 
 			if(! basicFX)
 			{
@@ -518,7 +518,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				}
 
 				// Normal Matrix
-				NormalMatrix = (ModelViewMatrix.getInverse()).getTranspose();
+				NormalMatrix = (m_currModelViewMatrix.getInverse()).getTranspose();
 			}
 
 
@@ -704,7 +704,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 				render->sendUniformInt(fxId, "RandTexture", &randTextureId);
 
-				render->sendUniformMatrix(fxId, "ModelViewMatrix", &ModelViewMatrix);
+				render->sendUniformMatrix(fxId, "ModelViewMatrix", &m_currModelViewMatrix);
 				render->sendUniformMatrix(fxId, "NormalMatrix", &NormalMatrix);
 				render->sendUniformMatrix(fxId, "ProjectionMatrix", cameraProjMatrix);
 			}
@@ -916,7 +916,7 @@ float MStandardRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & po
 	return dist*dist;
 }
 
-void MStandardRenderer::setShadowMatrix(MMatrix4x4 * matrix)
+void MStandardRenderer::setShadowMatrix(MMatrix4x4 * matrix, MOCamera * camera)
 {
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
@@ -928,14 +928,12 @@ void MStandardRenderer::setShadowMatrix(MMatrix4x4 * matrix)
 		0.5f, 0.5f, 0.5f, 1.0f
 	);
 
-	MMatrix4x4 modelViewMatrix;
-	MMatrix4x4 projMatrix;
-	render->getModelViewMatrix(&modelViewMatrix);
-	render->getProjectionMatrix(&projMatrix);
+	MMatrix4x4 * modelViewMatrix = camera->getCurrentViewMatrix();
+	MMatrix4x4 * projMatrix = camera->getCurrentProjMatrix();
 
 	(*matrix) = biasMatrix;
-	(*matrix) = (*matrix) * projMatrix;
-	(*matrix) = (*matrix) * modelViewMatrix;
+	(*matrix) = (*matrix) * (*projMatrix);
+	(*matrix) = (*matrix) * (*modelViewMatrix);
 }
 
 void MStandardRenderer::updateVisibility(MScene * scene, MOCamera * camera)
@@ -1075,14 +1073,14 @@ void MStandardRenderer::drawText(MOText * textObj)
 	unsigned int fxId;
 	static MVector2 vertices[4];
 	static MVector2 texCoords[4];
-	static MMatrix4x4 ModelViewMatrix;
+	//static MMatrix4x4 ModelViewMatrix;
 	static MMatrix4x4 ProjModelViewMatrix;
 	MMatrix4x4 * cameraProjMatrix = m_currentCamera->getCurrentProjMatrix();
 
 
 	// Matrix
-	render->getModelViewMatrix(&ModelViewMatrix);
-	ProjModelViewMatrix = (*cameraProjMatrix) * ModelViewMatrix;
+	//render->getModelViewMatrix(&ModelViewMatrix);
+	ProjModelViewMatrix = (*cameraProjMatrix) * m_currModelViewMatrix;
 
 
 	// cull face
@@ -1583,13 +1581,14 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 								continue;
 						}
 
-						render->pushMatrix();
-						render->multMatrix(entity->getMatrix());
+						//render->pushMatrix();
+						//render->multMatrix(entity->getMatrix());
+						m_currModelViewMatrix = (*lightCamera.getCurrentViewMatrix()) * (*entity->getMatrix());
 
 						// draw opaques
 						drawOpaques(subMesh, mesh->getArmature());
 
-						render->popMatrix();
+						//render->popMatrix();
 					}
 
 					mesh->updateBoundingBox();
@@ -1597,7 +1596,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				}
 			}
 
-			setShadowMatrix(&shadowLight->shadowMatrix);
+			setShadowMatrix(&shadowLight->shadowMatrix, &lightCamera);
 
 			// biasUnity
 			{
@@ -1612,7 +1611,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			render->bindTexture(0);
 			restoreCamera = true;
 
-		} // if(light->getSpotAngle() < 90.0f && light->isCastingShadow())
+		}
 
 	}
 
@@ -1861,15 +1860,16 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			if(mesh->getMaterialsAnim())
 				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
 
-			render->pushMatrix();
-			render->multMatrix(entity->getMatrix());
-
+			//render->pushMatrix();
+			//render->multMatrix(entity->getMatrix());
+			m_currModelViewMatrix = currentViewMatrix * (*entity->getMatrix());
+			
 			// draw opaques
 			render->beginQuery(subMeshPass->occlusionQuery);
 			drawOpaques(subMesh, mesh->getArmature());
 			render->endQuery();
 
-			render->popMatrix();
+			//render->popMatrix();
 
 			// update bounding box
 			mesh->updateBoundingBox();
@@ -1899,10 +1899,13 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			{
 				prepareSubMesh(scene, camera, entity, subMesh);
 
-				render->pushMatrix();
-				render->multMatrix(entity->getMatrix());
+				//render->pushMatrix();
+				//render->multMatrix(entity->getMatrix());
+				m_currModelViewMatrix = currentViewMatrix * (*entity->getMatrix());
+				
 				drawOpaques(subMesh, mesh->getArmature());
-				render->popMatrix();
+				
+				//render->popMatrix();
 			}
 		}
 
@@ -1936,10 +1939,13 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 					prepareSubMesh(scene, camera, entity, subMesh);
 
-					render->pushMatrix();
-					render->multMatrix(entity->getMatrix());
+					//render->pushMatrix();
+					//render->multMatrix(entity->getMatrix());
+					m_currModelViewMatrix = currentViewMatrix * (*entity->getMatrix());
+					
 					drawTransparents(subMesh, mesh->getArmature());
-					render->popMatrix();
+					
+					//render->popMatrix();
 
 					// update bounding box
 					mesh->updateBoundingBox();
@@ -1952,10 +1958,13 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				{
 					MOText * text = (MOText *)object;
 
-					render->pushMatrix();
-					render->multMatrix(text->getMatrix());
+					//render->pushMatrix();
+					//render->multMatrix(text->getMatrix());
+					m_currModelViewMatrix = currentViewMatrix * (*text->getMatrix());
+					
 					drawText(text);
-					render->popMatrix();
+					
+					//render->popMatrix();
 
 					break;
 				}

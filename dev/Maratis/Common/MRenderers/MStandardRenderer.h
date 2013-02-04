@@ -92,6 +92,8 @@ private:
 	int m_lightShadowTexture[4];
 	float m_lightShadowBias[4];
 	float m_lightShadowBlur[4];
+	
+	MMatrix4x4 m_currModelViewMatrix;
 	MMatrix4x4 m_lightShadowMatrix[4];
 	MOCamera * m_currentCamera;
 	
@@ -134,7 +136,7 @@ private:
 	//void drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices);
 	void drawOpaques(MSubMesh * subMesh, MArmature * armature);
 	void drawTransparents(MSubMesh * subMesh, MArmature * armature);
-	void setShadowMatrix(MMatrix4x4 * matrix);
+	void setShadowMatrix(MMatrix4x4 * matrix, MOCamera * camera);
 	void updateVisibility(MScene * scene, MOCamera * camera);
 	void enableFog(MOCamera * camera);
 	
