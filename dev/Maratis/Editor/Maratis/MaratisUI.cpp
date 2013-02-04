@@ -1678,7 +1678,7 @@ void MaratisUI::createGUI(void)
 	addTextButtonToMenu(fileMenu, " Save", MVector2(0, 110), saveEvents);
 	addTextButtonToMenu(fileMenu, " Save as", MVector2(0, 130), saveAsEvents);
 	
-	addTextButtonToMenu(fileMenu, " Import Models", MVector2(0, 160), importExternalEvents);
+	addTextButtonToMenu(fileMenu, " Import 3d model", MVector2(0, 160), importExternalEvents);
 	
     addTextButtonToMenu(fileMenu, " Publish Project", MVector2(0, 190), publishEvents);
 

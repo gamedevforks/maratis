@@ -949,7 +949,7 @@ void Maratis::addEntity(void)
 
 	char startPath[256];
 	getGlobalFilename(startPath, window->getWorkingDirectory(), "meshs");
-	UI->openFileBrowser(startPath, "", "import entity", okAddEntity);
+	UI->openFileBrowser(startPath, "", "load mesh", okAddEntity);
 }
 
 void Maratis::addSound(void)
@@ -961,7 +961,7 @@ void Maratis::addSound(void)
 
 	char startPath[256];
 	getGlobalFilename(startPath, window->getWorkingDirectory(), "sounds");
-	UI->openFileBrowser(startPath, "", "import sound", okAddSound);
+	UI->openFileBrowser(startPath, "", "load sound", okAddSound);
 }
 
 void Maratis::addText(void)
@@ -973,7 +973,7 @@ void Maratis::addText(void)
 
 	char startPath[256];
 	getGlobalFilename(startPath, window->getWorkingDirectory(), "fonts");
-    UI->openFileBrowser(startPath, "", "import font", okAddFont);
+    UI->openFileBrowser(startPath, "", "load font", okAddFont);
 }
 
 void Maratis::updateTitle(const char * additional)
@@ -1044,7 +1044,7 @@ void Maratis::importExternal(void)
 
 	if(strcmp(m_currentProject, "") != 0)
 	{
-		UI->openFileBrowser(NULL, "", "import models", okImportExternal); // .dae, .obj, .x, .xml(ogre), .md3...
+		UI->openFileBrowser(NULL, "", "import", okImportExternal); // .dae, .obj, .x, .xml(ogre), .md3...
 	}
 	else
 	{
