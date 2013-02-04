@@ -101,7 +101,7 @@ static void pushIntArray(lua_State * L, lua_Integer * values, unsigned int nbVal
 
 static MObject3d * getObject3d(LUA_INTEGER object)
 {
-	if(object <= 0)
+	if(object == 0)
 		return NULL;
 	
 	return (MObject3d*)object;
