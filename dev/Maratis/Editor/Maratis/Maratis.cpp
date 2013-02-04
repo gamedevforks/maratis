@@ -3451,6 +3451,7 @@ void Maratis::transformPosition(void)
 	MOCamera * camera = getPerspectiveVue();
 
 	// position
+	updateSelectionCenter();
 	MVector3 * position = getSelectionCenter();
 
 	// mouse position
@@ -3465,7 +3466,7 @@ void Maratis::transformPosition(void)
 		// ray (origin and dest)
 		MVector3 rayO = camera->getTransformedPosition();
 		MVector3 rayD = camera->getUnProjectedPoint(
-                                                    MVector3(mousePos.x, (window->getHeight() - mousePos.y), 0.499238f)
+                                                    MVector3((float)mousePos.x, (float)(window->getHeight() - mousePos.y), 1)
                                                     );
 
 		if(camera->isOrtho())
