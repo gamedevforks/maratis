@@ -1011,6 +1011,8 @@ int isVisible(lua_State * L)
 
 int activate(lua_State * L)
 {
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+
 	if(! isFunctionOk(L, "activate", 1))
 		return 0;
 
@@ -1020,7 +1022,13 @@ int activate(lua_State * L)
 	if((object = getObject3d(id)))
 	{
 		object->setActive(true);
-		return 0;
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+				physics->activateObject(phyProps->getCollisionObjectId());
+		}
 	}
 
 	return 0;
@@ -1028,6 +1036,8 @@ int activate(lua_State * L)
 
 int deactivate(lua_State * L)
 {
+	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	
 	if(! isFunctionOk(L, "deactivate", 1))
 		return 0;
 
@@ -1037,7 +1047,13 @@ int deactivate(lua_State * L)
 	if((object = getObject3d(id)))
 	{
 		object->setActive(false);
-		return 0;
+		if(object->getType() == M_OBJECT3D_ENTITY)
+		{
+			MOEntity * entity = (MOEntity*)object;
+			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+			if(phyProps)
+				physics->deactivateObject(phyProps->getCollisionObjectId());
+		}
 	}
 
 	return 0;
@@ -3564,10 +3580,6 @@ void MScript::init(void)
 	lua_register(m_state, "setLinearDamping",	setLinearDamping);
 	lua_register(m_state, "getAngularDamping",	getAngularDamping);
 	lua_register(m_state, "setAngularDamping",	setAngularDamping);
-	lua_register(m_state, "getMass",			getMass);
-	lua_register(m_state, "setMass",			setMass);
-	lua_register(m_state, "getFriction",		getFriction);
-	lua_register(m_state, "setFriction",		setFriction);
 	lua_register(m_state, "getMass",			getMass);
 	lua_register(m_state, "setMass",			setMass);
 	lua_register(m_state, "getFriction",		getFriction);

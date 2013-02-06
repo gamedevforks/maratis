@@ -192,20 +192,7 @@ MPhysicsProperties * MOEntity::createPhysicsProperties(void)
 
 void MOEntity::setActive(bool active)
 {
-	if(active == m_isActive)
-		return;
-	
 	m_isActive = active;
-	
-	MPhysicsProperties * phyProps = getPhysicsProperties();
-	if(phyProps)
-	{
-		MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
-		if(active)
-			physics->activateObject(phyProps->getCollisionObjectId());
-		else
-			physics->deactivateObject(phyProps->getCollisionObjectId());
-	}
 }
 
 void MOEntity::setMeshRef(MMeshRef * meshRef)
