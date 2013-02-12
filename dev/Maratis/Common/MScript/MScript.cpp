@@ -2735,7 +2735,7 @@ int getCameraClearColor(lua_State * L)
 		if(object->getType() == M_OBJECT3D_CAMERA)
 		{
 			MOCamera * camera = (MOCamera*)object;
-			pushFloatArray(L, *camera->getClearColor(), 3);
+			pushFloatArray(L, camera->getClearColor(), 3);
 			return 1;
 		}
 	}

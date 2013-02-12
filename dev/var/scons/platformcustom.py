@@ -7,7 +7,7 @@
 import sys
 
 def customizeAppleLinker(env):
-    env.Append(LINKFLAGS=['-arch','i386','-arch','x86_64'])
+    env.Append(LINKFLAGS=['-arch','i386','-arch','x86_64','-mmacosx-version-min=10.6'])
     # in osx rpath refers to install_name when used in shared libs, 
     # and to runtime search path when used in executables
     # env.Append(SHLINKFLAGS=['$_SHLIBRPATH'])

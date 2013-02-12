@@ -556,7 +556,7 @@ void MFixedRenderer::enableFog(MOCamera * camera)
 		render->disableFog();
 	}
 
-	render->setFogColor(*camera->getClearColor());
+	render->setFogColor(camera->getClearColor());
 	render->setFogDistance(fogMin, camera->getClippingFar());
 }
 

@@ -452,7 +452,7 @@ void MaratisUI::editObject(MObject3d * object)
             m_editWin->setYScale(winHeight - m_editWin->getPosition().y);
             m_editTopWin->setYScale(viewPropHeight*2 + previewHeight);
 
-            m_cameraWin->setNormalColor(*((MOCamera*)object)->getClearColor());
+            m_cameraWin->setNormalColor(((MOCamera*)object)->getClearColor());
         }
         else
         {
@@ -793,10 +793,11 @@ void MaratisUI::editObject(MObject3d * object)
 				{
 					MOCamera * camera = (MOCamera *)object;
 
+					m_editCameraColor = camera->getClearColor();
 					addVariableName(m_editWin, "clearColor", &position);
-					addValue(m_editWin, "r", M_VAR_FLOAT, &camera->getClearColor()->x, &position);
-					addValue(m_editWin, "v", M_VAR_FLOAT, &camera->getClearColor()->y, &position);
-					addValue(m_editWin, "b", M_VAR_FLOAT, &camera->getClearColor()->z, &position);
+					addValue(m_editWin, "r", M_VAR_FLOAT, &m_editCameraColor.x, &position);
+					addValue(m_editWin, "v", M_VAR_FLOAT, &m_editCameraColor.y, &position);
+					addValue(m_editWin, "b", M_VAR_FLOAT, &m_editCameraColor.z, &position);
 					position += MVector2(0, ySpace);
 
 					m_editOrtho = camera->isOrtho();
@@ -2453,7 +2454,9 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 			}
 
 			// light color
-			else if(edit->getVariablePointer() == &UI->m_editLightColor)
+			else if(edit->getVariablePointer() == &UI->m_editLightColor.x ||
+					edit->getVariablePointer() == &UI->m_editLightColor.y ||
+					edit->getVariablePointer() == &UI->m_editLightColor.z)
 				((MOLight *)object)->setColor(UI->m_editLightColor);
             // radius
 			else if(edit->getVariablePointer() == &UI->m_editRadius)
@@ -2503,6 +2506,11 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
             // fog distance
             else if(edit->getVariablePointer() == &UI->m_editFogDistance)
 				((MOCamera *)object)->setFogDistance(UI->m_editFogDistance);
+			// clear color
+			else if(edit->getVariablePointer() == &UI->m_editCameraColor.x ||
+					edit->getVariablePointer() == &UI->m_editCameraColor.y ||
+					edit->getVariablePointer() == &UI->m_editCameraColor.z)
+				((MOCamera *)object)->setClearColor(UI->m_editCameraColor);
 
             // pitch
             else if(edit->getVariablePointer() == &UI->m_editPitch)
@@ -2537,14 +2545,19 @@ void MaratisUI::editEvents(MGuiEditText * edit, MGuiEvent * guiEvents)
 				((MOEntity *)object)->getPhysicsProperties()->setAngularFactor(UI->m_editAngularFactor);
 
 			// text color
-			else if(edit->getVariablePointer() == &UI->m_editTextColor)
+			else if(edit->getVariablePointer() == &UI->m_editTextColor.x ||
+					edit->getVariablePointer() == &UI->m_editTextColor.y ||
+					edit->getVariablePointer() == &UI->m_editTextColor.z ||
+					edit->getVariablePointer() == &UI->m_editTextColor.w)
 				((MOText *)object)->setColor(UI->m_editTextColor);
             // text size
             else if(edit->getVariablePointer() == &UI->m_editSize)
 				((MOText *)object)->setSize(UI->m_editSize);
 			
 			// gravity
-            else if(edit->getVariablePointer() == &UI->m_editGravity)
+			else if(edit->getVariablePointer() == &UI->m_editGravity.x ||
+					edit->getVariablePointer() == &UI->m_editGravity.y ||
+					edit->getVariablePointer() == &UI->m_editGravity.z)
 				scene->setGravity(UI->m_editGravity);
 
             break;
@@ -4382,7 +4395,7 @@ void MaratisUI::cameraWinEvents(MGuiWindow * window, MGuiEvent * guiEvents)
 			MRenderingContext * render = engine->getRenderingContext();
 
 			// clear screen
-			window->setNormalColor(*camera->getClearColor());
+			window->setNormalColor(camera->getClearColor());
 
 			// viewport
 			int x = (int)window->getPosition().x;

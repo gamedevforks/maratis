@@ -153,7 +153,7 @@ void MGame::draw(void)
 					render->attachFrameBufferTexture(M_ATTACH_DEPTH, depthTexture->getTextureId());
 
 				render->setViewport(0, 0, width, height);
-				render->setClearColor(*camera->getClearColor());
+				render->setClearColor(camera->getClearColor());
 				render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
 				// draw the scene
@@ -180,7 +180,7 @@ void MGame::draw(void)
 		// draw scene with default camera
 		MOCamera camera;
 
-		render->setClearColor(*camera.getClearColor());
+		render->setClearColor(camera.getClearColor());
 		render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
 		camera.enable();
@@ -195,7 +195,7 @@ void MGame::draw(void)
 		// draw current scene
 		if(! camera->getRenderColorTexture())
 		{
-			render->setClearColor(*camera->getClearColor());
+			render->setClearColor(camera->getClearColor());
 			render->clear(M_BUFFER_COLOR | M_BUFFER_DEPTH);
 
 			camera->enable();

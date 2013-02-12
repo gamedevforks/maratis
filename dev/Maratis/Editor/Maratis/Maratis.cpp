@@ -2122,7 +2122,7 @@ void Maratis::drawGrid(MScene * scene)
 	float gLength = (float)(gSize*gridSpace);
 
 	// colors
-	MVector3 clearColor = MVector3(0.2f, 0.3f, 0.4f);//scene->getClearColor();
+	MVector3 clearColor = MVector3(0.2f, 0.3f, 0.4f);
 	MVector3 color1 = (clearColor * 0.8f);
 	MVector3 color2 = (clearColor * 0.9f);
 	MVector3 red =   (clearColor * 0.7f) + (MVector3(1, 0, 0) * 0.3f);

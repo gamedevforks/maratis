@@ -70,6 +70,7 @@ public:
 	float m_editClipNear;
 	float m_editClipFar;
 	float m_editFogDistance;
+	MVector3 m_editCameraColor;
 
 	// light
 	bool m_editSpot;

@@ -92,7 +92,7 @@ public:
 	inline float getFov(void){ return m_fov; }
 	inline float getFogDistance(void){ return m_fogDistance; }
 	inline void setClearColor(MVector3 clearColor) { m_clearColor = clearColor; }
-	inline MVector3 * getClearColor(void) { return &m_clearColor; }
+	inline MVector3 getClearColor(void) const { return m_clearColor; }
 
 	// projection
 	MVector3 getProjectedPoint(const MVector3 & point) const;

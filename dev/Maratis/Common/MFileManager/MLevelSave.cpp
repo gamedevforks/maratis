@@ -164,7 +164,7 @@ void writeCameraProperties(MFile * file, MOCamera * camera)
 
 	// clearColor
 	M_fprintf(file, "\t\t\t\t");
-	writeFloatValues(file, "clearColor", *camera->getClearColor(), 3);
+	writeFloatValues(file, "clearColor", camera->getClearColor(), 3);
 	M_fprintf(file, "\n");
 
 	// ortho
