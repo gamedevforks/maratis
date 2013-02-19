@@ -552,7 +552,7 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	context = glXCreateContext(display, vi, None, True);
 	rootWindow = RootWindow(display,vi->screen);
 	cmap = XCreateColormap(display,rootWindow,vi->visual,AllocNone);
-	swa.colormap = cmap; swa.border_pixel = 0
+	swa.colormap = cmap; swa.border_pixel = 0;
 
 	// fullscreen
 #ifndef __CYGWIN__
