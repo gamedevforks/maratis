@@ -548,8 +548,13 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	// open display
 	display = XOpenDisplay(NULL);
 
+	vi = glXChooseVisual(display, DefaultScreen(display), dblBuf);
+	context = glXCreateContext(display, vi, None, True);
+	rootWindow = RootWindow(display,vi->screen);
+	cmap = XCreateColormap(display,rootWindow,vi->visual,AllocNone);
+	swa.colormap = cmap; swa.border_pixel = 0
+
 	// fullscreen
-	
 #ifndef __CYGWIN__
 	
 	int vmMajor, vmMinor;
@@ -584,8 +589,6 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 			PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
 			ExposureMask | FocusChangeMask | VisibilityChangeMask;
 
-			rootWindow = RootWindow(display,vi->screen);
-
 			window = XCreateWindow(
 				display, rootWindow,
 				0, 0, m_width, m_height, 0, vi->depth, InputOutput, vi->visual,
@@ -612,12 +615,6 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	// window
 	{
 		m_fullscreen = false;
-
-		vi = glXChooseVisual(display, DefaultScreen(display), dblBuf);
-		context = glXCreateContext(display, vi, None, True);
-		rootWindow = RootWindow(display,vi->screen);
-		cmap = XCreateColormap(display,rootWindow,vi->visual,AllocNone);
-		swa.colormap = cmap; swa.border_pixel = 0;
 
 		swa.event_mask =
 		StructureNotifyMask | KeyPressMask | KeyReleaseMask |
