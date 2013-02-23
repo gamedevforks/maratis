@@ -609,6 +609,8 @@ const char * MWindow::getTempDirectory(void)
 	NSString * temp = NSTemporaryDirectory();
 	strcpy(tempDirectory, [temp cStringUsingEncoding:NSUTF8StringEncoding]);
 	return tempDirectory;
+	
+	//return "/tmp"; // linux style
 }
 
 const char * MWindow::getCurrentDirectory(void)

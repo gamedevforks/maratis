@@ -29,6 +29,7 @@
 
 
 #include <MEngine.h>
+#include <tinyxml.h>
 #include "MXmlCommon.h"
 
 
@@ -85,7 +86,11 @@ void writeBool(MFile * file, const char * name, bool variable, const char * sep)
 
 void writeString(MFile * file, const char * name, const char * string, const char * sep)
 {
-	M_fprintf(file, "%s=\"%s\"", name, string);
+	TIXML_STRING S1(string);
+	TIXML_STRING S2;
+	TiXmlBase::EncodeString(S1, &S2);
+
+	M_fprintf(file, "%s=\"%s\"", name, S2.c_str());
 	if(sep)
 		M_fprintf(file, sep);
 }
