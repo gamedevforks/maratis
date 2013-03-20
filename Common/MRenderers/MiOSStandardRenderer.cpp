@@ -252,9 +252,9 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 		M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
 		M_BLENDING_MODES blendMode = material->getBlendMode();
 		M_CULL_MODES cullMode = display->getCullMode();
-		MVector3 * diffuse = material->getDiffuse();
-		MVector3 * specular = material->getSpecular();
-		MVector3 * emit = material->getEmit();
+		MVector3 diffuse = material->getDiffuse();
+		MVector3 specular = material->getSpecular();
+		MVector3 emit = material->getEmit();
 		float shininess = material->getShininess();
 		
 		// get current fog color
@@ -409,8 +409,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				
 					LightActive[i] = (lightDiffuse.w > 0.0f);
 					LightSpotCosCutoff[i] = cosf(spotAngle*DEG_TO_RAD);
-					LightDiffuseProduct[i] = (*diffuse) * lightDiffuse;
-					LightSpecularProduct[i] = (*specular) * lightDiffuse;
+					LightDiffuseProduct[i] = (diffuse) * lightDiffuse;
+					LightSpecularProduct[i] = (specular) * lightDiffuse;
 					LightPosition[i] = (*cameraViewMatrix) * MVector4(LightPosition[i]);
 					LightSpotDirection[i] = (cameraViewMatrix->getRotatedVector3(LightSpotDirection[i])).getNormalized();
 				}
@@ -502,10 +502,10 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				MMatrix4x4 * texMatrix = &TextureMatrix[t];
 				texMatrix->loadIdentity();
 				texMatrix->translate(MVector2(0.5f, 0.5f));
-				texMatrix->scale(*texture->getTexScale());
+				texMatrix->scale(texture->getTexScale());
 				texMatrix->rotate(MVector3(0, 0, -1), texture->getTexRotate());
 				texMatrix->translate(MVector2(-0.5f, -0.5f));
-				texMatrix->translate(*texture->getTexTranslate());
+				texMatrix->translate(texture->getTexTranslate());
 				
 				// texture coords
 				char name[16];
@@ -548,7 +548,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 				render->sendUniformFloat(fxId, "FogEnd", &FogEnd);
 				render->sendUniformFloat(fxId, "FogScale", &FogScale);
 			
-				render->sendUniformVec3(fxId, "MaterialEmit", *emit);
+				render->sendUniformVec3(fxId, "MaterialEmit", emit);
 				render->sendUniformFloat(fxId, "MaterialShininess", &shininess);
 			
 				render->sendUniformVec4(fxId, "LightPosition", LightPosition[0], MAX_LOCAL_LIGHTS);
@@ -810,7 +810,7 @@ void MStandardRenderer::enableFog(MOCamera * camera)
 		render->disableFog();
 	}
 	
-	render->setFogColor(*camera->getClearColor());
+	render->setFogColor(camera->getClearColor());
 	render->setFogDistance(fogMin, camera->getClippingFar());
 }
 
@@ -942,7 +942,7 @@ void MStandardRenderer::drawText(MOText * textObj)
 	render->sendUniformInt(fxId, "Texture0", &id);
 	
 	// Color
-	render->sendUniformVec4(fxId, "Color", *textObj->getColor());
+	render->sendUniformVec4(fxId, "Color", textObj->getColor());
 
 	// Vertex
 	render->getAttribLocation(fxId, "Vertex", &vertAttribIndex);
@@ -1190,8 +1190,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					
 					// compute entities visibility
 					MBox3d * box = entity->getBoundingBox();
-					MVector3 * min = box->getMin();
-					MVector3 * max = box->getMax();
+					MVector3 * min = &box->min;
+					MVector3 * max = &box->max;
 					
 					MVector3 points[8] = {
 						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -1273,8 +1273,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 						// check if submesh visible
 						if(sSize > 1)
 						{
-							MVector3 * min = box->getMin();
-							MVector3 * max = box->getMax();
+							MVector3 * min = &box->min;
+							MVector3 * max = &box->max;
 							
 							MVector3 points[8] = {
 								entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -1516,7 +1516,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					MVector3(localPos + localRadius)
 				);
 				
-				if(! entityBox->isInCollisionWith(&lightBox))
+				if(! entityBox->isInCollisionWith(lightBox))
 					continue;
 				
 				MEntityLight * entityLight = &entityLights[entityLightsNumber];
@@ -1554,8 +1554,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				// check if submesh visible
 				if(sSize > 1)
 				{
-					MVector3 * min = box->getMin();
-					MVector3 * max = box->getMax();
+					MVector3 * min = &box->min;
+					MVector3 * max = &box->max;
 					
 					MVector3 points[8] = {
 						entity->getTransformedVector(MVector3(min->x, min->y, min->z)),
@@ -1573,7 +1573,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				}
 				
 				// subMesh center
-				MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+				MVector3 center = box->min + (box->max - box->min)*0.5f;
 				center = entity->getTransformedVector(center);
 				
 				// sort entity lights
@@ -1581,7 +1581,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				for(l=0; l<entityLightsNumber; l++)
 				{
 					MEntityLight * entityLight = &entityLights[l];
-					if(! box->isInCollisionWith(&entityLight->lightBox))
+					if(! box->isInCollisionWith(entityLight->lightBox))
 						continue;
 					
 					entityLightsList[lightsNumber] = l;
@@ -1705,7 +1705,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			
 			// center
 			MBox3d * box = text->getBoundingBox();
-			MVector3 center = (*box->getMin()) + ((*box->getMax()) - (*box->getMin()))*0.5f;
+			MVector3 center = box->min + (box->max - box->min)*0.5f;
 			center = text->getTransformedVector(center);
 			
 			// z distance to camera

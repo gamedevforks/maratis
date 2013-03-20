@@ -69,7 +69,6 @@
 		E99ACC5E13A288C6009D3BFA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E99ACC5D13A288C6009D3BFA /* QuartzCore.framework */; };
 		E9BA0C6F132939AC00C98E56 /* MBFollow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C58132939AC00C98E56 /* MBFollow.cpp */; };
 		E9BA0C70132939AC00C98E56 /* MBLookAt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C5A132939AC00C98E56 /* MBLookAt.cpp */; };
-		E9BA0C71132939AC00C98E56 /* MLevelSave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C5E132939AC00C98E56 /* MLevelSave.cpp */; };
 		E9BA0C72132939AC00C98E56 /* MLevelLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C5F132939AC00C98E56 /* MLevelLoad.cpp */; };
 		E9BA0C73132939AC00C98E56 /* MMeshLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C62132939AC00C98E56 /* MMeshLoad.cpp */; };
 		E9BA0C74132939AC00C98E56 /* MInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9BA0C65132939AC00C98E56 /* MInput.cpp */; };
@@ -403,9 +402,7 @@
 		E9BA0C5A132939AC00C98E56 /* MBLookAt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBLookAt.cpp; path = ../../../trunk/dev/Maratis/Common/MBehaviors/MBLookAt.cpp; sourceTree = SOURCE_ROOT; };
 		E9BA0C5B132939AC00C98E56 /* MBLookAt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBLookAt.h; path = ../../../trunk/dev/Maratis/Common/MBehaviors/MBLookAt.h; sourceTree = SOURCE_ROOT; };
 		E9BA0C5D132939AC00C98E56 /* MMeshLoad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMeshLoad.h; path = ../../../trunk/dev/Maratis/Common/MFileManager/MMeshLoad.h; sourceTree = SOURCE_ROOT; };
-		E9BA0C5E132939AC00C98E56 /* MLevelSave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MLevelSave.cpp; path = ../../../trunk/dev/Maratis/Common/MFileManager/MLevelSave.cpp; sourceTree = SOURCE_ROOT; };
 		E9BA0C5F132939AC00C98E56 /* MLevelLoad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MLevelLoad.cpp; path = ../../../trunk/dev/Maratis/Common/MFileManager/MLevelLoad.cpp; sourceTree = SOURCE_ROOT; };
-		E9BA0C60132939AC00C98E56 /* MLevelSave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLevelSave.h; path = ../../../trunk/dev/Maratis/Common/MFileManager/MLevelSave.h; sourceTree = SOURCE_ROOT; };
 		E9BA0C61132939AC00C98E56 /* MLevelLoad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLevelLoad.h; path = ../../../trunk/dev/Maratis/Common/MFileManager/MLevelLoad.h; sourceTree = SOURCE_ROOT; };
 		E9BA0C62132939AC00C98E56 /* MMeshLoad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MMeshLoad.cpp; path = ../../../trunk/dev/Maratis/Common/MFileManager/MMeshLoad.cpp; sourceTree = SOURCE_ROOT; };
 		E9BA0C64132939AC00C98E56 /* MInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MInput.h; path = ../../../trunk/dev/Maratis/Common/MInput/MInput.h; sourceTree = SOURCE_ROOT; };
@@ -1120,9 +1117,7 @@
 				E9CCDE2C16008B8E00E045E0 /* MPackageManagerNPK.cpp */,
 				E9CCDE2D16008B8E00E045E0 /* MPackageManagerNPK.h */,
 				E9BA0C5D132939AC00C98E56 /* MMeshLoad.h */,
-				E9BA0C5E132939AC00C98E56 /* MLevelSave.cpp */,
 				E9BA0C5F132939AC00C98E56 /* MLevelLoad.cpp */,
-				E9BA0C60132939AC00C98E56 /* MLevelSave.h */,
 				E9BA0C61132939AC00C98E56 /* MLevelLoad.h */,
 				E9BA0C62132939AC00C98E56 /* MMeshLoad.cpp */,
 			);
@@ -2115,7 +2110,6 @@
 				E9C9988013291E6B002A3F21 /* MScene.cpp in Sources */,
 				E9BA0C6F132939AC00C98E56 /* MBFollow.cpp in Sources */,
 				E9BA0C70132939AC00C98E56 /* MBLookAt.cpp in Sources */,
-				E9BA0C71132939AC00C98E56 /* MLevelSave.cpp in Sources */,
 				E9BA0C72132939AC00C98E56 /* MLevelLoad.cpp in Sources */,
 				E9BA0C73132939AC00C98E56 /* MMeshLoad.cpp in Sources */,
 				E9BA0C74132939AC00C98E56 /* MInput.cpp in Sources */,
