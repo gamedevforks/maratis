@@ -594,20 +594,33 @@ void MES2Context::getAttribLocation(unsigned int fxId, const char * name, int * 
 }
 
 // arrays
-void MES2Context::enableVertexArray(void){
-	//glEnableClientState(GL_VERTEX_ARRAY);
+void MES2Context::enableVertexArray(void)
+{
+	//int location;
+	//bindFX(simpleFX);
+	//getAttribLocation(simpleFX, "Vertex", &location);
+	//enableAttribArray(location);
 }
 
-void MES2Context::enableColorArray(void){
-	//glEnableClientState(GL_COLOR_ARRAY);
+void MES2Context::enableColorArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Color", &location);
+	//enableAttribArray(location);
 }
 
-void MES2Context::enableNormalArray(void){
-	//glEnableClientState(GL_NORMAL_ARRAY);
+void MES2Context::enableNormalArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Normal", &location);
+	//enableAttribArray(location);
 }
 
-void MES2Context::enableTexCoordArray(void){
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+void MES2Context::enableTexCoordArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "TexCoord", &location);
+	//enableAttribArray(location);
 }
 
 void MES2Context::enableAttribArray(unsigned int location)
@@ -615,20 +628,32 @@ void MES2Context::enableAttribArray(unsigned int location)
 	glEnableVertexAttribArray(location);
 }
 
-void MES2Context::disableVertexArray(void){
-	//glDisableClientState(GL_VERTEX_ARRAY);
+void MES2Context::disableVertexArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Vertex", &location);
+	//disableAttribArray(location);
 }
 
-void MES2Context::disableColorArray(void){
-	//glDisableClientState(GL_COLOR_ARRAY);
+void MES2Context::disableColorArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Color", &location);
+	//disableAttribArray(location);
 }
 
-void MES2Context::disableNormalArray(void){
-	//glDisableClientState(GL_NORMAL_ARRAY);
+void MES2Context::disableNormalArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Normal", &location);
+	//disableAttribArray(location);
 }
 
-void MES2Context::disableTexCoordArray(void){
-	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+void MES2Context::disableTexCoordArray(void)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "TexCoord", &location);
+	//disableAttribArray(location);
 }
 
 void MES2Context::disableAttribArray(unsigned int location)
@@ -636,20 +661,32 @@ void MES2Context::disableAttribArray(unsigned int location)
 	glDisableVertexAttribArray(location);
 }
 
-void MES2Context::setVertexPointer(M_TYPES type, unsigned int components, const void * pointer){
-	//glVertexPointer(components, returnGLType(type), 0, pointer);
+void MES2Context::setVertexPointer(M_TYPES type, unsigned int components, const void * pointer)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Vertex", &location);
+	//setAttribPointer(location, type, components, pointer);
 }
 
-void MES2Context::setColorPointer(M_TYPES type, unsigned int components, const void * pointer){
-	//glColorPointer(components, returnGLType(type), 0, pointer);
+void MES2Context::setColorPointer(M_TYPES type, unsigned int components, const void * pointer)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Color", &location);
+	//setAttribPointer(location, type, components, pointer);
 }
 
-void MES2Context::setNormalPointer(M_TYPES type, const void * pointer){
-	//glNormalPointer(returnGLType(type), 0, pointer);
+void MES2Context::setNormalPointer(M_TYPES type, const void * pointer)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "Normal", &location);
+	//setAttribPointer(location, type, components, pointer, 1);
 }
 
-void MES2Context::setTexCoordPointer(M_TYPES type, unsigned int components, const void * pointer){
-	//glTexCoordPointer(components, returnGLType(type), 0, pointer);
+void MES2Context::setTexCoordPointer(M_TYPES type, unsigned int components, const void * pointer)
+{
+	//int location;
+	//getAttribLocation(simpleFX, "TexCoord", &location);
+	//setAttribPointer(location, type, components, pointer);
 }
 
 void MES2Context::setAttribPointer(unsigned int location, M_TYPES type, unsigned int components, const void * pointer, const bool normalized)
@@ -697,14 +734,17 @@ void MES2Context::setScissor(int x, int y, unsigned int width, unsigned int heig
 }
 
 // color
-void MES2Context::setColor(const MColor & color){
+void MES2Context::setColor(const MColor & color)
+{
 	//glColor4ub(color.r, color.g, color.b, color.a);
 }
 
-void MES2Context::setColor4(const MVector4 & color){
+void MES2Context::setColor4(const MVector4 & color)
+{
 	//glColor4f(color.x, color.y, color.z, color.w);
 }
-void MES2Context::setColor3(const MVector3 & color){
+void MES2Context::setColor3(const MVector3 & color)
+{
 	//glColor4f(color.x, color.y, color.z, 1.0f);
 }
 

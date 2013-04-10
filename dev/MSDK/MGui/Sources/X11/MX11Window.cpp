@@ -7,6 +7,7 @@
 // Copyright (c) 2011 teZeriusz <lukasz.wychrystenko@gmail.com>
 // Copyright (c) 2011 Anael Seghezzi <www.maratis3d.com>
 // Copyright (c) some parts using GLFW X11 code : http://www.glfw.org/
+// Copyright (c) 2013 Yannick Pflanzer <yp1995@live.de>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -44,6 +45,13 @@
 	#include <X11/extensions/xf86vmode.h>
 #endif
 
+#ifdef linux
+	#include "../../Includes/X11/MJoystickLinux.h"
+
+	// Joystick class
+	MJoystickLinux joystick1(JOY1_DEV);
+	MJoystickLinux joystick2(JOY2_DEV);
+#endif
 
 // start time
 static struct timeval startTime;
@@ -203,6 +211,40 @@ static int translateKey(int keycode)
     }
 }
 
+#ifdef linux
+static void updateJoystick(MJoystick* joystick, MJoystickLinux* joystickLinux, 
+			   MWindow* window)
+{
+	joystickLinux->updateData();
+	
+	for(int i=0; i<8; i++)
+	{
+		bool pressed = joystick->isKeyPressed(i);
+		
+		if(joystickLinux->getButton(i))
+		{
+			joystick->downKey(i);
+		}
+		else
+		{
+			joystick->upKey(i);
+		}
+	}
+	
+	joystick->setX(joystickLinux->getDeltaAxis(0));
+	joystick->setY(joystickLinux->getDeltaAxis(1));
+	joystick->setZ(joystickLinux->getDeltaAxis(2));
+	joystick->setR(joystickLinux->getDeltaAxis(3));
+	joystick->setU(joystickLinux->getDeltaAxis(4));
+	joystick->setV(joystickLinux->getDeltaAxis(5));
+	
+	MWinEvent events;
+	events.type = MWIN_EVENT_JOYSTICK1_UPDATE;
+	window->sendEvents(&events);
+	
+	joystick->flush();
+}
+#endif
 
 MWindow::MWindow(void):
 m_focus(true),
@@ -529,6 +571,16 @@ bool MWindow::onEvents(void)
 		}
 	}
 
+#ifdef linux
+	MWindow* window = MWindow::getInstance();
+
+	MJoystick* joystick = window->getJoystick1();
+	updateJoystick(joystick, &joystick1, window);
+
+	joystick = window->getJoystick2();
+	updateJoystick(joystick, &joystick2, window);	
+#endif
+	
 	return true;
 }
 

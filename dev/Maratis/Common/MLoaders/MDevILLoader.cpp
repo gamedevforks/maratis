@@ -28,11 +28,10 @@
 //    distribution.
 //
 //========================================================================
-//jan 2012 - Philipp Geyer <philipp@geyer.co.uk> - Changed sound loading to use MFile
+//jan 2012 - Philipp Geyer <philipp@geyer.co.uk> - Changed loading to use MFile
 
 
 #include <IL/il.h>
-#include <IL/ilu.h>
 
 #include <MCore.h>
 #include "MDevILLoader.h"
