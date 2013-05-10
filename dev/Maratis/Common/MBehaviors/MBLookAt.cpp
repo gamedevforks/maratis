@@ -91,13 +91,15 @@ MVariable MBLookAt::getVariable(unsigned int id)
 
 void MBLookAt::update(void)
 {
+	return;
+
 	MEngine * engine = MEngine::getInstance();
 	MLevel * level = engine->getLevel();
 	MScene * scene = level->getCurrentScene();
 
 	MObject3d * parent = getParentObject();
 
-	const char * targetName = m_targetName.getData();
+	const char * targetName = m_targetName.getSafeString();
 	if(strcmp(targetName, "none") == 0)
 		return;
 

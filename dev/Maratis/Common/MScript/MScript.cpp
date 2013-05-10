@@ -3187,7 +3187,7 @@ int getBehaviorVariable(lua_State * L)
 							}
 						case M_VARIABLE_STRING:
 							{
-								lua_pushstring(L, ((MString *)variable.getPointer())->getData());
+								lua_pushstring(L, ((MString *)variable.getPointer())->getSafeString());
 								return 1;
 							}
 						case M_VARIABLE_VEC2:
