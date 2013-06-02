@@ -199,9 +199,9 @@ static void linkObjects(MObject3d *parent, MObject3d *child)
 	child->setScale(MVector3(xSize, ySize, zSize));
 }
 
-static void unlinkObjects(MObject3d *parent, MObject3d *child)
+static void unlinkObjects(MObject3d *child)
 {
-	if(parent == NULL || child == NULL)
+	if(child == NULL)
 		return;
 	
 	child->unLink();
@@ -1108,7 +1108,7 @@ int setParent(lua_State * L)
 		if(parent)
 			linkObjects(parent, object);
 		else
-			unlinkObjects(parent, object);
+			unlinkObjects(object);
 		
 		object->updateMatrix();
 		return 0;
