@@ -1021,13 +1021,16 @@ int activate(lua_State * L)
 
 	if((object = getObject3d(id)))
 	{
-		object->setActive(true);
-		if(object->getType() == M_OBJECT3D_ENTITY)
+		if(! object->isActive())
 		{
-			MOEntity * entity = (MOEntity*)object;
-			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
-			if(phyProps)
-				physics->activateObject(phyProps->getCollisionObjectId());
+			object->setActive(true);
+			if(object->getType() == M_OBJECT3D_ENTITY)
+			{
+				MOEntity * entity = (MOEntity*)object;
+				MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+				if(phyProps)
+					physics->activateObject(phyProps->getCollisionObjectId());
+			}
 		}
 	}
 
@@ -1046,13 +1049,16 @@ int deactivate(lua_State * L)
 
 	if((object = getObject3d(id)))
 	{
-		object->setActive(false);
-		if(object->getType() == M_OBJECT3D_ENTITY)
+		if(object->isActive())
 		{
-			MOEntity * entity = (MOEntity*)object;
-			MPhysicsProperties * phyProps = entity->getPhysicsProperties();
-			if(phyProps)
-				physics->deactivateObject(phyProps->getCollisionObjectId());
+			object->setActive(false);
+			if(object->getType() == M_OBJECT3D_ENTITY)
+			{
+				MOEntity * entity = (MOEntity*)object;
+				MPhysicsProperties * phyProps = entity->getPhysicsProperties();
+				if(phyProps)
+					physics->deactivateObject(phyProps->getCollisionObjectId());
+			}
 		}
 	}
 

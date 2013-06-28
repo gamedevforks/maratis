@@ -78,8 +78,8 @@ void MGuiEditText::sendVariable(void)
 
 				int i;
 				sscanf(getText(), "%d", &i);
-				if(i == (*value))
-					return;
+				//if(i == (*value))
+				//	return;
 
 				*value = i;
 			}
@@ -91,8 +91,8 @@ void MGuiEditText::sendVariable(void)
 				int i;
 				sscanf(getText(), "%d", &i);
 				if(i < 0) i = 0;
-				if((unsigned int)i == (*value))
-					return;
+				//if((unsigned int)i == (*value))
+				//	return;
 
 				*value = (unsigned int)i;
 			}
@@ -103,8 +103,8 @@ void MGuiEditText::sendVariable(void)
 
 				float f;
 				sscanf(getText(), "%f", &f);
-				if(f == (*value))
-					return;
+				//if(f == (*value))
+				//	return;
 
 				*value = f;
 			}
