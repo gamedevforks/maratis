@@ -213,7 +213,7 @@ static int translateKey(int keycode)
 
 #ifdef linux
 static void updateJoystick(MJoystick* joystick, MJoystickLinux* joystickLinux, 
-			   MWindow* window)
+			   MWindow* window, MWIN_EVENT_TYPE event)
 {
 	joystickLinux->updateData();
 	
@@ -234,12 +234,12 @@ static void updateJoystick(MJoystick* joystick, MJoystickLinux* joystickLinux,
 	joystick->setX(joystickLinux->getDeltaAxis(0));
 	joystick->setY(joystickLinux->getDeltaAxis(1));
 	joystick->setZ(joystickLinux->getDeltaAxis(2));
-	joystick->setR(joystickLinux->getDeltaAxis(3));
-	joystick->setU(joystickLinux->getDeltaAxis(4));
+	joystick->setU(joystickLinux->getDeltaAxis(3));
+	joystick->setR(joystickLinux->getDeltaAxis(4));
 	joystick->setV(joystickLinux->getDeltaAxis(5));
 	
 	MWinEvent events;
-	events.type = MWIN_EVENT_JOYSTICK1_UPDATE;
+	events.type = event; // MWIN_EVENT_JOYSTICK1_UPDATE;
 	window->sendEvents(&events);
 	
 	joystick->flush();
@@ -575,10 +575,10 @@ bool MWindow::onEvents(void)
 	MWindow* window = MWindow::getInstance();
 
 	MJoystick* joystick = window->getJoystick1();
-	updateJoystick(joystick, &joystick1, window);
+	updateJoystick(joystick, &joystick1, window, MWIN_EVENT_JOYSTICK1_UPDATE);
 
 	joystick = window->getJoystick2();
-	updateJoystick(joystick, &joystick2, window);	
+	updateJoystick(joystick, &joystick2, window, MWIN_EVENT_JOYSTICK2_UPDATE);	
 #endif
 	
 	return true;

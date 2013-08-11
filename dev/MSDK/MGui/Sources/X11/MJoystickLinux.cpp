@@ -104,12 +104,12 @@ void MJoystickLinux::updateData()
 	if(m_file == -1)
 		return;
 	
+	fsync(m_file);
 	read(m_file, &m_js, sizeof(struct js_event));
 	
 	switch(m_js.type & ~JS_EVENT_INIT)
 	{
 		case JS_EVENT_AXIS:
-			//m_dAxis[m_js.number] = m_axis[m_js.number];
 			m_axis[m_js.number] = m_js.value;
 			m_dAxis[m_js.number] = m_js.value;
 			m_dAxis[m_js.number] /= (float) JOY_AXIS_MAX;
@@ -122,15 +122,3 @@ void MJoystickLinux::updateData()
 	
 }
 
-int main(int argc, char* argv[])
-{
-	MJoystickLinux joystick(JOY1_DEV);
-	
-	while(1)
-	{
-		joystick.updateData();
-				
-		printf("Axis x = %f\n", joystick.getDeltaAxis(0));
-		fflush(stdout);
-	}
-}
