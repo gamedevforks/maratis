@@ -110,7 +110,7 @@ solution "Test"
 		files { sourcesDir .. "Common/Loaders/Freetype/**" }
 		files { sourcesDir .. "Common/Renderers/**" }
 		files { sourcesDir .. "Common/GUI/**" }
-		links { "mcore", "mgui", "glee", "freeimage", "tinycthread" }
+		links { "mcore", "mengine", "mgui", "glfw", "glee", "freeimage", "tinycthread" }
 		defines { "FREEIMAGE_LIB" }
 		
 
