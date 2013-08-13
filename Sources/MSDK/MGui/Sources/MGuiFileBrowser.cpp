@@ -55,11 +55,14 @@ void MGuiFileBrowser::fileBrowserOkButtonEvents(MGuiButton * button, MGUI_EVENT_
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
 		{
-			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
-			fileBrowser->close();
-			if(fileBrowser->m_eventCallback)
-				fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_OK);
-            break;
+			if(button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
+			{
+				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
+				fileBrowser->close();
+				if(fileBrowser->m_eventCallback)
+					fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_OK);
+			}
+			break;
 		}
 			
         default:
@@ -73,10 +76,13 @@ void MGuiFileBrowser::fileBrowserCancelButtonEvents(MGuiButton * button, MGUI_EV
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
 		{
-			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
-			fileBrowser->close();
-			if(fileBrowser->m_eventCallback)
-				fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_CANCEL);
+			if(button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
+			{
+				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
+				fileBrowser->close();
+				if(fileBrowser->m_eventCallback)
+					fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_CANCEL);
+			}
             break;
 		}
 		
@@ -91,15 +97,18 @@ void MGuiFileBrowser::mainWinEvents(MGuiWindow * window, MGUI_EVENT_TYPE event)
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
 		{
-			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)window->getCustomPointer();
-			
-			unsigned int b, bSize = window->getButtonsNumber();
-			for(b=0; b<bSize; b++)
+			if(window->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
 			{
-				if(window->getButton(b)->isPressed())
+				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)window->getCustomPointer();
+			
+				unsigned int b, bSize = window->getButtonsNumber();
+				for(b=0; b<bSize; b++)
 				{
-					fileBrowser->selectFile(b);
-					break;
+					if(window->getButton(b)->isPressed())
+					{
+						fileBrowser->selectFile(b);
+						break;
+					}
 				}
 			}
 			

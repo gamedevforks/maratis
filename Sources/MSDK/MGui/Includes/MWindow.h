@@ -31,6 +31,9 @@
 #ifndef _M_WINDOW_H
 #define _M_WINDOW_H
 
+#define MWIN_MAX_KEYS 256
+#define MWIN_MAX_MOUSE_BUTTONS 32
+
 
 class M_GUI_EXPORT MWindow
 {
@@ -46,8 +49,8 @@ public:
 		m_pos[1] = y;
 		m_width = width;
 		m_height = height;
-		memset(m_key, 0, sizeof(bool)*256);
-		memset(m_mouseButton, 0, sizeof(bool)*3);
+		memset(m_keys, 0, sizeof(bool)*MWIN_MAX_KEYS);
+		memset(m_mouseButtons, 0, sizeof(bool)*MWIN_MAX_MOUSE_BUTTONS);
 	}
 	
 	virtual ~MWindow(void){ clear(); }
@@ -60,12 +63,12 @@ protected:
 	unsigned int m_height;
 
 	// keys
-	bool m_key[256];
-	int m_currentKey;
+	bool m_keys[MWIN_MAX_KEYS];
+	unsigned int m_currentKey;
 
 	// mouse
-	bool m_mouseButton[3];
-	int m_currentMouseButton;
+	bool m_mouseButtons[MWIN_MAX_MOUSE_BUTTONS];
+	unsigned int m_currentMouseButton;
 	MVector2 m_mousePos;
 	MVector2 m_mouseDir;
 	MVector2 m_mouseScroll;
@@ -92,11 +95,11 @@ public:
 	
 	// keys
 	inline int getKey(void){ return m_currentKey; }
-	inline bool isKeyPressed(unsigned char id){ return m_key[id]; }
+	inline bool isKeyPressed(unsigned int id){ return m_keys[id]; }
 
 	// mouse
 	inline int getMouseButton(void){ return m_currentMouseButton; }
-	inline bool isMouseButtonPressed(unsigned char id){ if(id > 2) return false; return m_mouseButton[id]; }
+	inline bool isMouseButtonPressed(unsigned int id){ return m_mouseButtons[id]; }
 	inline MVector2 getMousePosition(void) const { return m_mousePos; }
 	inline MVector2 getMouseScroll(void) const { return m_mouseScroll; }
 	inline MVector2 getMouseDir(void) const { return m_mouseDir; }
@@ -111,17 +114,17 @@ public:
 	void deleteWindow(MGuiWindow * window);
 
 	// events
-	inline void onChar(int character){ m_currentKey = character; onEvent(MWIN_EVENT_CHAR); }
-	inline void onKeyDown(unsigned char key){ m_key[key] = true;  m_currentKey = key; onEvent(MWIN_EVENT_KEY_DOWN); }
-	inline void onKeyUp(unsigned char key)  { m_key[key] = false; m_currentKey = key; onEvent(MWIN_EVENT_KEY_UP); }
+	inline void onChar(unsigned int character){ m_currentKey = character; onEvent(MWIN_EVENT_CHAR); }
+	inline void onKeyDown(unsigned int key){ m_keys[key] = true;  m_currentKey = key; onEvent(MWIN_EVENT_KEY_DOWN); }
+	inline void onKeyUp(unsigned int key)  { m_keys[key] = false; m_currentKey = key; onEvent(MWIN_EVENT_KEY_UP); }
 	
 	inline void onCreate(void){ onEvent(MWIN_EVENT_WINDOW_CREATE); }
 	inline void onMove(int x, int y){ m_pos[0] = x; m_pos[1] = y; onEvent(MWIN_EVENT_WINDOW_MOVE); }
 	inline void onResize(unsigned int width, unsigned int height){ m_width = width; m_height = height; onEvent(MWIN_EVENT_WINDOW_RESIZE); }
 	inline void onClose(void){ onEvent(MWIN_EVENT_WINDOW_CLOSE); }
 	
-	inline void onMouseButtonDown(unsigned char button){ if(button > 2) return; m_mouseButton[button] = true;  m_currentMouseButton = button; onEvent(MWIN_EVENT_MOUSE_BUTTON_DOWN); }
-	inline void onMouseButtonUp(unsigned char button)  { if(button > 2) return; m_mouseButton[button] = false; m_currentMouseButton = button; onEvent(MWIN_EVENT_MOUSE_BUTTON_UP); }
+	inline void onMouseButtonDown(unsigned int button){ m_mouseButtons[button] = true;  m_currentMouseButton = button; onEvent(MWIN_EVENT_MOUSE_BUTTON_DOWN); }
+	inline void onMouseButtonUp(unsigned int button)  { m_mouseButtons[button] = false; m_currentMouseButton = button; onEvent(MWIN_EVENT_MOUSE_BUTTON_UP); }
 	inline void onMouseMove(const MVector2 & pos){ m_mouseDir = pos - m_mousePos; m_mousePos = pos; onEvent(MWIN_EVENT_MOUSE_MOVE); }
 	inline void onMouseScroll(const MVector2 & scroll){ m_mouseScroll = scroll; onEvent(MWIN_EVENT_MOUSE_SCROLL); }
 

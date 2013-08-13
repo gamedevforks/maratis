@@ -132,6 +132,6 @@ solution "Test"
 			links { "Opengl32", "Winmm" }
 		
 		elseif os.is("linux") then
-			links { "GL", "dl", "X11", "Xxf86vm" }
+			links { "GL", "dl", "X11", "Xxf86vm", "pthread" }
 			linkoptions { "-Wl,-rpath=." }
 		end
