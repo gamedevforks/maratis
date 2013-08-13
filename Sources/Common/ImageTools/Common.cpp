@@ -263,7 +263,6 @@ bool convertToRGB(MImage * image)
 
 	unsigned int width = image->getWidth();
 	unsigned int height = image->getHeight();
-	unsigned int components = image->getComponents();
 
 	if(image->getDataType() == M_UBYTE)
 	{
@@ -320,16 +319,15 @@ void getImageSubPixel_ubyte(MImage * image, float x, float y, float * color)
 	int iy = (int)(y);
 	float fx = x - ix;
 	float fy = y - iy;
-
 	float A, B;
 
 	unsigned char * colors[4];
 	unsigned char * imgData = (unsigned char*)image->getData();
 	
-	colors[0] = imgData + width*iy*components + ix*components;
-	colors[1] = imgData + width*iy*components + MIN(width-1, ix+1)*components;
-	colors[2] = imgData + width*MIN(height-1, iy+1)*components + ix*components;
-	colors[3] = imgData + width*MIN(height-1, iy+1)*components + MIN(width-1, ix+1)*components;
+	colors[0] = imgData + (width*iy + ix)*components;
+	colors[1] = imgData + (width*iy + MIN(width-1, ix+1))*components;
+	colors[2] = imgData + (width*MIN(height-1, iy+1) + ix)*components;
+	colors[3] = imgData + (width*MIN(height-1, iy+1) + MIN(width-1, ix+1))*components;
 	
 	for(i=0; i<components; i++)
 	{
@@ -352,19 +350,18 @@ void getImageSubPixel_float(MImage * image, float x, float y, float * color)
 
 	int ix = (int)(x);
 	int iy = (int)(y);
-	float fx = x - (int)x;
-	float fy = y - (int)y;	
-
+	float fx = x - ix;
+	float fy = y - iy;
 	float A, B;
 
 	float * colors[4];
 	float * imgData = (float *)image->getData();
 		
-	colors[0] = imgData + width*iy*components + ix*components;
-	colors[1] = imgData + width*iy*components + MIN(width-1, ix+1)*components;
-	colors[2] = imgData + width*MIN(height-1, iy+1)*components + ix*components;
-	colors[3] = imgData + width*MIN(height-1, iy+1)*components + MIN(width-1, ix+1)*components;
-		
+	colors[0] = imgData + (width*iy + ix)*components;
+	colors[1] = imgData + (width*iy + MIN(width-1, ix+1))*components;
+	colors[2] = imgData + (width*MIN(height-1, iy+1) + ix)*components;
+	colors[3] = imgData + (width*MIN(height-1, iy+1) + MIN(width-1, ix+1))*components;
+	
 	for(i=0; i<components; i++)
 	{
 		A = colors[0][i] + (colors[2][i] - colors[0][i])*fy;

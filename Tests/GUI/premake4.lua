@@ -75,9 +75,6 @@ solution "Test"
 	project "mcore"
 		kind "StaticLib"
 		language "C++"
-		if os.is("windows") then
-			includedirs { thirdPartyDir .. "dirent/include/" }
-		end
 		files { sourcesDir .. "MSDK/MCore/**" }
 		defines { "MCORE_STATIC" }
 		

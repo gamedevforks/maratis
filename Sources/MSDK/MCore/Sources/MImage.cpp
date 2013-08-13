@@ -53,7 +53,7 @@ m_components(0)
 
 MImage::~MImage(void)
 {
-	SAFE_FREE(m_data);
+	clear();
 }
 
 void MImage::copyFrom(const MImage & image)
@@ -79,44 +79,13 @@ void MImage::copyFrom(const MImage & image)
 	}
 }
 
-void MImage::clear(void * color)
+void MImage::clear(void)
 {
-	unsigned int i;
-	unsigned int c;
-
-	switch(m_dataType)
-	{
-	case M_UBYTE:
-		for(i=0; i<m_size; i+=m_components)
-		{
-			for(c=0; c<m_components; c++)
-				((unsigned char *)m_data)[i+c] = ((unsigned char *)color)[c];
-		}
-		break;
-	case M_USHORT:
-		for(i=0; i<m_size; i+=m_components)
-		{
-			for(c=0; c<m_components; c++)
-				((unsigned short *)m_data)[i+c] = ((unsigned short *)color)[c];
-		}
-		break;
-	case M_INT:
-		for(i=0; i<m_size; i+=m_components)
-		{
-			for(c=0; c<m_components; c++)
-				((int *)m_data)[i+c] = ((int *)color)[c];
-		}
-		break;
-	case M_FLOAT:
-		for(i=0; i<m_size; i+=m_components)
-		{
-			for(c=0; c<m_components; c++)
-				((float *)m_data)[i+c] = ((float *)color)[c];
-		}
-		break;
-	default:
-		break;
-	}
+	SAFE_FREE(m_data);
+	m_width = 0;
+	m_height = 0;
+	m_components = 0;
+	m_size = 0;
 }
 
 void MImage::create(M_TYPES dataType, unsigned int width, unsigned int height, unsigned int components)

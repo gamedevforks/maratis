@@ -179,9 +179,7 @@ bool M_loadFont(const char * filename, void * data)
 	// create image
 	height = getNextPowerOfTwo(height);
 	image.create(M_UBYTE, width, height, 4);
-
-	unsigned char color[4] = {255, 255, 255, 0};
-	image.clear(color);
+	memset(image.getData(), 0, image.getSize()*sizeof(char));
 
 
 	// init font

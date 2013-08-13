@@ -53,7 +53,7 @@ private:
 public:
 
 	void create(M_TYPES dataType, unsigned int width, unsigned int height, unsigned int components);
-	void clear(void * color);
+	void clear(void);
 	void readPixel(unsigned int x, unsigned int y, void * color);
 	void writePixel(unsigned int x, unsigned int y, void * color);
 	void copyFrom(const MImage & image);

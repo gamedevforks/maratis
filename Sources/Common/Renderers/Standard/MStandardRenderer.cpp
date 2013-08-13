@@ -28,6 +28,7 @@
 //========================================================================
 
 
+#include <tinyutf8.h>
 #include <MEngine.h>
 #include <MLog.h>
 #include "MStandardShaders.h"
@@ -1145,9 +1146,9 @@ void MStandardRenderer::drawText(MOText * textObj)
 	float heightFactor = font->getTextureHeight() / fontSize;
 	float xc = 0, yc = 0;
 
-	uint32_t charCode;
-	uint32_t state = 0;
-	uint8_t* s = (uint8_t*)text;	
+	unsigned int charCode;
+	unsigned int state = 0;
+	unsigned char* s = (unsigned char*)text;	
 	for(; *s; ++s)
 	{
 		if(utf8_decode(&state, &charCode, *s) != UTF8_ACCEPT)

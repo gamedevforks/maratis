@@ -39,7 +39,6 @@ using namespace std;
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <tinyutf8.h>
 
 // sleep
 #ifdef WIN32

@@ -28,6 +28,7 @@
 //========================================================================
 
 
+#include <tinyutf8.h>
 #include <MEngine.h>
 #include "../Includes/MGui.h"
 
@@ -46,16 +47,16 @@ m_isSingleLine(false)
 	setText("");
 }
 
-void MGuiEditText::decodeUTF8(vector <uint32_t> * text32)
+void MGuiEditText::decodeUTF8(vector <unsigned int> * text32)
 {
 	const char * text = m_textObject.getText();
 
 	if(strlen(text) == 0)
 		return;
 
-	uint32_t charCode;
-	uint32_t state = 0;
-	uint8_t* s = (uint8_t*)text;
+	unsigned int charCode;
+	unsigned int state = 0;
+	unsigned char* s = (unsigned char *)text;
 	for(; *s; ++s)
 	{
 		if(utf8_decode(&state, &charCode, *s) == UTF8_ACCEPT)
@@ -63,14 +64,14 @@ void MGuiEditText::decodeUTF8(vector <uint32_t> * text32)
 	}
 }
 
-void MGuiEditText::encodeUTF8(const vector <uint32_t> & text32)
+void MGuiEditText::encodeUTF8(const vector <unsigned int> & text32)
 {
 	unsigned int i, size = text32.size();
 	char * text = new char[size*4+1];
 	
-	char * itext = text;
+	unsigned char * itext = (unsigned char *)text;
 	for(i=0; i<size; i++)
-		itext = (char *)utf8_encode((uint32_t)text32[i], (uint8_t*)itext);
+		itext = utf8_encode((unsigned int)text32[i], itext);
 	*itext = 0;
 	
 	m_textObject.setText(text);
@@ -143,8 +144,8 @@ void MGuiEditText::sendVariable(void)
 			break;
 		}
 
-		size_t count;
-		utf8_len((uint8_t*)getText(), &count);
+		unsigned int count;
+		utf8_len((unsigned char *)getText(), &count);
 	
 		if(getCharId() > count)
 			setCharId(count);
@@ -217,7 +218,7 @@ void MGuiEditText::setText(const char * text)
 {
 	m_textObject.setText(text);
 
-	vector<uint32_t> strText;
+	vector<unsigned int> strText;
 	decodeUTF8(&strText);
 
 	if(m_limitLength && strText.size() > m_maxLength)
@@ -268,9 +269,9 @@ unsigned int MGuiEditText::findPointedCharacter(MVector2 point)
 
 	unsigned int id = 0;
 
-	uint32_t charCode;
-	uint32_t state = 0;
-	uint8_t* s = (uint8_t*)text;
+	unsigned int charCode;
+	unsigned int state = 0;
+	unsigned char* s = (unsigned char *)text;
 	for(; *s; ++s)
 	{
 		if(utf8_decode(&state, &charCode, *s) != UTF8_ACCEPT)
@@ -374,9 +375,9 @@ MVector2 MGuiEditText::getCharacterPosition(unsigned int characterId)
 
 	unsigned int id = 0;
 
-	uint32_t charCode;
-	uint32_t state = 0;
-	uint8_t* s = (uint8_t*)text;
+	unsigned int charCode;
+	unsigned int state = 0;
+	unsigned char* s = (unsigned char *)text;
 	for(; *s; ++s)
 	{
 		if(utf8_decode(&state, &charCode, *s) != UTF8_ACCEPT)
@@ -475,8 +476,8 @@ void MGuiEditText::upCharId(int direction)
 
 void MGuiEditText::setCharId(unsigned int id)
 {
-	size_t count;
-	utf8_len((uint8_t*)getText(), &count);
+	unsigned int count;
+	utf8_len((unsigned char *)getText(), &count);
 	
 	if(id <= count)
 		m_charId = id;
@@ -484,8 +485,8 @@ void MGuiEditText::setCharId(unsigned int id)
 
 void MGuiEditText::addCharId(void)
 {
-	size_t count;
-	utf8_len((uint8_t*)getText(), &count);
+	unsigned int count;
+	utf8_len((unsigned char *)getText(), &count);
 	
 	if(m_charId < count)
 		m_charId++;
@@ -526,8 +527,8 @@ bool MGuiEditText::getSelectionIds(unsigned int * start, unsigned int * end)
 		*end = m_startSelectionId;
 	}
 
-	size_t count;
-	utf8_len((uint8_t*)getText(), &count);
+	unsigned int count;
+	utf8_len((unsigned char *)getText(), &count);
 
 	if(*start >= count)
 		*start = count;
@@ -546,8 +547,8 @@ bool MGuiEditText::canAddCharacter(void)
 	if(! m_limitLength)
 		return true;
 
-	size_t count;
-	utf8_len((uint8_t*)getText(), &count);
+	unsigned int count;
+	utf8_len((unsigned char *)getText(), &count);
 	if(count < m_maxLength)
 		return true;
 
@@ -627,7 +628,7 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		case MKEY_TAB:
 			if(! isSingleLine())
 			{
-				vector<uint32_t> strText;
+				vector<unsigned int> strText;
 				decodeUTF8(&strText);
 				
 				if(selection)
@@ -655,7 +656,7 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		case MKEY_BACKSPACE:
 			if(selection)
 			{
-				vector<uint32_t> strText;
+				vector<unsigned int> strText;
 				decodeUTF8(&strText);
 				
 				strText.erase(strText.begin() + sStart, strText.begin() + sEnd);
@@ -668,7 +669,7 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			}
 			else if(getCharId() > 0)
 			{
-				vector<uint32_t> strText;
+				vector<unsigned int> strText;
 				decodeUTF8(&strText);
 				
 				strText.erase(strText.begin() + getCharId() - 1);
@@ -682,12 +683,12 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 
 		case MKEY_DELETE:
 		{
-			size_t count;
-			utf8_len((uint8_t*)getText(), &count);
+			unsigned int count;
+			utf8_len((unsigned char *)getText(), &count);
 	
 			if(getCharId() < count)
 			{
-				vector<uint32_t> strText;
+				vector<unsigned int> strText;
 				decodeUTF8(&strText);
 				
 				if(selection)
@@ -712,7 +713,7 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		case MKEY_RETURN:
 			if(! isSingleLine())
 			{
-				vector<uint32_t> strText;
+				vector<unsigned int> strText;
 				decodeUTF8(&strText);
 				
 				if(selection)
@@ -756,7 +757,7 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		// add character
 		if(character)
 		{
-			vector<uint32_t> strText;
+			vector<unsigned int> strText;
 			decodeUTF8(&strText);
 			
 			if(selection)
@@ -772,7 +773,7 @@ void MGuiEditText::editText(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 				return;
 			}
 
-			strText.insert(strText.begin()+getCharId(), (uint32_t)character);
+			strText.insert(strText.begin()+getCharId(), (unsigned int)character);
 			encodeUTF8(strText);
 			
 			addCharId();
