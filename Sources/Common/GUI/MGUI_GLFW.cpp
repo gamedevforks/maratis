@@ -284,6 +284,7 @@ MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width
 		MThreadWindow * window = new MThreadWindow(x, y, width, height);
 		window->glfwWindow = glfwWindow;
 		window->setEventCallback(eventCallback);
+		windows.push_back(window);
 		
 		glfwSetWindowUserPointer(glfwWindow, window);
 		glfwSetCursorPosCallback(glfwWindow, cursorpos_callback);
@@ -296,18 +297,28 @@ MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width
 		
 		if(thrd_create(&window->threadId, thread_main, (void*)window) == thrd_success)
 		{
-			windows.push_back(window);
 			return window;
 		}
 		else
 		{
 			delete window;
+			windows.pop_back();
 			glfwDestroyWindow(glfwWindow);
 			return NULL;
 		}
 	}
 	
 	return NULL;
+}
+
+MWindow * MGUI_getWindow(unsigned int id)
+{
+	return windows[id];
+}
+
+unsigned int MGUI_getWindowsNumber(void)
+{
+	return windows.size();
 }
 
 void MGUI_closeWindow(MWindow * window)

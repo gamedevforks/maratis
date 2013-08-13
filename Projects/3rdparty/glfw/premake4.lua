@@ -38,30 +38,31 @@ project "glfw"
 	elseif os.is("windows") then
 		files {
 			projectRootDir .. "src/win32_platform.h",
-			projectRootDir .. "src/win32_clipboard.m",
+			projectRootDir .. "src/win32_clipboard.c",
 			projectRootDir .. "src/win32_gamma.c",
-			projectRootDir .. "src/win32_init.m",
-			projectRootDir .. "src/win32_joystick.m",
-			projectRootDir .. "src/win32_monitor.m",
+			projectRootDir .. "src/win32_init.c",
+			projectRootDir .. "src/win32_joystick.c",
+			projectRootDir .. "src/win32_monitor.c",
 			projectRootDir .. "src/win32_time.c",
-			projectRootDir .. "src/win32_window.m",
+			projectRootDir .. "src/win32_window.c",
 			projectRootDir .. "src/wgl_platform.h",
-			projectRootDir .. "src/wgl_context.m"
+			projectRootDir .. "src/wgl_context.c"
 		}
 		defines { "_GLFW_WIN32", "_GLFW_WGL" }	
 		
 	else
 		files {
 			projectRootDir .. "src/x11_platform.h",
-			projectRootDir .. "src/x11_clipboard.m",
+			projectRootDir .. "src/x11_clipboard.c",
 			projectRootDir .. "src/x11_gamma.c",
-			projectRootDir .. "src/x11_init.m",
-			projectRootDir .. "src/x11_joystick.m",
-			projectRootDir .. "src/x11_monitor.m",
+			projectRootDir .. "src/x11_init.c",
+			projectRootDir .. "src/x11_joystick.c",
+			projectRootDir .. "src/x11_monitor.c",
 			projectRootDir .. "src/x11_time.c",
-			projectRootDir .. "src/x11_window.m",
+			projectRootDir .. "src/x11_window.c",
+			projectRootDir .. "src/x11_unicode.c",
 			projectRootDir .. "src/glx_platform.h",
-			projectRootDir .. "src/glx_context.m"
+			projectRootDir .. "src/glx_context.c"
 		}
 		defines { "_GLFW_X11", "_GLFW_GLX" }
 	end
