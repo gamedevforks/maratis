@@ -168,7 +168,7 @@ bool clearDirectory(const char * filename)
 
 	dirent * pent = NULL;
 
-    while(pent = readdir(pdir))
+    while((pent = readdir(pdir)))
 	{
 		if(strcmp(pent->d_name, ".") == 0)
 			continue;
@@ -195,7 +195,7 @@ bool removeDirectory(const char * filename)
 
 	dirent * pent = NULL;
 
-    while(pent = readdir(pdir))
+    while((pent = readdir(pdir)))
 	{
 		if(strcmp(pent->d_name, ".") == 0)
 			continue;
@@ -226,7 +226,7 @@ bool copyDirectory(const char * inFilename, const char * outFilename)
 	mkdir(outFilename);
 	dirent * pent = NULL;
 
-    while(pent = readdir(pdir))
+    while((pent = readdir(pdir)))
 	{
 		if(strcmp(pent->d_name, ".") == 0)
 			continue;
@@ -256,7 +256,7 @@ bool readDirectory(const char * filename, vector<string> * files, bool hiddenFil
 		return false;
 
 	dirent * pent = NULL;
-    while(pent = readdir(pdir))
+    while((pent = readdir(pdir)))
 	{
 		if(strcmp(pent->d_name, ".") == 0)
 			continue;

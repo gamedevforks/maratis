@@ -59,8 +59,8 @@ public:
 
 private:
 
-	void decodeUTF8(vector <uint32_t> * text32);
-	void encodeUTF8(const vector <uint32_t> & text32);
+	void decodeUTF8(vector <unsigned int> * text32);
+	void encodeUTF8(const vector <unsigned int> & text32);
 	
 	bool canAddCharacter(void);
 	bool getSelectionIds(unsigned int * start, unsigned int * end);

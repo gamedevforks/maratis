@@ -57,7 +57,8 @@ void MGuiFileBrowser::fileBrowserOkButtonEvents(MGuiButton * button, MGUI_EVENT_
 		{
 			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
 			fileBrowser->close();
-			fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_OK);
+			if(fileBrowser->m_eventCallback)
+				fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_OK);
             break;
 		}
 			
@@ -74,10 +75,11 @@ void MGuiFileBrowser::fileBrowserCancelButtonEvents(MGuiButton * button, MGUI_EV
 		{
 			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
 			fileBrowser->close();
-			fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_CANCEL);
+			if(fileBrowser->m_eventCallback)
+				fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_CANCEL);
             break;
 		}
-			
+		
         default:
 			break;
 	}
@@ -162,11 +164,13 @@ MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font)
 	m_mainWin->setMargin(MVector2(0.0f));
 	m_mainWin->setCustomPointer(this);
 	
+	
 	// texts and buttons
 	{
 		m_dirEditText = m_dirWin->addNewEditText();
 		m_dirEditText->setFont(m_font);
-		m_dirEditText->setColor(m_headTextColor);
+		m_dirEditText->setTextSize(m_font->getFont()->getFontSize());
+		m_dirEditText->setTextColor(m_headTextColor);
 		m_dirEditText->setEventCallback(dirEditTextEvents);
 		m_dirEditText->enableVariable(&m_currentDirectory, M_VARIABLE_STRING);
 		m_dirEditText->setSingleLine(true);
@@ -174,15 +178,19 @@ MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font)
 		
 		m_fileEditText = m_fileWin->addNewEditText();
 		m_fileEditText->setFont(m_font);
-		m_fileEditText->setColor(m_headTextColor);
+		m_fileEditText->setTextSize(m_font->getFont()->getFontSize());
+		m_fileEditText->setTextColor(m_headTextColor);
 		m_fileEditText->enableVariable(&m_currentFile, M_VARIABLE_STRING);
 		m_fileEditText->setSingleLine(true);
 		
 		m_okButton = m_headWin->addNewButton();
+		m_okButton->setAutoScaleFromText(false);
+		m_okButton->setPosition(MVector2(m_dirWin->getScale().x + m_margin*2, m_margin));
+		m_okButton->setScale(MVector2(m_fileButtonsWidth, m_fileButtonsHeight));
 		m_okButton->setFont(m_font);
+		m_okButton->setTextSize(m_font->getFont()->getFontSize());
 		m_okButton->setEventCallback(fileBrowserOkButtonEvents);
 		m_okButton->setTextAlign(M_ALIGN_CENTER);
-		m_okButton->setAutoScaleFromText(false);
 		m_okButton->setTextColor(MVector4(0, 0, 0, 1));
 		m_okButton->setText("ok");
 		m_okButton->setNormalColor(m_buttonColor);
@@ -191,10 +199,13 @@ MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font)
 		m_okButton->setCustomPointer(this);
 		
 		m_cancelButton = m_headWin->addNewButton();
+		m_cancelButton->setAutoScaleFromText(false);
+		m_cancelButton->setPosition(MVector2(m_dirWin->getScale().x + m_margin*2, m_margin*2 + m_fileButtonsHeight));
+		m_cancelButton->setScale(MVector2(m_fileButtonsWidth, m_fileButtonsHeight));
 		m_cancelButton->setFont(m_font);
+		m_cancelButton->setTextSize(m_font->getFont()->getFontSize());
 		m_cancelButton->setEventCallback(fileBrowserCancelButtonEvents);
 		m_cancelButton->setTextAlign(M_ALIGN_CENTER);
-		m_cancelButton->setAutoScaleFromText(false);
 		m_cancelButton->setTextColor(MVector4(0, 0, 0, 1));
 		m_cancelButton->setText("cancel");
 		m_cancelButton->setNormalColor(m_buttonColor);
@@ -269,6 +280,7 @@ void MGuiFileBrowser::updateMainWin(void)
 			
 			MGuiText * text = m_mainWin->addNewText();
 			text->setFont(m_font);
+			text->setTextSize(m_font->getFont()->getFontSize());
 			text->setText(textName.c_str());
 			text->setPosition(MVector2(0, y));
 			text->setColor(m_browserTextColor);

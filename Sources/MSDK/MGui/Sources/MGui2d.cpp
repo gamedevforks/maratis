@@ -65,7 +65,7 @@ MVector2 MGui2d::getAlignedTextPosition(void)
 	
 	if(box->min == box->max)
 	{
-		return MVector2(0, getTextSize()*0.75f);
+		return MVector2(0, getTextSize());
 	}
 	
 	switch(m_textObject.getAlign())
@@ -73,11 +73,11 @@ MVector2 MGui2d::getAlignedTextPosition(void)
 		default:
 		case M_ALIGN_LEFT:
 		{
-			return MVector2(-box->min.x, -box->min.y);
+			return MVector2(-box->min.x, getTextSize());
 		}
 		case M_ALIGN_RIGHT:
 		{
-			return MVector2(-box->min.x + (m_scale.x - (box->max.x - box->min.x)), -box->min.y);
+			return MVector2(-box->min.x + (m_scale.x - (box->max.x - box->min.x)), getTextSize());
 		}
 		case M_ALIGN_CENTER:
 		{
