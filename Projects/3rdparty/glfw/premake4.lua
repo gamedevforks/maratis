@@ -65,6 +65,8 @@ project "glfw"
 			projectRootDir .. "src/glx_context.c"
 		}
 		defines { "_GLFW_X11", "_GLFW_GLX" }
+		-- this should be checked depending of the system
+		defines{ "_GLFW_HAS_GLXGETPROCADDRESS" }
 	end
 
 	defines { "_GLFW_USE_OPENGL", "_GLFW_USE_MENUBAR" }
