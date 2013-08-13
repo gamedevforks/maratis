@@ -47,7 +47,7 @@ project "freeimage"
 	includedirs { 
 		projectRootDir .. "Source/",
 		projectRootDir .. "Source/FreeImage/",
-		projectRootDir .. "Source/MetaData/",
+		projectRootDir .. "Source/Metadata/",
 		projectRootDir .. "Source/FreeImageToolkit/",
 		projectRootDir .. "Source/LibJPEG/",
 		projectRootDir .. "Source/LibMNG/",
