@@ -107,7 +107,7 @@ solution "Test"
 		files { sourcesDir .. "Common/Loaders/Freetype/**" }
 		files { sourcesDir .. "Common/Renderers/**" }
 		files { sourcesDir .. "Common/GUI/**" }
-		links { "mcore", "mengine", "mgui", "glfw", "glee", "freeimage", "tinycthread" }
+		links { "mcore", "mengine", "mgui", "glfw", "glee", "freeimage", "freetype", "tinycthread" }
 		defines { "FREEIMAGE_LIB" }
 		
 
@@ -132,6 +132,6 @@ solution "Test"
 			links { "Opengl32", "Winmm" }
 		
 		elseif os.is("linux") then
-			links { "GL", "dl", "X11", "Xxf86vm", "pthread" }
+			links { "GL", "dl", "X11", "Xxf86vm", "pthread", "rt" }
 			linkoptions { "-Wl,-rpath=." }
 		end

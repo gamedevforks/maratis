@@ -34,7 +34,7 @@
 
 // Node Link
 class MGuiNodeBranch;
-class MGuiNodeLink
+class M_GUI_EXPORT MGuiNodeLink
 {
 private:
 
@@ -54,7 +54,7 @@ public:
 
 
 // Node Branch
-class MGuiNodeBranch
+class M_GUI_EXPORT MGuiNodeBranch
 {
 private:
 
@@ -115,6 +115,9 @@ public:
 	bool isInputConnectedTo(MGuiNode * node);
 	bool isOutputConnectedTo(MGuiNode * node);
 	void removeLinksWith(MGuiNode * node);
+
+	// change
+	void onChange(void);
 
 	// text
 	inline void setText(const char * text){ m_textObject.setText(text); if(m_autoScaleFromText) autoScaleFromText(); }

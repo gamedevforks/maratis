@@ -32,7 +32,21 @@
 #include "../Includes/MGui.h"
 
 
-void MWindow::clear(void)
+MWindow::MWindow(int x, int y, unsigned int width, unsigned int height)
+{
+	m_drawCallback = NULL;
+	m_eventCallback = NULL;
+	m_currentKey = 0;
+	m_currentMouseButton = 0;
+	m_pos[0] = x;
+	m_pos[1] = y;
+	m_width = width;
+	m_height = height;
+	memset(m_keys, 0, sizeof(bool)*MWIN_MAX_KEYS);
+	memset(m_mouseButtons, 0, sizeof(bool)*MWIN_MAX_MOUSE_BUTTONS);
+}
+
+MWindow::~MWindow(void)
 {
 	unsigned int i;
 	unsigned int wSize = m_windows.size();
@@ -42,6 +56,14 @@ void MWindow::clear(void)
 	m_windows.clear();
 }
 
+void MWindow::clear(void)
+{
+	unsigned int i;
+	unsigned int wSize = m_windows.size();
+	for(i=0; i<wSize; i++)
+		m_windows[i]->deleteMe();
+}
+
 MGuiWindow * MWindow::addNewWindow(void)
 {
 	MGuiWindow * window = new MGuiWindow(this);
@@ -49,17 +71,19 @@ MGuiWindow * MWindow::addNewWindow(void)
 	return window;
 }
 
-void MWindow::deleteWindow(MGuiWindow * window)
+void MWindow::update(void)
 {
-	unsigned int i;
-	unsigned int wSize = m_windows.size();
-	for(i=0; i<wSize; i++)
+	unsigned int i, size = m_windows.size();
+	for(i=0; i<size; i++)
+		m_windows[i]->update();
+		
+	for(i=0; i<size; i++)
 	{
-		if(m_windows[i] == window)
+		unsigned int id = (size-1)-i;
+		if(m_windows[id]->isDeleted())
 		{
-			SAFE_DELETE(m_windows[i]);
-			m_windows.erase(m_windows.begin() + i);
-			break;
+			SAFE_DELETE(m_windows[id]);
+			m_windows.erase(m_windows.begin() + id);
 		}
 	}
 }
@@ -76,7 +100,7 @@ void MWindow::draw(void)
 	render->setViewport(0, 0, m_width, m_height);
 	render->setMatrixMode(M_MATRIX_PROJECTION);
 	render->loadIdentity();
-	render->setOrthoView(0, (float)m_width, (float)m_height, 0, 1.0f, -1.0f);
+	render->setOrthoView(0, (float)(m_width), (float)(m_height), 0, 1.0f, -1.0f);
 	render->setMatrixMode(M_MATRIX_MODELVIEW);
 	render->loadIdentity();
 

@@ -48,7 +48,8 @@ m_scroll(0, 0),
 m_minScroll(0, 0),
 m_maxScroll(0, 0),
 m_currentNode(NULL),
-m_currentBranch(NULL)
+m_currentBranch(NULL),
+m_drawCallbackMode(MGUI_DRAW_CALLBACK_PRE_GUI)
 {
 	m_hScrollSlide.setPosition(MVector2(0, m_scale.y-6));
 	m_vScrollSlide.setPosition(MVector2(m_scale.x-6, 0));
@@ -79,14 +80,7 @@ m_currentBranch(NULL)
 
 MGuiWindow::~MGuiWindow(void)
 {
-	clear();
-}
-
-void MGuiWindow::clear(void)
-{
-	unsigned int i;
-
-	unsigned int oSize = m_objects.size();
+	unsigned int i, oSize = m_objects.size();
 	for(i=0; i<oSize; i++)
 		SAFE_DELETE(m_objects[i]);
 
@@ -98,6 +92,13 @@ void MGuiWindow::clear(void)
 	m_editTexts.clear();
 	m_slides.clear();
 	m_nodes.clear();
+}
+
+void MGuiWindow::clear(void)
+{
+	unsigned int i, oSize = m_objects.size();
+	for(i=0; i<oSize; i++)
+		m_objects[i]->deleteMe();
 }
 
 bool MGuiWindow::isSomethingEditing(void)
@@ -129,8 +130,9 @@ void MGuiWindow::autoScale(void)
 		if(tmp.x > newScale.x) newScale.x = tmp.x;
 		if(tmp.y > newScale.y) newScale.y = tmp.y;
 	}
+	
+	m_scale = newScale;
 
-	setScale(newScale);
 	resizeScroll();
 }
 
@@ -197,45 +199,73 @@ MGuiNode * MGuiWindow::addNewNode(void)
 	return node;
 }
 
-void MGuiWindow::deleteObject(MGui2d * object)
+void MGuiWindow::checkDeletedNodes(void)
 {
-	// check nodes
-	if(object->getType() == M_GUI_NODE)
-	{
-		MGuiNode * node = (MGuiNode*)object;
+	unsigned int n, nSize = m_nodes.size();
 	
-		// unlink all connected nodes
-		unsigned int n, nSize = getNodesNumber();
-		for(n=0; n<nSize; n++)
+	// check if at least one node is delete
+	bool nodeDeleted = false;
+	for(n=0; n<nSize; n++)
+	{
+		MGuiNode * node = m_nodes[n];
+		if(node->isDeleted())
+			nodeDeleted = true;
+	}
+	
+	if(! nodeDeleted)
+		return;
+	
+	// unlink deleted nodes and build update list
+	char * updateList = new char[nSize];
+	memset(updateList, 0, sizeof(char)*nSize);
+	
+	for(n=0; n<nSize; n++)
+	{
+		MGuiNode * node = m_nodes[n];
+		if(node->isDeleted())
 		{
-			MGuiNode * curNode = getNode(n);
-			if(curNode != node)
-				curNode->removeLinksWith(node);
+			// unlink all connected nodes
+			unsigned int n2;
+			for(n2=0; n2<nSize; n2++)
+			{
+				MGuiNode * node2 = m_nodes[n2];
+				if(node2 != node && !node2->isDeleted())
+				{
+					if(node2->isInputConnectedTo(node))
+						updateList[n2] = 1;
+						
+					node2->removeLinksWith(node);
+				}
+			}
 		}
 	}
+	
+	// update nodes
+	for(n=0; n<nSize; n++)
+	{
+		if(updateList[n] == 1)
+		{
+			MGuiNode * node = m_nodes[n];
+			node->onChange();
+		}
+	}
+	
+	delete [] updateList;
+}
 
-	// delete
-	unsigned int i, size = m_objects.size();
-	for(i=0; i<size; i++)
-	{
-		if(m_objects[i] == object)
-		{
-			SAFE_DELETE(m_objects[i]);
-			m_objects.erase(m_objects.begin() + i);
-			break;
-		}
-	}
+void MGuiWindow::update(void)
+{
+	checkDeletedNodes();
 	
+	// pop
 	#define MGUI2D_POP(vector)\
 	{\
-		size = vector.size();\
+		unsigned int i, size = vector.size();\
 		for(i=0; i<size; i++)\
 		{\
-			if(vector[i] == object)\
-			{\
-				vector.erase(vector.begin() + i);\
-				return;\
-			}\
+			unsigned int id = (size-1)-i;\
+			if(vector[id]->isDeleted())\
+				vector.erase(vector.begin() + id);\
 		}\
 	}
 	
@@ -246,6 +276,18 @@ void MGuiWindow::deleteObject(MGui2d * object)
 	MGUI2D_POP(m_editTexts);
 	MGUI2D_POP(m_slides);
 	MGUI2D_POP(m_nodes);
+	
+	// delete
+	unsigned int i, size = m_objects.size();
+	for(i=0; i<size; i++)
+	{
+		unsigned int id = (size-1)-i;
+		if(m_objects[id]->isDeleted())
+		{
+			SAFE_DELETE(m_objects[id]);
+			m_objects.erase(m_objects.begin() + id);
+		}
+	}
 }
 
 bool MGuiWindow::isScrollBarPressed(void)
@@ -286,6 +328,7 @@ void MGuiWindow::nodesEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 							m_currentNode = branch->getLink(0)->getNode();
 							m_currentBranch = branch->getLink(0)->getBranch();
 							branch->unlink();
+							node->onChange();
 						}
 						else
 						{
@@ -341,6 +384,11 @@ void MGuiWindow::nodesEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 						
 								branch1->addLinkWith(node2, branch2);
 								branch2->addLinkWith(node1, branch1);
+								
+								if(branch1->getType() == 0)
+									node1->onChange();
+								else if(branch2->getType() == 0)
+									node2->onChange();
 							}
 						}
 					}
@@ -401,7 +449,7 @@ void MGuiWindow::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 {
 	switch(event)
 	{
-	case MWIN_EVENT_WINDOW_RESIZE:
+	case MWIN_EVENT_RESIZE:
 		if(m_eventCallback)
 			m_eventCallback(this, MGUI_EVENT_RESIZE);
 		resizeScroll();
@@ -512,8 +560,9 @@ void MGuiWindow::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 				else
 					m_zoom = CLAMP(m_zoom/(1-factor), m_minZoom, m_maxZoom);
 	
+				float size = m_zoom/prevZoom;
 				MVector2 center = m_scale*0.5f;
-				m_scroll = center + (m_scroll - center)*(m_zoom/prevZoom);
+				m_scroll = center + (m_scroll - center)*size;
 			}
 			else
 			{
@@ -762,6 +811,9 @@ bool MGuiWindow::getMouseOverNodeBranch(MGuiNode ** node, MGuiNodeBranch ** bran
 	for(n=0; n<nSize; n++)
 	{
 		MGuiNode * curNode = getNode(n);
+		if(! curNode->isVisible())
+			continue;
+		
 		MGuiNodeBranch * curBranch = curNode->getMouseOverBranch();
 		if(curBranch)
 		{
@@ -778,6 +830,9 @@ bool MGuiWindow::getMouseOverNodeBranch(MGuiNode ** node, MGuiNodeBranch ** bran
 
 void MGuiWindow::drawNodeInfo(void)
 {
+	if(! isHighLight())
+		return;
+
 	MGuiNode * node = NULL;
 	MGuiNodeBranch * branch = NULL;
 
@@ -830,6 +885,9 @@ void MGuiWindow::drawNodesLink(void)
 		for(n=0; n<nSize; n++)
 		{
 			MGuiNode * node = getNode(n);
+			if(! node->isVisible())
+				continue;
+			
 			unsigned int o, oSize = node->getOutputsNumber();
 			for(o=0; o<oSize; o++)
 			{
@@ -853,13 +911,16 @@ void MGuiWindow::drawNodesLink(void)
 	// current
 	if(m_currentNode)
 	{
-		render->disableColorArray();
+		if(m_currentNode->isVisible())
+		{
+			render->disableColorArray();
 
-		vertices[0] = m_currentNode->getBranchPosition(m_currentBranch) + offset;
-		vertices[1] = m_currentNode->getPointLocalPosition(m_rootWindow->getMousePosition());
+			vertices[0] = m_currentNode->getBranchPosition(m_currentBranch) + offset;
+			vertices[1] = m_currentNode->getPointLocalPosition(m_rootWindow->getMousePosition());
 	
-		render->setColor4(MVector4(0, 0, 0, 0.35f));
-		render->drawArray(M_PRIMITIVE_LINES, 0, 2);
+			render->setColor4(MVector4(0, 0, 0, 0.35f));
+			render->drawArray(M_PRIMITIVE_LINES, 0, 2);
+		}
 	}
 	
 	render->disableLineAntialiasing();
@@ -919,9 +980,9 @@ void MGuiWindow::draw(void)
 		}
 	}
 
-	
-	// draw callback
-	if(m_drawCallback)
+
+	// draw callback pre-gui
+	if(m_drawCallback && m_drawCallbackMode == MGUI_DRAW_CALLBACK_PRE_GUI)
 	{
 		m_drawCallback(this);
 
@@ -966,8 +1027,6 @@ void MGuiWindow::draw(void)
 		m_objects[i]->draw();
 
 	render->popMatrix();
-	
-	drawNodeInfo();
 
 	// draw shadows
 	if(hasShadow())
@@ -988,4 +1047,10 @@ void MGuiWindow::draw(void)
 	}
 		
 	render->popMatrix();
+	
+	drawNodeInfo();
+	
+	// draw callback post-gui
+	if(m_drawCallback && m_drawCallbackMode == MGUI_DRAW_CALLBACK_POST_GUI)
+		m_drawCallback(this);
 }

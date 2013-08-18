@@ -61,11 +61,13 @@ public:
 
 	// update
 	void update(void);
-
+	void updateFromImage(MImage * image);
+	
 	// type
 	int getType(void){ return M_REF_TEXTURE; }
 
 	// data
+	inline void enableMipmap(bool mipmap){ m_mipmap = mipmap; }
 	inline bool isMipmapEnabled(void){ return m_mipmap; }
 	inline unsigned int getComponents(void){ return m_components; }
 	inline unsigned int getWidth(void){ return m_width; }

@@ -34,12 +34,10 @@
 #include "Blur.h"
 
 
-bool blurImage(MImage * image, int radius)
+bool gaussianBlur(MImage * image, unsigned int radius)
 {
 	if(! isImageValid(image) || radius == 0)
 		return false;
-	
-	radius = ABS(radius);
 	
 	int width = (int)image->getWidth();
 	int height = (int)image->getHeight();
@@ -96,7 +94,7 @@ bool blurImage(MImage * image, int radius)
 		else
 		{
 			float sum = 0.0f;
-			for(r=-radius; r<=radius; r++)
+			for(r=-(int)radius; r<=(int)radius; r++)
 			{
 				float x = fabs((float)r / (float)radius)*gaussfac;
 				float val = (float)(1.0/exp(x*x) - 1.0/exp(gaussfac*gaussfac*2.25));
@@ -117,7 +115,7 @@ bool blurImage(MImage * image, int radius)
         int yStep = width*components;
 		
         // horizontal blur
-		#pragma omp parallel for
+		#pragma omp parallel for schedule(dynamic, 4)
         for(int y=0; y<height; y++)
         {
 			int i, x, xx;
@@ -126,8 +124,8 @@ bool blurImage(MImage * image, int radius)
             float * copyY = copyData + y*yStep;
             for(x=0; x<width; x++)
             {
-                int start = MAX(0, x-radius);
-                int end = MIN(width-1, x+radius);
+                int start = MAX(0, x-(int)radius);
+                int end = MIN(width-1, x+(int)radius);
 				
 				float * val = blurTable + (start - (x-radius));
 				
@@ -179,9 +177,8 @@ bool blurImage(MImage * image, int radius)
             }
         }
 		
-	
         // vertical blur
-		#pragma omp parallel for
+		#pragma omp parallel for schedule(dynamic, 4)
         for(int x=0; x<width; x++)
         {
 			int i, y, yy;
@@ -191,10 +188,10 @@ bool blurImage(MImage * image, int radius)
 			
             for(y=0; y<height; y++)
             {
-                int start = MAX(0, y-radius);
-                int end = MIN(height-1, y+radius);
+                int start = MAX(0, y-(int)radius);
+                int end = MIN(height-1, y+(int)radius);
 				
-				float * val = blurTable + (start - (y-radius));
+				float * val = blurTable + (start - (y-(int)radius));
 				
                 float sum = 0.0f;
 				memset(outPixel, 0, sizeof(float)*components);

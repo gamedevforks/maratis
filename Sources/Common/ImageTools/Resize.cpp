@@ -38,106 +38,145 @@ bool pyrDownImage(MImage * image)
 {
 	if(! isImageValid(image))
 		return false;
-
-	MImage copy;
 	
-	int width = (int)image->getWidth();
-	int height = (int)image->getHeight();
-	unsigned int components = image->getComponents();
 	M_TYPES type = image->getDataType();
 	
-	int halfWidth = (width+1)/2;
-	int halfHeight = (height+1)/2;
-
-	if(type == M_UBYTE)
+	if(type == M_FLOAT)
 	{
-		int * totalColor = new int[components];
+		int width = (int)image->getWidth();
+		int height = (int)image->getHeight();
+		int halfWidth = (width+1)/2;
+		int halfHeight = (height+1)/2;
+		unsigned int components = image->getComponents();
 	
-		copy.create(type, width, height, components);
-		memcpy(copy.getData(), image->getData(), image->getSize()*sizeof(char));
-		image->create(type, halfWidth, halfHeight, components);
-		
-		unsigned char * copyData = (unsigned char *)copy.getData();
-		unsigned char * pixel = (unsigned char *)image->getData();
-		
-		for(int y=0; y<halfHeight; y++)
-		{
-			int i;
-			unsigned char * color;
-			for(int x=0; x<halfWidth; x++)
-			{
-				int xp = MIN((x*2+1), width-1);
-				int yp = MIN((y*2+1), height-1);
-			
-				color = copyData + (y*2)*width*components + (x*2)*components;
-				for(i=0; i<components; i++)
-					totalColor[i] = color[i];
-				
-				color = copyData + yp*width*components + (x*2)*components;
-				for(i=0; i<components; i++)
-					totalColor[i] += color[i];
-				
-				color = copyData + (y*2)*width*components + xp*components;
-				for(i=0; i<components; i++)
-					totalColor[i] += color[i];
-				
-				color = copyData + yp*width*components + xp*components;
-				for(i=0; i<components; i++)
-					totalColor[i] += color[i];
-				
-				for(i=0; i<components; i++)
-					pixel[i] = totalColor[i]*0.25f;
-				
-				pixel+=components;
-			}
-		}
-		
-		delete [] totalColor;
-		return true;
-	}
-	else if(type == M_FLOAT)
-	{
-		float * totalColor = new float[components];
-		
-		copy.create(type, width, height, components);
-		memcpy(copy.getData(), image->getData(), image->getSize()*sizeof(float));
+		MImage copy(*image);
 		image->create(type, halfWidth, halfHeight, components);
 		
 		float * copyData = (float *)copy.getData();
-		float * pixel = (float *)image->getData();
+		float * destData = (float *)image->getData();
 		
+		#pragma omp parallel for schedule(dynamic, 4)
 		for(int y=0; y<halfHeight; y++)
 		{
-			int i;
 			float * color;
+			float * pixel = destData + halfWidth*y*components;
+		
+			int i;
+			int y2 = y*2;
+			int y2p = MIN(y2+1, height-1);
+			
 			for(int x=0; x<halfWidth; x++)
 			{
-				color = copyData + (y*2)*width*components + (x*2)*components;
+				int x2 = x*2;
+				int x2p = MIN(x2+1, width-1);
+			
+				color = copyData + (y2*width + x2)*components;
 				for(i=0; i<components; i++)
-					totalColor[i] = color[i];
+					pixel[i] = color[i];
 				
-				color = copyData + (y*2+1)*width*components + (x*2)*components;
+				color = copyData + (y2p*width + x2)*components;
 				for(i=0; i<components; i++)
-					totalColor[i] += color[i];
+					pixel[i] += color[i];
 				
-				color = copyData + (y*2)*width*components + (x*2+1)*components;
+				color = copyData + (y2*width + x2p)*components;
 				for(i=0; i<components; i++)
-					totalColor[i] += color[i];
+					pixel[i] += color[i];
 				
-				color = copyData + (y*2+1)*width*components + (x*2+1)*components;
+				color = copyData + (y2p*width + x2p)*components;
 				for(i=0; i<components; i++)
-					totalColor[i] += color[i];
+					pixel[i] += color[i];
 				
 				for(i=0; i<components; i++)
-					pixel[i] = totalColor[i]*0.25f;
+					pixel[i] *= 0.25f;
 				
 				pixel+=components;
 			}
 		}
-		
-		delete [] totalColor;
+	
+		return true;
+	}
+	else if(type == M_UBYTE)
+	{
+		convertToFloat(image);
+		pyrDownImage(image);
+		convertToUbyte(image);
 		return true;
 	}
 	
 	return false;
+}
+
+bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight, float filter)
+{
+	if(! isImageValid(image))
+		return false;
+		
+	M_TYPES type = image->getDataType();
+	
+	if(type == M_FLOAT)
+	{
+		MImage copy(*image);
+		
+		unsigned int components = image->getComponents();
+		unsigned int srcWidth = image->getWidth();
+		unsigned int srcHeight = image->getHeight();
+
+		float xFilter = filter;
+		float yFilter = filter;
+		
+		MVector2 scale(srcWidth/(float)destWidth, srcHeight/(float)destHeight);
+
+		image->create(type, destWidth, destHeight, components);
+		float * destData = (float *)image->getData();
+		
+		#pragma omp parallel for schedule(dynamic, 4)
+		for(unsigned int y=0; y<destHeight; y++)
+		{
+			float color[4];
+			float totalColor[4];
+			float * pixel = destData + destWidth*y*components;
+			
+			for(unsigned int x=0; x<destWidth; x++)
+			{
+				unsigned int i;
+				MVector2 srcPos, destPos = MVector2((float)x, (float)y);
+				
+				float score = 0;
+				memset(totalColor, 0, components*sizeof(float));
+				
+				if(filter > 0)
+				{
+					float dx, dy;
+					for(dy=-yFilter; dy<=yFilter; dy+=yFilter)
+					for(dx=-xFilter; dx<=xFilter; dx+=xFilter)
+					{
+						srcPos = (destPos + MVector2(dx, dy))*scale;
+						getImageSubPixel_float(&copy, srcPos.x-0.5f, srcPos.y-0.5f, color);
+						for(i=0; i<components; i++)
+							totalColor[i] += color[i];
+						score++;
+					}
+					
+					for(i=0; i<components; i++)
+						pixel[i] = (totalColor[i] / score);
+				}
+				else
+				{
+					srcPos = destPos*scale;
+					getImageSubPixel_float(&copy, srcPos.x-0.5f, srcPos.y-0.5f, pixel);
+				}
+			
+				pixel += components;
+			}
+		}
+	}
+	else if(type == M_UBYTE)
+	{
+		convertToFloat(image);
+		resizeImage(image, destWidth, destHeight, filter);
+		convertToUbyte(image);
+		return true;
+	}
+	
+	return true;
 }

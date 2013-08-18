@@ -52,6 +52,7 @@ protected:
 	bool m_isVisible;
 	bool m_isHighLight;
 	bool m_isPressed;
+	bool m_isDeleted;
 
 	// text object
 	MOText m_textObject;
@@ -79,6 +80,8 @@ protected:
 
 	// shadow textures
 	bool m_hasShadow;
+	float m_shadowOpacity;
+	MVector2 m_shadowDir;
 
 	// custom variable
 	void * m_customPointer;
@@ -86,6 +89,9 @@ protected:
 	MVector2 getAlignedTextPosition(void);
 
 public:
+
+	inline void deleteMe(void){ m_isDeleted = true; }
+	inline bool isDeleted(void){ return m_isDeleted; }
 
 	// position / scale
 	inline void setPosition(const MVector2 & position){ m_position = position; }
@@ -114,6 +120,10 @@ public:
 	// shadows
 	inline void setShadow(bool shadow){ m_hasShadow = shadow; }
 	inline bool hasShadow(void){ return m_hasShadow; }
+	inline void setShadowOpacity(float opacity){ m_shadowOpacity = opacity; }
+	inline float getShadowOpacity(void){ return m_shadowOpacity; }
+	inline void setShadowDir(MVector2 dir){ m_shadowDir = dir; }
+	inline MVector2 getShadowDir(void){ return m_shadowDir; }
 
 	// text
 	inline void setDrawingText(bool draw){ m_isDrawingText = draw; }
@@ -174,7 +184,7 @@ public:
 	MVector2 getPointLocalPosition(const MVector2 & point);
 
 	// properties
-	inline bool isVisible(void){ return m_isVisible; }
+	inline bool isVisible(void){ return (m_isVisible && !m_isDeleted); }
 	inline bool isHighLight(void){ return m_isHighLight; }
 	inline bool isPressed(void){ return m_isPressed; }
 

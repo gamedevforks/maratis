@@ -34,6 +34,10 @@
 #include <MEngine.h>
 #include <MGui.h>
 
+#ifdef WIN32
+#include <WinBase.h>
+#endif
+
 #include "MGUI.h"
 
 
@@ -76,8 +80,8 @@ public:
 // glfw callbacks
 static int getMaratisKey(int key)
 {
-	//if(key >=32 && key<=126)
-	//	return key;
+	if(key >=32 && key<=126)
+		return key;
 
 	switch(key)
 	{
@@ -138,22 +142,26 @@ static int getMaratisKey(int key)
 	case GLFW_KEY_MENU:			return MKEY_MENU;
 	case GLFW_KEY_RIGHT_SUPER:	return MKEY_RSUPER;
 	case GLFW_KEY_LEFT_SUPER:	return MKEY_LSUPER;
-	default:					return -1;
+	default:					return MKEY_DUMMY;
 	}
 }
 
 static void key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
 {
+	unsigned int mkey = getMaratisKey(key);
+	if(mkey >= MWIN_MAX_KEYS)
+		return;
+
 	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
 	
 	switch(action)
 	{
 	case GLFW_REPEAT:
 	case GLFW_PRESS:
-		rootWindow->onKeyDown(getMaratisKey(key));
+		rootWindow->onKeyDown(mkey);
 		break;
 	case GLFW_RELEASE:
-		rootWindow->onKeyUp(getMaratisKey(key));
+		rootWindow->onKeyUp(mkey);
 		break;
 	default:
 		break;
@@ -168,6 +176,9 @@ static void char_callback(GLFWwindow * window, unsigned int key)
 
 static void mousebutton_callback(GLFWwindow * window, int button, int action, int mods)
 {
+	if(button >= MWIN_MAX_MOUSE_BUTTONS)
+		return;
+
 	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
 	
 	if(action == GLFW_PRESS)
@@ -437,6 +448,14 @@ bool MGUI_update(void)
 		}
 	}
 	
+	// update windows
+	for(i=0; i<wSize; i++)
+	{
+		MThreadWindow * window = windows[i];
+		if(window)
+			window->update();
+	}
+	
 	return true;
 }
 
@@ -476,4 +495,13 @@ void MGUI_close(void)
 double MGUI_getTime(void)
 {
 	return glfwGetTime();
+}
+
+void MGUI_setCurrentDirectory(const char * path)
+{
+	#ifdef WIN32
+		SetCurrentDirectory(path);
+	#else
+		chdir(path);
+	#endif
 }

@@ -39,21 +39,8 @@ class M_GUI_EXPORT MWindow
 {
 public:
 
-	MWindow(int x, int y, unsigned int width, unsigned int height)
-	{
-		m_drawCallback = NULL;
-		m_eventCallback = NULL;
-		m_currentKey = 0;
-		m_currentMouseButton = 0;
-		m_pos[0] = x;
-		m_pos[1] = y;
-		m_width = width;
-		m_height = height;
-		memset(m_keys, 0, sizeof(bool)*MWIN_MAX_KEYS);
-		memset(m_mouseButtons, 0, sizeof(bool)*MWIN_MAX_MOUSE_BUTTONS);
-	}
-	
-	virtual ~MWindow(void){ clear(); }
+	MWindow(int x, int y, unsigned int width, unsigned int height);
+	virtual ~MWindow(void);
 
 protected:
 
@@ -87,6 +74,9 @@ protected:
 
 public:
 
+	// clear
+	void clear(void);
+	
 	// pos / scale
 	inline int getXPosition(void){ return m_pos[0]; }
 	inline int getYPosition(void){ return m_pos[1]; }
@@ -111,17 +101,16 @@ public:
 	MGuiWindow * addNewWindow(void);
 	inline unsigned int getWindowsNumber(void){ return m_windows.size(); }
 	inline MGuiWindow * getWindow(unsigned int id){ return m_windows[id]; }
-	void deleteWindow(MGuiWindow * window);
 
 	// events
 	inline void onChar(unsigned int character){ m_currentKey = character; onEvent(MWIN_EVENT_CHAR); }
 	inline void onKeyDown(unsigned int key){ m_keys[key] = true;  m_currentKey = key; onEvent(MWIN_EVENT_KEY_DOWN); }
 	inline void onKeyUp(unsigned int key)  { m_keys[key] = false; m_currentKey = key; onEvent(MWIN_EVENT_KEY_UP); }
 	
-	inline void onCreate(void){ onEvent(MWIN_EVENT_WINDOW_CREATE); }
-	inline void onMove(int x, int y){ m_pos[0] = x; m_pos[1] = y; onEvent(MWIN_EVENT_WINDOW_MOVE); }
-	inline void onResize(unsigned int width, unsigned int height){ m_width = width; m_height = height; onEvent(MWIN_EVENT_WINDOW_RESIZE); }
-	inline void onClose(void){ onEvent(MWIN_EVENT_WINDOW_CLOSE); }
+	inline void onCreate(void){ onEvent(MWIN_EVENT_CREATE); }
+	inline void onMove(int x, int y){ m_pos[0] = x; m_pos[1] = y; onEvent(MWIN_EVENT_MOVE); }
+	inline void onResize(unsigned int width, unsigned int height){ m_width = width; m_height = height; onEvent(MWIN_EVENT_RESIZE); }
+	inline void onClose(void){ onEvent(MWIN_EVENT_CLOSE); }
 	
 	inline void onMouseButtonDown(unsigned int button){ m_mouseButtons[button] = true;  m_currentMouseButton = button; onEvent(MWIN_EVENT_MOUSE_BUTTON_DOWN); }
 	inline void onMouseButtonUp(unsigned int button)  { m_mouseButtons[button] = false; m_currentMouseButton = button; onEvent(MWIN_EVENT_MOUSE_BUTTON_UP); }
@@ -136,9 +125,9 @@ public:
 
 	// draw
 	void draw(void);
-
-	// clear
-	void clear(void);
+	
+	// update
+	void update(void);
 };
 
 #endif

@@ -60,7 +60,7 @@ void MGuiColorPicker::winColorEvents(MGuiWindow * window, MGUI_EVENT_TYPE event)
 		case MGUI_EVENT_MOUSE_BUTTON_DOWN:
 		{
 			if(! window->isMouseInside())
-				window->setVisible(false);
+				((MGuiColorPicker *)window->getCustomPointer())->close();
 			break;
 		}
 	}
@@ -84,16 +84,18 @@ void MGuiColorPicker::winColorDraw(MGuiWindow * window)
 
 
 MGuiColorPicker::MGuiColorPicker(MWindow * rootWindow, MFontRef * font):
-	m_font(font),
-	m_colorSel(NULL),
-	m_tintSel(NULL),
-	m_colorTarget(NULL),
-	m_tintTarget(NULL),
-	m_parentButton(NULL),
-	m_R(NULL),
-	m_G(NULL),
-	m_B(NULL),
-	m_A(NULL)
+m_font(font),
+m_colorSel(NULL),
+m_tintSel(NULL),
+m_colorTarget(NULL),
+m_tintTarget(NULL),
+m_parentButton(NULL),
+m_R(NULL),
+m_G(NULL),
+m_B(NULL),
+m_A(NULL),
+m_customPointer(NULL),
+m_eventCallback(NULL)
 {
 	m_window = rootWindow->addNewWindow();
 
@@ -105,12 +107,12 @@ MGuiColorPicker::MGuiColorPicker(MWindow * rootWindow, MFontRef * font):
 
 MGuiColorPicker::~MGuiColorPicker(void)
 {
-	MWindow * rootWindow = m_window->getRootWindow();
-	rootWindow->deleteWindow(m_window);
+	m_window->deleteMe();
 }
 
-void MGuiColorPicker::open(MGuiButton * parentButton, float * R, float * G, float * B, float * A)
+void MGuiColorPicker::open(MGuiButton * parentButton, float * R, float * G, float * B, float * A, void (* eventCallback)(MGuiColorPicker * colorPicker, MGUI_COLOR_PICKER_EVENT_TYPE event))
 {
+	m_eventCallback = eventCallback;
 	m_parentButton = parentButton;
 	MWindow * rootWindow = m_window->getRootWindow();
 	
@@ -190,11 +192,17 @@ void MGuiColorPicker::open(MGuiButton * parentButton, float * R, float * G, floa
 	// callbacks
 	m_window->setEventCallback(winColorEvents);
 	m_window->setDrawCallback(winColorDraw);
+	m_window->setCustomPointer(this);
+	
+	if(m_eventCallback)
+		m_eventCallback(this, MGUI_COLOR_PICKER_EVENT_OPEN);
 }
 
 void MGuiColorPicker::close(void)
 {
 	m_window->setVisible(false);
+	if(m_eventCallback)
+		m_eventCallback(this, MGUI_COLOR_PICKER_EVENT_CLOSE);
 }
 
 void MGuiColorPicker::draw(MGuiWindow * window)

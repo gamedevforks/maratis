@@ -162,7 +162,7 @@ void MGuiNode::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 	switch(event)
 	{
 	case MWIN_EVENT_MOUSE_MOVE:
-		if(isPressed() && rootWindow->isMouseButtonPressed(MMOUSE_BUTTON_LEFT))
+		if(parent->isPressed() && isPressed() && rootWindow->isMouseButtonPressed(MMOUSE_BUTTON_LEFT))
 		{
 			m_position += rootWindow->getMouseDir()/parent->getZoom();
 		}
@@ -316,6 +316,12 @@ void MGuiNode::autoScaleFromText(void)
 	MGui2d::autoScaleFromText();
 	m_scale.x = m_scale.x+40;
 	m_scale.y += 16;
+}
+
+void MGuiNode::onChange(void)
+{
+	if(m_eventCallback)
+		m_eventCallback(this, MGUI_EVENT_ON_CHANGE);
 }
 
 void MGuiNode::draw(void)

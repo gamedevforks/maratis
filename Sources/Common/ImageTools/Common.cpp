@@ -114,7 +114,6 @@ bool convertAlphaToGreyscale(MImage * image)
 
 	unsigned int width = image->getWidth();
 	unsigned int height = image->getHeight();
-	unsigned int components = image->getComponents();
 
 	if(image->getDataType() == M_UBYTE)
 	{
@@ -128,7 +127,7 @@ bool convertAlphaToGreyscale(MImage * image)
 		for(x=0; x<width; x++)
 		{
 			(*greyPixel) = imagePixel[3];
-			imagePixel += components;
+			imagePixel+=4;
 			greyPixel++;
 		}
 		
@@ -146,7 +145,62 @@ bool convertAlphaToGreyscale(MImage * image)
 		for(x=0; x<width; x++)
 		{
 			(*greyPixel) = imagePixel[3];
-			imagePixel += components;
+			imagePixel+=4;
+			greyPixel++;
+		}
+		
+		return true;
+	}
+	
+	return false;
+}
+
+bool convertGreyscaleToAlpha(MImage * image)
+{
+	if(! isImageValid(image))
+		return false;
+
+	if(image->getComponents() != 1)
+		return false;
+
+	unsigned int width = image->getWidth();
+	unsigned int height = image->getHeight();
+
+	if(image->getDataType() == M_UBYTE)
+	{
+		MImage copy(*image);
+		image->create(M_UBYTE, width, height, 4);
+
+		unsigned char * greyPixel = (unsigned char *)copy.getData();
+		unsigned char * imagePixel = (unsigned char *)image->getData();
+	
+		unsigned int x, y;
+		for(y=0; y<height; y++)
+		for(x=0; x<width; x++)
+		{
+			imagePixel[0] = imagePixel[1] = imagePixel[2] = 255;
+			imagePixel[3] = (*greyPixel);
+			imagePixel+=4;
+			greyPixel++;
+		}
+		
+		return true;
+	}
+	else if(image->getDataType() == M_FLOAT)
+	{
+		MImage copy(*image);
+		image->create(M_FLOAT, width, height, 4);
+
+		float * greyPixel = (float *)copy.getData();
+		float * imagePixel = (float *)image->getData();
+	
+		unsigned int x, y;
+		for(y=0; y<height; y++)
+		for(x=0; x<width; x++)
+		{
+			imagePixel[0] = imagePixel[1] = imagePixel[2] = 1;
+			imagePixel[3] = (*greyPixel);
+			imagePixel+=4;
 			greyPixel++;
 		}
 		
@@ -212,42 +266,44 @@ bool convertToGreyscale(MImage * image)
 	
 		return false;
 	}
-
-	if(image->getDataType() == M_UBYTE)
+	else
 	{
-		MImage copy(*image);
-		image->create(M_UBYTE, width, height, 1);
-		unsigned char * greyPixel = (unsigned char *)image->getData();
-		unsigned char * imagePixel = (unsigned char *)copy.getData();
-	
-		unsigned int x, y;
-		for(y=0; y<height; y++)
-		for(x=0; x<width; x++)
+		if(image->getDataType() == M_UBYTE)
 		{
-			(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
-			imagePixel += components;
-			greyPixel++;
-		}
-		
-		return true;
-	}
-	else if(image->getDataType() == M_FLOAT)
-	{
-		MImage copy(*image);
-		image->create(M_FLOAT, width, height, 1);
-		float * greyPixel = (float *)image->getData();
-		float * imagePixel = (float *)copy.getData();
+			MImage copy(*image);
+			image->create(M_UBYTE, width, height, 1);
+			unsigned char * greyPixel = (unsigned char *)image->getData();
+			unsigned char * imagePixel = (unsigned char *)copy.getData();
 	
-		unsigned int x, y;
-		for(y=0; y<height; y++)
-		for(x=0; x<width; x++)
-		{
-			(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
-			imagePixel += components;
-			greyPixel++;
-		}
+			unsigned int x, y;
+			for(y=0; y<height; y++)
+			for(x=0; x<width; x++)
+			{
+				(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
+				imagePixel += components;
+				greyPixel++;
+			}
 		
-		return true;
+			return true;
+		}
+		else if(image->getDataType() == M_FLOAT)
+		{
+			MImage copy(*image);
+			image->create(M_FLOAT, width, height, 1);
+			float * greyPixel = (float *)image->getData();
+			float * imagePixel = (float *)copy.getData();
+	
+			unsigned int x, y;
+			for(y=0; y<height; y++)
+			for(x=0; x<width; x++)
+			{
+				(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
+				imagePixel += components;
+				greyPixel++;
+			}
+		
+			return true;
+		}
 	}
 	
 	return false;

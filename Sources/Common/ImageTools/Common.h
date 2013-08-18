@@ -56,6 +56,7 @@ bool convertToUbyte(MImage * image);
 bool convertToGreyscale(MImage * image);
 bool convertToRGB(MImage * image);
 bool convertAlphaToGreyscale(MImage * image);
+bool convertGreyscaleToAlpha(MImage * image);
 
 // get interpolated image sub-pixel (if you know the image type, use getImageSubPixel_**)
 void getImageSubPixel_ubyte(MImage * image, float x, float y, float * color);

@@ -166,7 +166,12 @@ void MGuiMenu::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			   (! rootWindow->isMouseButtonPressed(1)) &&
 			   (! rootWindow->isMouseButtonPressed(2)))
 			{
+				unsigned int m, mSize = parent->getMenusNumber();
+				for(m=0; m<mSize; m++)
+					parent->getMenu(m)->setHighLight(false);
+
 				setHighLight(true);
+				
 				if(m_eventCallback)
 					m_eventCallback(this, MGUI_EVENT_MOUSE_MOVE);
 			}
@@ -178,7 +183,7 @@ void MGuiMenu::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			
 		case MWIN_EVENT_MOUSE_BUTTON_DOWN:
 			
-			if(parent->isHighLight() && isMouseInside())
+			if(parent->isHighLight() && isHighLight())
 			{
 				if(rootWindow->getMouseButton() == MMOUSE_BUTTON_LEFT)
 				{
@@ -338,7 +343,6 @@ void MGuiMenu::drawWindowMenu(void)
 
 void MGuiMenu::addSimpleButton(const char * text, void (* buttoneventCallback)(MGuiButton * button, MGUI_EVENT_TYPE event))
 {
-	float space = 4;
 	MVector2 pos(0, 0);
 	
 	// position
@@ -346,7 +350,7 @@ void MGuiMenu::addSimpleButton(const char * text, void (* buttoneventCallback)(M
 	unsigned int bSize = m_window.getButtonsNumber();
 	
 	for(i=0; i<bSize; i++)
-		pos.y += m_window.getButton(i)->getScale().y + space;
+		pos.y += m_window.getButton(i)->getScale().y;
 	
 	// new button
 	MGuiButton * btn = m_window.addNewButton();
@@ -360,6 +364,9 @@ void MGuiMenu::addSimpleButton(const char * text, void (* buttoneventCallback)(M
 	btn->setPressedColor(getHighLightColor());
 	btn->setHighLightColor(getHighLightColor());
 	btn->setEventCallback(buttoneventCallback);
+	btn->setXScale(btn->getScale().x + 10);
+	btn->setYScale(getTextSize()+6);
+	btn->setTextAlign(M_ALIGN_CENTER);
 	
 	updateText();
 	autoScaleFromText();

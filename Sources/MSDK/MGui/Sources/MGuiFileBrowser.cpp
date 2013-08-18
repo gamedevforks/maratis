@@ -137,7 +137,9 @@ void MGuiFileBrowser::dirEditTextEvents(MGuiEditText * editText, MGUI_EVENT_TYPE
 }
 
 
-MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font)
+MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font):
+m_customPointer(NULL),
+m_eventCallback(NULL)
 {
 	m_font = font;
 	
@@ -231,11 +233,10 @@ MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font)
 
 MGuiFileBrowser::~MGuiFileBrowser(void)
 {
-	MWindow * rootWindow = m_mainWin->getRootWindow();
-	rootWindow->deleteWindow(m_headWin);
-	rootWindow->deleteWindow(m_dirWin);
-	rootWindow->deleteWindow(m_fileWin);
-	rootWindow->deleteWindow(m_mainWin);
+	m_headWin->deleteMe();
+	m_dirWin->deleteMe();
+	m_fileWin->deleteMe();
+	m_mainWin->deleteMe();
 }
 
 void MGuiFileBrowser::updateMainWin(void)
@@ -360,7 +361,6 @@ void MGuiFileBrowser::selectFile(unsigned int id)
 void MGuiFileBrowser::open(const char * startDirectory, const char * startFile, const char * okName, void (* eventCallback)(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event))
 {
 	bool forceRoot = true;
-	
 	m_eventCallback = eventCallback;
 	
 	m_headWin->setVisible(true);

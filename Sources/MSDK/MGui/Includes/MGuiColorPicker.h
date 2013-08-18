@@ -31,6 +31,12 @@
 #define _M_GUI_COLOR_PICKER_H
 
 
+enum MGUI_COLOR_PICKER_EVENT_TYPE
+{
+	MGUI_COLOR_PICKER_EVENT_OPEN = 0,
+	MGUI_COLOR_PICKER_EVENT_CLOSE
+};
+
 class M_GUI_EXPORT MGuiColorPicker
 {
 private:
@@ -51,6 +57,9 @@ private:
 	float * m_B;
 	float * m_A;
 	
+	void * m_customPointer;
+	void (* m_eventCallback)(MGuiColorPicker * fileBrowser, MGUI_COLOR_PICKER_EVENT_TYPE event);
+	
 	void updateTargets(void);
 	void updateRGBColor(void);
 	void updateHSVColor(void);
@@ -65,10 +74,12 @@ public:
 	MGuiColorPicker(MWindow * rootWindow, MFontRef * font);
 	~MGuiColorPicker(void);
 	
-	void open(MGuiButton * parentButton, float * R, float * G, float * B, float * A);
+	void open(MGuiButton * parentButton, float * R, float * G, float * B, float * A, void (* eventCallback)(MGuiColorPicker * colorPicker, MGUI_COLOR_PICKER_EVENT_TYPE event) = NULL);
 	void close(void);
-	
 	void draw(MGuiWindow * window);
+	
+	void setCustomPointer(void * pointer){ m_customPointer = pointer; }
+	void * getCustomPointer(void){ return m_customPointer; }
 };
 
 #endif

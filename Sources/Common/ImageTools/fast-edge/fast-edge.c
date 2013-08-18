@@ -58,7 +58,7 @@ void canny_edge_detect(struct image * img_in, struct image * img_out, int high, 
 	int * dir = malloc(img_in->width * img_in->height * sizeof(int));
 	unsigned char * img_scratch_data = malloc(img_in->width * img_in->height * sizeof(char));
 	memset(g, 0, img_in->width * img_in->height * sizeof(int));
-	memset(dir, 0, img_in->width * img_in->height * sizeof(int));
+	memset(dir, -1, img_in->width * img_in->height * sizeof(int));
 	#endif
 	img_scratch.width = img_in->width;
 	img_scratch.height = img_in->height;
@@ -353,7 +353,7 @@ void non_max_suppression(struct image * img, int g[], int dir[]) {//float theta[
 					}
 					break;
 				default:
-					printf("ERROR - direction outside range 0 to 3 %d\n", dir[x + y]);
+					//printf("ERROR - direction outside range 0 to 3 %d\n", dir[x + y]);
 					break;
 			}
 		}

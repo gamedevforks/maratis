@@ -32,6 +32,13 @@
 #define _M_GUI_WINDOW_H
 
 
+enum MGUI_DRAW_CALLBACK_MODES
+{
+	MGUI_DRAW_CALLBACK_PRE_GUI = 0,
+	MGUI_DRAW_CALLBACK_POST_GUI
+};
+
+
 class M_GUI_EXPORT MGuiWindow : public MGui2d
 {
 private:
@@ -58,6 +65,7 @@ private:
 	void (* m_eventCallback)(MGuiWindow * window, MGUI_EVENT_TYPE event);
 
 	// draw callback
+	MGUI_DRAW_CALLBACK_MODES m_drawCallbackMode;
 	void (* m_drawCallback)(MGuiWindow * window);
 
 	// objects
@@ -92,6 +100,7 @@ private:
 	bool getMouseOverNodeBranch(MGuiNode ** node, MGuiNodeBranch ** branch);
 	void drawNodeInfo(void);
 	void drawNodesLink(void);
+	void checkDeletedNodes(void);
 
 public:
 
@@ -151,7 +160,7 @@ public:
 	inline MGuiSlide * getSlide(unsigned int id){ return m_slides[id]; }
 	inline MGuiNode * getNode(unsigned int id){ return m_nodes[id]; }
 
-	// add objects
+	// add/remove objects
 	MGuiButton * addNewButton(void);
 	MGuiMenu * addNewMenu(void);
 	MGuiText * addNewText(void);
@@ -159,9 +168,6 @@ public:
 	MGuiEditText * addNewEditText(void);
 	MGuiSlide * addNewSlide(void);
 	MGuiNode * addNewNode(void);
-	
-	// delete object
-	void deleteObject(MGui2d * object);
 
 	// editing
 	bool isSomethingEditing(void);
@@ -170,7 +176,12 @@ public:
 	void setEventCallback(void (*eventCallback)(MGuiWindow * window, MGUI_EVENT_TYPE event)){ m_eventCallback = eventCallback; }
 
 	// draw callback
+	void setDrawCallbackMode(MGUI_DRAW_CALLBACK_MODES mode){ m_drawCallbackMode = mode; }
+	MGUI_DRAW_CALLBACK_MODES getDrawCallbackMode(void){ return m_drawCallbackMode; }
 	inline void setDrawCallback(void (* drawCallback)(MGuiWindow * window)){ m_drawCallback = drawCallback; }
+
+	// update
+	void update(void);
 
 	// virtual
 	int getType(void){ return M_GUI_WINDOW; }

@@ -42,8 +42,10 @@ using namespace std;
 
 // sleep
 #ifdef WIN32
+	#include <process.h>
 	#define SLEEP(t) Sleep(t);
 #else
+	#include <unistd.h>
 	#define SLEEP(t) usleep(t*1000);
 #endif
 

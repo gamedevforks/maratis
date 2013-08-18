@@ -32,6 +32,7 @@
 #ifndef _M_IT_COLOR_H
 #define _M_IT_COLOR_H
 
+// color filters (float images only)
 bool contrast(MImage * image, float factor);
 bool product(MImage * image, float factor);
 bool product(MImage * image, MImage * image2);
@@ -43,5 +44,6 @@ bool unpremultiply(MImage * image);
 bool threshold(MImage * image, float threshold);
 bool clamp(MImage * image, float min, float max);
 bool normalize(MImage * image);
+bool gammaCorrection(MImage * image, float gamma);
 
 #endif

@@ -35,7 +35,9 @@
 // constructor
 MGuiImage::MGuiImage(void):
 MGui2d()
-{}
+{
+	setColor(MVector4(1, 1, 1, 1));
+}
 
 void MGuiImage::draw(void)
 {

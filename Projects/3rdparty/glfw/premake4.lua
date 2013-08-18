@@ -69,4 +69,4 @@ project "glfw"
 		defines{ "_GLFW_HAS_GLXGETPROCADDRESS" }
 	end
 
-	defines { "_GLFW_USE_OPENGL", "_GLFW_USE_MENUBAR" }
+	defines { "_GLFW_USE_OPENGL", "_GLFW_USE_MENUBAR", "_GLFW_USE_CHDIR" }

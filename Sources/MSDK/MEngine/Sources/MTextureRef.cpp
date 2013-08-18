@@ -61,23 +61,27 @@ void MTextureRef::destroy(void)
 	delete this;
 }
 
-void MTextureRef::update(void)
+void MTextureRef::updateFromImage(MImage * image)
 {
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
+	
+	if(m_textureId == 0)
+		render->createTexture(&m_textureId);
+
+	m_components = image->getComponents();
+	m_width = image->getWidth();
+	m_height = image->getHeight();
+	
+	render->bindTexture(m_textureId);
+	render->sendTextureImage(image, isMipmapEnabled(), 1, 0);
+}
+
+void MTextureRef::update(void)
+{
+	MEngine * engine = MEngine::getInstance();
 
 	MImage image;
 	if(engine->getImageLoader()->loadData(getFilename(), &image))
-	{
-		if(m_textureId == 0)
-			render->createTexture(&m_textureId);
-
-		m_components = image.getComponents();
-		m_width = image.getWidth();
-		m_height = image.getHeight();
-				
-		// send texture image
-		render->bindTexture(m_textureId);
-		render->sendTextureImage(&image, isMipmapEnabled(), 1, 0);
-	}
+		updateFromImage(&image);
 }

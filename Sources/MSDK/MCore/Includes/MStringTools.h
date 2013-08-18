@@ -34,7 +34,7 @@
 // filenames
 M_CORE_EXPORT void getLocalFilename(char * out, const char * workingDirectory, const char * filename);
 M_CORE_EXPORT void getGlobalFilename(char * out, const char * workingDirectory, const char * filename);
-M_CORE_EXPORT void getRepertory(char * out, const char * filename);
+M_CORE_EXPORT void getDirectory(char * out, const char * filename);
 
 // text file
 M_CORE_EXPORT char * readTextFile(const char * filename);

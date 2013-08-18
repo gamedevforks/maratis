@@ -71,6 +71,8 @@ private:
 	MString m_currentFile;
 	vector <string> m_files;
 	
+	void * m_customPointer;
+	
 	// events function pointer
 	void (* m_eventCallback)(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event);
 	
@@ -88,11 +90,14 @@ public:
 	~MGuiFileBrowser(void);
 	
 	void resize(const MVector2 & position, const MVector2 & scale);
-	void open(const char * startDirectory = NULL, const char * startFile = NULL, const char * okName = "ok", void (* eventCallback)(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE guiEvent) = NULL);
+	void open(const char * startDirectory = NULL, const char * startFile = NULL, const char * okName = "ok", void (* eventCallback)(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event) = NULL);
 	void close(void);
 	
 	const char * getCurrentDirectory(void){ return m_currentDirectory.getData(); }
 	const char * getCurrentFile(void){ return m_currentFile.getData(); }
+	
+	void setCustomPointer(void * pointer){ m_customPointer = pointer; }
+	void * getCustomPointer(void){ return m_customPointer; }
 };
 
 #endif

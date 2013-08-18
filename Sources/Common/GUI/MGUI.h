@@ -47,5 +47,6 @@ bool				MGUI_update(void);
 bool				MGUI_isFocused(void);
 void				MGUI_close(void);
 double				MGUI_getTime(void);
+void				MGUI_setCurrentDirectory(const char * path);
 
 #endif

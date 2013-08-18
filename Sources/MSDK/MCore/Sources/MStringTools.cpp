@@ -193,7 +193,7 @@ void getGlobalFilename(char * out, const char * workingDirectory, const char * f
 	strcpy(out, res.c_str());
 }
 
-void getRepertory(char * out, const char * filename)
+void getDirectory(char * out, const char * filename)
 {
 	string res;
 	string file(filename);

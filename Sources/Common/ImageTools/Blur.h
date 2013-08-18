@@ -32,7 +32,6 @@
 #ifndef _M_IT_BLUR_H
 #define _M_IT_BLUR_H
 
-// gaussian blur
-bool blurImage(MImage * image, int radius);
+bool gaussianBlur(MImage * image, unsigned int radius);
 
 #endif

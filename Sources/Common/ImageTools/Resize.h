@@ -35,4 +35,7 @@
 // scale down image pyramid
 bool pyrDownImage(MImage * image);
 
+// bilinear scaling with optional supersampling filter
+bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight, float filter = 0);
+
 #endif
