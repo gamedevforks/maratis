@@ -314,7 +314,7 @@ MGuiNodeBranch * MGuiNode::getMouseOverBranch(void)
 void MGuiNode::autoScaleFromText(void)
 {
 	MGui2d::autoScaleFromText();
-	m_scale.x = m_scale.x+40;
+	m_scale.x = m_scale.x+32;
 	m_scale.y += 16;
 }
 

@@ -212,7 +212,7 @@ bool M_loadFont(const char * filename, void * data)
 
 		// get character properties
 		float xAdvance = (slot->advance.x >> 6) / ((float)size);
-		MVector2 offset = MVector2((float)slot->bitmap_left, - (float)slot->bitmap_top) / ((float)size);
+		MVector2 offset = MVector2((float)slot->bitmap_left - 1, - (float)slot->bitmap_top - 1) / ((float)size);
 		MVector2 pos = MVector2((float)(pen_x-1) / (float)width, (float)(pen_y-1) / (float)height);
 		MVector2 scale = MVector2((float)(slot->bitmap.width+2) / (float)width, (float)(slot->bitmap.rows+2) / (float)height);
 

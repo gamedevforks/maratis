@@ -920,7 +920,7 @@ void MGuiEditText::draw(void)
 	if(isPressed())
 	{
 		render->pushMatrix();
-		render->translate(MVector3(0, getTextSize()*0.25f, 0));
+		render->translate(MVector3(0, getTextSize()*0.15f, 0));
 		render->setColor4(MVector4(1, 0.1f, 0.1f, 0.3f));
 		
 		drawSelection();
@@ -962,7 +962,7 @@ void MGuiEditText::draw(void)
 		MVector2 scale = MVector2(MIN(2, getTextSize() * 0.1f), getTextSize());
 
 		float px = (float)((int)position.x);
-		float py = (float)((int)position.y + scale.y*0.25f);
+		float py = (float)((int)position.y + getTextSize()*0.15f);
 
 		// draw
 		render->disableNormalArray();

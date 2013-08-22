@@ -32,6 +32,7 @@
 #ifndef _M_IT_BLUR_H
 #define _M_IT_BLUR_H
 
+// blur, to be used preferably with premultiplied alpha
 bool gaussianBlur(MImage * image, unsigned int radius);
 
 #endif

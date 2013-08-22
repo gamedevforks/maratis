@@ -55,6 +55,7 @@ protected:
 	bool m_isDeleted;
 
 	// text object
+	float m_textMargin;
 	MOText m_textObject;
 
 	// parent
@@ -135,6 +136,8 @@ public:
 	inline bool isAutoScaleFromTextEnabled(void){ return m_autoScaleFromText; }
 	inline const char * getText(void){ return m_textObject.getText(); }
 	inline M_ALIGN_MODES getTextAlign(void){ return m_textObject.getAlign(); }
+	void setTextMargin(float margin){ m_textMargin = margin; }
+	float getTextMargin(void){ return m_textMargin; }
 
 	// root window
 	MWindow * getRootWindow(void);

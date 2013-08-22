@@ -69,7 +69,7 @@ void canny_edge_detect(struct image * img_in, struct image * img_out, int high, 
 	
 	memcpy(img_out->pixel_data, img_scratch.pixel_data, img_in->width * img_in->height * sizeof(char));
 	
-	if(high==0 && low==0)
+	if(high==0 || low==0)
 		estimate_threshold(&img_scratch, &high, &low);
 	
 	hysteresis(high, low, &img_scratch, img_out);

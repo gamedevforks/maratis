@@ -168,7 +168,7 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 
 	MVector3 scale = entity->getTransformedScale();
 
-	// swith shapes
+	// switch shapes
 	switch(phyProps->getCollisionShape())
 	{
 	default:

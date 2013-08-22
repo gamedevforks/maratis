@@ -51,7 +51,8 @@ m_customPointer(NULL),
 m_autoScaleFromText(true),
 m_scale(16, 16),
 m_shadowOpacity(0.1f),
-m_shadowDir(8, 8)
+m_shadowDir(8, 8),
+m_textMargin(0)
 {
 	setNormalColor(MVector3(1, 1, 1));
 	setHighLightColor(MVector3(1, 1, 1));
@@ -67,7 +68,7 @@ MVector2 MGui2d::getAlignedTextPosition(void)
 	
 	if(box->min == box->max)
 	{
-		return MVector2(0, getTextSize());
+		return MVector2(m_textMargin, getTextSize() + m_textMargin);
 	}
 	
 	switch(m_textObject.getAlign())
@@ -75,11 +76,11 @@ MVector2 MGui2d::getAlignedTextPosition(void)
 		default:
 		case M_ALIGN_LEFT:
 		{
-			return MVector2(-box->min.x, getTextSize());
+			return MVector2(-box->min.x + m_textMargin, getTextSize() + m_textMargin);
 		}
 		case M_ALIGN_RIGHT:
 		{
-			return MVector2(-box->min.x + (m_scale.x - (box->max.x - box->min.x)), getTextSize());
+			return MVector2(-box->min.x + (m_scale.x - (box->max.x - box->min.x)) - m_textMargin, getTextSize() + m_textMargin);
 		}
 		case M_ALIGN_CENTER:
 		{
@@ -98,7 +99,13 @@ void MGui2d::autoScaleFromText(void)
 
 	MBox3d * box = m_textObject.getBoundingBox();
 	m_scale.x = box->max.x - box->min.x;
-	m_scale.y = getTextSize() + MAX(2, box->max.y);
+	
+	if(getTextAlign() == M_ALIGN_CENTER)
+		m_scale.y = box->max.y - box->min.y;
+	else
+		m_scale.y = getTextSize() + box->max.y;
+		
+	m_scale += m_textMargin*2;
 }
 
 void MGui2d::setNormalTexture(MTextureRef * texture)

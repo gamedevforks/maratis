@@ -215,102 +215,111 @@ bool convertToGreyscale(MImage * image)
 	if(! isImageValid(image))
 		return false;
 
+
+	if(image->getDataType() == M_UBYTE)
+	{
+		convertToFloat(image);
+		convertToGreyscale(image);
+		convertToUbyte(image);
+		return true;
+	}
+	else if(image->getDataType() != M_FLOAT)
+		return false;
+	
 	unsigned int width = image->getWidth();
 	unsigned int height = image->getHeight();
 	unsigned int components = image->getComponents();
-
-	if(image->getComponents() != 3)
+	
+	if(image->getComponents() == 3)
 	{
-		if(image->getDataType() == M_UBYTE)
+		MImage copy(*image);
+		image->create(M_FLOAT, width, height, 1);
+		float * greyPixel = (float *)image->getData();
+		float * imagePixel = (float *)copy.getData();
+	
+		unsigned int x, y;
+		for(y=0; y<height; y++)
+		for(x=0; x<width; x++)
 		{
-			MImage copy(*image);
-			image->create(M_UBYTE, width, height, 1);
-			unsigned char * greyPixel = (unsigned char *)image->getData();
-			unsigned char * imagePixel = (unsigned char *)copy.getData();
-	
-			unsigned int x, y;
-			for(y=0; y<height; y++)
-			for(x=0; x<width; x++)
-			{
-				float val = 0;
-				for(int i=0; i<components; i++)
-					val += imagePixel[i];
-				(*greyPixel) = val / (float)components;
-				imagePixel += components;
-				greyPixel++;
-			}
-		
-			return true;
+			(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
+			imagePixel += 3;
+			greyPixel++;
 		}
-		else if(image->getDataType() == M_FLOAT)
+	}
+	else if(image->getComponents() == 4)
+	{
+		MImage copy(*image);
+		image->create(M_FLOAT, width, height, 1);
+		float * greyPixel = (float *)image->getData();
+		float * imagePixel = (float *)copy.getData();
+	
+		unsigned int x, y;
+		for(y=0; y<height; y++)
+		for(x=0; x<width; x++)
 		{
-			MImage copy(*image);
-			image->create(M_FLOAT, width, height, 1);
-			float * greyPixel = (float *)image->getData();
-			float * imagePixel = (float *)copy.getData();
-	
-			unsigned int x, y;
-			for(y=0; y<height; y++)
-			for(x=0; x<width; x++)
-			{
-				float val = 0;
-				for(int i=0; i<components; i++)
-					val += ABS(imagePixel[i]);
-				(*greyPixel) = val / (float)components;
-				imagePixel += components;
-				greyPixel++;
-			}
-		
-			return true;
+			(*greyPixel) = (0.1f + (imagePixel[0]*0.27f + imagePixel[1]*0.45f + imagePixel[2]*0.18f)) * imagePixel[3];
+			imagePixel += 4;
+			greyPixel++;
 		}
-	
-		return false;
 	}
 	else
 	{
-		if(image->getDataType() == M_UBYTE)
-		{
-			MImage copy(*image);
-			image->create(M_UBYTE, width, height, 1);
-			unsigned char * greyPixel = (unsigned char *)image->getData();
-			unsigned char * imagePixel = (unsigned char *)copy.getData();
+		MImage copy(*image);
+		image->create(M_FLOAT, width, height, 1);
+		float * greyPixel = (float *)image->getData();
+		float * imagePixel = (float *)copy.getData();
 	
-			unsigned int x, y;
-			for(y=0; y<height; y++)
-			for(x=0; x<width; x++)
-			{
-				(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
-				imagePixel += components;
-				greyPixel++;
-			}
-		
-			return true;
-		}
-		else if(image->getDataType() == M_FLOAT)
+		unsigned int x, y;
+		for(y=0; y<height; y++)
+		for(x=0; x<width; x++)
 		{
-			MImage copy(*image);
-			image->create(M_FLOAT, width, height, 1);
-			float * greyPixel = (float *)image->getData();
-			float * imagePixel = (float *)copy.getData();
-	
-			unsigned int x, y;
-			for(y=0; y<height; y++)
-			for(x=0; x<width; x++)
-			{
-				(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
-				imagePixel += components;
-				greyPixel++;
-			}
-		
-			return true;
+			float val = 0;
+			for(int i=0; i<components; i++)
+				val += ABS(imagePixel[i]);
+			(*greyPixel) = val / (float)components;
+			imagePixel += components;
+			greyPixel++;
 		}
 	}
 	
-	return false;
+	return true;
+}
+
+static bool convertNormalMap(MImage * image)
+{
+	if(! isImageValid(image))
+		return false;
+
+	if(! (image->getDataType() == M_FLOAT && image->getComponents() == 2))
+		return false;
+	
+	int width = image->getWidth();
+	int height = image->getHeight();
+	
+	MImage copy(*image);
+	image->create(M_FLOAT, width, height, 3);
+	
+	float * pixel = (float *)image->getData();
+	float * copyPixel = (float *)copy.getData();
+	for(int y=0; y<height; y++)
+	for(int x=0; x<width; x++)
+	{
+		pixel[0] = (CLAMP(copyPixel[0], -1, 1)+1)*0.5f;
+		pixel[1] = (CLAMP(copyPixel[1], -1, 1)+1)*0.5f;
+		pixel[2] = 0;
+		
+		copyPixel+=2;
+		pixel+=3;
+	}
+	
+	return true;
 }
 
 bool convertToRGB(MImage * image)
 {
+	if(convertNormalMap(image))
+		return true;
+
 	if(! isImageValid(image))
 		return false;
 

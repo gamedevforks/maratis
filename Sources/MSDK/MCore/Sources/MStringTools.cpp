@@ -109,8 +109,22 @@ void getLocalFilename(char * out, const char * workingDirectory, const char * fi
 
 void getGlobalFilename(char * out, const char * workingDirectory, const char * filename)
 {
-	if(!out || !workingDirectory || !filename)
+	if(!out || !workingDirectory)
 		return;
+
+	// no filename
+	if(!filename)
+	{
+		strcpy(out, workingDirectory);
+		return;
+	}
+
+	// check for zero length filename
+	if(strlen(filename) == 0)
+	{
+		strcpy(out, workingDirectory);
+		return;
+	}
 
 	// check if filename is local
 	if(strlen(filename) > 1)

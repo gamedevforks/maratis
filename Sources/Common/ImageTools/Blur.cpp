@@ -133,47 +133,17 @@ bool gaussianBlur(MImage * image, unsigned int radius)
 				memset(workPixel, 0, sizeof(float)*components);
 				
                 float * copyPixel = copyY + start*components;
-                
-				if(components == 4) // use alpha
+				for(xx=start; xx<=end; xx++)
 				{
-					float asum = 0.0f;
-					for(xx=start; xx<=end; xx++)
-					{
-						float v = copyPixel[3] * (*val);
-						
-						workPixel[0] += (*copyPixel++) * v;
-						workPixel[1] += (*copyPixel++) * v;
-						workPixel[2] += (*copyPixel++) * v;
-						workPixel[3] += v;
-						
-						sum += v;
-						asum += (*val);
-						val++;
-						copyPixel++;
-					}
-					
-					if(sum > 0)
-						sum = 1.0f/sum;
-					asum = 1.0f/asum;
-					(*workPixel++) *= sum;
-					(*workPixel++) *= sum;
-					(*workPixel++) *= sum;
-					(*workPixel++) *= asum;
-				}
-				else
-				{
-					for(xx=start; xx<=end; xx++)
-					{
-						for(i=0; i<components; i++) 
-							workPixel[i] += (*copyPixel++) * (*val);
-						sum += (*val);
-						val++;
-					}
-					
-					sum = 1.0f/sum;
 					for(i=0; i<components; i++)
-						(*workPixel++) *= sum;
+						workPixel[i] += (*copyPixel++) * (*val);
+					sum += (*val);
+					val++;
 				}
+				
+				sum = 1.0f/sum;
+				for(i=0; i<components; i++)
+					(*workPixel++) *= sum;
             }
         }
 		
@@ -196,50 +166,19 @@ bool gaussianBlur(MImage * image, unsigned int radius)
                 float sum = 0.0f;
 				memset(outPixel, 0, sizeof(float)*components);
 				
-				if(components == 4)
+				float * workPixel = workX + yStep*start;
+				for(yy=start; yy<=end; yy++)
 				{
-					float asum = 0.0f;
-					float * workPixel = workX + yStep*start;
-					for(yy=start; yy<=end; yy++)
-					{
-						float v = workPixel[3] * (*val);
-						
-						outPixel[0] += workPixel[0] * v;
-						outPixel[1] += workPixel[1] * v;
-						outPixel[2] += workPixel[2] * v;
-						outPixel[3] += v;
-						
-						sum += v;
-						asum += (*val);
-						val++;
-						workPixel += yStep;
-					}
-					
-					if(sum > 0)
-						sum = 1.0f/sum;
-					asum = 1.0f/asum;
-					outPixel[0] *= sum;
-					outPixel[1] *= sum;
-					outPixel[2] *= sum;
-					outPixel[3] *= asum;
-				}
-				else
-				{
-					float * workPixel = workX + yStep*start;
-
-					for(yy=start; yy<=end; yy++)
-					{
-						for(i=0; i<components; i++)
-							outPixel[i] += workPixel[i] * (*val);
-						sum += (*val);
-						val++;
-						workPixel += yStep;
-					}
-					
-					sum = 1.0f/sum;
 					for(i=0; i<components; i++)
-						outPixel[i] *= sum;
+						outPixel[i] += workPixel[i] * (*val);
+					sum += (*val);
+					val++;
+					workPixel += yStep;
 				}
+				
+				sum = 1.0f/sum;
+				for(i=0; i<components; i++)
+					outPixel[i] *= sum;
 				
                 outPixel += yStep;
             }

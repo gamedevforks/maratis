@@ -129,23 +129,23 @@ bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight
 		image->create(type, destWidth, destHeight, components);
 		float * destData = (float *)image->getData();
 		
-		#pragma omp parallel for schedule(dynamic, 4)
-		for(unsigned int y=0; y<destHeight; y++)
+		if(filter > 0)
 		{
-			float color[4];
-			float totalColor[4];
-			float * pixel = destData + destWidth*y*components;
-			
-			for(unsigned int x=0; x<destWidth; x++)
+			#pragma omp parallel for schedule(dynamic, 4)
+			for(unsigned int y=0; y<destHeight; y++)
 			{
-				unsigned int i;
-				MVector2 srcPos, destPos = MVector2((float)x, (float)y);
-				
-				float score = 0;
-				memset(totalColor, 0, components*sizeof(float));
-				
-				if(filter > 0)
+				float color[4];
+				float totalColor[4];
+				float * pixel = destData + destWidth*y*components;
+			
+				for(unsigned int x=0; x<destWidth; x++)
 				{
+					unsigned int i;
+					MVector2 srcPos, destPos = MVector2((float)x, (float)y);
+				
+					float score = 0;
+					memset(totalColor, 0, components*sizeof(float));
+		
 					float dx, dy;
 					for(dy=-yFilter; dy<=yFilter; dy+=yFilter)
 					for(dx=-xFilter; dx<=xFilter; dx+=xFilter)
@@ -159,14 +159,23 @@ bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight
 					
 					for(i=0; i<components; i++)
 						pixel[i] = (totalColor[i] / score);
-				}
-				else
-				{
-					srcPos = destPos*scale;
-					getImageSubPixel_float(&copy, srcPos.x-0.5f, srcPos.y-0.5f, pixel);
-				}
 			
-				pixel += components;
+					pixel += components;
+				}
+			}
+		}
+		else
+		{
+			#pragma omp parallel for schedule(dynamic, 4)
+			for(unsigned int y=0; y<destHeight; y++)
+			{
+				float * pixel = destData + destWidth*y*components;
+				for(unsigned int x=0; x<destWidth; x++)
+				{
+					MVector2 srcPos = MVector2((float)x, (float)y)*scale;
+					getImageSubPixel_float(&copy, srcPos.x-0.5f, srcPos.y-0.5f, pixel);
+					pixel += components;
+				}
 			}
 		}
 	}

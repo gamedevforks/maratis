@@ -356,6 +356,7 @@ void MGuiMenu::addSimpleButton(const char * text, void (* buttoneventCallback)(M
 	MGuiButton * btn = m_window.addNewButton();
 	
 	btn->setPosition(pos);
+	btn->setTextMargin(2);
 	btn->setFont(getFont());
 	btn->setTextSize(getTextSize());
 	btn->setTextColor(getTextColor());
@@ -364,9 +365,6 @@ void MGuiMenu::addSimpleButton(const char * text, void (* buttoneventCallback)(M
 	btn->setPressedColor(getHighLightColor());
 	btn->setHighLightColor(getHighLightColor());
 	btn->setEventCallback(buttoneventCallback);
-	btn->setXScale(btn->getScale().x + 10);
-	btn->setYScale(getTextSize()+6);
-	btn->setTextAlign(M_ALIGN_CENTER);
 	
 	updateText();
 	autoScaleFromText();
