@@ -1073,15 +1073,24 @@ void MStandardRenderer::drawText(MOText * textObj)
 	unsigned int fxId;
 	static MVector2 vertices[4];
 	static MVector2 texCoords[4];
-	//static MMatrix4x4 ModelViewMatrix;
 	static MMatrix4x4 ProjModelViewMatrix;
-	MMatrix4x4 * cameraProjMatrix = m_currentCamera->getCurrentProjMatrix();
-
-
+	
+	
+	
 	// Matrix
-	//render->getModelViewMatrix(&ModelViewMatrix);
-	ProjModelViewMatrix = (*cameraProjMatrix) * m_currModelViewMatrix;
-
+	if(m_currentCamera)
+	{
+		MMatrix4x4 * cameraProjMatrix = m_currentCamera->getCurrentProjMatrix();
+		ProjModelViewMatrix = (*cameraProjMatrix) * m_currModelViewMatrix;
+	}
+	else
+	{
+		MMatrix4x4 cameraProjMatrix, modelViewMatrix;
+		render->getProjectionMatrix(&cameraProjMatrix);
+		render->getModelViewMatrix(&modelViewMatrix);
+		ProjModelViewMatrix = cameraProjMatrix * modelViewMatrix;
+	}
+	
 
 	// cull face
 	render->disableCullFace();
@@ -1973,4 +1982,6 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		
 		render->setDepthMask(1);
 	}
+	
+	m_currentCamera = NULL;
 }
