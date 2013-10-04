@@ -164,7 +164,7 @@ bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight
 				}
 			}
 		}
-		else
+		else if(filter == 0)
 		{
 			#pragma omp parallel for schedule(dynamic, 4)
 			for(unsigned int y=0; y<destHeight; y++)
@@ -174,6 +174,19 @@ bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight
 				{
 					MVector2 srcPos = MVector2((float)x, (float)y)*scale;
 					getImageSubPixel_float(&copy, srcPos.x-0.5f, srcPos.y-0.5f, pixel);
+					pixel += components;
+				}
+			}
+		}
+		else
+		{
+			for(unsigned int y=0; y<destHeight; y++)
+			{
+				float * pixel = destData + destWidth*y*components;
+				for(unsigned int x=0; x<destWidth; x++)
+				{
+					MVector2 srcPos = MVector2((float)x, (float)y)*scale;
+					copy.readPixel(srcPos.x, srcPos.y, pixel);
 					pixel += components;
 				}
 			}

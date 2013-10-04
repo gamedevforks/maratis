@@ -157,7 +157,7 @@ void MWindow::onEvent(MWIN_EVENT_TYPE event)
 	// menus windows
 	for(i=0; i<wSize; i++)
 	{
-		if(! m_windows[i]->isVisible())
+		if((! m_windows[i]->isVisible()) || m_windows[i]->isIgnoringEvents())
 			continue;
 
 		int result = m_windows[i]->onWindowMenusEvent(this, event);
@@ -172,9 +172,9 @@ void MWindow::onEvent(MWIN_EVENT_TYPE event)
 	// windows
 	for(i=wSize-1; i>=0; i--)
 	{
-		if(! m_windows[i]->isVisible())
+		if((! m_windows[i]->isVisible()) || m_windows[i]->isIgnoringEvents())
 			continue;
-
+			
 		m_windows[i]->onEvent(this, event);
 
 		// priority window
@@ -182,7 +182,7 @@ void MWindow::onEvent(MWIN_EVENT_TYPE event)
 		{
 			for(j=i-1; j>=0; j--)
 			{
-				if(! m_windows[j]->isVisible())
+				if((! m_windows[j]->isVisible()) || m_windows[j]->isIgnoringEvents())
 					continue;
 
 				m_windows[j]->onEvent(this, event);

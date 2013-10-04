@@ -49,6 +49,9 @@ private:
 	float m_minZoom;
 	float m_maxZoom;
 	
+	// events handling
+	bool m_ignoreEvents;
+	
 	// scrolling
 	bool m_isScrolled;
 	MVector2 m_scroll;
@@ -179,6 +182,10 @@ public:
 	void setDrawCallbackMode(MGUI_DRAW_CALLBACK_MODES mode){ m_drawCallbackMode = mode; }
 	MGUI_DRAW_CALLBACK_MODES getDrawCallbackMode(void){ return m_drawCallbackMode; }
 	inline void setDrawCallback(void (* drawCallback)(MGuiWindow * window)){ m_drawCallback = drawCallback; }
+
+	// events handling
+	void ignoreEvents(bool state){ m_ignoreEvents = state; }
+	bool isIgnoringEvents(void){ return m_ignoreEvents; }
 
 	// update
 	void update(void);

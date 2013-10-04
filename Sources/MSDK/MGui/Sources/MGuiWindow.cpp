@@ -35,6 +35,7 @@
 //constructor
 MGuiWindow::MGuiWindow(MWindow * rootWindow):
 MGui2d(),
+m_ignoreEvents(false),
 m_isFreeView(false),
 m_zoom(1),
 m_minZoom(0.1f),

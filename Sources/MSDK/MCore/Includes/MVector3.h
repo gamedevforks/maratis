@@ -128,7 +128,7 @@ public:
 	{
 		return vec * factor;
 	}
-
+	
 	inline bool operator == (const MVector3 & vec) const
 	{
 		if(x == vec.x && y == vec.y && z == vec.z)

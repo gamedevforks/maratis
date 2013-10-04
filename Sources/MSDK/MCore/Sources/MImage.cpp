@@ -108,16 +108,16 @@ void MImage::create(M_TYPES dataType, unsigned int width, unsigned int height, u
 	default:
 		break;
 	case M_UBYTE:
-		m_data = new unsigned char[m_size];
+		m_data = malloc(m_size*sizeof(char));
 		break;
 	case M_USHORT:
-		m_data = new unsigned short[m_size];
+		m_data = malloc(m_size*sizeof(short));
 		break;
 	case M_INT:
-		m_data = new int[m_size];
+		m_data = malloc(m_size*sizeof(int));
 		break;
 	case M_FLOAT:
-		m_data = new float[m_size];
+		m_data = malloc(m_size*sizeof(float));
 		break;
 	}
 }
