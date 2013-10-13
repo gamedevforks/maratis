@@ -53,7 +53,7 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 	
 	switch(event)
 	{
-	case MWIN_EVENT_WINDOW_CREATE:
+	case MWIN_EVENT_CREATE:
 		{
 			// create a rendering context
 			render = new MGLContext();
@@ -87,7 +87,7 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		}
 		break;
 		
-	case MWIN_EVENT_WINDOW_CLOSE:
+	case MWIN_EVENT_CLOSE:
 		{
 			MGUI_closeWindow(rootWindow);
 		}

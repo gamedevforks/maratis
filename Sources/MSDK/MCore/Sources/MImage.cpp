@@ -90,8 +90,7 @@ void MImage::clear(void)
 
 void MImage::create(M_TYPES dataType, unsigned int width, unsigned int height, unsigned int components)
 {
-	unsigned int size = components * width * height;
-	if(size == m_size && dataType == m_dataType)
+	if(width == m_width && height == m_height && components == m_components && dataType == m_dataType)
 		return;
 		
 	SAFE_FREE(m_data);
@@ -100,7 +99,7 @@ void MImage::create(M_TYPES dataType, unsigned int width, unsigned int height, u
     m_height = height;
 	m_components = components;
 	m_dataType = dataType;
-    m_size = size;
+    m_size = components * width * height;
 
 	if(m_size > 0)
 	switch(dataType)

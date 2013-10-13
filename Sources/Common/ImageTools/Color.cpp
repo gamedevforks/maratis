@@ -218,11 +218,26 @@ bool negative(MImage * image)
 		return false;
 
 	unsigned int i, size = image->getSize();
+	unsigned int components = image->getComponents();
 	if(image->getDataType() == M_FLOAT)
 	{
 		float * imageData = (float *)image->getData();
-        for(i=0; i<size; i++)
-			imageData[i] = 1 - imageData[i];
+		if(components == 4)
+		{
+			for(i=0; i<size; i+=4)
+			{
+				imageData[0] = 1 - imageData[0];
+				imageData[1] = 1 - imageData[1];
+				imageData[2] = 1 - imageData[2];
+				imageData+=4;
+			}
+		}
+		else
+		{
+			for(i=0; i<size; i++)
+				imageData[i] = 1 - imageData[i];
+		}
+		
 		return true;
 	}
 	
@@ -316,10 +331,25 @@ bool gammaCorrection(MImage * image, float gamma)
 	if(image->getDataType() != M_FLOAT)
 		return false;
 
-	float * data = (float *)image->getData();
-	unsigned int size = image->getSize();
-	for(int i=0; i<size; i++)
-		data[i] = powf(data[i], gamma);
+	float * imageData = (float *)image->getData();
+	unsigned int i, size = image->getSize();
+	unsigned int components = image->getComponents();
+
+	if(components == 4)
+	{
+		for(i=0; i<size; i+=4)
+		{
+			imageData[0] = powf(imageData[0], gamma);
+			imageData[1] = powf(imageData[1], gamma);
+			imageData[2] = powf(imageData[2], gamma);
+			imageData+=4;
+		}
+	}
+	else
+	{
+		for(i=0; i<size; i++)
+			imageData[i] = powf(imageData[i], gamma);
+	}
 	
 	return true;
 }

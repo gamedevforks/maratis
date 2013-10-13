@@ -55,7 +55,7 @@ void MGuiFileBrowser::fileBrowserOkButtonEvents(MGuiButton * button, MGUI_EVENT_
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
 		{
-			if(button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
+			if(button->isPressed() && button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
 			{
 				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
 				fileBrowser->close();
@@ -76,7 +76,7 @@ void MGuiFileBrowser::fileBrowserCancelButtonEvents(MGuiButton * button, MGUI_EV
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
 		{
-			if(button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
+			if(button->isPressed() && button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
 			{
 				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
 				fileBrowser->close();
@@ -93,19 +93,58 @@ void MGuiFileBrowser::fileBrowserCancelButtonEvents(MGuiButton * button, MGUI_EV
 
 void MGuiFileBrowser::mainWinEvents(MGuiWindow * window, MGUI_EVENT_TYPE event)
 {
+	MWindow * rootWindow = window->getRootWindow();
+
 	switch(event)
 	{
         case MGUI_EVENT_MOUSE_BUTTON_UP:
 		{
-			if(window->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
+			if(rootWindow->getMouseButton() == MMOUSE_BUTTON_LEFT && !window->isScrollBarPressed())
 			{
 				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)window->getCustomPointer();
 			
-				unsigned int b, bSize = window->getButtonsNumber();
+				int b, bSize = window->getButtonsNumber();
 				for(b=0; b<bSize; b++)
 				{
-					if(window->getButton(b)->isPressed())
+					MGuiButton * button = window->getButton(b);
+					
+					// file
+					if(button->getMode()==MGUI_BUTTON_CHECK && button->isHighLight() && button->isActive())
 					{
+						// SHIFT multi selection (list)
+						if(rootWindow->isKeyPressed(MKEY_LSHIFT) && fileBrowser->m_lastPressedButton>=0)
+						{
+							int id1 = fileBrowser->m_lastPressedButton;
+							int id2 = b;
+							
+							if(id2 < id1)
+							{
+								id2 = id1;
+								id1 = b;
+							}
+							
+							for(int b2=id1+1; b2<id2; b2++)
+								window->getButton(b2)->setPressed(true);
+						}
+						// ALT multi selection (one by one)
+						else if(! rootWindow->isKeyPressed(MKEY_LALT))
+						{
+							for(int b2=0; b2<bSize; b2++)
+							{
+								if(b2 != b)
+									window->getButton(b2)->setPressed(false);
+							}
+						}
+						
+						fileBrowser->m_lastPressedButton = b;
+						fileBrowser->selectFile(b);
+						break;
+					}
+					
+					// directory
+					else if(button->getMode()==MGUI_BUTTON_SIMPLE && button->isPressed())
+					{
+						fileBrowser->m_lastPressedButton = b;
 						fileBrowser->selectFile(b);
 						break;
 					}
@@ -117,6 +156,19 @@ void MGuiFileBrowser::mainWinEvents(MGuiWindow * window, MGUI_EVENT_TYPE event)
 			
         default:
 			break;
+	}
+}
+
+void MGuiFileBrowser::getSelectedFiles(vector <string> * files)
+{
+	unsigned int b, bSize = m_mainWin->getButtonsNumber();
+	for(b=0; b<bSize; b++)
+	{
+		MGuiButton * button = m_mainWin->getButton(b);
+		if(button->isPressed())
+		{
+			files->push_back(m_files[b]);
+		}
 	}
 }
 
@@ -138,6 +190,7 @@ void MGuiFileBrowser::dirEditTextEvents(MGuiEditText * editText, MGUI_EVENT_TYPE
 
 
 MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font):
+m_lastPressedButton(-1),
 m_customPointer(NULL),
 m_eventCallback(NULL)
 {
@@ -148,15 +201,23 @@ m_eventCallback(NULL)
 	m_browserHeight = 18;
 	m_margin = 3;
 	
-	m_headWinColor = MVector4(0.2f, 0.3f, 0.4f, 1.0f);
+	/*m_headWinColor = MVector4(0.2f, 0.3f, 0.4f, 1.0f);
 	m_mainWinColor = MVector4(0.15f, 0.15f, 0.15f, 1.0f);
 	m_filesWinColor = MVector4(0.4f, 0.6f, 0.8f, 0.3f);
 	m_headTextColor = MVector4(0.0f, 0.0f, 0.0f, 1.0f);
 	m_browserTextColor = MVector4(1, 1, 1, 0.75f);
 	m_buttonColor = MVector4(0.4f, 0.6f, 0.8f, 0.75f);
 	m_highButtonColor = MVector4(0.8, 0.9f, 1.0f, 0.75f);
+	m_pressButtonColor = MVector4(1.0, 1.0f, 0.5f, 1.0f);*/
+		
+	m_headWinColor = MVector4(0.35f, 0.35f, 0.35f, 1.0f);
+	m_mainWinColor = MVector4(0.15f, 0.15f, 0.15f, 1.0f);
+	m_filesWinColor = MVector4(0.7f, 0.7f, 0.7f, 0.3f);
+	m_headTextColor = MVector4(0.0f, 0.0f, 0.0f, 1.0f);
+	m_browserTextColor = MVector4(1, 1, 1, 0.75f);
+	m_buttonColor = MVector4(0.6f, 0.6f, 0.6f, 0.75f);
+	m_highButtonColor = MVector4(0.8, 0.9f, 1.0f, 0.75f);
 	m_pressButtonColor = MVector4(1.0, 1.0f, 0.5f, 1.0f);
-	
 	
 	m_headWin = rootWindow->addNewWindow();
 	m_headWin->setColor(m_headWinColor);
@@ -179,6 +240,7 @@ m_eventCallback(NULL)
 	// texts and buttons
 	{
 		m_dirEditText = m_dirWin->addNewEditText();
+		m_dirEditText->setXPosition(3);
 		m_dirEditText->setFont(m_font);
 		m_dirEditText->setTextSize(m_font->getFont()->getFontSize());
 		m_dirEditText->setTextColor(m_headTextColor);
@@ -188,6 +250,7 @@ m_eventCallback(NULL)
 		m_dirEditText->setCustomPointer(this);
 		
 		m_fileEditText = m_fileWin->addNewEditText();
+		m_fileEditText->setXPosition(3);
 		m_fileEditText->setFont(m_font);
 		m_fileEditText->setTextSize(m_font->getFont()->getFontSize());
 		m_fileEditText->setTextColor(m_headTextColor);
@@ -241,6 +304,7 @@ MGuiFileBrowser::~MGuiFileBrowser(void)
 
 void MGuiFileBrowser::updateMainWin(void)
 {
+	m_lastPressedButton = -1;
 	m_mainWin->clear();
 	
 	m_files.clear();
@@ -275,6 +339,13 @@ void MGuiFileBrowser::updateMainWin(void)
 			float y = m_browserHeight*f;
 			const char * name = m_files[f].c_str();
 			
+			bool isDir = false;
+			if(strlen(name) > 0)
+			{
+				if(name[0] == '/')
+					isDir = true;
+			}
+			
 			string textName = name;
 			
 			float grey = 0.24f;
@@ -282,21 +353,24 @@ void MGuiFileBrowser::updateMainWin(void)
 				grey = 0.2f;
 			
 			MGuiButton * button = m_mainWin->addNewButton();
+			if(f>0 && !isDir)
+				button->setMode(MGUI_BUTTON_CHECK);
 			button->setPosition(MVector2(0, y));
 			button->setScale(MVector2(m_mainWin->getScale().x, m_browserHeight));
-			button->setNormalColor(MVector3(grey*0.9f, grey*1.1f, grey*1.3f));
-			button->setHighLightColor(MVector3(0.35f));
-			button->setPressedColor(MVector3(0.35f));
+			button->setNormalColor(MVector3(grey, grey, grey));
+			button->setHighLightColor(MVector3(0.3f));
+			button->setPressedColor(MVector3(0.45f));
 			
 			MGuiText * text = m_mainWin->addNewText();
 			text->setFont(m_font);
 			text->setTextSize(m_font->getFont()->getFontSize());
 			text->setText(textName.c_str());
-			text->setPosition(MVector2(0, y));
+			text->setPosition(MVector2(3, y));
 			text->setColor(m_browserTextColor);
 		}
 	}
 	
+	m_mainWin->setScroll(MVector2(0, 0));
 	m_mainWin->resizeScroll();
 }
 

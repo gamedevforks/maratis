@@ -62,6 +62,54 @@ void drawLine(MImage * image, int x0, int y0, int x1, int y1, void * color, floa
 	}
 }
 
+
+// Midpoint Circle Algorithm : http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+void drawLineCircle(MImage * image, int x0, int y0, int radius, void * color)
+{
+	unsigned int width = image->getWidth();
+	unsigned int height = image->getHeight();
+
+	int x = radius, y = 0;
+	int radiusError = 1-x;
+ 
+	while(x >= y)
+	{
+		if(isInFrame(x + x0, y + y0, width, height))
+			image->writePixel(x + x0, y + y0, color);
+			
+		if(isInFrame(y + x0, x + y0, width, height))
+			image->writePixel(y + x0, x + y0, color);
+			
+		if(isInFrame(-x + x0, y + y0, width, height))
+			image->writePixel(-x + x0, y + y0, color);
+			
+		if(isInFrame(-y + x0, x + y0, width, height))
+			image->writePixel(-y + x0, x + y0, color);
+		
+		if(isInFrame(-x + x0, -y + y0, width, height))
+			image->writePixel(-x + x0, -y + y0, color);
+			
+		if(isInFrame(-y + x0, -x + y0, width, height))
+			image->writePixel(-y + x0, -x + y0, color);
+			
+		if(isInFrame(x + x0, -y + y0, width, height))
+			image->writePixel(x + x0, -y + y0, color);
+			
+		if(isInFrame(y + x0, -x + y0, width, height))
+			image->writePixel(y + x0, -x + y0, color);
+ 
+		y++;
+        
+		if(radiusError<0)
+			radiusError+=2*y+1;
+        else
+        {
+			x--;
+			radiusError+=2*(y-x+1);
+        }
+	}
+}
+
 void drawCircle(MImage * image, const MVector2 & center, float radius, void * color)
 {
 	float R2 = radius*radius;

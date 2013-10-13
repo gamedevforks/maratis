@@ -108,7 +108,7 @@ bool MGuiWindow::isSomethingEditing(void)
 	unsigned int eSize = m_editTexts.size();
 	for(i=0; i<eSize; i++)
 	{
-		if(m_editTexts[i]->isPressed())
+		if(m_editTexts[i]->isVisible() && !m_editTexts[i]->isDeleted() && m_editTexts[i]->isPressed())
 			return true;
 	}
 
@@ -125,6 +125,9 @@ void MGuiWindow::autoScale(void)
     for(i=0; i<size; i++)
 	{
 		MGui2d * object = m_objects[i];
+		if(!object->isVisible() || object->isDeleted())
+			continue;
+			
 		tmp = object->getPosition()
 		    + object->getScale();
 
@@ -404,8 +407,8 @@ void MGuiWindow::nodesEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 
 void MGuiWindow::internalEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 {
-	unsigned int i;
-
+	unsigned int i, oSize = m_objects.size();
+	
 	// scolling slides
 	if(isHorizontalScroll())
 		m_hScrollSlide.onEvent(rootWindow, event);
@@ -414,16 +417,22 @@ void MGuiWindow::internalEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		m_vScrollSlide.onEvent(rootWindow, event);
 
 	if(isScrollBarPressed()) // disable gui events if scroll bar pressed
+	{
+		if(event == MWIN_EVENT_MOUSE_BUTTON_DOWN)
+		{
+			for(i=0; i<oSize; i++)
+				m_objects[i]->setHighLight(false);
+		}
 		return;
+	}
 
 	// nodes event
 	nodesEvent(rootWindow, event);
 
 	// objects event
-	unsigned int oSize = m_objects.size();
 	for(i=0; i<oSize; i++)
 	{
-		if(m_objects[i]->isVisible())
+		if(m_objects[i]->isVisible() && !m_objects[i]->isDeleted())
 			m_objects[i]->onEvent(rootWindow, event);
 	}
 }
@@ -644,6 +653,7 @@ void MGuiWindow::rescaleScrollingBar(void)
 	m_vScrollSlide.setPosition(MVector2(scale.x - m_vScrollSlide.getButtonScale().x, 0));
 
 	float length = (scale.x / (m_maxScroll.x - m_minScroll.x)) * scale.x;
+	length = MAX(32, length);
 
 	if(length < scale.x)
 	{
@@ -658,6 +668,7 @@ void MGuiWindow::rescaleScrollingBar(void)
 	}
 
 	float height = (scale.y / (m_maxScroll.y - m_minScroll.y)) * scale.y;
+	height = MAX(32, height);
 
 	if(height < scale.y)
 	{
@@ -689,7 +700,7 @@ void MGuiWindow::limitScroll(void)
 	{
 		m_scroll.x = -m_minScroll.x;
 	}
-	   
+	
 	if(isVerticalScroll())
 	{
 		if(-m_scroll.y < m_minScroll.y)
@@ -737,6 +748,9 @@ void MGuiWindow::resizeScroll(void)
 	unsigned int oSize = m_objects.size();
 	for(i=0; i<oSize; i++)
 	{
+		if(!m_objects[i]->isVisible() || m_objects[i]->isDeleted())
+			continue;
+			
 		MVector2 p1 = m_objects[i]->getPosition();
 		MVector2 p2 = p1 + m_objects[i]->getScale();
 
@@ -1025,7 +1039,10 @@ void MGuiWindow::draw(void)
 	unsigned int i;
 	unsigned int oSize = m_objects.size();
 	for(i=0; i<oSize; i++)
-		m_objects[i]->draw();
+	{
+		if(m_objects[i]->isVisible() && !m_objects[i]->isDeleted())
+			m_objects[i]->draw();
+	}
 
 	render->popMatrix();
 

@@ -55,7 +55,7 @@ bool pyrDownImage(MImage * image)
 		float * copyData = (float *)copy.getData();
 		float * destData = (float *)image->getData();
 		
-		#pragma omp parallel for schedule(dynamic, 4)
+		#pragma omp parallel for schedule(dynamic, 8)
 		for(int y=0; y<halfHeight; y++)
 		{
 			float * color;
@@ -131,7 +131,7 @@ bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight
 		
 		if(filter > 0)
 		{
-			#pragma omp parallel for schedule(dynamic, 4)
+			#pragma omp parallel for schedule(dynamic, 8)
 			for(unsigned int y=0; y<destHeight; y++)
 			{
 				float color[4];
@@ -166,7 +166,7 @@ bool resizeImage(MImage * image, unsigned int destWidth, unsigned int destHeight
 		}
 		else if(filter == 0)
 		{
-			#pragma omp parallel for schedule(dynamic, 4)
+			#pragma omp parallel for schedule(dynamic, 8)
 			for(unsigned int y=0; y<destHeight; y++)
 			{
 				float * pixel = destData + destWidth*y*components;

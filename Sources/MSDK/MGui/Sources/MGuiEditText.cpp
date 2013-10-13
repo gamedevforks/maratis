@@ -198,7 +198,7 @@ void MGuiEditText::updateFromVariable(void)
 			float * value = (float *)getVariablePointer();
 
 			char text[256];
-			sprintf(text, "%0.2f", *value);
+			sprintf(text, "%0.3f", *value);
 
 			setText(text);
 		}

@@ -78,10 +78,10 @@ bool M_loadImage(const char * filename, void * data)
 
 	// freeimage io
 	FreeImageIO io;
-	io.read_proc  = readProc;
-	io.write_proc = writeProc;
-	io.tell_proc  = tellProc;
-	io.seek_proc  = seekProc;
+	io.read_proc  = (FI_ReadProc)readProc;
+	io.write_proc = (FI_WriteProc)writeProc;
+	io.tell_proc  = (FI_TellProc)tellProc;
+	io.seek_proc  = (FI_SeekProc)seekProc;
 	
 	
 	// read file buffer
@@ -290,7 +290,7 @@ bool M_saveImage(const char * filename, void * data)
 		FreeImage_FlipVertical(dib);
 
 		// save
-		if(FreeImage_Save(format, dib, filename))
+		if(FreeImage_Save(format, dib, filename, PNG_Z_BEST_SPEED))
 		{
 			FreeImage_Unload(dib);
 			return true;

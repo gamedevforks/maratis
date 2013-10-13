@@ -34,6 +34,7 @@
 
 void drawLine(MImage * image, int x0, int y0, int x1, int y1, void * color, float radius = 1);
 void drawLines(MImage * image, MVector2 * points, unsigned int nb, void * color, float radius = 1);
+void drawLineCircle(MImage * image, int x0, int y0, int radius, void * color);
 void drawCircle(MImage * image, const MVector2 & center, float radius, void * color);
 void drawPolygon(MImage * image, MVector2 * points, unsigned int nb, void * color);
 

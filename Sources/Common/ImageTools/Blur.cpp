@@ -115,7 +115,7 @@ bool gaussianBlur(MImage * image, unsigned int radius)
         int yStep = width*components;
 		
         // horizontal blur
-		#pragma omp parallel for schedule(dynamic, 4)
+		#pragma omp parallel for schedule(dynamic, 8)
         for(int y=0; y<height; y++)
         {
 			int i, x, xx;
@@ -148,7 +148,7 @@ bool gaussianBlur(MImage * image, unsigned int radius)
         }
 		
         // vertical blur
-		#pragma omp parallel for schedule(dynamic, 4)
+		#pragma omp parallel for schedule(dynamic, 8)
         for(int x=0; x<width; x++)
         {
 			int i, y, yy;

@@ -85,7 +85,7 @@ bool copyFile(const char * inFilename, const char * outFilename)
 	return true;
 }
 
-bool createDirectoryInternal(const char * filename)
+static bool createDirectoryInternal(const char * filename)
 {
 	if(mkdir(filename) != -1)
 		return true;
@@ -145,7 +145,7 @@ bool isEmptyDirectory(const char * filename)
 		return true;
 
 	dirent * pent = NULL;
-    while(pent = readdir(pdir))
+    while((pent = readdir(pdir)))
 	{
 		if(strcmp(pent->d_name, ".") == 0)
 			continue;

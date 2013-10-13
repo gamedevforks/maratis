@@ -53,6 +53,8 @@ private:
 	MGuiButton * m_okButton;
 	MGuiButton * m_cancelButton;
 	
+	int m_lastPressedButton;
+	
 	float m_fileButtonsWidth;
 	float m_fileButtonsHeight;
 	float m_browserHeight;
@@ -71,6 +73,11 @@ private:
 	MString m_currentFile;
 	vector <string> m_files;
 	
+	// linked variable
+	M_VARIABLE_TYPE m_variableType;
+	void * m_variablePointer;
+	
+	// custom pointer
 	void * m_customPointer;
 	
 	// events function pointer
@@ -95,7 +102,16 @@ public:
 	
 	const char * getCurrentDirectory(void){ return m_currentDirectory.getData(); }
 	const char * getCurrentFile(void){ return m_currentFile.getData(); }
+	vector <string> * getDirectoryFiles(void){ return &m_files; }
+	void getSelectedFiles(vector <string> * files);
 	
+	// linked variable
+	inline M_VARIABLE_TYPE getVariableType(void){ return m_variableType; }
+	inline void * getVariablePointer(void){ return m_variablePointer; }
+	inline void enableVariable(void * variable, M_VARIABLE_TYPE type){ m_variablePointer = variable; m_variableType = type; }
+	inline void disableVariable(void){ m_variablePointer = NULL; }
+
+	// custom pointer
 	void setCustomPointer(void * pointer){ m_customPointer = pointer; }
 	void * getCustomPointer(void){ return m_customPointer; }
 };

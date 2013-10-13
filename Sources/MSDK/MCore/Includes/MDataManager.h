@@ -68,6 +68,7 @@ public:
 	inline long getTime(void){ return m_time; }
 
 	// filename
+	inline void setFilename(const char * filename){ m_filename = filename; }
 	inline const char * getFilename(void){ return m_filename.getData(); }
 };
 
