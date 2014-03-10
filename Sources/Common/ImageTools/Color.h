@@ -38,6 +38,8 @@ bool product(MImage * image, float factor);
 bool product(MImage * image, MImage * image2);
 bool addition(MImage * image, float factor);
 bool addition(MImage * image, MImage * image2);
+bool substraction(MImage * image, MImage * image2);
+bool blendOver(MImage * image, MImage * image2); // blend image2 over image1 using premultiplied alpha
 bool negative(MImage * image);
 bool premultiply(MImage * image);
 bool unpremultiply(MImage * image);

@@ -32,7 +32,7 @@
 #ifndef _M_IT_SOBEL_H
 #define _M_IT_SOBEL_H
 
-// sobel filter : src (float 1), dest (float 2 : dx, dy)
+// sobel filter : src (float1), dest (float2 : dx, dy)
 bool sobelFilter(MImage * src, MImage * dest, int radius=2);
 
 #endif

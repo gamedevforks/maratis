@@ -169,6 +169,18 @@ bool M_loadImage(const char * filename, void * data)
 		}
 		break;
 		
+	case FIT_RGB16:
+	{
+		image->create(M_USHORT, width, height, 3);
+		for(unsigned int y=0; y<height; y++)
+		{
+			unsigned short * dest = (unsigned short *)image->getData() + width*y*3;
+			bits = FreeImage_GetScanLine(dib, y);
+			memcpy(dest, bits, width*3*sizeof(short));
+		}
+		break;
+	}
+	
 	case FIT_FLOAT:
 		image->create(M_FLOAT, width, height, 1);
 		for(unsigned int y=0; y<height; y++)

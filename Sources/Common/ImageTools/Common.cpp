@@ -44,6 +44,17 @@ static void ubyteToFloat(MImage * src, MImage * dest)
 		data2[i] = (float)(data1[i])*ubyte_div;
 }
 
+static void ushortToFloat(MImage * src, MImage * dest)
+{
+	static const float ushort_div = 1.0f/65535.0f;
+	
+	unsigned short * data1 = (unsigned short *)src->getData();
+	float * data2 = (float *)dest->getData();
+	unsigned int size = src->getSize();
+	for(int i=0; i<size; i++)
+		data2[i] = (float)(data1[i])*ushort_div;
+}
+
 static void floatToUbyte(MImage * src, MImage * dest)
 {
 	float * data1 = (float *)src->getData();
@@ -80,6 +91,13 @@ bool convertToFloat(MImage * image)
 		ubyteToFloat(&copy, image);
 		return true;
 	}
+	else if(image->getDataType() == M_USHORT)
+	{
+		MImage copy(*image);
+		image->create(M_FLOAT, width, height, components);
+		ushortToFloat(&copy, image);
+		return true;
+	}
 	
 	return false;
 }
@@ -104,16 +122,17 @@ bool convertToUbyte(MImage * image)
 	return false;
 }
 
-bool convertAlphaToGreyscale(MImage * image)
+bool convertComponentToGreyscale(MImage * image, unsigned int id)
 {
 	if(! isImageValid(image))
 		return false;
 
-	if(image->getComponents() != 4)
+	if(id >= image->getComponents())
 		return false;
 
 	unsigned int width = image->getWidth();
 	unsigned int height = image->getHeight();
+	unsigned int comp = image->getComponents();
 
 	if(image->getDataType() == M_UBYTE)
 	{
@@ -126,8 +145,8 @@ bool convertAlphaToGreyscale(MImage * image)
 		for(y=0; y<height; y++)
 		for(x=0; x<width; x++)
 		{
-			(*greyPixel) = imagePixel[3];
-			imagePixel+=4;
+			(*greyPixel) = imagePixel[id];
+			imagePixel+=comp;
 			greyPixel++;
 		}
 		
@@ -144,8 +163,8 @@ bool convertAlphaToGreyscale(MImage * image)
 		for(y=0; y<height; y++)
 		for(x=0; x<width; x++)
 		{
-			(*greyPixel) = imagePixel[3];
-			imagePixel+=4;
+			(*greyPixel) = imagePixel[id];
+			imagePixel+=comp;
 			greyPixel++;
 		}
 		
@@ -153,6 +172,17 @@ bool convertAlphaToGreyscale(MImage * image)
 	}
 	
 	return false;
+}
+
+bool convertAlphaToGreyscale(MImage * image)
+{
+	if(! isImageValid(image))
+		return false;
+
+	if(image->getComponents() != 4)
+		return false;
+	
+	return convertComponentToGreyscale(image, 3);
 }
 
 bool convertGreyscaleToAlpha(MImage * image)
@@ -210,11 +240,13 @@ bool convertGreyscaleToAlpha(MImage * image)
 	return false;
 }
 
-bool convertToGreyscale(MImage * image)
+bool convertToGreyscale(MImage * image, float rf, float gf, float bf)
 {
 	if(! isImageValid(image))
 		return false;
 
+	if(image->getComponents() == 1)
+		return false;
 
 	if(image->getDataType() == M_UBYTE)
 	{
@@ -241,7 +273,7 @@ bool convertToGreyscale(MImage * image)
 		for(y=0; y<height; y++)
 		for(x=0; x<width; x++)
 		{
-			(*greyPixel) = imagePixel[0]*0.3f + imagePixel[1]*0.5f + imagePixel[2]*0.2f;
+			(*greyPixel) = imagePixel[0]*rf + imagePixel[1]*gf + imagePixel[2]*bf;
 			imagePixel += 3;
 			greyPixel++;
 		}
@@ -257,7 +289,7 @@ bool convertToGreyscale(MImage * image)
 		for(y=0; y<height; y++)
 		for(x=0; x<width; x++)
 		{
-			(*greyPixel) = (0.1f + (imagePixel[0]*0.27f + imagePixel[1]*0.45f + imagePixel[2]*0.18f)) * imagePixel[3];
+			(*greyPixel) = 0.1f + (imagePixel[0]*rf + imagePixel[1]*gf + imagePixel[2]*bf)*imagePixel[3]*0.9f;
 			imagePixel += 4;
 			greyPixel++;
 		}
@@ -410,9 +442,6 @@ void getImageSubPixel_float(MImage * image, float x, float y, float * color)
 	unsigned int i;
 	unsigned int components = image->getComponents();
 
-	x = CLAMP(x, 0, width-1);
-	y = CLAMP(y, 0, height-1);
-
 	int ix = (int)(x);
 	int iy = (int)(y);
 	float fx = x - ix;
@@ -422,10 +451,15 @@ void getImageSubPixel_float(MImage * image, float x, float y, float * color)
 	float * colors[4];
 	float * imgData = (float *)image->getData();
 		
+	ix = CLAMP(ix, 0, width-1);
+	iy = CLAMP(iy, 0, height-1);
+	int ix2 = CLAMP(ix+1, 0, width-1);
+	int iy2 = CLAMP(iy+1, 0, height-1);
+		
 	colors[0] = imgData + (width*iy + ix)*components;
-	colors[1] = imgData + (width*iy + MIN(width-1, ix+1))*components;
-	colors[2] = imgData + (width*MIN(height-1, iy+1) + ix)*components;
-	colors[3] = imgData + (width*MIN(height-1, iy+1) + MIN(width-1, ix+1))*components;
+	colors[1] = imgData + (width*iy + ix2)*components;
+	colors[2] = imgData + (width*iy2 + ix)*components;
+	colors[3] = imgData + (width*iy2 + ix2)*components;
 	
 	for(i=0; i<components; i++)
 	{

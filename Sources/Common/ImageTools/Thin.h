@@ -32,7 +32,7 @@
 #ifndef _M_IT_THIN_H
 #define _M_IT_THIN_H
 
-// thin non-zero pixels (ubyte 1 image)
+// thin non-zero pixels (ubyte1 image)
 bool thinImage(MImage * image);
 
 #endif

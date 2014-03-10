@@ -53,8 +53,9 @@ bool isImageValid(MImage * image);
 // convertions
 bool convertToFloat(MImage * image);
 bool convertToUbyte(MImage * image);
-bool convertToGreyscale(MImage * image);
+bool convertToGreyscale(MImage * image, float rf=0.3f, float gf=0.5f, float bf=0.2f);
 bool convertToRGB(MImage * image);
+bool convertComponentToGreyscale(MImage * image, unsigned int id);
 bool convertAlphaToGreyscale(MImage * image);
 bool convertGreyscaleToAlpha(MImage * image);
 

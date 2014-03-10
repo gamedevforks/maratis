@@ -212,6 +212,52 @@ bool addition(MImage * image, MImage * image2)
 	return false;
 }
 
+bool substraction(MImage * image, MImage * image2)
+{
+	if(! (isImageValid(image) && isImageValid(image)))
+		return false;
+
+	unsigned int i, size = image->getSize();
+	if(image->getDataType() == M_FLOAT && image->getDataType() == M_FLOAT)
+	{
+		float * imageData = (float *)image->getData();
+		float * image2Data = (float *)image2->getData();
+        for(i=0; i<size; i++)
+            imageData[i] -= image2Data[i];
+		return true;
+	}
+	
+	return false;
+}
+
+bool blendOver(MImage * image, MImage * image2)
+{
+	if(! (isImageValid(image) && isImageValid(image)))
+		return false;
+
+	unsigned int i, size = image->getSize();
+	unsigned int components = image->getComponents();
+	
+	if(image->getDataType() == M_FLOAT && image->getDataType() == M_FLOAT
+	&& components == 4 && image->getComponents() == image2->getComponents())
+	{
+		float * imageData = (float *)image->getData();
+		float * image2Data = (float *)image2->getData();
+        for(i=0; i<size; i+=4)
+		{
+			float alpha = image2Data[i+3];
+			float ialpha = 1-ialpha;
+			imageData[i] = imageData[i]*ialpha + image2Data[i];
+			imageData[i+1] = imageData[i+1]*ialpha + image2Data[i+1];
+			imageData[i+2] = imageData[i+2]*ialpha + image2Data[i+2];
+			imageData[i+3] = imageData[i+3]*ialpha + alpha;
+		}
+		return true;
+	}
+	
+	return false;
+}
+
 bool negative(MImage * image)
 {
 	if(! isImageValid(image))

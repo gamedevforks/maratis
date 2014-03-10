@@ -32,9 +32,9 @@
 #ifndef _M_IT_RESIZE_H
 #define _M_IT_RESIZE_H
 
-// resizing functions, to be used preferably with premultiplied alpha
+// resizing functions, to be used with premultiplied alpha
 
-// pyramid down (scale down by 2)
+// pyramid down (scale down by half)
 bool pyrDownImage(MImage * image);
 
 // bilinear scaling with optional supersampling filter

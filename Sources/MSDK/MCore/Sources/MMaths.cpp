@@ -35,18 +35,23 @@ void sortFloatList(int indexList[], float floatList[], int start, int end)
 {
 	int i = start;
 	int j = end;
-	float middle = floatList[indexList[(start + end)/2]];
+	float middle = floatList[(start + end)/2];
 	
 	while(i <= j)
 	{
-		while(floatList[indexList[i]] > middle) i++;
-		while(floatList[indexList[j]] < middle) j--;
+		while(floatList[i] > middle) i++;
+		while(floatList[j] < middle) j--;
 		
 		if(i <= j)
 		{
-			int temp = indexList[i];
+			float temp = floatList[i];
+			floatList[i] = floatList[j];
+			floatList[j] = temp;
+			
+			int itemp = indexList[i];
 			indexList[i] = indexList[j];
-			indexList[j] = temp;
+			indexList[j] = itemp;
+			
 			i++; 
 			j--;
 		}
