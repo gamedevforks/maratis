@@ -242,6 +242,11 @@ public:
 		return ((x*x) + (y*y));
 	}
 
+	inline float crossProduct(const MVector2 & vec) const
+	{
+		return x*vec.y - y*vec.x;
+	}
+	
 	inline float dotProduct(const MVector2 & vec) const
 	{	
 		return (x*vec.x) + (y*vec.y);
