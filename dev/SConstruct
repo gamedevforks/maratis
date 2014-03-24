@@ -60,6 +60,9 @@ print "Build in", env['build_mode'], "mode"
 builddir = os.path.join(env['build_area'], sys.platform+arch_suffix, env['build_mode'])
 env['builddir'] = builddir
 env.Append( CCFLAGS = flags.getCppFlags())
+env.Append( CFLAGS = '-std=gnu89')
+
+
 env.Append( CPPDEFINES = flags.getCppDefines())
 # product dir
 proddir = os.path.join(env['prod_area'], sys.platform+arch_suffix, env['build_mode'])

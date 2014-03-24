@@ -761,8 +761,8 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	
     [NSApp setDelegate:delegate];
 	
-	
-    CFDictionaryRef fullscreenMode = NULL;
+	// deprecated
+	/*CFDictionaryRef fullscreenMode = NULL;
     if(fullscreen)
     {
         fullscreenMode =
@@ -778,9 +778,14 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 																 kCGDisplayModeIsSafeForHardware,
 																 NULL);
 		
+		const int modeWidth = (int) CGDisplayModeGetWidth(mode);
+        const int modeHeight = (int) CGDisplayModeGetHeight(mode);
+        const int modeRate = (int) CGDisplayModeGetRefreshRate(mode);
+		
+		
         width = [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
         height = [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
-    }
+    }*/
 	
     unsigned int styleMask = 0;
     if(! fullscreen)
@@ -804,7 +809,8 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
     if(fullscreen)
     {
         CGCaptureAllDisplays();
-        CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
+		// deprecated
+        //CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
     }
 	
     unsigned int attribute_count = 0;
