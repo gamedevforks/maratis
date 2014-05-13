@@ -40,7 +40,7 @@ static void ubyteToFloat(MImage * src, MImage * dest)
 	unsigned char * data1 = (unsigned char *)src->getData();
 	float * data2 = (float *)dest->getData();
 	unsigned int size = src->getSize();
-	for(int i=0; i<size; i++)
+	for(unsigned int i=0; i<size; i++)
 		data2[i] = (float)(data1[i])*ubyte_div;
 }
 
@@ -51,8 +51,17 @@ static void ushortToFloat(MImage * src, MImage * dest)
 	unsigned short * data1 = (unsigned short *)src->getData();
 	float * data2 = (float *)dest->getData();
 	unsigned int size = src->getSize();
-	for(int i=0; i<size; i++)
+	for(unsigned int i=0; i<size; i++)
 		data2[i] = (float)(data1[i])*ushort_div;
+}
+
+static void intToFloat(MImage * src, MImage * dest)
+{
+	int * data1 = (int *)src->getData();
+	float * data2 = (float *)dest->getData();
+	unsigned int size = src->getSize();
+	for(unsigned int i=0; i<size; i++)
+		data2[i] = (float)(data1[i]);
 }
 
 static void floatToUbyte(MImage * src, MImage * dest)
@@ -73,6 +82,92 @@ bool isImageValid(MImage * image)
 		return false;
 		
 	return true;
+}
+
+bool copySubImage(MImage * source, MImage * dest, int x, int y, unsigned int w, unsigned int h)
+{
+	if(! isImageValid(source))
+		return false;
+		
+	int swidth = source->getWidth();
+	int sheight = source->getHeight();
+	unsigned int components = source->getComponents();
+	M_TYPES dataType = source->getDataType();
+	
+	int minx = MAX(0, x);
+	int miny = MAX(0, y);
+	int maxx = MIN(x+(int)w-1, swidth-1);
+	int maxy = MIN(y+(int)h-1, sheight-1);
+		
+	int dwidth = maxx - minx + 1;
+	int dheight = maxy - miny + 1;
+	if(dwidth==0 || dheight==0)
+		return false;
+	
+	dest->create(dataType, dwidth, dheight, components);
+	
+	int sstep = swidth*components;
+	int dstep = dwidth*components;
+	
+	switch(dataType)
+	{
+	default:
+		break;
+	case M_UBYTE:
+		{
+			unsigned char * sData = (unsigned char *)source->getData();
+			unsigned char * dData = (unsigned char *)dest->getData();
+			sData += (miny*swidth + minx)*components;
+			for(int y=miny; y<=maxy; y++)
+			{
+				memcpy(dData, sData, dstep*sizeof(unsigned char));
+				dData+=dstep;
+				sData+=sstep;
+			}
+		}
+		break;
+	case M_USHORT:
+		{
+			unsigned short * sData = (unsigned short *)source->getData();
+			unsigned short * dData = (unsigned short *)dest->getData();
+			sData += (miny*swidth + minx)*components;
+			for(int y=miny; y<=maxy; y++)
+			{
+				memcpy(dData, sData, dstep*sizeof(unsigned short));
+				dData+=dstep;
+				sData+=sstep;
+			}
+		}
+		break;
+	case M_INT:
+		{
+			int * sData = (int *)source->getData();
+			int * dData = (int *)dest->getData();
+			sData += (miny*swidth + minx)*components;
+			for(int y=miny; y<=maxy; y++)
+			{
+				memcpy(dData, sData, dstep*sizeof(int));
+				dData+=dstep;
+				sData+=sstep;
+			}
+		}
+		break;
+	case M_FLOAT:
+		{
+			float * sData = (float *)source->getData();
+			float * dData = (float *)dest->getData();
+			sData += (miny*swidth + minx)*components;
+			for(int y=miny; y<=maxy; y++)
+			{
+				memcpy(dData, sData, dstep*sizeof(float));
+				dData+=dstep;
+				sData+=sstep;
+			}
+		}
+		break;
+	}
+
+	return false;
 }
 
 bool convertToFloat(MImage * image)
@@ -96,6 +191,13 @@ bool convertToFloat(MImage * image)
 		MImage copy(*image);
 		image->create(M_FLOAT, width, height, components);
 		ushortToFloat(&copy, image);
+		return true;
+	}
+	else if(image->getDataType() == M_INT)
+	{
+		MImage copy(*image);
+		image->create(M_FLOAT, width, height, components);
+		intToFloat(&copy, image);
 		return true;
 	}
 	
@@ -439,8 +541,7 @@ void getImageSubPixel_float(MImage * image, float x, float y, float * color)
 	int width = (int)image->getWidth();
 	int height = (int)image->getHeight();
 
-	unsigned int i;
-	unsigned int components = image->getComponents();
+	unsigned int i, components = image->getComponents();
 
 	int ix = (int)(x);
 	int iy = (int)(y);
@@ -448,7 +549,6 @@ void getImageSubPixel_float(MImage * image, float x, float y, float * color)
 	float fy = y - iy;
 	float A, B;
 
-	float * colors[4];
 	float * imgData = (float *)image->getData();
 		
 	ix = CLAMP(ix, 0, width-1);
@@ -456,15 +556,15 @@ void getImageSubPixel_float(MImage * image, float x, float y, float * color)
 	int ix2 = CLAMP(ix+1, 0, width-1);
 	int iy2 = CLAMP(iy+1, 0, height-1);
 		
-	colors[0] = imgData + (width*iy + ix)*components;
-	colors[1] = imgData + (width*iy + ix2)*components;
-	colors[2] = imgData + (width*iy2 + ix)*components;
-	colors[3] = imgData + (width*iy2 + ix2)*components;
+	float * colors0 = imgData + (width*iy + ix)*components;
+	float * colors1 = imgData + (width*iy + ix2)*components;
+	float * colors2 = imgData + (width*iy2 + ix)*components;
+	float * colors3 = imgData + (width*iy2 + ix2)*components;
 	
 	for(i=0; i<components; i++)
 	{
-		A = colors[0][i] + (colors[2][i] - colors[0][i])*fy;
-		B = colors[1][i] + (colors[3][i] - colors[1][i])*fy;
+		A = colors0[i] + (colors2[i] - colors0[i])*fy;
+		B = colors1[i] + (colors3[i] - colors1[i])*fy;
 		color[i] = A + (B-A)*fx;
 	}
 }

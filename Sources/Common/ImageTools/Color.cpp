@@ -199,6 +199,9 @@ bool addition(MImage * image, MImage * image2)
 	if(! (isImageValid(image) && isImageValid(image)))
 		return false;
 
+	if(! (image->getWidth() == image2->getWidth() && image->getHeight() == image2->getHeight()))
+		return false;
+
 	unsigned int i, size = image->getSize();
 	if(image->getDataType() == M_FLOAT && image->getDataType() == M_FLOAT)
 	{
@@ -232,26 +235,31 @@ bool substraction(MImage * image, MImage * image2)
 
 bool blendOver(MImage * image, MImage * image2)
 {
-	if(! (isImageValid(image) && isImageValid(image)))
+	if(! (isImageValid(image) && isImageValid(image2)))
 		return false;
-
-	unsigned int i, size = image->getSize();
-	unsigned int components = image->getComponents();
 	
-	if(image->getDataType() == M_FLOAT && image->getDataType() == M_FLOAT
-	&& components == 4 && image->getComponents() == image2->getComponents())
+	if(image->getDataType() == M_FLOAT && image2->getDataType() == M_FLOAT
+	&& image->getComponents() == 4 && image2->getComponents() == 4
+	&& image->getSize() == image2->getSize())
 	{
+		unsigned int i, size = image->getSize();
+		
 		float * imageData = (float *)image->getData();
 		float * image2Data = (float *)image2->getData();
         for(i=0; i<size; i+=4)
 		{
-			float alpha = image2Data[i+3];
-			float ialpha = 1-ialpha;
-			imageData[i] = imageData[i]*ialpha + image2Data[i];
-			imageData[i+1] = imageData[i+1]*ialpha + image2Data[i+1];
-			imageData[i+2] = imageData[i+2]*ialpha + image2Data[i+2];
-			imageData[i+3] = imageData[i+3]*ialpha + alpha;
+			float alpha = CLAMP(image2Data[3], 0, 1);
+			float ialpha = 1.0f-alpha;
+			
+			imageData[0] = imageData[0]*ialpha + image2Data[0];
+			imageData[1] = imageData[1]*ialpha + image2Data[1];
+			imageData[2] = imageData[2]*ialpha + image2Data[2];
+			imageData[3] += alpha;
+			
+			imageData+=4;
+			image2Data+=4;
 		}
+		
 		return true;
 	}
 	

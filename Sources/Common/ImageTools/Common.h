@@ -50,6 +50,9 @@ static const int closestPixels[8][2] = {
 // test image validity
 bool isImageValid(MImage * image);
 
+// copy
+bool copySubImage(MImage * source, MImage * dest, int x, int y, unsigned int w, unsigned int h);
+
 // convertions
 bool convertToFloat(MImage * image);
 bool convertToUbyte(MImage * image);

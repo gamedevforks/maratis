@@ -49,19 +49,7 @@ void drawLine(MImage * image, int x0, int y0, int x1, int y1, void * color, floa
 		{
 			if(radius <= 1)
 			{
-				//image->writePixel(x0, y0, color);
-				
-				float col;
-				
-				// additive
-				//image->readPixel(x0, y0, &col);
-				//col += *(float*)color;
-				
-				// max
-				image->readPixel(x0, y0, &col);
-				col = MAX(col, *(float*)color);
-				
-				image->writePixel(x0, y0, &col);
+				image->writePixel(x0, y0, color);
 			}
 			else
 				drawCircle(image, MVector2(x0+0.5f, y0+0.5f), radius, color);

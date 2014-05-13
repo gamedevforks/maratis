@@ -222,7 +222,7 @@ static int thread_main(void * data)
 	glfwSwapInterval(1);
 	
 	window->onCreate();
-
+	
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 
@@ -305,7 +305,7 @@ MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width
 		glfwSetCharCallback(glfwWindow, char_callback);
 		glfwSetWindowCloseCallback(glfwWindow, close_callback);
 		glfwSetWindowSizeCallback(glfwWindow, size_callback);
-		
+	
 		if(thrd_create(&window->threadId, thread_main, (void*)window) == thrd_success)
 		{
 			return window;
