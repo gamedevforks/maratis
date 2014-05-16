@@ -97,6 +97,7 @@ bool M_loadImage(const char * filename, void * data)
 	FREE_IMAGE_FORMAT format = FreeImage_GetFileTypeFromHandle(&io, (fi_handle)fp, 0);
 	if(format == FIF_UNKNOWN)
 	{
+		printf("Error : unknow format %s\n", filename);
 		M_fclose(fp);
 		return false;
 	}

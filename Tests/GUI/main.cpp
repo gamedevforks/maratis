@@ -67,14 +67,14 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			guiData = new MLevel();
 		
 			
-			// create a gui window (sub-window or rootWindow handled by MGui)
+			// create a gui window (sub-window of rootWindow handled by MGui)
 			MGuiWindow * gw = rootWindow->addNewWindow();
 			gw->setScale(MVector2(800, 600));
 			gw->setColor(MVector3(0.5f, 0.5f, 0.5f));
 			
 			
 			// load a font
-			MFontRef * fontRef = guiData->loadFont("/Library/Fonts/Arial.ttf");
+			MFontRef * fontRef = guiData->loadFont("data/Gentium102/GenR102.TTF");
 			
 			// add some editable text
 			MGuiEditText * text = gw->addNewEditText();
@@ -119,6 +119,10 @@ int main(int argc, char **argv)
 {
 	setlocale(LC_NUMERIC, "C");
 
+	char dir[256];
+	getDirectory(dir, argv[0]);
+	MGUI_setCurrentDirectory(dir);
+	
 
 	// get engine
 	MEngine * engine = MEngine::getInstance();
@@ -147,18 +151,17 @@ int main(int argc, char **argv)
 	
 	
 	// create secondary window
-	// MWindow * window2 = MGUI_createWindow("test2", 200, 10, 400, 400, NULL);
+	//MWindow * window2 = MGUI_createWindow("test2", 200, 10, 400, 400, NULL);
 	
 	
 	// update
 	while(1)
-    {
+	{
 		MGUI_pauseAllWindows();
 		if(! MGUI_update())
 			break;
 			
 		MGUI_unpauseAllWindows();
-		SLEEP(1);
 	}
 	
 	

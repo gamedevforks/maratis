@@ -49,6 +49,7 @@ void MGame::update(void)
 {
 	MEngine * engine = MEngine::getInstance();
 	MScriptContext * scriptContext = engine->getScriptContext();
+	MInputContext * input = engine->getInputContext();
 
 	// update script
 	if(scriptContext)
@@ -92,7 +93,8 @@ void MGame::update(void)
 	}
 
 	// flush input
-	engine->getInputContext()->flush();
+	if(input)
+		input->flush();
 
 	// update postponed requests
 	engine->updateRequests();
@@ -243,8 +245,10 @@ void MGame::onBeginScene(void)
 void MGame::onEndScene(void)
 {
 	MEngine * engine = MEngine::getInstance();
-	engine->getPhysicsContext()->clear();
-
+	MPhysicsContext * physics = engine->getPhysicsContext();
+	if(physics)
+		physics->clear();
+		
 	// get level
 	MLevel * level = MEngine::getInstance()->getLevel();
 	if(! level)

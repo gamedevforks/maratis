@@ -711,7 +711,7 @@ bool xmlMeshLoad(const char * filename, void * data)
 	char fragShadPath[256];
 
 	// mesh rep
-	getRepertory(meshRep, filename);
+	getDirectory(meshRep, filename);
 
 	// animation
 	if(! loadAnim(pMeshNode, meshRep, mesh))

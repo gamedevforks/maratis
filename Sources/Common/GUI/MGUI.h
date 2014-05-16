@@ -31,6 +31,7 @@
 #ifndef _GUI_H
 #define _GUI_H
 
+
 #define MGUI_EVENT_CALLBACK void (* eventCallback)(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 
 bool				MGUI_init(void);
@@ -48,5 +49,20 @@ bool				MGUI_isFocused(void);
 void				MGUI_close(void);
 double				MGUI_getTime(void);
 void				MGUI_setCurrentDirectory(const char * path);
+
+
+// context
+class MGUIContext : public MSystemContext
+{
+public:
+
+	~MGUIContext(void){}
+	void getScreenSize(unsigned int * width, unsigned int * height){}
+	void setCursorPosition(int x, int y){}
+	void hideCursor(void){}
+	void showCursor(void){}
+	const char * getWorkingDirectory(void){ return ""; }
+	unsigned long getSystemTick(void){ return (unsigned long)(MGUI_getTime()*1000); }
+};
 
 #endif

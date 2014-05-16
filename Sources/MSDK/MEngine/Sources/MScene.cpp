@@ -162,6 +162,8 @@ void MScene::setScriptFilename(const char * scriptFilename)
 bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int * shapeId)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	if(! physics)
+		return false;
 
 	// get bounding box
 	MBox3d * box = entity->getBoundingBox();
@@ -307,6 +309,9 @@ bool createShape(MOEntity * entity, MPhysicsProperties * phyProps, unsigned int 
 void MScene::prepareCollisionShape(MOEntity * entity)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	if(! physics)
+		return;
+		
 	MPhysicsProperties * phyProps = entity->getPhysicsProperties();
 
 	if(! phyProps)
@@ -352,6 +357,9 @@ void MScene::prepareCollisionShape(MOEntity * entity)
 void MScene::prepareCollisionObject(MOEntity * entity)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	if(! physics)
+		return;
+		
 	MPhysicsProperties * phyProps = entity->getPhysicsProperties();
 	if(! phyProps)
 		return;
@@ -431,6 +439,9 @@ void MScene::prepareCollisionObject(MOEntity * entity)
 void MScene::prepareConstraints(MOEntity * entity)
 {
 	MPhysicsContext * physics = MEngine::getInstance()->getPhysicsContext();
+	if(! physics)
+		return;
+		
 	MPhysicsProperties * phyProps = entity->getPhysicsProperties();
 
 	if(! phyProps)
