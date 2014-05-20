@@ -258,6 +258,7 @@ void MObject3d::setAxisAngleRotation(const MVector3 & axis, const float angle)
 void MObject3d::addAxisAngleRotation(const MVector3 & axis, const float angle)
 {
 	m_rotation *= MQuaternion(angle, axis);
+	m_rotation.normalize();
 	m_needToUpdate = true;
 }
 

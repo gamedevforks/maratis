@@ -444,7 +444,7 @@ void MGLContext::sendTextureImage(MImage * image, bool mipMap, bool filter, bool
 			glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 
-	glTexImage2D(glType, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, image->getData());
+	glTexImage2D(glType, 0, internalFormat, width, height, 0, format, returnGLType(image->getDataType()), image->getData());
 	if(mipMap)
 	{
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
