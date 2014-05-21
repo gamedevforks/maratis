@@ -60,13 +60,13 @@ void MMeshRef::destroy(void)
 	delete this;
 }
 
-void MMeshRef::update(void)
+void MMeshRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 
 	if(! m_mesh)
 		m_mesh = MMesh::getNew();
 
-	if(! engine->getMeshLoader()->loadData(getFilename(), m_mesh))
+	if(! engine->getMeshLoader()->loadData(getFilename(), m_mesh, arg))
 		MLOG_WARNING("Cannot load data " << getFilename());
 }

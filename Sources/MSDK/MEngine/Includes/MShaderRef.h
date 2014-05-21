@@ -65,7 +65,7 @@ public:
 public:
 
 	// update
-	void update(void);
+	void update(void * arg);
 
 	// type
 	int getType(void){ return M_REF_SHADER; }

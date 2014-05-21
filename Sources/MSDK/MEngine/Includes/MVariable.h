@@ -59,9 +59,9 @@ private:
 public:
 	
 	MVariable(const char * name, void * pointer, M_VARIABLE_TYPE type):
+	m_type(type),
 	m_name(name),
-	m_pointer(pointer),
-	m_type(type)
+	m_pointer(pointer)
 	{}
 
 public:

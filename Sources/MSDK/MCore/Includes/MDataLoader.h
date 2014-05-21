@@ -37,10 +37,10 @@ class M_CORE_EXPORT MDataLoadFunction
 {
 public:
 
-	MDataLoadFunction(bool (* functionPtr)(const char * filename, void * data));
+	MDataLoadFunction(bool (* functionPtr)(const char * filename, void * data, void * arg));
 	~MDataLoadFunction(void);
 
-	bool (* m_functionPtr)(const char * filename, void * data);
+	bool (* m_functionPtr)(const char * filename, void * data, void * arg);
 };
 
 
@@ -64,10 +64,10 @@ public:
 	void clear(void);
 
 	// loaders
-	void addLoader(bool (* functionPtr)(const char * filename, void * data));
+	void addLoader(bool (* functionPtr)(const char * filename, void * data, void * arg));
 
 	// data
-	bool loadData(const char * filename, void * data);
+	bool loadData(const char * filename, void * data, void * arg=NULL);
 };
 
 #endif

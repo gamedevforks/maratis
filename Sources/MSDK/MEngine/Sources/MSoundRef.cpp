@@ -56,7 +56,7 @@ void MSoundRef::destroy(void){
 	delete this;
 }
 
-void MSoundRef::update(void)
+void MSoundRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 	MSoundContext * soundContext = engine->getSoundContext();
@@ -65,7 +65,7 @@ void MSoundRef::update(void)
 	clear();
 
 	MSound sound;
-	if(engine->getSoundLoader()->loadData(getFilename(), &sound))
+	if(engine->getSoundLoader()->loadData(getFilename(), &sound, arg))
 	{
 		// create new buffer
 		soundContext->createBuffer(&m_bufferId);

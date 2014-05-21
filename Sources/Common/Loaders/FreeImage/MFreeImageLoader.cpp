@@ -68,7 +68,7 @@ void M_closeFreeImage(void)
 	#endif
 }
 
-bool M_loadImage(const char * filename, void * data)
+bool M_loadImage(const char * filename, void * data, void * arg)
 {
 	if(! filename)
 		return false;

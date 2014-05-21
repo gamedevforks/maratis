@@ -2,11 +2,11 @@
 // MCore
 // MGLContext.cpp
 //
-// OpenGL-Glew Rendering Context
+// OpenGL Rendering Context
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2003-2014 Anael Seghezzi <www.maratis3d.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,9 +29,8 @@
 //
 //========================================================================
 
+#include <MCore.h>
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
 
 #ifdef __APPLE__
 	#include <OpenGL/OpenGL.h>
@@ -43,8 +42,13 @@
 #include "MGLContext.h"
 
 
+#define MAX_MRCSHADERS 1024
+#define MAX_MRCFXS 1024
+
 static int g_GLversion = 0;
-static float maxAnisotropy = 0.0f;
+static float g_maxAnisotropy = 0.0f;
+static GLhandleARB g_shaderIds[MAX_MRCSHADERS];
+static GLhandleARB g_fxs[MAX_MRCFXS];
 
 
 GLenum returnGLType(M_TYPES type)
@@ -178,6 +182,10 @@ m_currentFrameBuffer(0)
 		sscanf(version, "%d", &g_GLversion);
 	}
 
+	// shaders and fxs
+	memset(g_shaderIds, 0, MAX_MRCSHADERS*sizeof(GLhandleARB));
+	memset(g_fxs, 0, MAX_MRCFXS*sizeof(GLhandleARB));
+
 	// init cull face (back)
 	enableCullFace();
 	setCullMode(M_CULL_BACK);
@@ -216,11 +224,25 @@ m_currentFrameBuffer(0)
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 	// anisotropic filtering
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &g_maxAnisotropy);
 }
 
 MGLContext::~MGLContext(void)
-{}
+{
+	// fxs
+	for(unsigned int i=0; i<MAX_MRCFXS; i++)
+	{
+		unsigned int id = i;
+		deleteFX(&id);
+	}
+	
+	// shaders
+	for(unsigned int i=0; i<MAX_MRCSHADERS; i++)
+	{
+		unsigned int id = i;
+		deleteShader(&id);
+	}
+}
 
 // view
 void MGLContext::setPerspectiveView(float fov, float ratio, float zNear, float zFar)
@@ -354,6 +376,7 @@ void MGLContext::setTextureCombineMode(M_TEX_COMBINE_MODES combine)
 
 	switch(combine)
 	{
+	default:
 	case M_TEX_COMBINE_REPLACE:
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE);
 		break;
@@ -447,7 +470,7 @@ void MGLContext::sendTextureImage(MImage * image, bool mipMap, bool filter, bool
 	glTexImage2D(glType, 0, internalFormat, width, height, 0, format, returnGLType(image->getDataType()), image->getData());
 	if(mipMap)
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, g_maxAnisotropy); // anisotropic filtering
 		glGenerateMipmapEXT(glType);
 	}
 
@@ -468,7 +491,7 @@ void MGLContext::texImage(unsigned int level, unsigned int width, unsigned int h
 
 	glTexImage2D(GL_TEXTURE_2D, level, intFormat, width, height, 0, format, returnGLType(type), pixels);
 	if(level > 0)
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, g_maxAnisotropy); // anisotropic filtering
 }
 
 void MGLContext::texSubImage(unsigned int level, int xoffset, int yoffset, unsigned int width, unsigned int height, M_TYPES type, M_TEX_MODES mode, const void * pixels)
@@ -476,7 +499,7 @@ void MGLContext::texSubImage(unsigned int level, int xoffset, int yoffset, unsig
 	GLenum format = returnTexMode(mode);
 	glTexSubImage2D(GL_TEXTURE_2D, level, xoffset, yoffset, width, height, format, returnGLType(type), pixels);
 	if(level > 0)
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy); // anisotropic filtering
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, g_maxAnisotropy); // anisotropic filtering
 }
 
 void MGLContext::generateMipMap(void){
@@ -623,89 +646,136 @@ void MGLContext::setRenderBuffer(M_RENDER_BUFFER_MODES mode, unsigned int width,
 }
 
 // shaders
-void MGLContext::createVertexShader(unsigned int * shaderId){
-	*shaderId = (unsigned int)(unsigned long)glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+void MGLContext::createVertexShader(unsigned int * shaderId)
+{
+	for(unsigned int i=1; i<MAX_MRCSHADERS; i++)
+	if(g_shaderIds[i] == 0)
+	{
+		*shaderId = i;
+		g_shaderIds[i] = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+		return;
+	}
+	
+	// no free space
+	*shaderId = 0;
 }
 
-void MGLContext::createPixelShader(unsigned int * shaderId){
-	*shaderId = (unsigned int)(unsigned long)glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+void MGLContext::createPixelShader(unsigned int * shaderId)
+{
+	for(unsigned int i=1; i<MAX_MRCSHADERS; i++)
+	if(g_shaderIds[i] == 0)
+	{
+		*shaderId = i;
+		g_shaderIds[i] = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+		return;
+	}
+	
+	// no free space
+	*shaderId = 0;
 }
 
-void MGLContext::deleteShader(unsigned int * shaderId){
-	glDeleteObjectARB((GLhandleARB)(*shaderId));
+void MGLContext::deleteShader(unsigned int * shaderId)
+{
+	unsigned int id = *shaderId;
+	if(id > 0)
+	{
+		glDeleteObjectARB(g_shaderIds[id]);
+		g_shaderIds[id] = 0;
+		*shaderId = 0;
+	}
 }
 
 void MGLContext::sendShaderSource(unsigned int shaderId, const char * source)
 {
-	glShaderSourceARB((GLhandleARB)shaderId, 1, &source, NULL);
-	glCompileShaderARB((GLhandleARB)shaderId);
+	GLhandleARB object = g_shaderIds[shaderId];
+
+	glShaderSourceARB(object, 1, &source, NULL);
+	glCompileShaderARB(object);
 
 	GLint compiled;
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compiled);
+	glGetObjectParameterivARB(object, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
 	if(!compiled)
 	{
-		printf("ERROR OpenGL : unable to compile shader\n");
 		char shader_link_error[4096];
-        glGetInfoLogARB((GLhandleARB)shaderId, sizeof(shader_link_error), NULL, shader_link_error);
-		printf("%s", shader_link_error);
+        glGetInfoLogARB(object, sizeof(shader_link_error), NULL, shader_link_error);
+		MLOG_ERROR(shader_link_error);
 	}
 }
 
 // FX
-void MGLContext::bindFX(unsigned int fxId){
-	glUseProgramObjectARB((GLhandleARB)fxId);
+void MGLContext::bindFX(unsigned int fxId)
+{
+	glUseProgramObjectARB(g_fxs[fxId]);
 }
 
 void MGLContext::createFX(unsigned int * fxId, unsigned int vertexShaderId, unsigned int pixelShaderId)
 {
-	*fxId = (unsigned int)(unsigned long)glCreateProgramObjectARB();
-	glAttachObjectARB((GLhandleARB)*fxId, (GLhandleARB)vertexShaderId);
-	glAttachObjectARB((GLhandleARB)*fxId, (GLhandleARB)pixelShaderId);
-	glLinkProgramARB((GLhandleARB)*fxId);
+	for(unsigned int i=1; i<MAX_MRCFXS; i++)
+	if(g_fxs[i] == 0)
+	{
+		*fxId = i;
+		GLhandleARB object = glCreateProgramObjectARB();
+		g_fxs[i] = object;
+		
+		glAttachObjectARB(object, g_shaderIds[vertexShaderId]);
+		glAttachObjectARB(object, g_shaderIds[pixelShaderId]);
+		glLinkProgramARB(object);
+		return;
+	}
+	
+	// no free space
+	*fxId = 0;
 }
 
 void MGLContext::updateFX(unsigned int fxId)
 {
-	glLinkProgramARB((GLhandleARB)fxId);
+	glLinkProgramARB(g_fxs[fxId]);
 }
 
-void MGLContext::deleteFX(unsigned int * fxId){
-	glDeleteObjectARB((GLhandleARB)(*fxId));
+void MGLContext::deleteFX(unsigned int * fxId)
+{
+	unsigned int id = *fxId;
+	if(id > 0)
+	{
+		glDeleteObjectARB(g_fxs[id]);
+		g_fxs[id] = 0;
+		*fxId = 0;
+	}
 }
 
 void MGLContext::sendUniformInt(unsigned int fxId, const char * name, int * values, const int count){
-	GLint uValue = glGetUniformLocationARB((GLhandleARB)fxId, name);
+	GLint uValue = glGetUniformLocationARB(g_fxs[fxId], name);
 	if(uValue != -1) glUniform1ivARB(uValue, count, values);
 }
 
 void MGLContext::sendUniformFloat(unsigned int fxId, const char * name, float * values, const int count){
-	GLint uValue = glGetUniformLocationARB((GLhandleARB)fxId, name);
+	GLint uValue = glGetUniformLocationARB(g_fxs[fxId], name);
 	if(uValue != -1) glUniform1fvARB(uValue, count, values);
 }
 
 void MGLContext::sendUniformVec2(unsigned int fxId, const char * name, float * values, const int count){
-	GLint uValue = glGetUniformLocationARB((GLhandleARB)fxId, name);
+	GLint uValue = glGetUniformLocationARB(g_fxs[fxId], name);
 	if(uValue != -1) glUniform2fvARB(uValue, count, values);
 }
 
 void MGLContext::sendUniformVec3(unsigned int fxId, const char * name, float * values, const int count){
-	GLint uValue = glGetUniformLocationARB((GLhandleARB)fxId, name);
+	GLint uValue = glGetUniformLocationARB(g_fxs[fxId], name);
 	if(uValue != -1) glUniform3fvARB(uValue, count, values);
 }
 
 void MGLContext::sendUniformVec4(unsigned int fxId, const char * name, float * values, const int count){
-	GLint uValue = glGetUniformLocationARB((GLhandleARB)fxId, name);
+	GLint uValue = glGetUniformLocationARB(g_fxs[fxId], name);
 	if(uValue != -1) glUniform4fvARB(uValue, count, values);
 }
 
 void MGLContext::sendUniformMatrix(unsigned int fxId, const char * name, MMatrix4x4 * matrix, const int count, const bool transpose){
-	GLint uValue = glGetUniformLocationARB((GLhandleARB)fxId, name);
+	GLint uValue = glGetUniformLocationARB(g_fxs[fxId], name);
 	if(uValue != -1) glUniformMatrix4fvARB(uValue, count, transpose, matrix->entries);
 }
 
 void MGLContext::getAttribLocation(unsigned int fxId, const char * name, int * location)
 {
-	(*location) = glGetAttribLocationARB((GLhandleARB)fxId, name);
+	(*location) = glGetAttribLocationARB(g_fxs[fxId], name);
 }
 
 // VBO
@@ -885,31 +955,35 @@ void MGLContext::setDepthMode(M_DEPTH_MODES mode)
 	{
 	case M_DEPTH_ALWAYS:
 		glDepthFunc(GL_ALWAYS);
-		return;
+		break;
 
 	case M_DEPTH_LESS:
 		glDepthFunc(GL_LESS);
-		return;
+		break;
 
 	case M_DEPTH_GREATER:
 		glDepthFunc(GL_GREATER);
-		return;
+		break;
 
 	case M_DEPTH_EQUAL:
 		glDepthFunc(GL_EQUAL);
-		return;
+		break;
 
 	case M_DEPTH_LEQUAL:
 		glDepthFunc(GL_LEQUAL);
-		return;
+		break;
 
 	case M_DEPTH_GEQUAL:
 		glDepthFunc(GL_GEQUAL);
-		return;
+		break;
 
 	case M_DEPTH_NOTEQUAL:
 		glDepthFunc(GL_NOTEQUAL);
-		return;
+		break;
+	
+	case M_DEPTH_NONE:
+		glDepthFunc(GL_NEVER);
+		break;
 	}
 }
 
@@ -979,15 +1053,18 @@ void MGLContext::setCullMode(M_CULL_MODES mode)
 	{
 	case M_CULL_FRONT:
 		glCullFace(GL_FRONT);
-		return;
+		break;
 
 	case M_CULL_BACK:
 		glCullFace(GL_BACK);
-		return;
+		break;
 
 	case M_CULL_FRONT_BACK:
 		glCullFace(GL_FRONT_AND_BACK);
-		return;
+		break;
+		
+	case M_CULL_NONE:
+		break;
 	}
 }
 
@@ -1203,19 +1280,28 @@ void MGLContext::setBlendingMode(M_BLENDING_MODES mode)
 	switch(mode)
 	{
 	case M_BLENDING_NONE:
+		glBlendEquationEXT(GL_FUNC_ADD_EXT);
 		glBlendFunc(GL_ONE, GL_ZERO);
 		break;
 	case M_BLENDING_ALPHA:
+		glBlendEquationEXT(GL_FUNC_ADD_EXT);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		break;
 	case M_BLENDING_ADD:
+		glBlendEquationEXT(GL_FUNC_ADD_EXT);
 		glBlendFunc(GL_ONE, GL_ONE);
 		break;
 	case M_BLENDING_PRODUCT:
+		glBlendEquationEXT(GL_FUNC_ADD_EXT);
 		glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 		break;
 	case M_BLENDING_LIGHT:
+		glBlendEquationEXT(GL_FUNC_ADD_EXT);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		break;
+	case M_BLENDING_SUB:
+		glBlendEquationEXT(GL_FUNC_SUBTRACT_EXT);
+		glBlendFunc(GL_ONE, GL_ONE);
 		break;
 	}
 }

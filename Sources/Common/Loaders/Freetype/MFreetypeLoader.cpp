@@ -63,7 +63,7 @@ static void drawBitmap(MImage * image, FT_Bitmap * bitmap, int left, int top)
 	}
 }
 
-bool M_loadFont(const char * filename, void * data)
+bool M_loadFont(const char * filename, void * data, void * arg)
 {
 	MFont * font = (MFont *)data;
 	

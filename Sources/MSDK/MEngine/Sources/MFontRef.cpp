@@ -58,12 +58,12 @@ void MFontRef::destroy(void){
 	delete this;
 }
 
-void MFontRef::update(void)
+void MFontRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 
 	if(! m_font)
 		m_font = MFont::getNew();
 
-	engine->getFontLoader()->loadData(getFilename(), m_font);
+	engine->getFontLoader()->loadData(getFilename(), m_font, arg);
 }

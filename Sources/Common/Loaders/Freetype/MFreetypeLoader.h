@@ -33,6 +33,6 @@
 #ifndef _M_FREETYPE_FONT_LOADER_H
 #define _M_FREETYPE_FONT_LOADER_H
 
-bool M_loadFont(const char * filename, void * data);
+bool M_loadFont(const char * filename, void * data, void * arg);
 
 #endif

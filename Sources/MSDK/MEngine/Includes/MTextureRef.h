@@ -60,7 +60,7 @@ public:
 public:
 
 	// update
-	void update(void);
+	void update(void * arg=NULL);
 	void updateFromImage(MImage * image);
 	
 	// type

@@ -43,8 +43,9 @@ protected:
 
 public:
 
-	// constructor
+	// constructor / destructor
 	MDataRef(void);
+	virtual ~MDataRef(void){}
 
 	// clear / destroy
 	virtual void clear(void) = 0;
@@ -58,7 +59,7 @@ public:
 	inline unsigned int getScore(void){ return m_score; }
 
 	// update
-	virtual void update(void) = 0;
+	virtual void update(void * arg=NULL) = 0;
 
 	// type
 	virtual int getType(void) = 0;

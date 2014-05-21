@@ -57,12 +57,12 @@ void MArmatureAnimRef::destroy(void){
 	delete this;
 }
 
-void MArmatureAnimRef::update(void)
+void MArmatureAnimRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 
 	if(! m_armatureAnim)
 		m_armatureAnim = MArmatureAnim::getNew();
 
-	engine->getArmatureAnimLoader()->loadData(getFilename(), m_armatureAnim);	
+	engine->getArmatureAnimLoader()->loadData(getFilename(), m_armatureAnim, arg);
 }

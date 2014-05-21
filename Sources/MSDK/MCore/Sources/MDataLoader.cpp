@@ -32,7 +32,7 @@
 
 
 // Data load function
-MDataLoadFunction::MDataLoadFunction(bool (* functionPtr)(const char * filename, void * data)):
+MDataLoadFunction::MDataLoadFunction(bool (* functionPtr)(const char * filename, void * data, void * arg)):
 m_functionPtr(functionPtr)
 {}
 
@@ -58,12 +58,12 @@ void MDataLoader::clear(void)
 	m_loaders.clear();
 }
 
-void MDataLoader::addLoader(bool (* functionPtr)(const char * filename, void * data))
+void MDataLoader::addLoader(bool (* functionPtr)(const char * filename, void * data, void * arg))
 {
 	m_loaders.push_back(new MDataLoadFunction(functionPtr));
 }
 
-bool MDataLoader::loadData(const char * filename, void * data)
+bool MDataLoader::loadData(const char * filename, void * data, void * arg)
 {
 	// parse loaders
 	unsigned int i;
@@ -71,7 +71,7 @@ bool MDataLoader::loadData(const char * filename, void * data)
 	for(i=0; i<lSize; i++)
 	{
 		MDataLoadFunction * loader = m_loaders[i];
-		if(loader->m_functionPtr(filename, data))
+		if(loader->m_functionPtr(filename, data, arg))
 			return true;
 	}
 

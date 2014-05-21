@@ -35,7 +35,7 @@
 
 void M_initFreeImage(void);
 void M_closeFreeImage(void);
-bool M_loadImage(const char * filename, void * data);
+bool M_loadImage(const char * filename, void * data, void * arg);
 bool M_saveImage(const char * filename, void * data);
 
 #endif

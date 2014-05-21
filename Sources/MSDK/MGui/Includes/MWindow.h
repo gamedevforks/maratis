@@ -84,11 +84,11 @@ public:
 	inline unsigned int getHeight(void){ return m_height; }
 	
 	// keys
-	inline int getKey(void){ return m_currentKey; }
+	inline unsigned int getKey(void){ return m_currentKey; }
 	inline bool isKeyPressed(unsigned int id){ return m_keys[id]; }
 
 	// mouse
-	inline int getMouseButton(void){ return m_currentMouseButton; }
+	inline unsigned int getMouseButton(void){ return m_currentMouseButton; }
 	inline bool isMouseButtonPressed(unsigned int id){ return m_mouseButtons[id]; }
 	inline MVector2 getMousePosition(void) const { return m_mousePos; }
 	inline MVector2 getMouseScroll(void) const { return m_mouseScroll; }

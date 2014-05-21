@@ -59,12 +59,12 @@ void MMaterialsAnimRef::destroy(void)
 	delete this;
 }
 
-void MMaterialsAnimRef::update(void)
+void MMaterialsAnimRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 
 	if(! m_materialsAnim)
 		m_materialsAnim = MMaterialsAnim::getNew();
 
-	engine->getMaterialsAnimLoader()->loadData(getFilename(), m_materialsAnim);	
+	engine->getMaterialsAnimLoader()->loadData(getFilename(), m_materialsAnim, arg);
 }

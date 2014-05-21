@@ -32,8 +32,9 @@
 
 
 MShaderRef::MShaderRef(unsigned int shaderId, M_SHADER_TYPES type, const char * filename):
-	m_shaderId(shaderId),
-	m_type(type){
+	m_type(type),
+	m_shaderId(shaderId)
+{
 	m_filename.set(filename);
 }
 
@@ -53,12 +54,20 @@ void MShaderRef::destroy(void){
 	delete this;
 }
 
-void MShaderRef::update(void)
+void MShaderRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
-	MLevel * level = engine->getLevel();
 	MRenderingContext * render = engine->getRenderingContext();
 
+	MLevel * level = (MLevel*)arg;
+	if(! level)
+	{
+		MLOG_ERROR("no level found");
+		return;
+	}
+	
+	MFXManager * FXManager = level->getFXManager();
+	
 	char * text = readTextFile(getFilename());
 	if(text)
 	{
@@ -78,10 +87,7 @@ void MShaderRef::update(void)
 
 		// send shader source
 		render->sendShaderSource(m_shaderId, text);
-		SAFE_FREE(text);
-
-		MFXManager * FXManager = level->getFXManager();
-
+		
 		unsigned int i;
 		unsigned int size = FXManager->getFXRefsNumber();
 		for(i=0; i<size; i++)
@@ -94,4 +100,6 @@ void MShaderRef::update(void)
 			}
 		}
 	}
+	
+	SAFE_FREE(text);
 }

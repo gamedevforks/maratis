@@ -111,7 +111,7 @@ MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 			if(preload)
 			{
 				if(ref->getScore() == 0)
-					ref->update();
+					ref->update(this);
 				ref->incrScore();
 			}
 
@@ -126,7 +126,7 @@ MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 	if(preload)
 	{
 		if(ref->getScore() == 0)
-			ref->update();
+			ref->update(this);
 		ref->incrScore();
 	}
 
@@ -315,7 +315,7 @@ MShaderRef * MLevel::loadShader(const char * filename, M_SHADER_TYPES type, cons
 			if(preload)
 			{
 				if(ref->getScore() == 0)
-					ref->update();
+					ref->update(this);
 				ref->incrScore();
 			}
 				
@@ -329,7 +329,7 @@ MShaderRef * MLevel::loadShader(const char * filename, M_SHADER_TYPES type, cons
 	if(preload)
 	{
 		if(ref->getScore() == 0)
-			ref->update();
+			ref->update(this);
 		ref->incrScore();
 	}
 	

@@ -34,7 +34,7 @@
 #include "MMeshLoad.h"
 
 
-MVector3 computeTangent(
+static MVector3 computeTangent(
 	const MVector3 & P1,  const MVector3 & P2,  const MVector3 & P3,
 	const MVector2 & UV1, const MVector2 & UV2, const MVector2 & UV3)
 {
@@ -56,7 +56,7 @@ MVector3 computeTangent(
 	return MVector3(0.0f, 0.0f, 0.0f);
 }
 
-void generateTangents(MSubMesh * subMesh)
+static void generateTangents(MSubMesh * subMesh)
 {
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
@@ -218,7 +218,7 @@ void generateTangents(MSubMesh * subMesh)
 	}
 }
 
-void readFloatKeys(TiXmlElement * node, MKey * keys)
+static void readFloatKeys(TiXmlElement * node, MKey * keys)
 {
 	TiXmlElement * kNode = node->FirstChildElement("k");
 	for(kNode; kNode; kNode=kNode->NextSiblingElement("k"))
@@ -234,7 +234,7 @@ void readFloatKeys(TiXmlElement * node, MKey * keys)
 	}
 }
 
-void readVector2Keys(TiXmlElement * node, MKey * keys)
+static void readVector2Keys(TiXmlElement * node, MKey * keys)
 {
 	TiXmlElement * kNode = node->FirstChildElement("k");
 	for(kNode; kNode; kNode=kNode->NextSiblingElement("k"))
@@ -251,7 +251,7 @@ void readVector2Keys(TiXmlElement * node, MKey * keys)
 	}
 }
 
-void readVector3Keys(TiXmlElement * node, MKey * keys)
+static void readVector3Keys(TiXmlElement * node, MKey * keys)
 {
 	TiXmlElement * kNode = node->FirstChildElement("k");
 	for(kNode; kNode; kNode=kNode->NextSiblingElement("k"))
@@ -269,7 +269,7 @@ void readVector3Keys(TiXmlElement * node, MKey * keys)
 	}
 }
 
-bool xmlArmatureAnimLoad(const char * filename, void * data)
+bool xmlArmatureAnimLoad(const char * filename, void * data, void * arg)
 {
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
@@ -361,7 +361,7 @@ bool xmlArmatureAnimLoad(const char * filename, void * data)
 	return true;
 }
 
-bool xmlTextureAnimLoad(const char * filename, void * data)
+bool xmlTextureAnimLoad(const char * filename, void * data, void * arg)
 {
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
@@ -435,7 +435,7 @@ bool xmlTextureAnimLoad(const char * filename, void * data)
 	return true;
 }
 
-bool xmlMaterialAnimLoad(const char * filename, void * data)
+bool xmlMaterialAnimLoad(const char * filename, void * data, void * arg)
 {
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
@@ -549,11 +549,8 @@ bool xmlMaterialAnimLoad(const char * filename, void * data)
 	return true;
 }
 
-bool loadAnim(TiXmlElement * rootNode, const char * repertory, MMesh * mesh)
+static bool loadAnim(TiXmlElement * rootNode, const char * repertory, MMesh * mesh, MLevel * level)
 {
-	MLevel * level = MEngine::getInstance()->getLevel();
-
-
 	// Animation
 	TiXmlElement * animationNode = rootNode->FirstChildElement("Animation");
 	if(! animationNode)
@@ -635,7 +632,7 @@ bool loadAnim(TiXmlElement * rootNode, const char * repertory, MMesh * mesh)
 	return true;
 }
 
-bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory)
+static bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory, MLevel * level)
 {
 	TiXmlDocument doc(filename);
 	if(! doc.LoadFile())
@@ -655,14 +652,19 @@ bool loadAnimFile(MMesh * mesh, const char * filename, const char * repertory)
 
 	hRoot = TiXmlHandle(pRootNode);
 
-	return loadAnim(pRootNode, repertory, mesh);
+	return loadAnim(pRootNode, repertory, mesh, level);
 }
 
-bool xmlMeshLoad(const char * filename, void * data)
+bool xmlMeshLoad(const char * filename, void * data, void * arg)
 {
     MLOG_DEBUG("xmlMeshLoad " << filename?filename:"NULL");
 	
-	MLevel * level = MEngine::getInstance()->getLevel();
+	MLevel * level = (MLevel *)arg;
+	if(! level)
+	{
+	    MLOG_ERROR("no level found");
+	    return false;
+	}
 
 	// read document
 	TiXmlDocument doc(filename);
@@ -714,13 +716,13 @@ bool xmlMeshLoad(const char * filename, void * data)
 	getDirectory(meshRep, filename);
 
 	// animation
-	if(! loadAnim(pMeshNode, meshRep, mesh))
+	if(! loadAnim(pMeshNode, meshRep, mesh, level))
 	{
 		// load external anim file (depracated)
 		char animFilename[256];
 		strcpy(animFilename, filename);
 		strcpy(animFilename + strlen(animFilename) - 4, "anim");
-		loadAnimFile(mesh, animFilename, meshRep);
+		loadAnimFile(mesh, animFilename, meshRep, level);
 	}
 
 	// Textures

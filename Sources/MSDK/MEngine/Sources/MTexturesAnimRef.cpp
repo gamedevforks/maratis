@@ -57,12 +57,12 @@ void MTexturesAnimRef::destroy(void){
 	delete this;
 }
 
-void MTexturesAnimRef::update(void)
+void MTexturesAnimRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 
 	if(! m_texturesAnim)
 		m_texturesAnim = MTexturesAnim::getNew();
 
-	engine->getTexturesAnimLoader()->loadData(getFilename(), m_texturesAnim);	
+	engine->getTexturesAnimLoader()->loadData(getFilename(), m_texturesAnim, arg);
 }

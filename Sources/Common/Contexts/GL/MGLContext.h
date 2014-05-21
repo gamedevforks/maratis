@@ -2,11 +2,11 @@
 // MCore
 // MGLContext.h
 //
-// OpenGL-Glew Rendering Context
+// OpenGL Rendering Context
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2003-2014 Anael Seghezzi <www.maratis3d.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,11 +29,9 @@
 //
 //========================================================================
 
-
 #ifndef _M_GL_CONTEXT_H
 #define _M_GL_CONTEXT_H
 
-#include <MCore.h>
 #define MAX_MRCLIGHTS 8
 
 

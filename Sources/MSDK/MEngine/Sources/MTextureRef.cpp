@@ -77,11 +77,11 @@ void MTextureRef::updateFromImage(MImage * image)
 	render->sendTextureImage(image, isMipmapEnabled(), 1, 0);
 }
 
-void MTextureRef::update(void)
+void MTextureRef::update(void * arg)
 {
 	MEngine * engine = MEngine::getInstance();
 
 	MImage image;
-	if(engine->getImageLoader()->loadData(getFilename(), &image))
+	if(engine->getImageLoader()->loadData(getFilename(), &image, arg))
 		updateFromImage(&image);
 }
