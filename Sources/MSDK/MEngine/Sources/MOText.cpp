@@ -45,10 +45,10 @@ m_color(1, 1, 1, 1)
 // copy constructor
 MOText::MOText(const MOText & text):
 MObject3d(text),
+m_fontRef(text.m_fontRef),
 m_text(text.m_text),
 m_align(text.m_align),
 m_size(text.m_size),
-m_fontRef(text.m_fontRef),
 m_color(text.m_color),
 m_boundingBox(text.m_boundingBox)
 {

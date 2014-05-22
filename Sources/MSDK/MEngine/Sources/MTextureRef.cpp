@@ -32,11 +32,11 @@
 
 
 MTextureRef::MTextureRef(unsigned int textureId, const char * filename, bool mipmap):
-	m_textureId(textureId),
 	m_mipmap(mipmap),
 	m_components(0),
 	m_width(0),
-	m_height(0)
+	m_height(0),
+	m_textureId(textureId)
 {
 	m_filename.set(filename);
 }

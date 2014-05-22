@@ -41,9 +41,9 @@ MCharacter::MCharacter(void):
 
 MFont::MFont(void):
 m_textureId(0),
-m_fontSize(32),
 m_textureWidth(0),
-m_textureHeight(0)
+m_textureHeight(0),
+m_fontSize(32)
 {}
 
 MFont::~MFont(void)

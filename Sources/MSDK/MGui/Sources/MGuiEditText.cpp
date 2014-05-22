@@ -35,13 +35,13 @@
 
 //constructor
 MGuiEditText::MGuiEditText(void):
-m_eventCallback(NULL),
+m_isSingleLine(false),
 m_charId(0),
-m_startSelectionId(0),
-m_endSelectionId(0),
 m_limitLength(false),
 m_maxLength(0),
-m_isSingleLine(false)
+m_startSelectionId(0),
+m_endSelectionId(0),
+m_eventCallback(NULL)
 {
 	setColor(MVector4(0, 0, 0, 0));
 	setText("");

@@ -34,10 +34,10 @@
 MPhysicsConstraint::MPhysicsConstraint(void):
 constraintId(0),
 parentObjectId(0),
+parentName("..."),
 lowerAngularLimit(-180),
 upperAngularLimit(180),
-disableParentCollision(false),
-parentName("...")
+disableParentCollision(false)
 {}
 
 MPhysicsConstraint::MPhysicsConstraint(const MPhysicsConstraint & constraint):
@@ -55,12 +55,12 @@ disableParentCollision(constraint.disableParentCollision)
 
 MPhysicsProperties::MPhysicsProperties(void):
 	m_constraint(NULL),
-	m_ghost(false),
 	m_shapeId(0),
 	m_collisionObjectId(0),
 	m_collisionShape(M_COLLISION_SHAPE_BOX),
-	m_friction(0.5f),
+	m_ghost(false),
 	m_mass(0),
+	m_friction(0.5f),
 	m_restitution(0.0f),
 	m_linearDamping(0.01f),
 	m_angularDamping(0.01f),
@@ -70,12 +70,12 @@ MPhysicsProperties::MPhysicsProperties(void):
 
 MPhysicsProperties::MPhysicsProperties(const MPhysicsProperties & physicsProperties):
 	m_constraint(NULL),
-	m_ghost(physicsProperties.m_ghost),
 	m_shapeId(physicsProperties.m_shapeId),
 	m_collisionObjectId(0),
 	m_collisionShape(physicsProperties.m_collisionShape),
-	m_friction(physicsProperties.m_friction),
+	m_ghost(physicsProperties.m_ghost),
 	m_mass(physicsProperties.m_mass),
+	m_friction(physicsProperties.m_friction),
 	m_restitution(physicsProperties.m_restitution),
 	m_linearDamping(physicsProperties.m_linearDamping),
 	m_angularDamping(physicsProperties.m_angularDamping),
@@ -107,10 +107,10 @@ MPhysicsConstraint * MPhysicsProperties::createConstraint(void)
 MOEntity::MOEntity(MMeshRef * meshRef):
 MObject3d(),
 m_isInvisible(false),
+m_animationId(0),
+m_currentLoop(0),
 m_animationSpeed(1),
 m_currentFrame(0),
-m_currentLoop(0),
-m_animationId(0),
 m_physicsProperties(NULL)
 {
 	setMeshRef(meshRef);
@@ -119,11 +119,11 @@ m_physicsProperties(NULL)
 MOEntity::MOEntity(const MOEntity & entity):
 MObject3d(entity),
 m_isInvisible(entity.m_isInvisible),
-m_physicsProperties(NULL),
+m_animationId(entity.m_animationId),
+m_currentLoop(entity.m_currentLoop),
 m_animationSpeed(entity.m_animationSpeed),
 m_currentFrame(entity.m_currentFrame),
-m_currentLoop(entity.m_currentLoop),
-m_animationId(entity.m_animationId)
+m_physicsProperties(NULL)
 {
 	setMeshRef(entity.m_meshRef);
 	if(entity.m_physicsProperties)

@@ -70,11 +70,11 @@ m_colorsSize(0),
 m_indicesType(M_UINT),
 m_indices(NULL),
 
+m_colors(NULL),
 m_vertices(NULL),
 m_normals(NULL),
 m_tangents(NULL),
 m_texCoords(NULL),
-m_colors(NULL),
 
 m_vboId1(0),
 m_vboId2(0),

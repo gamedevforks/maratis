@@ -34,8 +34,8 @@
 // constructor
 MOCamera::MOCamera(void):
 MObject3d(),
-m_ortho(false),
 m_fog(false),
+m_ortho(false),
 m_fov(60),
 m_fogDistance(0),
 m_clippingNear(1),
@@ -60,8 +60,8 @@ MOCamera::~MOCamera(void)
 // copy constructor
 MOCamera::MOCamera(const MOCamera & camera):
 MObject3d(camera),
-m_ortho(camera.m_ortho),
 m_fog(camera.m_fog),
+m_ortho(camera.m_ortho),
 m_fov(camera.m_fov),
 m_fogDistance(camera.m_fogDistance),
 m_clippingNear(camera.m_clippingNear),

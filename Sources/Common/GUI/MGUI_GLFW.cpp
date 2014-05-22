@@ -47,12 +47,12 @@ class MThreadWindow : public MWindow
 public:
 
 	MThreadWindow(int x, int y, unsigned int width, unsigned int height):
-		running(true),
 		MWindow(x, y, width, height),
-		glfwWindow(NULL),
-		threadId(0),
+		running(true),
+		paused(false),
 		pause(false),
-		paused(false)
+		threadId(0),
+		glfwWindow(NULL)
 	{}
 	
 	~MThreadWindow(void)

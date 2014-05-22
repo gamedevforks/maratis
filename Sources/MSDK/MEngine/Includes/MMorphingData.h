@@ -65,9 +65,6 @@ public:
 
 private:
 
-	// factor
-	float m_factor;
-
 	// points
 	unsigned int m_pointsNumber;
 	MMorphingPoint * m_points;

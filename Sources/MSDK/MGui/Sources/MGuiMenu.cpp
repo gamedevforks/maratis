@@ -34,9 +34,9 @@
 
 // constructor
 MGuiMenu::MGuiMenu(MWindow * rootWindow):
-m_window(rootWindow),
+m_menuId(0),
 m_eventCallback(NULL),
-m_menuId(0)
+m_window(rootWindow)
 {
 	setTextColor(MVector4(0, 0, 0, 0.5f));
 	m_window.setMargin(MVector2(0, 0));

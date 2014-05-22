@@ -35,22 +35,22 @@
 //constructor
 MGuiWindow::MGuiWindow(MWindow * rootWindow):
 MGui2d(),
-m_ignoreEvents(false),
 m_isFreeView(false),
 m_zoom(1),
 m_minZoom(0.1f),
 m_maxZoom(10),
-m_drawCallback(NULL),
-m_eventCallback(NULL),
-m_rootWindow(rootWindow),
-m_margin(16, 16),
+m_ignoreEvents(false),
 m_isScrolled(false),
 m_scroll(0, 0),
-m_minScroll(0, 0),
 m_maxScroll(0, 0),
+m_minScroll(0, 0),
+m_margin(16, 16),
 m_currentNode(NULL),
 m_currentBranch(NULL),
-m_drawCallbackMode(MGUI_DRAW_CALLBACK_PRE_GUI)
+m_eventCallback(NULL),
+m_drawCallbackMode(MGUI_DRAW_CALLBACK_PRE_GUI),
+m_drawCallback(NULL),
+m_rootWindow(rootWindow)
 {
 	m_hScrollSlide.setPosition(MVector2(0, m_scale.y-6));
 	m_vScrollSlide.setPosition(MVector2(m_scale.x-6, 0));

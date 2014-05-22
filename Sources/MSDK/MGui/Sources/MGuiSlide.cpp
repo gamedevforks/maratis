@@ -34,10 +34,10 @@
 
 // constructor
 MGuiSlide::MGuiSlide(void):
-m_eventCallback(NULL),
 m_value(0),
 m_minValue(0),
-m_maxValue(1)
+m_maxValue(1),
+m_eventCallback(NULL)
 {}
 
 float MGuiSlide::getNormalizedValue(void)

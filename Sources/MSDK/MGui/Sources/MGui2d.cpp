@@ -33,26 +33,26 @@
 
 
 MGui2d::MGui2d(void):
-m_isDeleted(false),
-m_textObject(NULL),
-m_parentWindow(NULL),
+m_variableType(M_VARIABLE_NULL),
+m_variablePointer(NULL),
+m_isScrollAffect(true),
 m_isVisible(true),
 m_isHighLight(false),
 m_isPressed(false),
-m_isDrawingText(true),
+m_isDeleted(false),
+m_textMargin(0),
+m_textObject(NULL),
+m_parentWindow(NULL),
+m_scale(16, 16),
 m_normalTexture(NULL),
 m_pressedTexture(NULL),
 m_highLightTexture(NULL),
-m_hasShadow(false),
-m_isScrollAffect(true),
-m_variableType(M_VARIABLE_NULL),
-m_variablePointer(NULL),
-m_customPointer(NULL),
+m_isDrawingText(true),
 m_autoScaleFromText(true),
-m_scale(16, 16),
+m_hasShadow(false),
 m_shadowOpacity(0.1f),
 m_shadowDir(8, 8),
-m_textMargin(0)
+m_customPointer(NULL)
 {
 	setNormalColor(MVector3(1, 1, 1));
 	setHighLightColor(MVector3(1, 1, 1));

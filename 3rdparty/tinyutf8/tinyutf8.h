@@ -44,7 +44,7 @@ static const unsigned char utf8d[] = {
   1,3,1,1,1,1,1,3,1,3,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // s7..s8
 };
 
-static unsigned int inline utf8_decode(unsigned int* state, unsigned int* codep, unsigned int byte)
+inline unsigned int utf8_decode(unsigned int* state, unsigned int* codep, unsigned int byte)
 {
 	unsigned int type = utf8d[byte];
 
@@ -56,7 +56,7 @@ static unsigned int inline utf8_decode(unsigned int* state, unsigned int* codep,
 	return *state;
 }
 
-static int utf8_len(unsigned char* s, unsigned int* count)
+inline int utf8_len(unsigned char* s, unsigned int* count)
 {
 	unsigned int codepoint;
 	unsigned int state = 0;
@@ -68,7 +68,7 @@ static int utf8_len(unsigned char* s, unsigned int* count)
 	return state != UTF8_ACCEPT;
 }
 
-static unsigned char* utf8_encode(unsigned int codep, unsigned char* s)
+inline unsigned char* utf8_encode(unsigned int codep, unsigned char* s)
 {
 	if(codep < 0x80)
 	{

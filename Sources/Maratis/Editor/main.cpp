@@ -64,7 +64,7 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			engine->setRenderingContext(render);
 			
 			// create a renderer
-			renderer = new MFixedRenderer(); // or use MStandardRenderer();
+			renderer = new MStandardRenderer();
 			engine->setRenderer(renderer);
 			
 			// create a level to handle the gui data
@@ -124,9 +124,6 @@ int main(int argc, char **argv)
 	setlocale(LC_NUMERIC, "C");
 	
 	
-	// get engine
-	MEngine * engine = MEngine::getInstance();
-
 	// init
 	if(! MGUI_init())
 		return EXIT_FAILURE;

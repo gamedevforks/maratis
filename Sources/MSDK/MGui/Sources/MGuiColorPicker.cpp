@@ -84,12 +84,12 @@ void MGuiColorPicker::winColorDraw(MGuiWindow * window)
 
 
 MGuiColorPicker::MGuiColorPicker(MWindow * rootWindow, MFontRef * font):
-m_font(font),
+m_parentButton(NULL),
 m_colorSel(NULL),
 m_tintSel(NULL),
 m_colorTarget(NULL),
 m_tintTarget(NULL),
-m_parentButton(NULL),
+m_font(font),
 m_R(NULL),
 m_G(NULL),
 m_B(NULL),

@@ -40,16 +40,16 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MStandardRenderer::MStandardRenderer(void):
-m_fboId(0),
 m_forceNoFX(false),
+m_fboId(0),
+m_currentCamera(NULL),
 m_verticesNumber(0),
 m_normalsNumber(0),
 m_tangentsNumber(0),
 m_vertices(NULL),
 m_normals(NULL),
 m_tangents(NULL),
-m_FXsNumber(0),
-m_currentCamera(NULL)
+m_FXsNumber(0)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 
@@ -545,7 +545,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 
 			if(! basicFX)
 			{
-				unsigned int offset = sizeof(MVector3)*subMesh->getVerticesSize();
+				unsigned long offset = sizeof(MVector3)*subMesh->getVerticesSize();
 				
 				// Normal
 				if(normals)
@@ -737,6 +737,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 						case M_UINT:
 							render->drawElement(primitiveType, size, indicesType, (void*)(begin*sizeof(int)));
 							break;
+						default:
+							break;
 					}
 				}
 				else
@@ -748,6 +750,8 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 							break;
 						case M_UINT:
 							render->drawElement(primitiveType, size, indicesType, (unsigned int*)indices + begin);
+							break;
+						default:
 							break;
 					}
 				}
@@ -830,8 +834,6 @@ void MStandardRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 
 void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 {
-	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-
 	// data
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
@@ -920,9 +922,6 @@ float MStandardRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & po
 
 void MStandardRenderer::setShadowMatrix(MMatrix4x4 * matrix, MOCamera * camera)
 {
-	MEngine * engine = MEngine::getInstance();
-	MRenderingContext * render = engine->getRenderingContext();
-
 	const MMatrix4x4 biasMatrix(
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f, 0.0f,
@@ -1653,9 +1652,6 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 	// enable blending
 	render->enableBlending();
-
-	// camera
-	MVector3 cameraPos = camera->getTransformedPosition();
 
 	// opaque/transp number
 	unsigned int opaqueNumber = 0;

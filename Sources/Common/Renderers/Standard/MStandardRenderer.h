@@ -65,7 +65,7 @@ public:
 class MShadowLight
 {
 public:
-	MShadowLight(void):shadowTexture(0), score(0){}
+	MShadowLight(void):score(0), shadowTexture(0){}
 	
 	int score;
 	unsigned int shadowTexture;

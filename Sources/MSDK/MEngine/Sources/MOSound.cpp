@@ -34,8 +34,8 @@
 // constructor
 MOSound::MOSound(MSoundRef * soundRef):
 	MObject3d(),
-	m_sourceId(0),
-	m_soundRef(soundRef)
+	m_soundRef(soundRef),
+	m_sourceId(0)
 {
 	unsigned int bufferId = 0;
 	if(m_soundRef)
@@ -55,8 +55,8 @@ MOSound::MOSound(MSoundRef * soundRef):
 // copy constructor
 MOSound::MOSound(const MOSound & sound):
 	MObject3d(sound),
-	m_sourceId(0),
-	m_soundRef(sound.m_soundRef)
+	m_soundRef(sound.m_soundRef),
+	m_sourceId(0)
 {
 	unsigned int bufferId = 0;
 	if(m_soundRef)

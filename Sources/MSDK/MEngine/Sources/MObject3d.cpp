@@ -33,11 +33,11 @@
 
 // constructor
 MObject3d::MObject3d(void):
-	m_parent(NULL),
 	m_scale(1, 1, 1),
-	m_isVisible(true),
 	m_isActive(true),
-	m_needToUpdate(true)
+	m_isVisible(true),
+	m_needToUpdate(true),
+	m_parent(NULL)
 {}
 
 // destructor
@@ -59,14 +59,14 @@ void MObject3d::clearObject3d(void)
 
 // copy constructor
 MObject3d::MObject3d(const MObject3d & object):
-	m_parent(NULL),
 	m_position(object.m_position),
 	m_scale(object.m_scale),
 	m_rotation(object.m_rotation),
 	m_matrix(object.m_matrix),
-	m_isVisible(object.m_isVisible),
 	m_isActive(object.m_isActive),
-	m_needToUpdate(object.m_needToUpdate)
+	m_isVisible(object.m_isVisible),
+	m_needToUpdate(object.m_needToUpdate),
+	m_parent(NULL)
 {
 	if(object.m_parent)
 		linkTo(object.m_parent);

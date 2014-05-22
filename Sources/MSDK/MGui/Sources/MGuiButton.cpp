@@ -34,10 +34,10 @@
 
 //constructor
 MGuiButton::MGuiButton(void):
-m_eventCallback(NULL),
 m_mode(MGUI_BUTTON_SIMPLE),
+m_groupId(0),
 m_isActive(false),
-m_groupId(0)
+m_eventCallback(NULL)
 {
 	setText("");
 	setColor(MVector4(1, 1, 1, 1));

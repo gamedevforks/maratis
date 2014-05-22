@@ -40,7 +40,6 @@ MMorphingPoint::~MMorphingPoint(void)
 
 
 MMorphingPose::MMorphingPose(void):
-m_factor(0),
 m_pointsNumber(0),
 m_points(NULL)
 {}
@@ -53,7 +52,7 @@ MMorphingPose::~MMorphingPose(void)
 MMorphingPoint * MMorphingPose::allocPoints(unsigned int size)
 {
 	clearPoints();
-	if(size = 0)
+	if(size == 0)
 		return NULL;
 	m_pointsNumber = size;
 	m_points = new MMorphingPoint[size];

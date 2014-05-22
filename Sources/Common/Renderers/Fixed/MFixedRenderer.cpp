@@ -200,6 +200,8 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 			case M_BLENDING_PRODUCT:
 				render->setFogColor(MVector3(1, 1, 1));
 				break;
+			default:
+				break;
 		}
 
 		// fixed pipeline
@@ -312,6 +314,8 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 					case M_UINT:
 						render->drawElement(primitiveType, size, indicesType, (unsigned int*)indices + begin);
 						break;
+					default:
+						break;
 				}
 			}
 			else{
@@ -392,6 +396,8 @@ void MFixedRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display
 			case M_UINT:
 				render->drawElement(primitiveType, size, indicesType, (unsigned int*)indices + begin);
 				break;
+			default:
+				break;
 		}
 	}
 	else
@@ -449,8 +455,6 @@ void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 
 void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 {
-	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
-
 	// data
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
@@ -713,9 +717,6 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 	// fog
 	enableFog(camera);
 
-	// camera
-	MVector3 cameraPos = camera->getTransformedPosition();
-
 
 	// transp sub obj number
 	unsigned int transpSubObsNumber = 0;
@@ -741,7 +742,6 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 			if(mesh)
 			{
 				MArmature * armature = mesh->getArmature();
-				MArmatureAnim * armatureAnim = mesh->getArmatureAnim();
 				if(armature)
 				{
 					// animate armature

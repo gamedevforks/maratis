@@ -34,19 +34,19 @@
 MImage::MImage(void):
 m_data(NULL),
 m_dataType(M_UBYTE),
-m_size(0),
+m_components(0),
 m_width(0),
 m_height(0),
-m_components(0)
+m_size(0)
 {}
 
 MImage::MImage(const MImage & image):
 m_data(NULL),
 m_dataType(M_UBYTE),
-m_size(0),
+m_components(0),
 m_width(0),
 m_height(0),
-m_components(0)
+m_size(0)
 {
 	copyFrom(image);
 }
