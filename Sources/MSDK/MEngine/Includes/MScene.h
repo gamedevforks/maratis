@@ -101,6 +101,9 @@ public:
 	void playLoopSounds(void);
 	void stopAllSounds(void);
 
+	// object name
+	MString getNewObjectName(const char * baseName);
+	
 	// delete object
 	void deleteObject(MObject3d * object);
 
@@ -129,6 +132,9 @@ public:
 	inline unsigned int getCurrentCameraId(void){ return m_currentCamera; }
 	MOCamera * getCurrentCamera(void);
 
+	// raytracing
+	MOEntity * getRayNearestEntityIntersection(const MVector3 & origin, const MVector3 & dest, MVector3 * intersectPoint);
+	
 	// current frame
 	inline void setCurrentFrame(int currentFrame){ m_currentFrame = currentFrame; }
 	inline int getCurrentFrame(void){ return m_currentFrame; }

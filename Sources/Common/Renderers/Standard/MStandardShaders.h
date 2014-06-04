@@ -106,15 +106,6 @@ string functionsShader = string(
 										
 		//"shadow = lookup(shadowCoordinateWdivide, shadMap, vec2(0.0, 0.0));"
 		
-		/*
-		"shadow = lookup(shadowCoordinateWdivide, shadMap, vec2(0.0, 0.0));"
-		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2(-0.001, 0.001)*shadBlur);"
-		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2( 0.001, 0.001)*shadBlur);"
-		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2(-0.001, -0.001)*shadBlur);"
-		"shadow += lookup(shadowCoordinateWdivide, shadMap, vec2( 0.001, -0.001)*shadBlur);"
-		"shadow /= 5.0;"*/
-		
-		 
 		"float blur = (shadBlur*0.01);"
 		"vec4 rand = texture2D(RandTexture, (shadowCoordinateWdivide.xy)*(500.0/(shadBlur+1.0)))*2.0 - 1.0;"
 		
@@ -541,11 +532,11 @@ fragHeader +
 
 "vec3 nor = normalize(normal.xyz);"
 "vec3 bi = normalize(cross(normal.xyz, tangent.xyz));"
-"vec3 tan = normalize(tangent.xyz);"
+"vec3 tn = normalize(tangent.xyz);"
 
 "vec3 bump = normalize(texture2D(Texture[2], texCoord[1].xy).xyz * 2.0 - 1.0);"
 
-"vec3 N = normalize(tan*bump.x + bi*bump.y + nor*bump.z);"
+"vec3 N = normalize(tn*bump.x + bi*bump.y + nor*bump.z);"
 "vec3 E = normalize(-position.xyz);"
 
 + functionsShader +
@@ -646,11 +637,11 @@ fragHeader +
 
 "vec3 nor = normalize(normal.xyz);"
 "vec3 bi = normalize(cross(normal.xyz, tangent.xyz));"
-"vec3 tan = normalize(tangent.xyz);"
+"vec3 tn = normalize(tangent.xyz);"
 
 "vec3 bump = normalize(texture2D(Texture[2], texCoord[1].xy).xyz * 2.0 - 1.0);"
 
-"vec3 N = normalize(tan*bump.x + bi*bump.y + nor*bump.z);"
+"vec3 N = normalize(tn*bump.x + bi*bump.y + nor*bump.z);"
 "vec3 E = normalize(-position.xyz);"
 
 + functionsShader +

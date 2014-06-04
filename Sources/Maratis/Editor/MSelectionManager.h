@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// MRayUtils.h
+// MSelectionManager.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-//  Maratis, Copyright (c) 2003-2014 Anael Seghezzi <www.maratis3d.com>
+//  Maratis, Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -22,10 +22,33 @@
 //
 //========================================================================
 
-#ifndef _M_RAY_UTILS_H
-#define _M_RAY_UTILS_H
 
-bool getEntityNearestDistance(MOEntity * entity, const MVector3 & origin, const MVector3 & dest, float * distance);
-MOEntity * getSceneNearestEntity(MScene * scene, const MVector3 & origin, const MVector3 & dest, MVector3 * intersectPoint);
+#ifndef _M_SELECTION_MANAGER_H
+#define _M_SELECTION_MANAGER_H
+
+
+class M_EDITOR_EXPORT MSelectionManager
+{
+private:
+	
+	MVector3 m_selectionCenter;
+	vector <MObject3d *> m_selection;
+	
+public:
+	
+	void selectAll(void);
+	void selectSameMesh(void);
+	void select(MObject3d * object);
+	void clearSelection(void);
+	void activateSelection(void);
+	void deleteSelection(void);
+	void duplicateSelection(void);
+	void updateSelectionCenter(void);
+	
+	bool isObjectSelected(MObject3d * object);
+	unsigned int getSelectionSize(void);
+	MObject3d * getSelectedObject(unsigned int id);
+	inline MVector3 const getSelectionCenter(void){ return m_selectionCenter; }
+};
 
 #endif

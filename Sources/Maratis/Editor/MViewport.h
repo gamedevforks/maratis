@@ -26,13 +26,14 @@
 #ifndef _M_VIEWPORT
 #define _M_VIEWPORT
 
-class MViewport
+
+class M_EDITOR_EXPORT MViewport
 {
 public:
     
 	virtual ~MViewport(void){}
 	virtual void create(MWindow * rootWindow) = 0;
-	virtual void constraintTo(MVector2 position, MVector2 scale) = 0;
+	virtual void resize(MVector2 position, MVector2 scale) = 0;
 	virtual void onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event) = 0;
 	virtual void hide(void) = 0;
 	virtual void show(void) = 0;

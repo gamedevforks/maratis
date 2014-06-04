@@ -92,7 +92,9 @@ bool MGuiNodeBranch::isConnectedTo(MGuiNode * node)
 
 // Node
 MGuiNode::MGuiNode(void):
-m_eventCallback(NULL)
+m_eventCallback(NULL),
+m_pinSpace(8),
+m_pinScale(4, 4)
 {
 	setText("");
 	setColor(MVector4(0.35f, 0.35f, 0.35f, 1));
@@ -229,9 +231,6 @@ void MGuiNode::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 	}
 }
 
-static MVector2 scale(4, 4);
-static float space = 8;
-
 void MGuiNode::addInput(const char * name)
 {
 	m_inputs.push_back(MGuiNodeBranch(m_inputs.size(), 0, name));
@@ -257,13 +256,13 @@ MVector2 MGuiNode::getBranchPosition(MGuiNodeBranch * branch)
 	else
 	{
 		nb = getOutputsNumber();
-		pos.y = m_position.y + (m_scale.y - scale.y);
+		pos.y = m_position.y + (m_scale.y - m_pinScale.y);
 	}
 	
 	if(nb > 0)
 	{
-		float LX = scale.x*nb + space*(nb-1);
-		pos.x = m_position.x + (m_scale.x - LX)*0.5f + (scale.x + space)*branch->getId();
+		float LX = m_pinScale.x*nb + m_pinSpace*(nb-1);
+		pos.x = m_position.x + (m_scale.x - LX)*0.5f + (m_pinScale.x + m_pinSpace)*branch->getId();
 	}
 	
 	return pos;
@@ -276,35 +275,35 @@ MGuiNodeBranch * MGuiNode::getMouseOverBranch(void)
 	unsigned int iSize = getInputsNumber();
 	unsigned int oSize = getOutputsNumber();
 	
-	float R2 = space*space;
+	float R2 = m_pinSpace*m_pinSpace;
 		
 	MVector2 mousePos = getPointLocalPosition(rootWindow->getMousePosition());
 	
 	// inputs
 	if(iSize > 0)
 	{
-		float LX = scale.x*iSize + space*(iSize-1);
+		float LX = m_pinScale.x*iSize + m_pinSpace*(iSize-1);
 		MVector2 pos = m_position + MVector2((m_scale.x - LX)*0.5f, 0);
 		
 		for(unsigned int i=0; i<iSize; i++)
 		{
-			if((mousePos - (pos + scale*0.5f)).getSquaredLength() < R2)
+			if((mousePos - (pos + m_pinScale*0.5f)).getSquaredLength() < R2)
 				return &m_inputs[i];
-			pos.x += scale.x + space;
+			pos.x += m_pinScale.x + m_pinSpace;
 		}
 	}
 	
 	// inputs
 	if(oSize > 0)
 	{
-		float LX = scale.x*oSize + space*(oSize-1);
-		MVector2 pos = m_position + MVector2((m_scale.x - LX)*0.5f, m_scale.y-scale.y);
+		float LX = m_pinScale.x*oSize + m_pinSpace*(oSize-1);
+		MVector2 pos = m_position + MVector2((m_scale.x - LX)*0.5f, m_scale.y-m_pinScale.y);
 		
 		for(unsigned int o=0; o<oSize; o++)
 		{
-			if((mousePos - (pos + scale*0.5f)).getSquaredLength() < R2)
+			if((mousePos - (pos + m_pinScale*0.5f)).getSquaredLength() < R2)
 				return &m_outputs[o];
-			pos.x += scale.x + space;
+			pos.x += m_pinScale.x + m_pinSpace;
 		}
 	}
 
@@ -342,12 +341,12 @@ void MGuiNode::draw(void)
 		MVector4 color(0, 0, 0, 0.5f);
 	
 		MGuiImage plot;
-		plot.setScale(scale);
+		plot.setScale(m_pinScale);
 	
 		// inputs
 		if(iSize > 0)
 		{
-			float LX = scale.x*iSize + space*(iSize-1);
+			float LX = m_pinScale.x*iSize + m_pinSpace*(iSize-1);
 			MVector2 pos = m_position + MVector2((m_scale.x - LX)*0.5f, 0);
 		
 			render->setColor4(color);
@@ -355,22 +354,22 @@ void MGuiNode::draw(void)
 			{
 				plot.setPosition(pos);
 				plot.drawQuad();
-				pos.x += scale.x + space;
+				pos.x += m_pinScale.x + m_pinSpace;
 			}
 		}
 		
 		// outputs
 		if(oSize > 0)
 		{
-			float LX = scale.x*oSize + space*(oSize-1);
-			MVector2 pos = m_position + MVector2((m_scale.x - LX)*0.5f, m_scale.y-scale.y);
+			float LX = m_pinScale.x*oSize + m_pinSpace*(oSize-1);
+			MVector2 pos = m_position + MVector2((m_scale.x - LX)*0.5f, m_scale.y-m_pinScale.y);
 		
 			render->setColor4(color);
 			for(unsigned int o=0; o<oSize; o++)
 			{
 				plot.setPosition(pos);
 				plot.drawQuad();
-				pos.x += scale.x + space;
+				pos.x += m_pinScale.x + m_pinSpace;
 			}
 		}
 	}

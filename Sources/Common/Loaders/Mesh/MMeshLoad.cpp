@@ -56,7 +56,7 @@ static MVector3 computeTangent(
 	return MVector3(0.0f, 0.0f, 0.0f);
 }
 
-static void generateTangents(MSubMesh * subMesh)
+static void generateTangents(MMesh * mesh, MSubMesh * subMesh)
 {
 	MVector3 * vertices = subMesh->getVertices();
 	MVector3 * normals = subMesh->getNormals();
@@ -75,9 +75,11 @@ static void generateTangents(MSubMesh * subMesh)
 	for(d=0; d<dSize; d++)
 	{
 		MDisplay * display = subMesh->getDisplay(d);
-		MMaterial * material = display->getMaterial();
-		if(material)
+		
+		if(display->getMaterialId() < mesh->getMaterialsNumber())
 		{
+			MMaterial * material = mesh->getMaterial(display->getMaterialId());
+			
 			if(material->getType() == 1) // standard
 			{
 				if(material->getTexturesPassNumber() > 2)
@@ -1412,7 +1414,7 @@ bool xmlMeshLoad(const char * filename, void * data, void * arg)
 
 				// set material
 				if(material < mesh->getMaterialsNumber())
-					display->setMaterial(mesh->getMaterial(material));
+					display->setMaterialId(material);
 
 				// set cull mode
 				M_CULL_MODES cullMode = M_CULL_BACK;
@@ -1426,7 +1428,7 @@ bool xmlMeshLoad(const char * filename, void * data, void * arg)
 
 		// generate tangents if needed
 		if(! subMesh->getTangents())
-			generateTangents(subMesh);
+			generateTangents(mesh, subMesh);
 
 
 		subMeshs++;

@@ -22,29 +22,26 @@
 //
 //========================================================================
 
-#ifndef _M_3D_VIEW
-#define _M_3D_VIEW
+
+#ifndef _M_3D_VIEW_H
+#define _M_3D_VIEW_H
 
 
-class M3dView : public MViewport
+class M_EDITOR_EXPORT M3dView
 {
 public:
-    
-	M3dView(void);
-	~M3dView(void);
-
-private:
-
-	MView m_view;
-	MGuiWindow * m_window;
-
-public:
 	
-	void create(MWindow * rootWindow);
-	void constraintTo(MVector2 position, MVector2 scale);
-	void onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event);
-	void hide(void);
-	void show(void);
+	M3dView(void);
+	
+	MOCamera m_camera;
+	MVector3 m_pivot;
+	
+	void initPerspective(void);
+	void initOrtho(int mode);
+	void switchProjectionMode(void);
+	void rotate(float mx, float my);
+	void pan(float mx, float my);
+	void zoom(float mz);
 };
 
 #endif

@@ -72,6 +72,9 @@ protected:
 	// events
 	void onEvent(MWIN_EVENT_TYPE event);
 
+	// user pointer
+	void * m_userPointer;
+	
 public:
 
 	// clear
@@ -123,6 +126,10 @@ public:
 	// draw callback
 	inline void setDrawCallback(void (* drawCallback)(MWindow * rootWindow)){ m_drawCallback = drawCallback; }
 
+	// user pointer
+	inline void * getUserPointer(void){ return m_userPointer; }
+	inline void setUserPointer(void * userPointer){ m_userPointer = userPointer; }
+	
 	// draw
 	void draw(void);
 	

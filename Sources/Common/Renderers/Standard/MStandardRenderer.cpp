@@ -43,12 +43,6 @@ MStandardRenderer::MStandardRenderer(void):
 m_forceNoFX(false),
 m_fboId(0),
 m_currentCamera(NULL),
-m_verticesNumber(0),
-m_normalsNumber(0),
-m_tangentsNumber(0),
-m_vertices(NULL),
-m_normals(NULL),
-m_tangents(NULL),
 m_FXsNumber(0)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
@@ -116,10 +110,6 @@ MStandardRenderer::~MStandardRenderer(void)
 
 	// delete FBO
 	render->deleteFrameBuffer(&m_fboId);
-
-	// delete skin cache
-	SAFE_DELETE_ARRAY(m_vertices);
-	SAFE_DELETE_ARRAY(m_normals);
 }
 
 void MStandardRenderer::destroy(void)
@@ -152,77 +142,22 @@ void MStandardRenderer::addFX(const char * vert, const char * frag)
 // Drawing
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MVector3 * MStandardRenderer::getVertices(unsigned int size)
+static bool hasSubMeshTransparency(MOEntity * entity, MSubMesh * subMesh)
 {
-	if(size == 0)
-		return NULL;
-
-	if(size > m_verticesNumber)
+	unsigned int i, displayNumber = subMesh->getDisplaysNumber();
+	for(i=0; i<displayNumber; i++)
 	{
-		SAFE_DELETE_ARRAY(m_vertices);
-		m_vertices = new MVector3[size];
-		m_verticesNumber = size;
-	}
-
-	return m_vertices;
-}
-
-MVector3 * MStandardRenderer::getNormals(unsigned int size)
-{
-	if(size == 0)
-		return NULL;
-
-	if(size > m_normalsNumber)
-	{
-		SAFE_DELETE_ARRAY(m_normals);
-		m_normals = new MVector3[size];
-		m_normalsNumber = size;
-	}
-
-	return m_normals;
-}
-
-MVector3 * MStandardRenderer::getTangents(unsigned int size)
-{
-	if(size == 0)
-		return NULL;
-
-	if(size > m_tangentsNumber)
-	{
-		SAFE_DELETE_ARRAY(m_tangents);
-		m_tangents = new MVector3[size];
-		m_tangentsNumber = size;
-	}
-
-	return m_tangents;
-}
-
-void MStandardRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
-{
-	unsigned int s;
-	unsigned int sSize = mesh->getSubMeshsNumber();
-	for(s=0; s<sSize; s++)
-	{
-		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
-
-		// data
-		MVector3 * vertices = subMesh->getVertices();
-
-		if(! vertices)
+		MDisplay * display = subMesh->getDisplay(i);
+		MMaterial * material = entity->getMaterial(display->getMaterialId());
+		
+		if((! display->isVisible()) || (! material))
 			continue;
 
-		MSkinData * skinData = subMesh->getSkinData();
-		if(armature && skinData)
-		{
-			unsigned int verticesSize = subMesh->getVerticesSize();
-			MVector3 * skinVertices = getVertices(verticesSize);
-
-			computeSkinning(armature, skinData, vertices, NULL, NULL, skinVertices, NULL, NULL);
-			subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-		}
+		if(material->getBlendMode() != M_BLENDING_NONE)
+			return true;
 	}
 
-	mesh->updateBoundingBox();
+	return false;
 }
 
 void MStandardRenderer::initVBO(MSubMesh * subMesh)
@@ -306,13 +241,12 @@ void MStandardRenderer::initVBO(MSubMesh * subMesh)
 			render->setVBO(M_VBO_ELEMENT_ARRAY, indices, subMesh->getIndicesSize()*typeSize, mode);
 		}
 		
-		
 		render->bindVBO(M_VBO_ARRAY, 0);
 		render->bindVBO(M_VBO_ELEMENT_ARRAY, 0);
 	}
 }
 
-void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MVector3 * tangents, MColor * colors)
+void MStandardRenderer::drawDisplay(MOEntity * entity, MSubMeshCache * subMeshCahe, MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MVector3 * tangents, MColor * colors)
 {
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
@@ -326,7 +260,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 	
 	
 	// get material
-	MMaterial * material = display->getMaterial();
+	MMaterial * material = entity->getMaterial(display->getMaterialId());
 	{
 		float opacity = material->getOpacity();
 		if(opacity <= 0.0f)
@@ -785,7 +719,7 @@ void MStandardRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVec
 	}
 }
 
-void MStandardRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
+void MStandardRenderer::drawOpaques(MOEntity * entity, MSubMeshCache * subMeshCahe, MSubMesh * subMesh, MArmature * armature)
 {
 	// data
 	MVector3 * vertices = subMesh->getVertices();
@@ -796,23 +730,11 @@ void MStandardRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 	if(! vertices)
 		return;
 
-	MSkinData * skinData = subMesh->getSkinData();
-	if(armature && skinData)
+	if(subMeshCahe)
 	{
-		unsigned int verticesSize = subMesh->getVerticesSize();
-		unsigned int normalsSize = subMesh->getNormalsSize();
-		unsigned int tangentsSize = subMesh->getTangentsSize();
-
-		MVector3 * skinVertices = getVertices(verticesSize);
-		MVector3 * skinNormals = getNormals(normalsSize);
-		MVector3 * skinTangents = getTangents(tangentsSize);
-
-		computeSkinning(armature, skinData, vertices, normals, tangents, skinVertices, skinNormals, skinTangents);
-		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-
-		vertices = skinVertices;
-		normals = skinNormals;
-		tangents = skinTangents;
+		vertices = subMeshCahe->getVertices();
+		normals = subMeshCahe->getNormals();
+		tangents = subMeshCahe->getTangents();
 	}
 
 	unsigned int i;
@@ -823,16 +745,16 @@ void MStandardRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 		if(! display->isVisible())
 			continue;
 
-		MMaterial * material = display->getMaterial();
+		MMaterial * material = entity->getMaterial(display->getMaterialId());
 		if(material)
 		{
 			if(material->getBlendMode() == M_BLENDING_NONE)
-				drawDisplay(subMesh, display, vertices, normals, tangents, colors);
+				drawDisplay(entity, subMeshCahe, subMesh, display, vertices, normals, tangents, colors);
 		}
 	}
 }
 
-void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
+void MStandardRenderer::drawTransparents(MOEntity * entity, MSubMeshCache * subMeshCahe, MSubMesh * subMesh, MArmature * armature)
 {
 	// data
 	MVector3 * vertices = subMesh->getVertices();
@@ -843,69 +765,28 @@ void MStandardRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armatur
 	if(! vertices)
 		return;
 
-	MSkinData * skinData = subMesh->getSkinData();
-	if(armature && skinData)
+	if(subMeshCahe)
 	{
-		unsigned int verticesSize = subMesh->getVerticesSize();
-		unsigned int normalsSize = subMesh->getNormalsSize();
-		unsigned int tangentsSize = subMesh->getTangentsSize();
-
-		MVector3 * skinVertices = getVertices(verticesSize);
-		MVector3 * skinNormals = getNormals(normalsSize);
-		MVector3 * skinTangents = getTangents(tangentsSize);
-
-		computeSkinning(armature, skinData, vertices, normals, tangents, skinVertices, skinNormals, skinTangents);
-		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-
-		vertices = skinVertices;
-		normals = skinNormals;
-		tangents = skinTangents;
+		vertices = subMeshCahe->getVertices();
+		normals = subMeshCahe->getNormals();
+		tangents = subMeshCahe->getTangents();
 	}
-
 	
 	unsigned int i;
 	unsigned int displayNumber = subMesh->getDisplaysNumber();
-	
-	/*
-	// not sure of this technique
-	render->setColorMask(0, 0, 0, 0);
-	m_forceNoFX = true;
-
-	for(i=0; i<displayNumber; i++)
-	{
-		MDisplay * display = subMesh->getDisplay(i);
-		if((! display->isVisible()) || (! display->getMaterial()))
-			continue;
-
-		MMaterial * material = display->getMaterial();
-		if(material)
-		{
-			if(material->getBlendMode() != M_BLENDING_NONE)
-				drawDisplay(subMesh, display, vertices, normals, tangents, colors);
-		}
-	}
-
-	m_forceNoFX = false;
-	render->setColorMask(1, 1, 1, 1);
-	render->setDepthMask(0);
-	render->setDepthMode(M_DEPTH_EQUAL);*/
-
 	for(i=0; i<displayNumber; i++)
 	{
 		MDisplay * display = subMesh->getDisplay(i);
 		if(! display->isVisible())
 			continue;
 
-		MMaterial * material = display->getMaterial();
+		MMaterial * material = entity->getMaterial(display->getMaterialId());
 		if(material)
 		{
 			if(material->getBlendMode() != M_BLENDING_NONE)
-				drawDisplay(subMesh, display, vertices, normals, tangents, colors);
+				drawDisplay(entity, subMeshCahe, subMesh, display, vertices, normals, tangents, colors);
 		}
 	}
-
-	//render->setDepthMask(1);
-	//render->setDepthMode(M_DEPTH_LEQUAL);
 }
 
 float MStandardRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & pos)
@@ -1213,13 +1094,15 @@ void MStandardRenderer::drawText(MOText * textObj)
 	render->setDepthMask(1);
 }
 
-void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMesh * subMesh)
+void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMeshCache * subMeshCache, MSubMesh * subMesh)
 {
 	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
 
 	MMesh * mesh = entity->getMesh();
 	MVector3 scale = entity->getTransformedScale();
 	MBox3d * box = subMesh->getBoundingBox();
+	if(subMeshCache)
+		box = subMeshCache->getBoundingBox();
 
 	// subMesh center
 	MVector3 center = box->min + (box->max - box->min)*0.5f;
@@ -1280,24 +1163,6 @@ void MStandardRenderer::prepareSubMesh(MScene * scene, MOCamera * camera, MOEnti
 	if(lightsNumber > 1)
 		sortFloatList(m_entityLightsList, m_entityLightsZList, 0, (int)lightsNumber-1);
 
-	// animate armature
-	if(mesh->getArmature())
-	{
-		MArmature * armature = mesh->getArmature();
-		if(mesh->getArmatureAnim())
-		{
-			animateArmature(
-				mesh->getArmature(),
-				mesh->getArmatureAnim(),
-				entity->getCurrentFrame()
-			);
-		}
-		else
-		{
-			armature->processBonesLinking();
-			armature->updateBonesSkinMatrix();
-		}
-	}
 
 	// animate textures
 	if(mesh->getTexturesAnim())
@@ -1535,25 +1400,6 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				// draw mesh
 				if(mesh && entity->isActive() && entity->isVisible())
 				{
-					// animate armature
-					if(mesh->getArmature())
-					{
-						MArmature * armature = mesh->getArmature();
-						if(mesh->getArmatureAnim())
-						{
-							animateArmature(
-								mesh->getArmature(),
-								mesh->getArmatureAnim(),
-								entity->getCurrentFrame()
-							);
-						}
-						else
-						{
-							armature->processBonesLinking();
-							armature->updateBonesSkinMatrix();
-						}
-					}
-
 					// animate textures
 					if(mesh->getTexturesAnim())
 						animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
@@ -1568,7 +1414,15 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					{
 						MSubMesh * subMesh = &mesh->getSubMeshs()[s];
 						MBox3d * box = subMesh->getBoundingBox();
-
+						
+						// cache
+						MSubMeshCache * subMeshCache = NULL;
+						if(entity->getSubMeshCachesNumber() == sSize)
+						{
+							subMeshCache = &entity->getSubMeshCaches()[s];
+							box = subMeshCache->getBoundingBox();
+						}
+						
 						// check if submesh visible
 						if(sSize > 1)
 						{
@@ -1590,18 +1444,11 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 								continue;
 						}
 
-						//render->pushMatrix();
-						//render->multMatrix(entity->getMatrix());
 						m_currModelViewMatrix = (*lightCamera.getCurrentViewMatrix()) * (*entity->getMatrix());
 
 						// draw opaques
-						drawOpaques(subMesh, mesh->getArmature());
-
-						//render->popMatrix();
+						drawOpaques(entity, subMeshCache, subMesh, mesh->getArmature());
 					}
-
-					mesh->updateBoundingBox();
-					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 				}
 			}
 
@@ -1667,9 +1514,6 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 
 
-
-
-
 	// make opaque and transp list
 	for(i=0; i<eSize; i++)
 	{
@@ -1681,37 +1525,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			continue;
 
 		if(! entity->isVisible())
-		{
-			/*
-			// TODO : optimize and add a tag to desactivate it
-			if(mesh)
-			{
-				MArmature * armature = mesh->getArmature();
-				MArmatureAnim * armatureAnim = mesh->getArmatureAnim();
-				if(armature)
-				{
-					// animate armature
-					if(armatureAnim)
-					{
-						animateArmature(
-							mesh->getArmature(),
-							mesh->getArmatureAnim(),
-							entity->getCurrentFrame()
-						);
-					}
-					else
-					{
-						armature->processBonesLinking();
-						armature->updateBonesSkinMatrix();
-					}
-
-					updateSkinning(mesh, armature);
-					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
-				}
-			}*/
-
 			continue;
-		}
 
 		if(mesh)
 		{
@@ -1721,6 +1535,10 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			{
 				MSubMesh * subMesh = &mesh->getSubMeshs()[s];
 				MBox3d * box = subMesh->getBoundingBox();
+
+				// cache
+				if(entity->getSubMeshCachesNumber() == sSize)
+					box = entity->getSubMeshCaches()[s].getBoundingBox();
 
 				// check if submesh visible
 				if(sSize > 1)
@@ -1751,7 +1569,7 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				float z = getDistanceToCam(camera, center);
 
 				// transparent
-				if(subMesh->hasTransparency())
+				if(hasSubMeshTransparency(entity, subMesh))
 				{
 					if(transpNumber < MAX_TRANSP)
 					{
@@ -1834,29 +1652,9 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 		{
 			MSubMeshPass * subMeshPass = &m_opaqueList[m_opaqueSortList[s]];
 			
-			
 			MOEntity * entity = (MOEntity *)subMeshPass->object;
 			MMesh * mesh = entity->getMesh();
 			MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
-
-			// animate armature
-			if(mesh->getArmature())
-			{
-				MArmature * armature = mesh->getArmature();
-				if(mesh->getArmatureAnim())
-				{
-					animateArmature(
-						mesh->getArmature(),
-						mesh->getArmatureAnim(),
-						entity->getCurrentFrame()
-					);
-				}
-				else
-				{
-					armature->processBonesLinking();
-					armature->updateBonesSkinMatrix();
-				}
-			}
 
 			// animate textures
 			if(mesh->getTexturesAnim())
@@ -1866,20 +1664,17 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			if(mesh->getMaterialsAnim())
 				animateMaterials(mesh, mesh->getMaterialsAnim(), entity->getCurrentFrame());
 
-			//render->pushMatrix();
-			//render->multMatrix(entity->getMatrix());
 			m_currModelViewMatrix = currentViewMatrix * (*entity->getMatrix());
 			
+			// cache
+			MSubMeshCache * subMeshCache = NULL;
+			if(entity->getSubMeshCachesNumber() == mesh->getSubMeshsNumber())
+				subMeshCache = &entity->getSubMeshCaches()[subMeshPass->subMeshId];
+							
 			// draw opaques
 			render->beginQuery(subMeshPass->occlusionQuery);
-			drawOpaques(subMesh, mesh->getArmature());
+			drawOpaques(entity, subMeshCache, subMesh, mesh->getArmature());
 			render->endQuery();
-
-			//render->popMatrix();
-
-			// update bounding box
-			mesh->updateBoundingBox();
-			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 		}
 
 
@@ -1897,21 +1692,20 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 			MMesh * mesh = entity->getMesh();
 			MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
 
+			// cache
+			MSubMeshCache * subMeshCache = NULL;
+			if(entity->getSubMeshCachesNumber() == mesh->getSubMeshsNumber())
+				subMeshCache = &entity->getSubMeshCaches()[subMeshPass->subMeshId];
 
 			// read occlusion result
 			unsigned int queryResult = 1;
 			render->getQueryResult(subMeshPass->occlusionQuery, &queryResult);
 			if(queryResult > 0)
 			{
-				prepareSubMesh(scene, camera, entity, subMesh);
+				prepareSubMesh(scene, camera, entity, subMeshCache, subMesh);
 
-				//render->pushMatrix();
-				//render->multMatrix(entity->getMatrix());
 				m_currModelViewMatrix = currentViewMatrix * (*entity->getMatrix());
-				
-				drawOpaques(subMesh, mesh->getArmature());
-				
-				//render->popMatrix();
+				drawOpaques(entity, subMeshCache, subMesh, mesh->getArmature());
 			}
 		}
 
@@ -1943,20 +1737,15 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 					MMesh * mesh = entity->getMesh();
 					MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshPass->subMeshId];
 
-					prepareSubMesh(scene, camera, entity, subMesh);
+					// cache
+					MSubMeshCache * subMeshCache = NULL;
+					if(entity->getSubMeshCachesNumber() == mesh->getSubMeshsNumber())
+						subMeshCache = &entity->getSubMeshCaches()[subMeshPass->subMeshId];
+				
+					prepareSubMesh(scene, camera, entity, subMeshCache, subMesh);
 
-					//render->pushMatrix();
-					//render->multMatrix(entity->getMatrix());
 					m_currModelViewMatrix = currentViewMatrix * (*entity->getMatrix());
-					
-					drawTransparents(subMesh, mesh->getArmature());
-					
-					//render->popMatrix();
-
-					// update bounding box
-					mesh->updateBoundingBox();
-					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
-
+					drawTransparents(entity, subMeshCache, subMesh, mesh->getArmature());
 					break;
 				}
 
@@ -1964,14 +1753,8 @@ void MStandardRenderer::drawScene(MScene * scene, MOCamera * camera)
 				{
 					MOText * text = (MOText *)object;
 
-					//render->pushMatrix();
-					//render->multMatrix(text->getMatrix());
 					m_currModelViewMatrix = currentViewMatrix * (*text->getMatrix());
-					
 					drawText(text);
-					
-					//render->popMatrix();
-
 					break;
 				}
 			}

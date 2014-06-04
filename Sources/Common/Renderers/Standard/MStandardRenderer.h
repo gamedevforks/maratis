@@ -101,14 +101,6 @@ private:
 	unsigned int m_randTexture;
 	map<unsigned long, MShadowLight> m_shadowLights;
 	
-	// skin cache
-	unsigned int m_verticesNumber;
-	unsigned int m_normalsNumber;
-	unsigned int m_tangentsNumber;
-	MVector3 * m_vertices;
-	MVector3 * m_normals;
-	MVector3 * m_tangents;
-	
 	// default FXs
 	unsigned int m_FXsNumber;
 	unsigned int m_vertShaders[MAX_DEFAULT_FXS];
@@ -131,11 +123,9 @@ private:
 private:
 	
 	void addFX(const char * vert, const char * frag);
-	void updateSkinning(MMesh * mesh, MArmature * armature);
-	void drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MVector3 * tangents, MColor * colors);
-	//void drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices);
-	void drawOpaques(MSubMesh * subMesh, MArmature * armature);
-	void drawTransparents(MSubMesh * subMesh, MArmature * armature);
+	void drawDisplay(MOEntity * entity, MSubMeshCache * subMeshCahe, MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MVector3 * tangents, MColor * colors);
+	void drawOpaques(MOEntity * entity, MSubMeshCache * subMeshCahe, MSubMesh * subMesh, MArmature * armature);
+	void drawTransparents(MOEntity * entity, MSubMeshCache * subMeshCahe, MSubMesh * subMesh, MArmature * armature);
 	void setShadowMatrix(MMatrix4x4 * matrix, MOCamera * camera);
 	void updateVisibility(MScene * scene, MOCamera * camera);
 	void enableFog(MOCamera * camera);
@@ -149,13 +139,8 @@ private:
 	void destroyUnusedShadowLights(void);
 	void decreaseShadowLights(void);
 	
-	// skin cache
-	MVector3 * getVertices(unsigned int size);
-	MVector3 * getNormals(unsigned int size);
-	MVector3 * getTangents(unsigned int size);
-	
 	// subMesh
-	void prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMesh * subMesh);
+	void prepareSubMesh(MScene * scene, MOCamera * camera, MOEntity * entity, MSubMeshCache * subMeshCache, MSubMesh * subMesh);
 	
 public:
 	

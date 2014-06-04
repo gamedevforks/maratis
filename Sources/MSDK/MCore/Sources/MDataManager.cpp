@@ -81,3 +81,16 @@ void MDataManager::addRef(MDataRef * ref)
 
 	m_refs.push_back(ref);
 }
+
+MDataRef * MDataManager::getRefFromFilename(const char * filename)
+{
+	unsigned int i, size = getRefsNumber();
+	for(i=0; i<size; i++)
+	{
+		MDataRef * ref = getRef(i);
+		if(strcmp(ref->getFilename(), filename) == 0)
+			return ref;
+	}
+	
+	return NULL;
+}

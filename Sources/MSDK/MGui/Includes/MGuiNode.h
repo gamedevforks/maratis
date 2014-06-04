@@ -96,6 +96,9 @@ private:
 	vector<MGuiNodeBranch> m_inputs;
 	vector<MGuiNodeBranch> m_outputs;
 
+	float m_pinSpace;
+	MVector2 m_pinScale;
+
 public:
 
 	// constructor

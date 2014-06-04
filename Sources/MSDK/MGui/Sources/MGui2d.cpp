@@ -52,7 +52,7 @@ m_autoScaleFromText(true),
 m_hasShadow(false),
 m_shadowOpacity(0.1f),
 m_shadowDir(8, 8),
-m_customPointer(NULL)
+m_userPointer(NULL)
 {
 	setNormalColor(MVector3(1, 1, 1));
 	setHighLightColor(MVector3(1, 1, 1));
@@ -185,8 +185,8 @@ void MGui2d::drawShadow(void)
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	
-	static MVector2 vertices[12];
-	static MVector4 colors[12];
+	MVector2 vertices[12];
+	MVector4 colors[12];
 
 	render->disableTexture();
 	render->disableNormalArray();
@@ -292,7 +292,7 @@ void MGui2d::drawQuad(void)
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	
-	static MVector2 vertices[8];
+	MVector2 vertices[8];
 
 	render->disableTexture();
 
@@ -315,8 +315,8 @@ void MGui2d::drawTexturedQuad(unsigned int textureId)
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	
-	static MVector2 vertices[8];
-	static MVector2 texCoords[8];
+	MVector2 vertices[8];
+	MVector2 texCoords[8];
 
 	render->enableTexture();
 	

@@ -37,12 +37,16 @@ MOSound::MOSound(MSoundRef * soundRef):
 	m_soundRef(soundRef),
 	m_sourceId(0)
 {
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
 	unsigned int bufferId = 0;
 	if(m_soundRef)
 		bufferId = m_soundRef->getBufferId();
 
 	// create Source
-	MEngine::getInstance()->getSoundContext()->createSource(&m_sourceId, bufferId);
+	if(soundContext)
+		soundContext->createSource(&m_sourceId, bufferId);
 
 	setLooping(false);
 	setRelative(false);
@@ -58,12 +62,16 @@ MOSound::MOSound(const MOSound & sound):
 	m_soundRef(sound.m_soundRef),
 	m_sourceId(0)
 {
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
 	unsigned int bufferId = 0;
 	if(m_soundRef)
 		bufferId = m_soundRef->getBufferId();
 
 	// create Source
-	MEngine::getInstance()->getSoundContext()->createSource(&m_sourceId, bufferId);
+	if(soundContext)
+		soundContext->createSource(&m_sourceId, bufferId);
 
 	setLooping(sound.m_isLooping);
 	setRelative(sound.m_isRelative);
@@ -76,59 +84,84 @@ MOSound::MOSound(const MOSound & sound):
 // destructor
 MOSound::~MOSound(void)
 {
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
 	MObject3d::clearObject3d();
-	MEngine::getInstance()->getSoundContext()->deleteSource(&m_sourceId);
+	if(soundContext)
+		soundContext->deleteSource(&m_sourceId);
 }
 
 void MOSound::setSoundRef(MSoundRef * soundRef)
 {
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
 	m_soundRef = soundRef;
 
-	unsigned int bufferId = 0;
-	if(m_soundRef)
-		bufferId = m_soundRef->getBufferId();
-
-	MEngine::getInstance()->getSoundContext()->setSourceBufferId(m_sourceId, bufferId);
+	if(m_soundRef && soundContext)
+		soundContext->setSourceBufferId(m_sourceId, m_soundRef->getBufferId());
 }
 
 bool MOSound::isPlaying(void)
 {
-	return MEngine::getInstance()->getSoundContext()->isSourcePlaying(m_sourceId);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
+	if(soundContext)
+		return soundContext->isSourcePlaying(m_sourceId);
+	else
+		return false;
 }
 
 float MOSound::getTimePos(void)
 {
-	return MEngine::getInstance()->getSoundContext()->getSourceTimePos(m_sourceId);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
+	if(soundContext)
+		return soundContext->getSourceTimePos(m_sourceId);
+	else
+		return 0;
 }
 
 float MOSound::getSoundDuration(void)
 {
-	if(m_soundRef)
-		return MEngine::getInstance()->getSoundContext()->getBufferDuration(m_soundRef->getBufferId());
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	
+	if(m_soundRef && soundContext)
+		return soundContext->getBufferDuration(m_soundRef->getBufferId());
 	else
 		return 0.0f;
 }
 
 void MOSound::play(void)
 {
-	MSoundContext * soundContext = MEngine::getInstance()->getSoundContext();
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
 
-	if(m_soundRef)
+	if(m_soundRef && soundContext)
 	{
-		unsigned int bufferId = m_soundRef->getBufferId();
-		soundContext->setSourceBufferId(m_sourceId, bufferId);
+		soundContext->setSourceBufferId(m_sourceId, m_soundRef->getBufferId());
 		soundContext->playSource(m_sourceId);
 	}
 }
 
 void MOSound::pause(void)
 {
-	MEngine::getInstance()->getSoundContext()->pauseSource(m_sourceId);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->pauseSource(m_sourceId);
 }
 
 void MOSound::stop(void)
 {
-	MEngine::getInstance()->getSoundContext()->stopSource(m_sourceId);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->stopSource(m_sourceId);
 }
 
 void MOSound::setLooping(bool loop)
@@ -137,11 +170,14 @@ void MOSound::setLooping(bool loop)
 
 	if(loop != m_isLooping)
 	{
-		if(loop)
-			soundContext->enableSourceLoop(m_sourceId);
-		else
-			soundContext->disableSourceLoop(m_sourceId);
-
+		if(soundContext)
+		{
+			if(loop)
+				soundContext->enableSourceLoop(m_sourceId);
+			else
+				soundContext->disableSourceLoop(m_sourceId);
+		}
+		
 		m_isLooping = loop;
 	}
 }
@@ -149,34 +185,52 @@ void MOSound::setLooping(bool loop)
 void MOSound::setRelative(bool relative)
 {
 	m_isRelative = relative;
-	MEngine::getInstance()->getSoundContext()->setSourceRelative(m_sourceId, m_isRelative);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->setSourceRelative(m_sourceId, m_isRelative);
 }
 
 void MOSound::setPitch(float pitch)
 {
 	m_pitch = pitch;
-	MEngine::getInstance()->getSoundContext()->setSourcePitch(m_sourceId, m_pitch);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->setSourcePitch(m_sourceId, m_pitch);
 }
 
 void MOSound::setGain(float gain)
 {
 	m_gain = gain;
-	MEngine::getInstance()->getSoundContext()->setSourceGain(m_sourceId, m_gain);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->setSourceGain(m_sourceId, m_gain);
 }
 
 void MOSound::setRadius(float radius)
 {
 	m_radius = radius;
-	MEngine::getInstance()->getSoundContext()->setSourceRadius(m_sourceId, m_radius);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->setSourceRadius(m_sourceId, m_radius);
 }
 
 void MOSound::setRolloff(float rolloff)
 {
 	m_rolloff = rolloff;
-	MEngine::getInstance()->getSoundContext()->setSourceRolloff(m_sourceId, m_rolloff);
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->setSourceRolloff(m_sourceId, m_rolloff);
 }
 
 void MOSound::update(void)
 {
-	MEngine::getInstance()->getSoundContext()->setSourcePosition(m_sourceId, getTransformedPosition());
+	MEngine * engine = MEngine::getInstance();
+	MSoundContext * soundContext = engine->getSoundContext();
+	if(soundContext)
+		soundContext->setSourcePosition(m_sourceId, getTransformedPosition());
 }

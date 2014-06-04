@@ -42,27 +42,14 @@ public:
 	
 private:
 	
-	// skin cache
-	unsigned int m_verticesNumber;
-	unsigned int m_normalsNumber;
-	MVector3 * m_vertices;
-	MVector3 * m_normals;
-	
-private:
-	
-	void updateSkinning(MMesh * mesh, MArmature * armature);
-	void drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MColor * colors);
+	void drawDisplay(MOEntity * entity, MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MColor * colors);
 	void drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices);
-	void drawOpaques(MSubMesh * subMesh, MArmature * armature);
-	void drawTransparents(MSubMesh * subMesh, MArmature * armature);
+	void drawOpaques(MOEntity * entity, MSubMeshCache * subMeshCache, MSubMesh * subMesh, MArmature * armature);
+	void drawTransparents(MOEntity * entity, MSubMeshCache * subMeshCache, MSubMesh * subMesh, MArmature * armature);
 	void updateVisibility(MScene * scene, MOCamera * camera);
 	void enableFog(MOCamera * camera);
 	
 	float getDistanceToCam(MOCamera * camera, const MVector3 & pos);
-	
-	// skin cache
-	MVector3 * getVertices(unsigned int size);
-	MVector3 * getNormals(unsigned int size);
 	
 public:
 	

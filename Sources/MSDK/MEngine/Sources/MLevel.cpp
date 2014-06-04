@@ -67,27 +67,12 @@ void MLevel::decrDataRefScore(MDataRef * ref)
 
 MFontRef * MLevel::loadFont(const char * filename, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_fontManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MFontRef * ref = (MFontRef *)m_fontManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MFontRef * ref = (MFontRef *)m_fontManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update();
-				ref->incrScore();
-			}
-			
-			return ref;
-		}
+		ref = MFontRef::getNew(NULL, filename);
+		m_fontManager.addRef(ref);
 	}
-
-	// add data
-	MFontRef * ref = MFontRef::getNew(NULL, filename);
-	m_fontManager.addRef(ref);
 	
 	if(preload)
 	{
@@ -101,28 +86,13 @@ MFontRef * MLevel::loadFont(const char * filename, const bool preload)
 
 MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_meshManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MMeshRef * ref = (MMeshRef *)m_meshManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MMeshRef * ref = (MMeshRef *)m_meshManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update(this);
-				ref->incrScore();
-			}
-
-			return ref;
-		}
+		ref = MMeshRef::getNew(NULL, filename);
+		m_meshManager.addRef(ref);
 	}
-
-	// add data
-	MMeshRef * ref = MMeshRef::getNew(NULL, filename);
-	m_meshManager.addRef(ref);
-
+	
 	if(preload)
 	{
 		if(ref->getScore() == 0)
@@ -135,27 +105,12 @@ MMeshRef * MLevel::loadMesh(const char * filename, const bool preload)
 
 MArmatureAnimRef * MLevel::loadArmatureAnim(const char * filename, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_armatureAnimManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MArmatureAnimRef * ref = (MArmatureAnimRef *)m_armatureAnimManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MArmatureAnimRef * ref = (MArmatureAnimRef *)m_armatureAnimManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update();
-				ref->incrScore();
-			}
-
-			return ref;
-		}
+		ref = MArmatureAnimRef::getNew(NULL, filename);
+		m_armatureAnimManager.addRef(ref);
 	}
-
-	// add data
-	MArmatureAnimRef * ref = MArmatureAnimRef::getNew(NULL, filename);
-	m_armatureAnimManager.addRef(ref);
 
 	if(preload)
 	{
@@ -169,28 +124,13 @@ MArmatureAnimRef * MLevel::loadArmatureAnim(const char * filename, const bool pr
 
 MTexturesAnimRef * MLevel::loadTexturesAnim(const char * filename, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_texturesAnimManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MTexturesAnimRef * ref = (MTexturesAnimRef *)m_texturesAnimManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MTexturesAnimRef * ref = (MTexturesAnimRef *)m_texturesAnimManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update();
-				ref->incrScore();
-			}
-
-			return ref;
-		}
+		ref = MTexturesAnimRef::getNew(NULL, filename);
+		m_texturesAnimManager.addRef(ref);
 	}
-
-	// add data
-	MTexturesAnimRef * ref = MTexturesAnimRef::getNew(NULL, filename);
-	m_texturesAnimManager.addRef(ref);
-
+	
 	if(preload)
 	{
 		if(ref->getScore() == 0)
@@ -203,28 +143,13 @@ MTexturesAnimRef * MLevel::loadTexturesAnim(const char * filename, const bool pr
 
 MMaterialsAnimRef * MLevel::loadMaterialsAnim(const char * filename, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_materialsAnimManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MMaterialsAnimRef * ref = (MMaterialsAnimRef *)m_materialsAnimManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MMaterialsAnimRef * ref = (MMaterialsAnimRef *)m_materialsAnimManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update();
-				ref->incrScore();
-			}
-
-			return ref;
-		}
+		ref = MMaterialsAnimRef::getNew(NULL, filename);
+		m_materialsAnimManager.addRef(ref);
 	}
-
-	// add data
-	MMaterialsAnimRef * ref = MMaterialsAnimRef::getNew(NULL, filename);
-	m_materialsAnimManager.addRef(ref);
-
+	
 	if(preload)
 	{
 		if(ref->getScore() == 0)
@@ -237,28 +162,13 @@ MMaterialsAnimRef * MLevel::loadMaterialsAnim(const char * filename, const bool 
 
 MSoundRef * MLevel::loadSound(const char * filename, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_soundManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MSoundRef * ref = (MSoundRef *)m_soundManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MSoundRef * ref = (MSoundRef *)m_soundManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update();
-				ref->incrScore();
-			}
-
-			return ref;
-		}
+		ref = MSoundRef::getNew(0, filename);
+		m_soundManager.addRef(ref);
 	}
-
-	// add data
-	MSoundRef * ref = MSoundRef::getNew(0, filename);
-	m_soundManager.addRef(ref);
-
+	
 	if(preload)
 	{
 		if(ref->getScore() == 0)
@@ -271,27 +181,12 @@ MSoundRef * MLevel::loadSound(const char * filename, const bool preload)
 
 MTextureRef * MLevel::loadTexture(const char * filename, const bool mipmap, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_textureManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MTextureRef * ref = (MTextureRef *)m_textureManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MTextureRef * ref = (MTextureRef *)m_textureManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update();
-				ref->incrScore();
-			}
-
-			return ref;
-		}
+		ref = MTextureRef::getNew(0, filename, mipmap);
+		m_textureManager.addRef(ref);
 	}
-
-	// add data
-	MTextureRef * ref = MTextureRef::getNew(0, filename, mipmap);
-	m_textureManager.addRef(ref);
 
 	if(preload)
 	{
@@ -305,26 +200,12 @@ MTextureRef * MLevel::loadTexture(const char * filename, const bool mipmap, cons
 
 MShaderRef * MLevel::loadShader(const char * filename, M_SHADER_TYPES type, const bool preload)
 {
-	unsigned int i;
-	unsigned int size = m_shaderManager.getRefsNumber();
-	for(i=0; i<size; i++)
+	MShaderRef * ref = (MShaderRef *)m_shaderManager.getRefFromFilename(filename);
+	if(! ref)
 	{
-		MShaderRef * ref = (MShaderRef *)m_shaderManager.getRef(i);
-		if(strcmp(ref->getFilename(), filename) == 0)
-		{
-			if(preload)
-			{
-				if(ref->getScore() == 0)
-					ref->update(this);
-				ref->incrScore();
-			}
-				
-			return ref;
-		}
+		ref = MShaderRef::getNew(0, type, filename);
+		m_shaderManager.addRef(ref);
 	}
-
-	MShaderRef * ref = MShaderRef::getNew(0, type, filename);
-	m_shaderManager.addRef(ref);
 	
 	if(preload)
 	{

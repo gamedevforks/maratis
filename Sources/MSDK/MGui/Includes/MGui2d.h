@@ -84,8 +84,10 @@ protected:
 	float m_shadowOpacity;
 	MVector2 m_shadowDir;
 
-	// custom variable
-	void * m_customPointer;
+	// user pointer
+	void * m_userPointer;
+
+protected:
 
 	MVector2 getAlignedTextPosition(void);
 
@@ -191,9 +193,9 @@ public:
 	inline bool isHighLight(void){ return m_isHighLight; }
 	inline bool isPressed(void){ return m_isPressed; }
 
-	// custom variable
-	inline void * getCustomPointer(void){ return m_customPointer; }
-	inline void setCustomPointer(void * customPointer){ m_customPointer = customPointer; }
+	// user pointer
+	inline void * getUserPointer(void){ return m_userPointer; }
+	inline void setUserPointer(void * userPointer){ m_userPointer = userPointer; }
 
 	// virtual
 	virtual int getType(void) = 0;

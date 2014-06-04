@@ -23,29 +23,27 @@
 //
 //========================================================================
 
+
 #ifndef _M_SHORTCUT_MANAGER_H
 #define _M_SHORTCUT_MANAGER_H
 
 
 // Shortcut
-class MShortcut
+class M_EDITOR_EXPORT MShortcut
 {
-public:
-
-	MShortcut(void):key1(-1), key2(-1), key3(-1){}
-	
 public:
 
 	int key1;
 	int key2;
 	int key3;
 	
+	MShortcut(void):key1(-1), key2(-1), key3(-1){}
 	bool isEngaged(MWindow * rootWindow);
 };
 
 
 // Preferences
-class MPreferences
+class M_EDITOR_EXPORT MPreferences
 {
 public:
 
@@ -53,33 +51,44 @@ public:
 	MPreferences(void);
 	~MPreferences(void);
 
-	// instance
-	static MPreferences * getInstance(void)
-	{
-		static MPreferences m_instance;
-		return &m_instance;
-	};
-
 private:
 
-	// shortcuts
+	// keys
 	map<string, int> m_keys;
+	
+	// shortcuts
     map<string, MShortcut*> m_shortcuts;
+	
+	// theme
+	unsigned int m_fontSize;
+	string m_fontFilename;
+	string m_guiPath;
+	map<string, MVector4> m_colors;
 	
 private:
 
-	// shortcuts
+	// init
+	void initKeys(void);
 	void initShortcuts(void);
-	int getKey(const char * name);
+	void initThemes(void);
 	
 public:
     
+	// keys
+	int getKeyCode(const char * name);
+	
 	// loading
     void load(const char * filename);
 	
 	// shortcuts
 	MShortcut * getShortcut(const char * name);
 	bool isShortCutEngaged(MWindow * rootWindow, const char * name);
+	
+	// theme
+	unsigned int getFontSize(void){ return m_fontSize; }
+	const char * getFontFilename(void){ return m_fontFilename.c_str(); }
+	const char * getGuiPath(void){ return m_guiPath.c_str(); }
+	MVector4 getColor(const char * name);
 };
 
 #endif

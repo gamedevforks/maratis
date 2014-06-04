@@ -57,7 +57,7 @@ void MGuiFileBrowser::fileBrowserOkButtonEvents(MGuiButton * button, MGUI_EVENT_
 		{
 			if(button->isPressed() && button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
 			{
-				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
+				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getUserPointer();
 				fileBrowser->close();
 				if(fileBrowser->m_eventCallback)
 					fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_OK);
@@ -78,7 +78,7 @@ void MGuiFileBrowser::fileBrowserCancelButtonEvents(MGuiButton * button, MGUI_EV
 		{
 			if(button->isPressed() && button->getRootWindow()->getMouseButton() == MMOUSE_BUTTON_LEFT)
 			{
-				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getCustomPointer();
+				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)button->getUserPointer();
 				fileBrowser->close();
 				if(fileBrowser->m_eventCallback)
 					fileBrowser->m_eventCallback(fileBrowser, MGUI_FILE_BROWSER_EVENT_CANCEL);
@@ -101,7 +101,7 @@ void MGuiFileBrowser::mainWinEvents(MGuiWindow * window, MGUI_EVENT_TYPE event)
 		{
 			if(rootWindow->getMouseButton() == MMOUSE_BUTTON_LEFT && !window->isScrollBarPressed())
 			{
-				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)window->getCustomPointer();
+				MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)window->getUserPointer();
 			
 				int b, bSize = window->getButtonsNumber();
 				for(b=0; b<bSize; b++)
@@ -178,7 +178,7 @@ void MGuiFileBrowser::dirEditTextEvents(MGuiEditText * editText, MGUI_EVENT_TYPE
 	{
         case MGUI_EVENT_SEND_VARIABLE:
 		{
-			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)editText->getCustomPointer();
+			MGuiFileBrowser * fileBrowser = (MGuiFileBrowser *)editText->getUserPointer();
 			fileBrowser->updateMainWin();
             break;
 		}
@@ -191,7 +191,7 @@ void MGuiFileBrowser::dirEditTextEvents(MGuiEditText * editText, MGUI_EVENT_TYPE
 
 MGuiFileBrowser::MGuiFileBrowser(MWindow * rootWindow, MFontRef * font):
 m_lastPressedButton(-1),
-m_customPointer(NULL),
+m_userPointer(NULL),
 m_eventCallback(NULL)
 {
 	m_font = font;
@@ -234,7 +234,7 @@ m_eventCallback(NULL)
 	m_mainWin->setColor(m_mainWinColor);
 	m_mainWin->setEventCallback(mainWinEvents);
 	m_mainWin->setMargin(MVector2(0.0f));
-	m_mainWin->setCustomPointer(this);
+	m_mainWin->setUserPointer(this);
 	
 	
 	// texts and buttons
@@ -247,7 +247,7 @@ m_eventCallback(NULL)
 		m_dirEditText->setEventCallback(dirEditTextEvents);
 		m_dirEditText->enableVariable(&m_currentDirectory, M_VARIABLE_STRING);
 		m_dirEditText->setSingleLine(true);
-		m_dirEditText->setCustomPointer(this);
+		m_dirEditText->setUserPointer(this);
 		
 		m_fileEditText = m_fileWin->addNewEditText();
 		m_fileEditText->setXPosition(3);
@@ -270,7 +270,7 @@ m_eventCallback(NULL)
 		m_okButton->setNormalColor(m_buttonColor);
 		m_okButton->setHighLightColor(m_highButtonColor);
 		m_okButton->setPressedColor(m_pressButtonColor);
-		m_okButton->setCustomPointer(this);
+		m_okButton->setUserPointer(this);
 		
 		m_cancelButton = m_headWin->addNewButton();
 		m_cancelButton->setAutoScaleFromText(false);
@@ -285,7 +285,7 @@ m_eventCallback(NULL)
 		m_cancelButton->setNormalColor(m_buttonColor);
 		m_cancelButton->setHighLightColor(m_highButtonColor);
 		m_cancelButton->setPressedColor(m_pressButtonColor);
-		m_cancelButton->setCustomPointer(this);
+		m_cancelButton->setUserPointer(this);
 	}
 	
 	m_headWin->setVisible(false);

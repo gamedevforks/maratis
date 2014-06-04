@@ -37,7 +37,7 @@ m_primitiveType(primitiveType),
 m_begin(begin),
 m_size(size),
 m_cullMode(M_CULL_BACK),
-m_material(NULL),
+m_materialId(0),
 m_visibility(true)
 {}
 
@@ -46,12 +46,93 @@ m_primitiveType(display.m_primitiveType),
 m_begin(display.m_begin),
 m_size(display.m_size),
 m_cullMode(display.m_cullMode),
-m_material(display.m_material),
+m_materialId(display.m_materialId),
 m_visibility(display.m_visibility)
 {}
 
 MDisplay::~MDisplay(void)
 {}
+
+
+// MSubMeshCache
+MSubMeshCache::MSubMeshCache(void):
+m_verticesSize(0),
+m_normalsSize(0),
+m_tangentsSize(0),
+m_vertices(NULL),
+m_normals(NULL),
+m_tangents(NULL)
+{}
+
+MSubMeshCache::~MSubMeshCache(void)
+{
+	clearVertices();
+	clearNormals();
+	clearTangents();
+}
+
+void MSubMeshCache::clearVertices(void)
+{
+	m_verticesSize = 0;
+	SAFE_DELETE_ARRAY(m_vertices);
+}
+
+void MSubMeshCache::clearNormals(void)
+{
+	m_normalsSize = 0;
+	SAFE_DELETE_ARRAY(m_normals);
+}
+
+void MSubMeshCache::clearTangents(void)
+{
+	m_tangentsSize = 0;
+	SAFE_DELETE_ARRAY(m_tangents);
+}
+
+MVector3 * MSubMeshCache::allocVertices(unsigned int size)
+{
+	if(size == m_verticesSize)
+		return m_vertices;
+
+	clearVertices();
+	if(size == 0)
+		return NULL;
+
+	m_verticesSize = size;
+	m_vertices = new MVector3[size];
+
+	return m_vertices;
+}
+
+MVector3 * MSubMeshCache::allocNormals(unsigned int size)
+{
+	if(size == m_normalsSize)
+		return m_normals;
+		
+	clearNormals();
+	if(size == 0)
+		return NULL;
+
+	m_normalsSize = size;
+	m_normals = new MVector3[size];
+
+	return m_normals;
+}
+
+MVector3 * MSubMeshCache::allocTangents(unsigned int size)
+{
+	if(size == m_tangentsSize)
+		return m_tangents;
+		
+	clearTangents();
+	if(size == 0)
+		return NULL;
+	
+	m_tangentsSize = size;
+	m_tangents = new MVector3[size];
+	
+	return m_tangents;
+}
 
 
 // MSubMesh
@@ -307,24 +388,6 @@ MDisplay * MSubMesh::addNewDisplay(M_PRIMITIVE_TYPES primitiveType, unsigned int
 	return display;
 }
 
-bool MSubMesh::hasTransparency(void)
-{
-	unsigned int i;
-	unsigned int displayNumber = getDisplaysNumber();
-	for(i=0; i<displayNumber; i++)
-	{
-		MDisplay * display = getDisplay(i);
-
-		if((! display->isVisible()) || (! display->getMaterial()))
-			continue;
-
-		if(display->getMaterial()->getBlendMode() != M_BLENDING_NONE)
-			return true;
-	}
-
-	return false;
-}
-
 
 // MMesh
 MMesh::MMesh(void):
@@ -525,5 +588,22 @@ void MMesh::updateBoundingBox(void)
 			max->y = MAX(max->y, subMax->y);
 			max->z = MAX(max->z, subMax->z);
 		}
+	}
+}
+
+void MMesh::updateArmature(float currentFrame)
+{
+	if(! m_armature)
+		return;
+		
+	MArmatureAnim * armatureAnim = getArmatureAnim();
+	if(armatureAnim)
+	{
+		animateArmature(m_armature, armatureAnim, currentFrame);
+	}
+	else
+	{
+		m_armature->processBonesLinking();
+		m_armature->updateBonesSkinMatrix();
 	}
 }

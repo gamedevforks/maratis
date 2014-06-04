@@ -875,8 +875,8 @@ void MGuiWindow::drawNodesLink(void)
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	
-	static MVector2 vertices[2];
-	static MVector4 colors[2];
+	MVector2 vertices[2];
+	MVector4 colors[2];
 				
 	colors[0] = MVector4(0, 0, 0, 0.35f);
 	colors[1] = MVector4(0, 0, 0, 0.18f);

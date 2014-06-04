@@ -40,9 +40,9 @@ void MGuiColorPicker::onValueEvents(MGuiEditText * editText, MGUI_EVENT_TYPE eve
 			
 		case MGUI_EVENT_SEND_VARIABLE:
 		{
-			if(editText->getCustomPointer())
+			if(editText->getUserPointer())
 			{
-				MGuiColorPicker * colorPicker = (MGuiColorPicker*)editText->getCustomPointer();
+				MGuiColorPicker * colorPicker = (MGuiColorPicker*)editText->getUserPointer();
 				colorPicker->updateHSVColor();
 			}
 			break;
@@ -60,7 +60,7 @@ void MGuiColorPicker::winColorEvents(MGuiWindow * window, MGUI_EVENT_TYPE event)
 		case MGUI_EVENT_MOUSE_BUTTON_DOWN:
 		{
 			if(! window->isMouseInside())
-				((MGuiColorPicker *)window->getCustomPointer())->close();
+				((MGuiColorPicker *)window->getUserPointer())->close();
 			break;
 		}
 	}
@@ -71,9 +71,9 @@ void MGuiColorPicker::winColorDraw(MGuiWindow * window)
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	
-	if(window->getCustomPointer())
+	if(window->getUserPointer())
 	{
-		MGuiColorPicker * colorPicker = (MGuiColorPicker*)window->getCustomPointer();
+		MGuiColorPicker * colorPicker = (MGuiColorPicker*)window->getUserPointer();
 		
 		render->pushMatrix();
 		render->translate(window->getPosition());
@@ -94,13 +94,13 @@ m_R(NULL),
 m_G(NULL),
 m_B(NULL),
 m_A(NULL),
-m_customPointer(NULL),
+m_userPointer(NULL),
 m_eventCallback(NULL)
 {
 	m_window = rootWindow->addNewWindow();
 
 	m_window->setShadow(true);
-	m_window->setCustomPointer(this);
+	m_window->setUserPointer(this);
 	m_window->setColor(MVector4(0.25f, 0.25f, 0.25f, 0.75f));
 	m_window->setVisible(false);
 }
@@ -192,7 +192,7 @@ void MGuiColorPicker::open(MGuiButton * parentButton, float * R, float * G, floa
 	// callbacks
 	m_window->setEventCallback(winColorEvents);
 	m_window->setDrawCallback(winColorDraw);
-	m_window->setCustomPointer(this);
+	m_window->setUserPointer(this);
 	
 	if(m_eventCallback)
 		m_eventCallback(this, MGUI_COLOR_PICKER_EVENT_OPEN);
@@ -214,8 +214,8 @@ void MGuiColorPicker::draw(MGuiWindow * window)
 	MVector2 mousePos = m_tintSel->getPointLocalPosition(rootWindow->getMousePosition());
 
 	
-	static MVector2 vertices[14];
-	static MVector3 colors[14];
+	MVector2 vertices[14];
+	MVector3 colors[14];
 				
 	render->disableTexture();
 	render->disableCullFace();
@@ -404,7 +404,7 @@ void MGuiColorPicker::addValue(MGuiWindow * window, MVector2 * position, const c
 	editText->setSingleLine(true);
 	editText->setEventCallback(eventCallback);
 	editText->enableVariable(pointer, varType);
-	editText->setCustomPointer(this);
+	editText->setUserPointer(this);
 	
 	*position += MVector2(0, ySpace);
 }

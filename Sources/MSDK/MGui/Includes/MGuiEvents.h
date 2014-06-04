@@ -31,6 +31,7 @@
 #ifndef _M_GUI_EVENTS_H
 #define _M_GUI_EVENTS_H
 
+
 enum MGUI_EVENT_TYPE
 {
 	MGUI_EVENT_MOUSE_MOVE,

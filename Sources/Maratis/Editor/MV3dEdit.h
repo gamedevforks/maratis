@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// MSelectionUtils.cpp
+// MV3dEdit.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-//  Maratis, Copyright (c) 2003-2014 Anael Seghezzi <www.maratis3d.com>
+//  Maratis, Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -23,8 +23,54 @@
 //========================================================================
 
 
-#include <MEngine.h>
-#include "MSelectionUtils.h"
+#ifndef _MV_3D_EDIT
+#define _MV_3D_EDIT
 
 
+enum M_AXIS
+{
+	M_AXIS_NONE = 0,
+	M_AXIS_X,
+	M_AXIS_Y,
+	M_AXIS_Z,
+	M_AXIS_VIEW
+};
 
+enum M_ORIENTATION_MODE
+{
+	M_ORIENTATION_WORLD = 0,
+	M_ORIENTATION_LOCAL
+};
+
+enum M_TRANSFORM_MODE
+{
+	M_TRANSFORM_MOUSE = 0,
+	M_TRANSFORM_POSITION,
+	M_TRANSFORM_ROTATION,
+	M_TRANSFORM_SCALE
+};
+
+
+class M_EDITOR_EXPORT MV3dEdit : public MV3dView
+{
+public:
+    
+	MV3dEdit(void);
+	~MV3dEdit(void);
+
+protected:
+
+	MGuiWindow * m_tools;
+	
+public:
+	
+	M_TRANSFORM_MODE getTransformMode(void);
+	
+	void create(MWindow * rootWindow);
+	void resize(MVector2 position, MVector2 scale);
+	void onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event);
+	void hide(void);
+	void show(void);
+};
+
+#endif

@@ -119,7 +119,7 @@ void MGuiButton::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		if(parent->isHighLight() && isMouseInside())
 		{
 			setHighLight(true);
-			if((! isCheckButton()) && (!isPressed()) && m_isActive)
+			if((m_mode == MGUI_BUTTON_SIMPLE) && (!isPressed()) && m_isActive)
 				press(true);
 
 			if(m_eventCallback)
@@ -128,7 +128,7 @@ void MGuiButton::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		else
 		{
 		    setHighLight(false);
-			if((! isCheckButton()) && (! isGroupButton()) && isPressed())
+			if((m_mode == MGUI_BUTTON_SIMPLE) && isPressed())
 				press(false);
 		}
 		break;

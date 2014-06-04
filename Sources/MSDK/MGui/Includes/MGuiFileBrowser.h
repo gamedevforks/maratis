@@ -27,6 +27,7 @@
 //
 //========================================================================
 
+
 #ifndef _MGUI_FILE_BROWSER_H
 #define _MGUI_FILE_BROWSER_H
 
@@ -78,7 +79,7 @@ private:
 	void * m_variablePointer;
 	
 	// custom pointer
-	void * m_customPointer;
+	void * m_userPointer;
 	
 	// events function pointer
 	void (* m_eventCallback)(MGuiFileBrowser * fileBrowser, MGUI_FILE_BROWSER_EVENT_TYPE event);
@@ -112,8 +113,8 @@ public:
 	inline void disableVariable(void){ m_variablePointer = NULL; }
 
 	// custom pointer
-	void setCustomPointer(void * pointer){ m_customPointer = pointer; }
-	void * getCustomPointer(void){ return m_customPointer; }
+	void setUserPointer(void * pointer){ m_userPointer = pointer; }
+	void * getUserPointer(void){ return m_userPointer; }
 };
 
 #endif

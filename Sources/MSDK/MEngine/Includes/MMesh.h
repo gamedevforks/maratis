@@ -55,7 +55,7 @@ private:
 	M_CULL_MODES m_cullMode;
 
 	// material
-	MMaterial * m_material;
+	unsigned int m_materialId;
 
 	// visibility
 	bool m_visibility;
@@ -72,12 +72,58 @@ public:
 	inline M_CULL_MODES getCullMode(void){ return m_cullMode; }
 
 	// material
-	inline void setMaterial(MMaterial * material){ m_material = material; }
-	inline MMaterial * getMaterial(void){ return m_material; }
-
+	inline void setMaterialId(unsigned int materialId){ m_materialId = materialId; }
+	inline unsigned int getMaterialId(void){ return m_materialId; }
+	
 	// visibility
 	inline void setVisibility(bool visibility){ m_visibility = visibility; }
 	inline bool isVisible(void){ return m_visibility; }
+};
+
+
+// SubMeshCache
+class M_ENGINE_EXPORT MSubMeshCache
+{
+public:
+
+	MSubMeshCache(void);
+	~MSubMeshCache(void);
+
+private:
+
+	// data
+	unsigned int m_verticesSize;
+	unsigned int m_normalsSize;
+	unsigned int m_tangentsSize;
+
+	MVector3 * m_vertices;
+	MVector3 * m_normals;
+	MVector3 * m_tangents;
+
+	// bounding box
+	MBox3d m_boundingBox;
+
+public:
+
+	// data
+	void clearVertices(void);
+	void clearNormals(void);
+	void clearTangents(void);
+
+	MVector3 * allocVertices(unsigned int size);
+	MVector3 * allocNormals(unsigned int size);
+	MVector3 * allocTangents(unsigned int size);
+
+	inline unsigned int getVerticesSize(void){ return m_verticesSize; }
+	inline unsigned int getNormalsSize(void){ return m_normalsSize; }
+	inline unsigned int getTangentsSize(void){ return m_tangentsSize; }
+
+	inline MVector3 * getVertices(void){ return m_vertices; }
+	inline MVector3 * getNormals(void){ return m_normals; }
+	inline MVector3 * getTangents(void){ return m_tangents; }
+
+	// bounding box
+	inline MBox3d * getBoundingBox(void){ return &m_boundingBox; }
 };
 
 
@@ -172,6 +218,8 @@ public:
 	inline MVector2 * getTexCoords(void){ return m_texCoords; }
 
 	// VBO
+	void clearVBO1(void);
+	void clearVBO2(void);
 	void clearVBO(void);
 	unsigned int * getVBOid1(void){ return &m_vboId1; }
 	unsigned int * getVBOid2(void){ return &m_vboId2; }
@@ -192,9 +240,6 @@ public:
 
 	// bounding box
 	inline MBox3d * getBoundingBox(void){ return &m_boundingBox; }
-
-	// transparency
-	bool hasTransparency(void);
 };
 
 
@@ -282,6 +327,7 @@ public:
 
 	// armature
 	void clearArmature(void);
+	void updateArmature(float currentFrame);
 	MArmature * createArmature(void);
 	inline MArmature * getArmature(void){ return m_armature; }
 

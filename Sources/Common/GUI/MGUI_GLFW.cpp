@@ -233,7 +233,6 @@ static int thread_main(void * data)
 			if(window->pause)
 			{
 				window->paused = true;
-				SLEEP(1);
 			}
 			else
 			{
@@ -246,9 +245,9 @@ static int thread_main(void * data)
 			
 				glfwSwapBuffers(window->glfwWindow);
 				init = 1;
-				
-				thrd_yield();
 			}
+			
+			thrd_yield();
 		}
 		else
 		{

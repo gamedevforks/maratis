@@ -106,9 +106,12 @@ MPhysicsConstraint * MPhysicsProperties::createConstraint(void)
 
 MOEntity::MOEntity(MMeshRef * meshRef):
 MObject3d(),
+m_needToUpdateCache(true),
+m_subMeshCachesNumber(0),
+m_subMeshCaches(NULL),
 m_isInvisible(false),
-m_animationId(0),
 m_currentLoop(0),
+m_animationId(0),
 m_animationSpeed(1),
 m_currentFrame(0),
 m_physicsProperties(NULL)
@@ -118,9 +121,12 @@ m_physicsProperties(NULL)
 
 MOEntity::MOEntity(const MOEntity & entity):
 MObject3d(entity),
+m_needToUpdateCache(true),
+m_subMeshCachesNumber(0),
+m_subMeshCaches(NULL),
 m_isInvisible(entity.m_isInvisible),
-m_animationId(entity.m_animationId),
 m_currentLoop(entity.m_currentLoop),
+m_animationId(entity.m_animationId),
 m_animationSpeed(entity.m_animationSpeed),
 m_currentFrame(entity.m_currentFrame),
 m_physicsProperties(NULL)
@@ -132,6 +138,8 @@ m_physicsProperties(NULL)
 
 MOEntity::~MOEntity(void)
 {
+	clearPrivateMaterials();
+	clearSubMeshCaches();
 	deletePhysicsProperties();
 	MObject3d::clearObject3d();
 }
@@ -204,10 +212,205 @@ void MOEntity::setMeshRef(MMeshRef * meshRef)
 		MMesh * mesh = meshRef->getMesh();
 		if(mesh)
 		{
-			// create nounding box
+			// copy nounding box
 			m_boundingBox = (*mesh->getBoundingBox());
+			
+			// armature
+			if(mesh->getArmature())
+				return;
 		}
 	}
+	
+	clearSubMeshCaches();
+}
+
+void MOEntity::clearSubMeshCaches(void)
+{
+	m_subMeshCachesNumber = 0;
+	SAFE_DELETE_ARRAY(m_subMeshCaches);
+}
+
+bool MOEntity::getRayNearestIntersectionDistance(const MVector3 & origin, const MVector3 & dest, float * distance)
+{
+	MMesh * mesh = getMesh();
+	if(! mesh)
+		return false;
+
+	MMatrix4x4 * matrix = getMatrix();
+	MMatrix4x4 iMatrix = matrix->getInverse();
+
+	MVector3 localOrigin = iMatrix * origin;
+	MVector3 localDest = iMatrix * dest;
+
+	MBox3d * ebox = getBoundingBox();
+	if(! isEdgeToBoxCollision(localOrigin, localDest, ebox->min, ebox->max))
+		return false;
+		
+	bool raytraced = false;
+
+	float dist;
+	float nearDist;
+	MVector3 I, intersectionPoint;
+	MVector3 rayVector = localDest - localOrigin;
+
+	// init near dist
+	nearDist = rayVector.getSquaredLength();
+
+	unsigned int s;
+	unsigned int sSize = mesh->getSubMeshsNumber();
+	for(s=0; s<sSize; s++)
+	{
+		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
+		MVector3 * vertices = subMesh->getVertices();
+		MBox3d * box = subMesh->getBoundingBox();
+		
+		if(getSubMeshCachesNumber() == sSize)
+		{
+			MSubMeshCache * subMeshCache = &getSubMeshCaches()[s];
+			vertices = subMeshCache->getVertices();
+			box = subMeshCache->getBoundingBox();
+		}
+
+		if(isEdgeToBoxCollision(localOrigin, localDest, box->min, box->max))
+		{
+			unsigned int d;
+			unsigned int dSize = subMesh->getDisplaysNumber();
+			for(d=0; d<dSize; d++)
+			{
+				MDisplay * display = subMesh->getDisplay(d);
+
+				// indices
+				void * indices = subMesh->getIndices();
+				switch(subMesh->getIndicesType())
+				{
+					case M_USHORT:
+					{
+						unsigned short * idx = (unsigned short *)indices;
+						indices = (void *)(idx + display->getBegin());
+						break;
+					}
+					case M_UINT:
+					{
+						unsigned int * idx = (unsigned int *)indices;
+						indices = (void *)(idx + display->getBegin());
+						break;
+					}
+
+                    default:
+                        break;
+				}
+
+				// BACK or FRONT and BACK, scan ray
+				if((display->getCullMode() == M_CULL_BACK) || (display->getCullMode() == M_CULL_NONE))
+				{
+					if(getNearestRaytracedPosition(
+						localOrigin, localDest,
+						indices,
+						subMesh->getIndicesType(),
+						vertices,
+						display->getSize(),
+						&I))
+					{
+						dist = (I - localOrigin).getSquaredLength();
+						if(dist < nearDist)
+						{
+							intersectionPoint = I;
+							nearDist = dist;
+							raytraced = true;
+						}
+					}
+				}
+
+				// FRONT or FRONT and BACK, scan invert
+				if((display->getCullMode() == M_CULL_FRONT) || (display->getCullMode() == M_CULL_NONE))
+				{
+					if(getNearestRaytracedPosition(
+						localOrigin, localDest,
+						indices,
+						subMesh->getIndicesType(),
+						vertices,
+						display->getSize(),
+						&I, 1))
+					{
+						dist = (I - localOrigin).getSquaredLength();
+						if(dist < nearDist)
+						{
+							intersectionPoint = I;
+							nearDist = dist;
+							raytraced = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if(raytraced)
+		*distance = (((*matrix) * intersectionPoint) - origin).getLength();
+
+	return raytraced;
+}
+
+MMaterial * MOEntity::createPrivateMaterial(unsigned int id)
+{
+	map<unsigned int, MMaterial*>::iterator iter = m_materials.find(id);
+    if(iter != m_materials.end())
+    {
+        return iter->second;
+    }
+	else
+	{
+		MMaterial * material, * meshMaterial = getMaterial(id);
+		if(meshMaterial)
+			material = new MMaterial(*meshMaterial);
+		else
+			material = new MMaterial();
+		m_materials[id] = material;
+		return material;
+	}
+}
+
+MMaterial * MOEntity::getMaterial(unsigned int id)
+{
+	map<unsigned int, MMaterial*>::iterator iter = m_materials.find(id);
+	if(iter != m_materials.end())
+    {
+        return iter->second;
+    }
+	
+	if(m_meshRef)
+	{
+		MMesh * mesh = m_meshRef->getMesh();
+		if(mesh)
+		{
+			if(id < mesh->getMaterialsNumber())
+				return mesh->getMaterial(id);
+		}
+	}
+	
+	return NULL;
+}
+
+void MOEntity::deletePrivateMaterial(unsigned int id)
+{
+	map<unsigned int, MMaterial*>::iterator iter = m_materials.find(id);
+    if(iter != m_materials.end())
+    {
+        SAFE_DELETE(iter->second);
+		m_materials.erase(iter);
+    }
+}
+
+void MOEntity::clearPrivateMaterials(void)
+{
+	map<unsigned int, MMaterial*>::iterator
+		mit (m_materials.begin()),
+		mend(m_materials.end());
+		
+	for(; mit!=mend; mit++)
+		SAFE_DELETE(mit->second);
+	
+	m_materials.clear();
 }
 
 MMesh * MOEntity::getMesh(void)
@@ -271,8 +474,82 @@ bool MOEntity::isAnimationOver(void)
 	return false;
 }
 
+void MOEntity::updateCache(void)
+{
+	if(! m_needToUpdateCache)
+		return;
+
+	MMesh * mesh = getMesh();
+	if(! mesh)
+		return;
+		
+	MArmature * armature = mesh->getArmature();
+	if(! armature)
+		return;
+		
+		
+	// update armature
+	if(mesh->getArmatureAnim())
+	{
+		animateArmature(
+			mesh->getArmature(),
+			mesh->getArmatureAnim(),
+			m_currentFrame
+		);
+	}
+	else
+	{
+		armature->processBonesLinking();
+		armature->updateBonesSkinMatrix();
+	}
+		
+		
+	// update cache
+	unsigned int s, sSize = mesh->getSubMeshsNumber();
+	
+	if(m_subMeshCachesNumber != sSize)
+	{
+		// alloc cache
+		SAFE_DELETE(m_subMeshCaches);
+		m_subMeshCachesNumber = sSize;
+		if(m_subMeshCachesNumber > 0)
+			m_subMeshCaches = new MSubMeshCache[m_subMeshCachesNumber];
+	}
+	
+	for(s=0; s<sSize; s++)
+	{
+		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
+		MSubMeshCache * subMeshCache = &getSubMeshCaches()[s];
+
+		if(! subMesh->getVertices() || ! subMesh->getSkinData())
+			continue;
+			
+		MVector3 * vertices = subMesh->getVertices();
+		MVector3 * normals = subMesh->getNormals();
+		MVector3 * tangents = subMesh->getTangents();
+		
+		unsigned int verticesSize = subMesh->getVerticesSize();
+		unsigned int normalsSize = subMesh->getNormalsSize();
+		unsigned int tangentsSize = subMesh->getTangentsSize();
+
+		MVector3 * skinVertices = subMeshCache->allocVertices(verticesSize);
+		MVector3 * skinNormals = subMeshCache->allocNormals(normalsSize);
+		MVector3 * skinTangents = subMeshCache->allocTangents(tangentsSize);
+		
+		MSkinData * skinData = subMesh->getSkinData();
+		computeSkinning(armature, skinData, vertices, normals, tangents, skinVertices, skinNormals, skinTangents);
+		
+		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
+		*subMeshCache->getBoundingBox() = *subMesh->getBoundingBox();
+	}
+
+	mesh->updateBoundingBox();
+	m_boundingBox = *mesh->getBoundingBox();
+	m_needToUpdateCache = false;
+}
+
 void MOEntity::update(void)
-{	
+{
 	MMesh * mesh = getMesh();
 	if(mesh)
 	{
@@ -306,5 +583,8 @@ void MOEntity::update(void)
 				}
 			}
 		}
+		
+		m_needToUpdateCache = true;
+		updateCache();
 	}
 }

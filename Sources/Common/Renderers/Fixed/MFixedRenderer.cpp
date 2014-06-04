@@ -37,20 +37,11 @@
 // Init
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MFixedRenderer::MFixedRenderer(void):
-m_verticesNumber(0),
-m_normalsNumber(0),
-m_vertices(NULL),
-m_normals(NULL)
-{
-}
+MFixedRenderer::MFixedRenderer(void)
+{}
 
 MFixedRenderer::~MFixedRenderer(void)
-{
-	// delete skin cache
-	SAFE_DELETE_ARRAY(m_vertices);
-	SAFE_DELETE_ARRAY(m_normals);
-}
+{}
 
 void MFixedRenderer::destroy(void)
 {
@@ -67,65 +58,25 @@ MRenderer * MFixedRenderer::getNew(void)
 // Drawing
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MVector3 * MFixedRenderer::getVertices(unsigned int size)
+static bool hasSubMeshTransparency(MOEntity * entity, MSubMesh * subMesh)
 {
-	if(size == 0)
-		return NULL;
-
-	if(size > m_verticesNumber)
+	unsigned int i, displayNumber = subMesh->getDisplaysNumber();
+	for(i=0; i<displayNumber; i++)
 	{
-		SAFE_DELETE_ARRAY(m_vertices);
-		m_vertices = new MVector3[size];
-		m_verticesNumber = size;
-	}
-
-	return m_vertices;
-}
-
-MVector3 * MFixedRenderer::getNormals(unsigned int size)
-{
-	if(size == 0)
-		return NULL;
-
-	if(size > m_normalsNumber)
-	{
-		SAFE_DELETE_ARRAY(m_normals);
-		m_normals = new MVector3[size];
-		m_normalsNumber = size;
-	}
-
-	return m_normals;
-}
-
-void MFixedRenderer::updateSkinning(MMesh * mesh, MArmature * armature)
-{
-	unsigned int s;
-	unsigned int sSize = mesh->getSubMeshsNumber();
-	for(s=0; s<sSize; s++)
-	{
-		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
-
-		// data
-		MVector3 * vertices = subMesh->getVertices();
-
-		if(! vertices)
+		MDisplay * display = subMesh->getDisplay(i);
+		MMaterial * material = entity->getMaterial(display->getMaterialId());
+		
+		if((! display->isVisible()) || (! material))
 			continue;
 
-		MSkinData * skinData = subMesh->getSkinData();
-		if(armature && skinData)
-		{
-			unsigned int verticesSize = subMesh->getVerticesSize();
-			MVector3 * skinVertices = getVertices(verticesSize);
-
-			computeSkinning(armature, skinData, vertices, NULL, NULL, skinVertices, NULL, NULL);
-			subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-		}
+		if(material->getBlendMode() != M_BLENDING_NONE)
+			return true;
 	}
 
-	mesh->updateBoundingBox();
+	return false;
 }
 
-void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MColor * colors)
+void MFixedRenderer::drawDisplay(MOEntity * entity, MSubMesh * subMesh, MDisplay * display, MVector3 * vertices, MVector3 * normals, MColor * colors)
 {
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
@@ -135,7 +86,7 @@ void MFixedRenderer::drawDisplay(MSubMesh * subMesh, MDisplay * display, MVector
 
 
 	// get material
-	MMaterial * material = display->getMaterial();
+	MMaterial * material = entity->getMaterial(display->getMaterialId());
 	{
 		float opacity = material->getOpacity();
 		if(opacity <= 0.0f)
@@ -410,7 +361,7 @@ void MFixedRenderer::drawDisplayTriangles(MSubMesh * subMesh, MDisplay * display
 	render->bindFX(0);
 }
 
-void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
+void MFixedRenderer::drawOpaques(MOEntity * entity, MSubMeshCache * subMeshCache, MSubMesh * subMesh, MArmature * armature)
 {
 	// data
 	MVector3 * vertices = subMesh->getVertices();
@@ -420,20 +371,10 @@ void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 	if(! vertices)
 		return;
 
-	MSkinData * skinData = subMesh->getSkinData();
-	if(armature && skinData)
+	if(subMeshCache)
 	{
-		unsigned int verticesSize = subMesh->getVerticesSize();
-		unsigned int normalsSize = subMesh->getNormalsSize();
-
-		MVector3 * skinVertices = getVertices(verticesSize);
-		MVector3 * skinNormals = getNormals(normalsSize);
-
-		computeSkinning(armature, skinData, vertices, normals, NULL, skinVertices, skinNormals, NULL);
-		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-
-		vertices = skinVertices;
-		normals = skinNormals;
+		vertices = subMeshCache->getVertices();
+		normals = subMeshCache->getNormals();
 	}
 
 	unsigned int i;
@@ -444,16 +385,16 @@ void MFixedRenderer::drawOpaques(MSubMesh * subMesh, MArmature * armature)
 		if(! display->isVisible())
 			continue;
 
-		MMaterial * material = display->getMaterial();
+		MMaterial * material = entity->getMaterial(display->getMaterialId());
 		if(material)
 		{
 			if(material->getBlendMode() == M_BLENDING_NONE)
-				drawDisplay(subMesh, display, vertices, normals, colors);
+				drawDisplay(entity, subMesh, display, vertices, normals, colors);
 		}
 	}
 }
 
-void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
+void MFixedRenderer::drawTransparents(MOEntity * entity, MSubMeshCache * subMeshCache, MSubMesh * subMesh, MArmature * armature)
 {
 	// data
 	MVector3 * vertices = subMesh->getVertices();
@@ -463,42 +404,14 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 	if(! vertices)
 		return;
 
-	MSkinData * skinData = subMesh->getSkinData();
-	if(armature && skinData)
+	if(subMeshCache)
 	{
-		unsigned int verticesSize = subMesh->getVerticesSize();
-		unsigned int normalsSize = subMesh->getNormalsSize();
-
-		MVector3 * skinVertices = getVertices(verticesSize);
-		MVector3 * skinNormals = getNormals(normalsSize);
-
-		computeSkinning(armature, skinData, vertices, normals, NULL, skinVertices, skinNormals, NULL);
-		subMesh->getBoundingBox()->initFromPoints(skinVertices, verticesSize);
-
-		vertices = skinVertices;
-		normals = skinNormals;
+		vertices = subMeshCache->getVertices();
+		normals = subMeshCache->getNormals();
 	}
 
-	
 	unsigned int i;
 	unsigned int displayNumber = subMesh->getDisplaysNumber();
-	
-	/*
-	// not sure of this technique
-	render->setColorMask(0, 0, 0, 0);
-
-	for(i=0; i<displayNumber; i++)
-	{
-		MDisplay * display = subMesh->getDisplay(i);
-		if((! display->isVisible()) || (! display->getMaterial()))
-			continue;
-
-		if(display->getMaterial()->getBlendMode() == M_BLENDING_ALPHA)
-			drawDisplayTriangles(subMesh, display, vertices);
-	}
-
-	render->setColorMask(1, 1, 1, 1);
-	render->setDepthMask(0);*/
 
 	for(i=0; i<displayNumber; i++)
 	{
@@ -506,15 +419,13 @@ void MFixedRenderer::drawTransparents(MSubMesh * subMesh, MArmature * armature)
 		if(! display->isVisible())
 			continue;
 
-		MMaterial * material = display->getMaterial();
+		MMaterial * material = entity->getMaterial(display->getMaterialId());
 		if(material)
 		{
 			if(material->getBlendMode() != M_BLENDING_NONE)
-				drawDisplay(subMesh, display, vertices, normals, colors);
+				drawDisplay(entity, subMesh, display, vertices, normals, colors);
 		}
 	}
-
-	//render->setDepthMask(1);
 }
 
 float MFixedRenderer::getDistanceToCam(MOCamera * camera, const MVector3 & pos)
@@ -738,39 +649,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 			continue;
 
 		if(! entity->isVisible())
-		{
-			if(mesh)
-			{
-				MArmature * armature = mesh->getArmature();
-				if(armature)
-				{
-					// animate armature
-					if(mesh->getArmature())
-					{
-						MArmature * armature = mesh->getArmature();
-						if(mesh->getArmatureAnim())
-						{
-							animateArmature(
-								mesh->getArmature(),
-								mesh->getArmatureAnim(),
-								entity->getCurrentFrame()
-							);
-						}
-						else
-						{
-							armature->processBonesLinking();
-							armature->updateBonesSkinMatrix();
-						}
-					}
-
-					// TODO : optimize and add a tag to desactivate it
-					updateSkinning(mesh, armature);
-					(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
-				}
-			}
-
 			continue;
-		}
 
 		// draw mesh
 		if(mesh)
@@ -818,25 +697,6 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					break;
 			}
 
-			// animate armature
-			if(mesh->getArmature())
-			{
-				MArmature * armature = mesh->getArmature();
-				if(mesh->getArmatureAnim())
-				{
-					animateArmature(
-						mesh->getArmature(),
-						mesh->getArmatureAnim(),
-						entity->getCurrentFrame()
-					);
-				}
-				else
-				{
-					armature->processBonesLinking();
-					armature->updateBonesSkinMatrix();
-				}
-			}
-
 			// animate textures
 			if(mesh->getTexturesAnim())
 				animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
@@ -852,6 +712,14 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				MSubMesh * subMesh = &mesh->getSubMeshs()[s];
 				MBox3d * box = subMesh->getBoundingBox();
 
+				// cache
+				MSubMeshCache * subMeshCache = NULL;
+				if(entity->getSubMeshCachesNumber() == sSize)
+				{
+					subMeshCache = &entity->getSubMeshCaches()[s];
+					box = subMeshCache->getBoundingBox();
+				}
+				
 				// check if submesh visible
 				if(sSize > 1)
 				{
@@ -939,9 +807,9 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				render->multMatrix(entity->getMatrix());
 
 				// draw opaques
-				drawOpaques(subMesh, mesh->getArmature());
+				drawOpaques(entity, subMeshCache, subMesh, mesh->getArmature());
 
-				if(subMesh->hasTransparency())
+				if(hasSubMeshTransparency(entity, subMesh))
 				{
 					if(transpSubObsNumber < MAX_TRANSP_SUBOBJ)
 					{
@@ -968,9 +836,6 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 				render->popMatrix();
 			}
-
-			mesh->updateBoundingBox();
-			(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 		}
 	}
 
@@ -1025,25 +890,6 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				MMesh * mesh = entity->getMesh();
 				MSubMesh * subMesh = &mesh->getSubMeshs()[subMeshId];
 
-				// animate armature
-				if(mesh->getArmature())
-				{
-					MArmature * armature = mesh->getArmature();
-					if(mesh->getArmatureAnim())
-					{
-						animateArmature(
-							mesh->getArmature(),
-							mesh->getArmatureAnim(),
-							entity->getCurrentFrame()
-						);
-					}
-					else
-					{
-						armature->processBonesLinking();
-						armature->updateBonesSkinMatrix();
-					}
-				}
-
 				// animate textures
 				if(mesh->getTexturesAnim())
 					animateTextures(mesh, mesh->getTexturesAnim(), entity->getCurrentFrame());
@@ -1086,14 +932,16 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				for(l=subMeshPass->lightsNumber; l<4; l++){
 					render->disableLight(l);
 				}
+				
+				// cache
+				MSubMeshCache * subMeshCache = NULL;
+				if(entity->getSubMeshCachesNumber() == mesh->getSubMeshsNumber())
+					subMeshCache = &entity->getSubMeshCaches()[subMeshPass->subMeshId];
 
 				render->pushMatrix();
 				render->multMatrix(entity->getMatrix());
-				drawTransparents(subMesh, mesh->getArmature());
+				drawTransparents(entity, subMeshCache, subMesh, mesh->getArmature());
 				render->popMatrix();
-
-				mesh->updateBoundingBox();
-				(*entity->getBoundingBox()) = (*mesh->getBoundingBox());
 			}
 				break;
 

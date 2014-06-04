@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// MSelectionUtils.cpp
+// MUIConstants.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-//  Maratis, Copyright (c) 2003-2014 Anael Seghezzi <www.maratis3d.com>
+//  Maratis, Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -23,8 +23,21 @@
 //========================================================================
 
 
-#include <MEngine.h>
-#include "MSelectionUtils.h"
+#ifndef _MUI_CONSTANTS_H
+#define _MUI_CONSTANTS_H
 
+#define MUI_HEAD_H 24
+#define MUI_EDIT_W 225
+#define MUI_CONSOLE_H 16
+#define MUI_CONSOLE_EXTENDED_H 250
+#define MUI_TOOLS_X 8
+#define MUI_TOOLS_Y 35
 
+#define MUI_DIVIDER 1
+#define MUI_HEAD_MARGIN 8
+#define MUI_MENU_MARGIN 16
+#define MUI_EDIT_MARGIN 16
+#define MUI_VARIABLE_SPACE 10
+#define MUI_VALUE_SPACE 7
 
+#endif

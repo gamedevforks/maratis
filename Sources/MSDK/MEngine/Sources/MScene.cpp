@@ -149,6 +149,44 @@ MOCamera * MScene::getCurrentCamera(void)
 	return NULL;
 }
 
+MOEntity * MScene::getRayNearestEntityIntersection(const MVector3 & origin, const MVector3 & dest, MVector3 * intersectPoint)
+{
+	float distance = 0;
+	MOEntity * nearestEntity = NULL;
+	
+	unsigned int i;
+	unsigned int oSize = getEntitiesNumber();
+	for(i=0; i<oSize; i++)
+	{
+		MOEntity * entity = getEntityByIndex(i);
+		
+		if(! entity->isActive())
+			continue;
+		
+		if(entity->isInvisible())
+			continue;
+
+		MMesh * mesh = entity->getMesh();
+		if(! mesh)
+			continue;
+		
+		float dist;
+		if(! entity->getRayNearestIntersectionDistance(origin, dest, &dist))
+			continue;
+	
+		if((! nearestEntity) || (dist < distance))
+		{
+			nearestEntity = entity;
+			distance = dist;
+		}
+	}
+	
+	if(intersectPoint && nearestEntity)
+		*intersectPoint = origin + (dest - origin).getNormalized()*distance;
+	
+	return nearestEntity;
+}
+
 void MScene::setName(const char * name)
 {
 	m_name.set(name);
@@ -514,6 +552,31 @@ void MScene::preparePhysics(void)
 	}
 }
 
+MString MScene::getNewObjectName(const char * baseName)
+{
+	unsigned int count = 0;
+	
+	char name[256];
+	sprintf(name, "%s%d", baseName, count);
+	
+	int size = getObjectsNumber();
+	for(int i=0; i<size; i++)
+	{
+		MObject3d * object = getObjectByIndex(i);
+		if(object->getName())
+		{
+            if(strcmp(name, object->getName()) == 0) // name already exists
+            {
+                count++;
+                sprintf(name, "%s%d", baseName, count);
+                i = -1;
+            }
+		}
+	}
+	
+	return MString(name);
+}
+
 void MScene::deleteObject(MObject3d * object)
 {
 	if(! object)
@@ -525,7 +588,7 @@ void MScene::deleteObject(MObject3d * object)
 	// objects
 	switch(object->getType())
 	{
-	case M_OBJECT3D_ENTITY:
+		case M_OBJECT3D_ENTITY:
 		{
 			// entities
 			oSize = m_entities.size();
@@ -539,7 +602,7 @@ void MScene::deleteObject(MObject3d * object)
 		}
 		break;
 
-	case M_OBJECT3D_CAMERA:
+		case M_OBJECT3D_CAMERA:
 		{
 			// cameras
 			oSize = m_cameras.size();
@@ -553,7 +616,7 @@ void MScene::deleteObject(MObject3d * object)
 		}
 		break;
 
-	case M_OBJECT3D_LIGHT:
+		case M_OBJECT3D_LIGHT:
 		{
 			// lights
 			oSize = m_lights.size();
@@ -567,7 +630,7 @@ void MScene::deleteObject(MObject3d * object)
 		}
 		break;
 
-	case M_OBJECT3D_SOUND:
+		case M_OBJECT3D_SOUND:
 		{
 			// sounds
 			oSize = m_sounds.size();
@@ -581,7 +644,7 @@ void MScene::deleteObject(MObject3d * object)
 		}
 		break;
 
-	case M_OBJECT3D_TEXT:
+		case M_OBJECT3D_TEXT:
 		{
 			// sounds
 			oSize = m_texts.size();
@@ -598,7 +661,8 @@ void MScene::deleteObject(MObject3d * object)
 
 	// objects pointer
 	oSize = m_objects.size();
-	for(i=0; i<oSize; i++){
+	for(i=0; i<oSize; i++)
+	{
 		MObject3d * obj = m_objects[i];
 		if(obj == object)
 		{

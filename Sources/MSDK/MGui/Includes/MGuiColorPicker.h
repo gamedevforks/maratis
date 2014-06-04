@@ -27,6 +27,7 @@
 //
 //========================================================================
 
+
 #ifndef _M_GUI_COLOR_PICKER_H
 #define _M_GUI_COLOR_PICKER_H
 
@@ -57,7 +58,7 @@ private:
 	float * m_B;
 	float * m_A;
 	
-	void * m_customPointer;
+	void * m_userPointer;
 	void (* m_eventCallback)(MGuiColorPicker * fileBrowser, MGUI_COLOR_PICKER_EVENT_TYPE event);
 	
 	void updateTargets(void);
@@ -78,8 +79,8 @@ public:
 	void close(void);
 	void draw(MGuiWindow * window);
 	
-	void setCustomPointer(void * pointer){ m_customPointer = pointer; }
-	void * getCustomPointer(void){ return m_customPointer; }
+	void setUserPointer(void * pointer){ m_userPointer = pointer; }
+	void * getUserPointer(void){ return m_userPointer; }
 };
 
 #endif

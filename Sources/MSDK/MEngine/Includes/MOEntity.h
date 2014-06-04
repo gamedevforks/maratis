@@ -154,13 +154,21 @@ private:
 
 	// mesh
 	MMeshRef * m_meshRef;
+	
+	// mesh cache
+	bool m_needToUpdateCache;
+	unsigned int m_subMeshCachesNumber;
+	MSubMeshCache * m_subMeshCaches;
+
+	// materials
+	map<unsigned int, MMaterial*> m_materials;
 
 	// invisible
 	bool m_isInvisible;
 
 	// animation
-	unsigned int m_animationId;
 	int m_currentLoop;
+	unsigned int m_animationId;
 	float m_animationSpeed;
 	float m_currentFrame;
 
@@ -170,21 +178,39 @@ private:
 	// bounding box
 	MBox3d m_boundingBox;
 
+private:
+
+	void clearSubMeshCaches(void);
+
 public:
 
 	// type
 	int getType(void){ return M_OBJECT3D_ENTITY; }
 
+	// active
 	void setActive(bool active);
 	
 	// invisible
-	void setInvisible(bool invisible){ m_isInvisible = invisible; }
-	bool isInvisible(void){ return m_isInvisible; }
+	inline void setInvisible(bool invisible){ m_isInvisible = invisible; }
+	inline bool isInvisible(void){ return m_isInvisible; }
 
 	// mesh
 	MMesh * getMesh(void);
 	void setMeshRef(MMeshRef * meshRef);
 	inline MMeshRef * getMeshRef(void){ return m_meshRef; }
+
+	// mesh cache
+	inline unsigned int getSubMeshCachesNumber(void){ return m_subMeshCachesNumber; }
+	inline MSubMeshCache * getSubMeshCaches(void){ return m_subMeshCaches; }
+
+	// raytracing
+	bool getRayNearestIntersectionDistance(const MVector3 & origin, const MVector3 & dest, float * distance);
+
+	// materials
+	MMaterial * getMaterial(unsigned int id); // return the private material if existing or else return the mesh material
+	MMaterial * createPrivateMaterial(unsigned int id);
+	void deletePrivateMaterial(unsigned int id);
+	void clearPrivateMaterials(void);
 
 	// animation
 	void changeAnimation(unsigned int animationId);
@@ -205,8 +231,7 @@ public:
 
 	// update
 	void update(void);
-
-	// visibility
+	void updateCache(void);
 	void updateVisibility(MOCamera * camera);
 };
 

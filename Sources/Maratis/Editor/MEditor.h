@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// MaratisEditor.h
+// MEditor.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -26,66 +26,70 @@
 #ifndef _MARATIS_EDITOR_H
 #define _MARATIS_EDITOR_H
 
-enum M_AXIS
-{
-	M_AXIS_NONE = 0,
-	M_AXIS_X,
-	M_AXIS_Y,
-	M_AXIS_Z,
-	M_AXIS_VIEW
-};
+#ifdef WIN32
 
-enum M_ORIENTATION_MODE
-{
-	M_ORIENTATION_WORLD = 0,
-	M_ORIENTATION_LOCAL
-};
+	// M_EDITOR_EXPORT
+	#if defined(MEDITOR_DLL)
+		#define M_EDITOR_EXPORT __declspec( dllexport )
+	#elif defined(MEDITOR_STATIC)
+		#define M_EDITOR_EXPORT
+	#else
+		#define M_EDITOR_EXPORT __declspec( dllimport )
+	#endif
 
-enum M_TRANSFORM_MODE
-{
-	M_TRANSFORM_MOUSE = 0,
-	M_TRANSFORM_POSITION,
-	M_TRANSFORM_ROTATION,
-	M_TRANSFORM_SCALE
-};
+#else
+
+	// M_EDITOR_EXPORT
+	#define M_EDITOR_EXPORT
+
+#endif
 
 
-class MaratisEditor
+#include <MEngine.h>
+#include <MGui.h>
+
+#include "MViewport.h"
+#include "M3dView.h"
+#include "MV3dView.h"
+#include "MV3dEdit.h"
+#include "MPreferences.h"
+#include "MUIConstants.h"
+#include "MSelectionManager.h"
+
+
+class M_EDITOR_EXPORT MEditor
 {
 public:
 
 	// constructor / destructor
-	MaratisEditor(void);
-	~MaratisEditor(void);
+	MEditor(void);
+	~MEditor(void);
 
 	// instance
-	static MaratisEditor * getInstance(void)
+	static MEditor * getInstance(void)
 	{
-		static MaratisEditor m_instance;
+		static MEditor m_instance;
 		return &m_instance;
 	}
 
 private:
 	
-	MOEntity * m_sphereEntity;
-	MOEntity * m_coneEntity;
-	MOEntity * m_cubeEntity;
-	MOEntity * m_planeEntity;
-	MOEntity * m_xEntity;
-	MOEntity * m_yEntity;
-	MOEntity * m_zEntity;
-	MOEntity * m_xcircleEntity;
-	MOEntity * m_ycircleEntity;
-	MOEntity * m_zcircleEntity;
-	MOEntity * m_lightEntity;
-	MOEntity * m_cameraEntity;
-	MOEntity * m_soundEntity;
+	MLevel m_guiData;
+	MPreferences m_preferences;
+	MSelectionManager m_selectionManager;
+	
+public:
 
-	// mesh manager
-	MDataManager m_meshManager;
-
-	// empty text
-	MOText m_emptyText;
+	void init(void);
+	void clear(void);
+	
+	inline MPreferences * getPreferences(void){ return &m_preferences; }
+	inline MLevel * getGuiData(void){ return &m_guiData; }
+	inline MSelectionManager * getSelectionManager(void){ return &m_selectionManager; }
+	
+	// windows
+	MWindow * createWindow(const char * title, int x, int y, unsigned int width, unsigned int height, void (* eventCallback)(MWindow * rootWindow, MWIN_EVENT_TYPE event) = NULL);
+	void closeWindow(MWindow * window);
 };
 
 #endif

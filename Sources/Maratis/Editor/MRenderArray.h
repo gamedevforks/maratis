@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// MView.h
+// MRenderArray.h
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -22,25 +22,13 @@
 //
 //========================================================================
 
-#ifndef _M_VIEW_H
-#define _M_VIEW_H
+#ifndef _M_RENDER_ARRAY_H
+#define _M_RENDER_ARRAY_H
 
-
-class MView
-{
-public:
-	
-	MView(void);
-	
-	MOCamera m_camera;
-	MVector3 m_pivot;
-	
-	void initPerspective(void);
-	void initOrtho(int mode);
-	void switchProjectionMode(void);
-	void rotate(float mx, float my);
-	void pan(float mx, float my);
-	void zoom(float mz);
-};
+void beginDraw(M_PRIMITIVE_TYPES primitiveType);
+void pushVertex(const MVector3 & vertex);
+void setColor(const MVector4 & color);
+void setTexcoords(const MVector2 & texcoords);
+void endDraw(MRenderingContext * render);
 
 #endif

@@ -94,6 +94,7 @@ public:
 
 	// refs
 	void addRef(MDataRef * ref);
+	MDataRef * getRefFromFilename(const char * filename);
 	inline MDataRef * getRef(unsigned int id){ return m_refs[id]; }
 	inline unsigned int getRefsNumber(void){ return m_refs.size(); }
 };

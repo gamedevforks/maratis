@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// M3dView.h
+// M3dView.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -22,142 +22,174 @@
 //
 //========================================================================
 
-#include <MEngine.h>
-#include <MGui.h>
 
-#include "MViewport.h"
-#include "MView.h"
-#include "MPreferences.h"
-#include "M3dView.h"
+#include "MEditor.h"
 
 
-M3dView::M3dView(void):
-m_window(NULL)
-{}
-
-M3dView::~M3dView(void)
+M3dView::M3dView(void)
 {
-	if(m_window)
+	initPerspective();
+}
+
+void M3dView::initPerspective(void)
+{
+	m_camera.setClippingNear(1);
+	m_camera.setClippingFar(100000);
+	m_camera.setPosition(MVector3(0, -200, 200));
+	m_camera.setEulerRotation(MVector3(40, 0, 0));
+	m_camera.enableOrtho(false);
+	m_camera.updateMatrix();
+
+	m_pivot.loadIdentity();
+}
+
+void M3dView::initOrtho(int mode)
+{
+	MVector3 position = m_camera.getPosition();
+
+	if(! m_camera.isOrtho())
+		switchProjectionMode();
+
+	float dist = (m_pivot - position).getLength();
+
+	// set vue
+	switch(mode)
 	{
-		m_window->deleteMe();
-		m_window = NULL;
+        case 1:
+            m_camera.setPosition(MVector3(0, -dist, 0));
+            m_camera.setEulerRotation(MVector3(90, 0, 0));
+            break;
+        case 3:
+            m_camera.setPosition(MVector3(dist, 0, 0));
+            m_camera.setEulerRotation(MVector3(90, 0, 90));
+            break;
+        case 7:
+            m_camera.setPosition(MVector3(0, 0, dist));
+            m_camera.setEulerRotation(MVector3(0, 0, 0));
+            break;
+        case 9:
+            m_camera.setPosition(MVector3(0, 0, -dist));
+            m_camera.setEulerRotation(MVector3(180, 0, 0));
+            break;
 	}
+
+	m_camera.updateMatrix();
 }
 
-void M3dView::create(MWindow * rootWindow)
+void M3dView::rotate(float mx, float my)
 {
-	if(! m_window)
-		m_window = rootWindow->addNewWindow();
+	// inverse center
+	MVector3 lCenter = m_camera.getInversePosition(m_pivot);
+
+	// rotation
+	m_camera.addAxisAngleRotation(MVector3(1, 0, 0), -my*0.65f);
+
+	MMatrix4x4 matrix;
+	MQuaternion rotation = m_camera.getRotation();
+	matrix.setRotationAxis(rotation.getAngle(), rotation.getAxis());
+	matrix.invert();
+
+	MVector3 axis = matrix * MVector3(0, 0, 1);
+	m_camera.addAxisAngleRotation(axis, -mx*0.65f);
+	m_camera.updateMatrix();
+
+	// position
+	MVector3 fCenter = m_camera.getTransformedVector(lCenter);
+	m_camera.setPosition(m_camera.getPosition() + (m_pivot - fCenter));
+
+	m_camera.updateMatrix();
 }
 
-void M3dView::constraintTo(MVector2 position, MVector2 scale)
+void M3dView::pan(float mx, float my)
 {
-	if(m_window)
-	{
-		m_window->setPosition(position);
-		m_window->setScale(scale);
-	}
-}
+	int * viewport = m_camera.getCurrentViewport();
 
-void M3dView::hide(void)
-{
-	if(m_window)
-		m_window->setVisible(false);
-}
-
-void M3dView::show(void)
-{
-	if(m_window)
-		m_window->setVisible(true);
-}
-
-void M3dView::onEvent(MWindow * rootWindow, MWIN_EVENT_TYPE event)
-{
-	MPreferences * prefs = MPreferences::getInstance();
-
-	if(! m_window)
-		return;
-		
-	if(rootWindow->isSomethingEditing() || (! m_window->isVisible()))
-		return;
-
-	switch(event)
-	{
-        case MWIN_EVENT_MOUSE_MOVE:
-		{
-			MVector2 mouseDir = rootWindow->getMouseDir();
-			
-			/*if(mouse->isLeftButtonPushed())
-			{
-				maratis->transformSelectedObjects();
-				break;
-			}*/
-
-			if(m_window->isScrolled() && rootWindow->isMouseButtonPressed(MMOUSE_BUTTON_MIDDLE))
-			{
-				if(prefs->isShortCutEngaged(rootWindow, "Pan View"))
-				{
-					m_view.pan(mouseDir.x, mouseDir.y);
-				}
-				else
-				{
-					m_view.rotate(mouseDir.x, mouseDir.y);
-				}
-			}
-			
-			break;
-		}
+	MVector3 vecX(1, 0, 0);
+	MVector3 vecZ(0, 1, 0);
+	MVector3 xAxis = m_camera.getRotatedVector(vecX);
+	MVector3 zAxis = m_camera.getRotatedVector(vecZ);
+	MVector3 position = m_camera.getPosition();
 	
-        case MWIN_EVENT_MOUSE_SCROLL:
+	if(m_camera.isOrtho())
+	{
+		float dFactor = m_camera.getFov() / (viewport[3]);
+
+		m_camera.setPosition(position + ((xAxis * (-mx)) + (zAxis * my))*dFactor);
+		m_camera.updateMatrix();
+	}
+	else
+	{
+		MVector3 axis = m_camera.getRotatedVector(MVector3(0, 0, -1));
+
+		float z = (m_pivot - position).dotProduct(axis);
+		float fovFactor = m_camera.getFov() * 0.0192f;
+
+		float dx = - ((mx / (float)viewport[3]) * z) * fovFactor;
+		float dy = ((my / (float)viewport[3]) * z) * fovFactor;
+
+		m_camera.setPosition(position + (xAxis * dx) + (zAxis * dy));
+		m_camera.updateMatrix();
+	}
+}
+
+void M3dView::zoom(float mz)
+{
+	MVector3 position = m_camera.getPosition();
+	MVector3 axis = m_camera.getRotatedVector(MVector3(0, 0, -1)).getNormalized();
+	float dist = (m_pivot - position).dotProduct(axis);
+	
+	if(m_camera.isOrtho())
+	{
+		float factor = (m_camera.getFov() - 1);
+		
+		m_camera.setFov(m_camera.getFov() - (m_camera.getFov() * mz * 0.15f));
+		m_camera.setPosition(position + (axis * (dist - factor)));
+		m_camera.updateMatrix();
+	}
+	else
+	{
+		float factor = (dist * 0.01f) * (mz * 20.0f);
+
+		if(mz > 0)
 		{
-			if(m_window->isHighLight() && !rootWindow->isMouseButtonPressed(MMOUSE_BUTTON_MIDDLE))
-				m_view.zoom(rootWindow->getMouseScroll().y);
-				
-			break;
+			if(factor > (dist - m_camera.getClippingNear()))
+				factor = dist - m_camera.getClippingNear();
+		}
+		else
+		{
+			if((dist-factor) > m_camera.getClippingFar())
+				factor = -(m_camera.getClippingFar() - dist);
 		}
 
-		case MWIN_EVENT_KEY_UP:
-		{
-			if(prefs->isShortCutEngaged(rootWindow, "Pan View"))
-			{
-				//maratis->updateViewCenter();
-				break;
-			}
-			
-			if(prefs->isShortCutEngaged(rootWindow, "Orthogonal View"))
-			{
-				m_view.switchProjectionMode();
-				break;
-            }
-			
-			if(prefs->isShortCutEngaged(rootWindow, "Face View"))
-            {
-                m_view.initOrtho(1);
-                break;
-            }
-			
-            if(prefs->isShortCutEngaged(rootWindow, "Right View"))
-            {
-                m_view.initOrtho(3);
-                break;
-            }
-			
-            if(prefs->isShortCutEngaged(rootWindow, "Top View"))
-            {
-                m_view.initOrtho(7);
-                break;
-            }
-			
-            if(prefs->isShortCutEngaged(rootWindow, "Bottom View"))
-            {
-                m_view.initOrtho(9);
-                break;
-            }
-			
-			break;
-		}
-		
-		default:
-			break;
+		m_camera.setPosition(position + (axis * factor));
+		m_camera.updateMatrix();
+	}
+}
+
+void M3dView::switchProjectionMode(void)
+{
+	MVector3 cameraAxis = m_camera.getRotatedVector(MVector3(0, 0, -1)).getNormalized();;
+	MVector3 position = m_camera.getPosition();
+
+	float dist = (m_pivot - position).dotProduct(cameraAxis);
+
+	if(m_camera.isOrtho())
+	{
+		float factor = (m_camera.getFov() - 1);
+
+		m_camera.setPosition(position + (cameraAxis * (dist - factor)));
+		m_camera.updateMatrix();
+
+		m_camera.setFov(60);
+		m_camera.setClippingNear(1);
+		m_camera.setClippingFar(100000);
+		m_camera.enableOrtho(false);
+	}
+	else
+	{
+		m_camera.setClippingNear(-1000);
+		m_camera.setClippingFar(50000);
+		m_camera.setFov(1 + dist);
+		m_camera.enableOrtho(true);
 	}
 }

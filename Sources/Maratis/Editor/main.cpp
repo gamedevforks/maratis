@@ -29,6 +29,7 @@
 //
 //========================================================================
 
+
 // MSDK
 #include <MEngine.h>
 #include <MGui.h>
@@ -40,16 +41,26 @@
 #include <Loaders/Freetype/MFreetypeLoader.h>
 #include <Renderers/Fixed/MFixedRenderer.h>
 #include <Renderers/Standard/MStandardRenderer.h>
+#include <Loaders/Mesh/MMeshLoad.h>
+
+#include "MEditor.h"
 
 
 // test data
-static MLevel * guiData = NULL;
 static MRenderingContext * render = NULL;
 static MRenderer * renderer = NULL;
+static MSystemContext * systemContext = NULL;
+static MLevel * level = NULL;
+
+static MViewport * my3dView = NULL;
+
+
 
 void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 {
 	MEngine * engine = MEngine::getInstance();
+	MEditor * editor = MEditor::getInstance();
+	
 	
 	switch(event)
 	{
@@ -58,36 +69,62 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			// add loaders
 			engine->getImageLoader()->addLoader(M_loadImage);
 			engine->getFontLoader()->addLoader(M_loadFont);
-	
-			// create a rendering context
+			engine->getMeshLoader()->addLoader(xmlMeshLoad);
+			engine->getArmatureAnimLoader()->addLoader(xmlArmatureAnimLoad);
+			engine->getTexturesAnimLoader()->addLoader(xmlTextureAnimLoad);
+			engine->getMaterialsAnimLoader()->addLoader(xmlMaterialAnimLoad);
+			
+			// system
+			systemContext = new MGUIContext();
+			engine->setSystemContext(systemContext);
+			
+			// rendering context
 			render = new MGLContext();
 			engine->setRenderingContext(render);
 			
-			// create a renderer
+			// renderer
 			renderer = new MStandardRenderer();
 			engine->setRenderer(renderer);
 			
-			// create a level to handle the gui data
-			guiData = new MLevel();
+			// engine level
+			level = new MLevel();
+			engine->setLevel(level);
+			
+			// test scene
+			{
+				char filename[256];
+				const char * workingDir = systemContext->getWorkingDirectory();
 		
+				MScene * scene = level->addNewScene();
+				getGlobalFilename(filename, workingDir, "Resources/meshes/default/Jules.mesh");
+				scene->addNewEntity(level->loadMesh(filename));
+				
+				MOCamera * camera = scene->addNewCamera();
+				camera->setPosition(MVector3(0, 0, 200));
+				
+				MOSound * sound = scene->addNewSound(NULL);
+				sound->setPosition(MVector3(100, 0, 0));
+				
+				//MOEntity * entity2 = scene->addNewEntity(level->loadMesh(filename));
+				//entity2->setPosition(MVector3(10, 0, 0));
+				//MMaterial * material = entity2->createPrivateMaterial(0);
+				//material->setDiffuse(MVector3(1, 0, 1));
+				
+				MOLight * light = scene->addNewLight();
+				light->setPosition(MVector3(150, 0, 100));
+				light->setColor(MVector3(1, 1, 1));
+				light->setRadius(10000);
+				
+				scene->update();
+				scene->updateObjectsMatrices();
+			}
 			
-			// create a gui window (sub-window of rootWindow handled by MGui)
-			MGuiWindow * gw = rootWindow->addNewWindow();
-			gw->setScale(MVector2(800, 600));
-			gw->setColor(MVector3(0.5f, 0.5f, 0.5f));
+			// editor init
+			editor->init();
 			
-			
-			// load a font
-			MFontRef * fontRef = guiData->loadFont("data/Gentium102/GenR102.TTF");
-			
-			// add some editable text
-			MGuiEditText * text = gw->addNewEditText();
-			text->setPosition(MVector2(100, 100));
-			text->setFont(fontRef);
-			//text->setTextAlign(M_ALIGN_RIGHT);
-			text->setTextSize(16);
-			text->setText("Hello world !");
-			text->setTextColor(MVector4(1, 1, 1, 1));
+			my3dView = new MV3dView();
+			my3dView->create(rootWindow);
+			my3dView->resize(MVector2(0, 0), MVector2(rootWindow->getWidth(), rootWindow->getHeight()));
 		}
 		break;
 		
@@ -99,22 +136,28 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		
 	case MWIN_EVENT_DESTROY:
 		{
-			SAFE_DELETE(guiData);
+			SAFE_DELETE(my3dView);
+			
+			editor->clear();
 			SAFE_DELETE(renderer);
 			SAFE_DELETE(render);
+			SAFE_DELETE(systemContext);
 		}
 		break;
 		
 	default:
 		break;
 	}
+	
+	// my3dView
+	if(my3dView)
+		my3dView->onEvent(rootWindow, event);
 }
 
 
 void drawCallback(MWindow * rootWindow)
 {
-	// update data if needed
-	guiData->updateQueueDatas();
+	level->getCurrentScene()->update();
 }
 
 
@@ -122,7 +165,6 @@ void drawCallback(MWindow * rootWindow)
 int main(int argc, char **argv)
 {
 	setlocale(LC_NUMERIC, "C");
-	
 	
 	// init
 	if(! MGUI_init())
@@ -134,10 +176,9 @@ int main(int argc, char **argv)
 		getDirectory(dir, argv[0]);
 		MGUI_setCurrentDirectory(dir);
 	}
-		
+	
 	M_initFreeImage();
 	
-
 	// create main window
 	MWindow * window = MGUI_createWindow("test1", 10, 10, 800, 600, winEvents);
 	if(! window)
@@ -149,11 +190,6 @@ int main(int argc, char **argv)
 
 	window->setDrawCallback(drawCallback);
 	
-	
-	// create secondary window
-	//MWindow * window2 = MGUI_createWindow("test2", 200, 10, 400, 400, NULL);
-	
-	
 	// update
 	while(1)
 	{
@@ -164,7 +200,7 @@ int main(int argc, char **argv)
 		MGUI_unpauseAllWindows();
 	}
 	
-	
+	// close
 	MGUI_close();
 	M_closeFreeImage();
 	return EXIT_SUCCESS;
