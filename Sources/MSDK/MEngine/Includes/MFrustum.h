@@ -36,16 +36,18 @@ class M_ENGINE_EXPORT MFrustum
 {
 private:
 
-	MVector3 m_nearPoint;
-	MVector3 m_farPoint;
 	MVector3 m_direction;
-	MVector3 m_points[4];
+	MVector3 m_points[8];
 	MVector3 m_normals[4];
 
 public:
 
 	void makeVolume(MOCamera * camera);
-	bool isVolumePointsVisible(MVector3 * points, unsigned int pointsNumber);
+	bool isPointCloudVisible(MVector3 * points, unsigned int pointsNumber);
+
+	inline const MVector3 * getPoints(void){ return m_points; }
+	inline const MVector3 * getNormals(void){ return m_normals; }
+	inline MVector3 getDirection(void) const { return m_direction; }
 };
 
 #endif

@@ -81,6 +81,9 @@ public:
 	void clear(int buffer);
 	void setClearColor(const MVector4 & color);
 
+	// finish
+	void finish(void);
+	
 	// texture
 	void enableTexture(void);
 	void disableTexture(void);
@@ -192,6 +195,7 @@ public:
 	void enableDepthTest(void);
 	void disableDepthTest(void);
 	void setDepthMode(M_DEPTH_MODES mode);
+	void setPolygonOffset(float factor, float units);
 
 	// stencil
 	void enableStencilTest(void);
@@ -210,6 +214,7 @@ public:
 	void beginQuery(unsigned int queryId);
 	void endQuery(void);
 	void getQueryResult(unsigned int queryId, unsigned int * result);
+	bool isQueryResultAvailable(unsigned int queryId);
 
 	// matrix
 	void loadIdentity(void);

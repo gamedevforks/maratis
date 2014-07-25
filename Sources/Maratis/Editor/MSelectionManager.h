@@ -39,6 +39,7 @@ public:
 	void selectAll(void);
 	void selectSameMesh(void);
 	void select(MObject3d * object);
+	void deselect(MObject3d * object);
 	void clearSelection(void);
 	void activateSelection(void);
 	void deleteSelection(void);

@@ -34,7 +34,7 @@ M3dView::M3dView(void)
 void M3dView::initPerspective(void)
 {
 	m_camera.setClippingNear(1);
-	m_camera.setClippingFar(100000);
+	m_camera.setClippingFar(1000000);
 	m_camera.setPosition(MVector3(0, -200, 200));
 	m_camera.setEulerRotation(MVector3(40, 0, 0));
 	m_camera.enableOrtho(false);

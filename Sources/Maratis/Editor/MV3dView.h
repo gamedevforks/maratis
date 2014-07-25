@@ -38,6 +38,7 @@ protected:
 
 	M3dView m_view;
 	MGuiWindow * m_window;
+	float m_unitSize;
 
 	static void drawCallback(MGuiWindow * window);
 	void drawGrid(void);
@@ -47,6 +48,7 @@ protected:
 	void drawBillboardObject(MObject3d * object, MMeshRef * meshRef, float unitSize);
 	void drawLight(MOLight * light, MMeshRef * meshRef, float unitSize);
 	void drawCamera(MOCamera * camera, MMeshRef * meshRef, float unitSize);
+	float getBillboardObjectSize(MObject3d * object, float unitSize);
 	
 public:
 	

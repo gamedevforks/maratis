@@ -1430,6 +1430,9 @@ bool xmlMeshLoad(const char * filename, void * data, void * arg)
 		if(! subMesh->getTangents())
 			generateTangents(mesh, subMesh);
 
+		// TEST : acceleration structure
+		//if(! mesh->getArmature())
+		//	subMesh->buildAccelMap();
 
 		subMeshs++;
 	}

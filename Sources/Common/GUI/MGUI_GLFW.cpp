@@ -42,37 +42,38 @@
 
 
 // thread window
-class MThreadWindow : public MWindow
+class MGLFWWindow : public MWindow
 {
 public:
 
-	MThreadWindow(int x, int y, unsigned int width, unsigned int height):
+	MGLFWWindow(GLFWwindow * glfwWin, int x, int y, unsigned int width, unsigned int height, MGUI_EVENT_CALLBACK):
 		MWindow(x, y, width, height),
+		init(false),
 		running(true),
 		paused(false),
 		pause(false),
-		threadId(0),
-		glfwWindow(NULL)
-	{}
-	
-	~MThreadWindow(void)
+		glfwWindow(glfwWin)
 	{
-		int result;
+		setEventCallback(eventCallback);
+		glfwMakeContextCurrent(glfwWindow);
+		onEvent(MWIN_EVENT_CREATE);
+		glfwMakeContextCurrent(NULL);
+	}
+	
+	~MGLFWWindow(void)
+	{
 		running = false;
-		thrd_join(threadId, &result);
-				
 		glfwMakeContextCurrent(glfwWindow);
 		onEvent(MWIN_EVENT_DESTROY);
 		glfwMakeContextCurrent(NULL);
 		glfwDestroyWindow(glfwWindow);
-		
 		clear();
 	}
 	
+	bool init;
 	bool running;
 	bool paused;
 	bool pause;
-	thrd_t threadId;
 	GLFWwindow * glfwWindow;
 };
 
@@ -152,7 +153,7 @@ static void key_callback(GLFWwindow * window, int key, int scancode, int action,
 	if(mkey >= MWIN_MAX_KEYS)
 		return;
 
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	
 	switch(action)
 	{
@@ -170,7 +171,7 @@ static void key_callback(GLFWwindow * window, int key, int scancode, int action,
 
 static void char_callback(GLFWwindow * window, unsigned int key)
 {
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	rootWindow->onChar(key);
 }
 
@@ -179,7 +180,7 @@ static void mousebutton_callback(GLFWwindow * window, int button, int action, in
 	if(button >= MWIN_MAX_MOUSE_BUTTONS)
 		return;
 
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	
 	if(action == GLFW_PRESS)
 		rootWindow->onMouseButtonDown(button);
@@ -189,86 +190,107 @@ static void mousebutton_callback(GLFWwindow * window, int button, int action, in
 
 static void cursorpos_callback(GLFWwindow * window, double x, double y)
 {
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	rootWindow->onMouseMove(MVector2(x, y));
 }
 
 static void scroll_callback(GLFWwindow * window, double xoffset, double yoffset)
 {
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	rootWindow->onMouseScroll(MVector2(xoffset, yoffset));
 }
 
 static void close_callback(GLFWwindow * window)
 {
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	rootWindow->onClose();
 }
 
 static void size_callback(GLFWwindow * window, int width, int height)
 {
-	MThreadWindow * rootWindow = (MThreadWindow *)glfwGetWindowUserPointer(window);
+	MGLFWWindow * rootWindow = (MGLFWWindow *)glfwGetWindowUserPointer(window);
 	rootWindow->onResize(width, height);
 }
 
 
+
+
+
 // thread main
-static int thread_main(void * data)
+static void drawWindow(MGLFWWindow * window)
 {
-	int init = 0;
-	MThreadWindow * window = (MThreadWindow *) data;
-
-	glfwMakeContextCurrent(window->glfwWindow);
-	glfwSwapInterval(1);
-	
-	window->onCreate();
-
 	MEngine * engine = MEngine::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
-
-	while(window->running)
+	
+	if(! MGUI_isFocused() && window->init)
 	{
-		if(MGUI_isFocused() || init == 0)
+		window->paused = window->pause;
+		thrd_yield();
+		return;
+	}
+	
+	glfwMakeContextCurrent(window->glfwWindow);
+	
+	if(window->running)
+	{
+		if(window->pause)
 		{
-			if(window->pause)
-			{
-				window->paused = true;
-			}
-			else
-			{
-				window->paused = false;
-				render->disableScissorTest();
-				render->setClearColor(MVector4(0, 0, 0, 0));
-				render->clear(M_BUFFER_COLOR);
-			
-				window->draw();
-			
-				glfwSwapBuffers(window->glfwWindow);
-				init = 1;
-			}
-			
-			thrd_yield();
+			window->paused = true;
 		}
 		else
 		{
-			window->paused = window->pause;
-			SLEEP(100);
+			window->paused = false;
+			render->disableScissorTest();
+			render->setClearColor(MVector4(0, 0, 0, 0));
+			render->clear(M_BUFFER_COLOR);
+			
+			window->draw();
+			
+			glfwSwapBuffers(window->glfwWindow);
+			window->init = true;
 		}
 	}
 	
 	glfwMakeContextCurrent(NULL);
-    return 0;
+	thrd_yield();
 }
 
-
-
-static vector <MThreadWindow *> windows;
+static vector <MGLFWWindow *> windows;
+/*
+static thrd_t threadId = 0;
+static bool running = false;
+static int thread_main(void * data)
+{
+	while(running)
+	{
+		unsigned int i, wSize = windows.size();
+		for(i=0; i<wSize; i++)
+		{
+			MGLFWWindow * window = windows[i];
+			if(window)
+				drawWindow(window);
+		}
+	}
+	
+    return 0;
+}*/
 
 bool MGUI_init(void)
 {
 	int init = glfwInit();
 	glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-	return (init == GL_TRUE);
+	
+	if(init != GL_TRUE)
+		return false;
+		
+	/*if(thrd_create(&threadId, thread_main, NULL) != thrd_success)
+	{
+		glfwTerminate();
+		return false;
+	}
+	
+	running = true;*/
+	return true;
 }
 
 MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width, unsigned int height, MGUI_EVENT_CALLBACK)
@@ -291,9 +313,7 @@ MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width
 		glfwGetWindowSize(glfwWindow, (int*)&width, (int*)&height);
 		glfwShowWindow(glfwWindow);
 		
-		MThreadWindow * window = new MThreadWindow(x, y, width, height);
-		window->glfwWindow = glfwWindow;
-		window->setEventCallback(eventCallback);
+		MGLFWWindow * window = new MGLFWWindow(glfwWindow, x, y, width, height, eventCallback);
 		windows.push_back(window);
 		
 		glfwSetWindowUserPointer(glfwWindow, window);
@@ -305,17 +325,7 @@ MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width
 		glfwSetWindowCloseCallback(glfwWindow, close_callback);
 		glfwSetWindowSizeCallback(glfwWindow, size_callback);
 		
-		if(thrd_create(&window->threadId, thread_main, (void*)window) == thrd_success)
-		{
-			return window;
-		}
-		else
-		{
-			delete window;
-			windows.pop_back();
-			glfwDestroyWindow(glfwWindow);
-			return NULL;
-		}
+		return window;
 	}
 	
 	return NULL;
@@ -333,13 +343,13 @@ unsigned int MGUI_getWindowsNumber(void)
 
 void MGUI_closeWindow(MWindow * window)
 {
-	MThreadWindow * thWin = (MThreadWindow *)window;
+	MGLFWWindow * thWin = (MGLFWWindow *)window;
 	thWin->running = false;
 }
 
 void MGUI_pauseWindow(MWindow * window)
 {
-	MThreadWindow * thWin = (MThreadWindow *)window;
+	MGLFWWindow * thWin = (MGLFWWindow *)window;
 	if(! thWin->running)
 		return;
 	
@@ -350,7 +360,7 @@ void MGUI_pauseWindow(MWindow * window)
 
 void MGUI_unpauseWindow(MWindow * window)
 {
-	MThreadWindow * thWin = (MThreadWindow *)window;
+	MGLFWWindow * thWin = (MGLFWWindow *)window;
 	if(! thWin->running)
 		return;
 		
@@ -376,7 +386,7 @@ void MGUI_pauseAllWindows(void)
 	{
 		if(windows[i])
 		{
-			MThreadWindow * thWin = (MThreadWindow *)windows[i];
+			MGLFWWindow * thWin = (MGLFWWindow *)windows[i];
 			thWin->pause = true;
 		}
 	}
@@ -385,7 +395,7 @@ void MGUI_pauseAllWindows(void)
 	{
 		if(windows[i])
 		{
-			MThreadWindow * thWin = (MThreadWindow *)windows[i];
+			MGLFWWindow * thWin = (MGLFWWindow *)windows[i];
 			if(! thWin->running)
 				continue;
 		
@@ -402,7 +412,7 @@ void MGUI_unpauseAllWindows(void)
 	{
 		if(windows[i])
 		{
-			MThreadWindow * thWin = (MThreadWindow *)windows[i];
+			MGLFWWindow * thWin = (MGLFWWindow *)windows[i];
 			thWin->pause = false;
 		}
 	}
@@ -411,7 +421,7 @@ void MGUI_unpauseAllWindows(void)
 	{
 		if(windows[i])
 		{
-			MThreadWindow * thWin = (MThreadWindow *)windows[i];
+			MGLFWWindow * thWin = (MGLFWWindow *)windows[i];
 			if(! thWin->running)
 				continue;
 				
@@ -430,7 +440,7 @@ bool MGUI_update(void)
 		return false;
 	
 	// main window
-	MThreadWindow * window0 = windows[0];
+	MGLFWWindow * window0 = windows[0];
 	if(! window0->running)
 	{
 		return false;
@@ -439,7 +449,7 @@ bool MGUI_update(void)
 	// secondary windows
 	for(i=1; i<wSize; i++)
 	{
-		MThreadWindow * window = windows[i];
+		MGLFWWindow * window = windows[i];
 		if(window)
 		{
 			if(! window->running)
@@ -450,9 +460,18 @@ bool MGUI_update(void)
 	// update windows
 	for(i=0; i<wSize; i++)
 	{
-		MThreadWindow * window = windows[i];
+		MGLFWWindow * window = windows[i];
 		if(window)
 			window->update();
+	}
+	
+	// draw
+	wSize = windows.size();
+	for(i=0; i<wSize; i++)
+	{
+		MGLFWWindow * window = windows[i];
+		if(window)
+			drawWindow(window);
 	}
 	
 	return true;
@@ -463,7 +482,7 @@ bool MGUI_isFocused(void)
 	unsigned int i, wSize = windows.size();
 	for(i=0; i<wSize; i++)
 	{
-		MThreadWindow * window = windows[i];
+		MGLFWWindow * window = windows[i];
 		if(window)
 		{
 			if(glfwGetWindowAttrib(window->glfwWindow, GLFW_FOCUSED))
@@ -476,6 +495,10 @@ bool MGUI_isFocused(void)
 
 void MGUI_close(void)
 {
+	/*int result;
+	running = false;
+	thrd_join(threadId, &result);*/
+	
 	unsigned int i;
 	unsigned int wSize = windows.size();
 	if(wSize > 0)

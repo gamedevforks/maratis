@@ -66,6 +66,11 @@ MMatrix4x4::MMatrix4x4(const float * value)
 	memcpy(entries, value, 16*sizeof(float));
 }
 
+MMatrix4x4::MMatrix4x4(const MVector3 & pos, const MVector3 & dir, const MVector3 & up)
+{
+	lookAt(pos, dir, up);
+}
+
 void MMatrix4x4::setEntry(int position, float value)
 {
 	if(position >= 0 && position <= 15)
@@ -456,25 +461,6 @@ MVector4 MMatrix4x4::operator * (const MVector4 mat) const
 	);
 }
 
-MVector3 MMatrix4x4::getInverseRotatedVector3(const MVector3 & vec) const
-{
-	return MVector3(
-		entries[0]*vec.x + entries[1]*vec.y + entries[2]*vec.z,
-		entries[4]*vec.x + entries[5]*vec.y + entries[6]*vec.z,
-		entries[8]*vec.x + entries[9]*vec.y + entries[10]*vec.z
-	);
-}
-
-MVector3 MMatrix4x4::getTranslatedVector3(const MVector3 & vec) const
-{
-	return MVector3(vec.x + entries[12], vec.y + entries[13], vec.z + entries[14]);
-}
-
-MVector3 MMatrix4x4::getInversetranslatedVector3(const MVector3 & vec) const
-{
-	return MVector3(vec.x - entries[12], vec.y - entries[13], vec.z - entries[14]);
-}
-
 void MMatrix4x4::invert(void)
 {
 	*this = getInverse();
@@ -804,4 +790,31 @@ void MMatrix4x4::setRotationPartEuler(const float angleX, const float angleY, co
 	entries[8] = ( float )( crsp*cy+sr*sy );
 	entries[9] = ( float )( crsp*sy-sr*cy );
 	entries[10] = ( float )( cr*cp );
+}
+
+void MMatrix4x4::lookAt(const MVector3 & pos, const MVector3 & dir, const MVector3 & up)
+{
+	MVector3 lftN = dir.crossProduct(up).getNormalized();
+	MVector3 upN = lftN.crossProduct(dir).getNormalized();
+	MVector3 dirN = dir.getNormalized();
+
+	entries[0] = lftN.x;
+	entries[1] = upN.x;
+	entries[2] = -dirN.x;
+	entries[3] = 0.0f;
+
+	entries[4] = lftN.y;
+	entries[5] = upN.y;
+	entries[6] = -dirN.y;
+	entries[7] = 0.0f;
+
+	entries[8] = lftN.z;
+	entries[9] = upN.z;
+	entries[10] = -dirN.z;
+	entries[11] = 0.0f;
+
+	entries[12] = -lftN.dotProduct(pos);
+	entries[13] = -upN.dotProduct(pos);
+	entries[14] = dirN.dotProduct(pos);
+	entries[15] = 1.0f;
 }

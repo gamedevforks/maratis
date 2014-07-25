@@ -149,9 +149,9 @@ MOCamera * MScene::getCurrentCamera(void)
 	return NULL;
 }
 
-MOEntity * MScene::getRayNearestEntityIntersection(const MVector3 & origin, const MVector3 & dest, MVector3 * intersectPoint)
+MOEntity * MScene::getRayNearestEntityIntersection(const MVector3 & origin, const MVector3 & direction, float * distance)
 {
-	float distance = 0;
+	float nearestDist = 10E7;
 	MOEntity * nearestEntity = NULL;
 	
 	unsigned int i;
@@ -160,29 +160,26 @@ MOEntity * MScene::getRayNearestEntityIntersection(const MVector3 & origin, cons
 	{
 		MOEntity * entity = getEntityByIndex(i);
 		
-		if(! entity->isActive())
-			continue;
-		
-		if(entity->isInvisible())
+		if(! entity->isActive() || entity->isInvisible())
 			continue;
 
 		MMesh * mesh = entity->getMesh();
 		if(! mesh)
 			continue;
 		
-		float dist;
-		if(! entity->getRayNearestIntersectionDistance(origin, dest, &dist))
-			continue;
-	
-		if((! nearestEntity) || (dist < distance))
+		float dist = entity->getRayNearestIntersectionDistance(origin, direction);
+		if(dist > 0)
 		{
-			nearestEntity = entity;
-			distance = dist;
+			if(dist < nearestDist)
+			{
+				nearestEntity = entity;
+				nearestDist = dist;
+			}
 		}
 	}
 	
-	if(intersectPoint && nearestEntity)
-		*intersectPoint = origin + (dest - origin).getNormalized()*distance;
+	if(distance && nearestEntity)
+		*distance = nearestDist;
 	
 	return nearestEntity;
 }

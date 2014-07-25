@@ -58,9 +58,13 @@ public:
 	MV3dEdit(void);
 	~MV3dEdit(void);
 
-protected:
+private:
 
+	int m_selectionDepth;
 	MGuiWindow * m_tools;
+	
+	float getObjectRayNearestIntersectionDistance(MObject3d * object, const MVector3 & origin, const MVector3 & direction);
+	void pointSelect(MVector2 point, bool useDepth = true);
 	
 public:
 	

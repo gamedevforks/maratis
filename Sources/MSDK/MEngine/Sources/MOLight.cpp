@@ -69,7 +69,13 @@ void MOLight::updateVisibility(MOCamera * camera)
 {
 	MFrustum * frustum = camera->getFrustum();
 
-	// TODO: use different test for spot and directional
+	if(m_lightType == M_LIGHT_DIRECTIONAL)
+	{
+		setVisible(true);
+		return;
+	}
+	
+	// TODO: optimze test for spot
 	MVector3 min = getTransformedPosition() - m_radius;
 	MVector3 max = getTransformedPosition() + m_radius;
 
@@ -85,5 +91,5 @@ void MOLight::updateVisibility(MOCamera * camera)
 	};
 
 	// is box in frustum
-	setVisible(frustum->isVolumePointsVisible(points, 8));
+	setVisible(frustum->isPointCloudVisible(points, 8));
 }

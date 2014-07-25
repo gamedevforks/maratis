@@ -61,7 +61,8 @@ m_normalsSize(0),
 m_tangentsSize(0),
 m_vertices(NULL),
 m_normals(NULL),
-m_tangents(NULL)
+m_tangents(NULL),
+m_vboId(0)
 {}
 
 MSubMeshCache::~MSubMeshCache(void)
@@ -132,6 +133,14 @@ MVector3 * MSubMeshCache::allocTangents(unsigned int size)
 	m_tangents = new MVector3[size];
 	
 	return m_tangents;
+}
+
+void MSubMeshCache::clearVBO(void)
+{
+	MEngine * engine = MEngine::getInstance();
+	MRenderingContext * render = engine->getRenderingContext();
+	if(render && m_vboId>0)
+		render->deleteVBO(&m_vboId);
 }
 
 
@@ -386,6 +395,110 @@ MDisplay * MSubMesh::addNewDisplay(M_PRIMITIVE_TYPES primitiveType, unsigned int
 	m_displays[m_displaysNumber] = display;
 	m_displaysNumber++;
 	return display;
+}
+
+void MSubMesh::buildAccelMap(void)
+{
+	if(m_indicesType != M_USHORT) // limit to small mesh for now
+		return;
+	
+	if(m_accelMap.map == NULL)
+	{
+		int triSize = m_indicesSize/3;
+		if(triSize == 0)
+			return;
+		
+		float vsize = pow((float)triSize*16, 1.0f/3.0f); // cubic root
+	
+		MVector3 bscale = m_boundingBox.max - m_boundingBox.min;
+		float bsum = bscale.x + bscale.y + bscale.z;
+	
+		m_accelMap.sx = MAX(4, (bscale.x/bsum)*vsize);
+		m_accelMap.sy = MAX(4, (bscale.y/bsum)*vsize);
+		m_accelMap.sz = MAX(4, (bscale.z/bsum)*vsize);
+		
+		while(m_accelMap.sx%4 != 0)
+			m_accelMap.sx++;
+		while(m_accelMap.sy%4 != 0)
+			m_accelMap.sy++;
+		while(m_accelMap.sz%4 != 0)
+			m_accelMap.sz++;
+		
+		m_accelMap.mapSize = m_accelMap.sx*m_accelMap.sy*m_accelMap.sz;
+		m_accelMap.dataSize = m_accelMap.mapSize*16;
+	
+		m_accelMap.map = new unsigned int[m_accelMap.mapSize];
+		m_accelMap.bitMap = new char[m_accelMap.mapSize];
+		m_accelMap.data = new unsigned int[m_accelMap.dataSize];
+	}
+	
+	//MSystemContext * system = MEngine::getInstance()->getSystemContext();
+	//unsigned long tick = system->getSystemTick();
+	
+	// triangles
+	unsigned short * indices = (unsigned short *)m_indices;
+	
+	// init
+	int dataId = 1;
+	memset(m_accelMap.map, 0, m_accelMap.mapSize*sizeof(int));
+	memset(m_accelMap.bitMap, 0, m_accelMap.mapSize*sizeof(char));
+
+	m_accelMap.unit = m_boundingBox.max - m_boundingBox.min;
+	m_accelMap.unit.x /= (float)(m_accelMap.sx);
+	m_accelMap.unit.y /= (float)(m_accelMap.sy);
+	m_accelMap.unit.z /= (float)(m_accelMap.sz);
+	
+	m_accelMap.invUnit.x = 1.0f/m_accelMap.unit.x;
+	m_accelMap.invUnit.y = 1.0f/m_accelMap.unit.y;
+	m_accelMap.invUnit.z = 1.0f/m_accelMap.unit.z;
+	m_accelMap.invUnitN = m_accelMap.invUnit.getNormalized();
+	
+	MVector3 bunit_h = m_accelMap.unit*0.5f;
+	MVector3 bzero = m_boundingBox.min + bunit_h;
+	
+	int nb=0;
+	for(int z=0; z<m_accelMap.sz; z++)
+	for(int y=0; y<m_accelMap.sy; y++)
+	for(int x=0; x<m_accelMap.sx; x++)
+	{
+		int curDataId = dataId;
+		dataId++;
+		
+		MVector3 bcenter = bzero + m_accelMap.unit*MVector3(x, y, z);
+		
+		for(int i=0; i<m_indicesSize; i+=3)
+		{
+			if(isTriangleInBox(m_vertices[indices[i]], m_vertices[indices[i+1]], m_vertices[indices[i+2]], bcenter, bunit_h))
+			{
+				m_accelMap.data[dataId] = i;
+				dataId++;
+			
+				// not enough memory ?
+				if(dataId == m_accelMap.dataSize)
+				{
+					printf("not enough memory : %d / %d\n", (m_indicesSize/3), dataId); // TODO : realloc ?
+					return;
+				}
+			}
+		}
+		
+		int id3d = m_accelMap.sx*m_accelMap.sy*z + m_accelMap.sx*y + x;
+		
+		if(curDataId+1 == dataId)
+		{
+			dataId--;
+		}
+		else
+		{
+			m_accelMap.bitMap[id3d] = 1;
+			m_accelMap.map[id3d] = curDataId;
+			m_accelMap.data[curDataId] = dataId-curDataId-1;
+			nb++;
+		}
+	}
+	
+	//unsigned int elapsed = system->getSystemTick() - tick;
+	//printf("ok %d = %d ms\n", nb, elapsed);
 }
 
 

@@ -65,9 +65,10 @@ public:
 class MShadowLight
 {
 public:
-	MShadowLight(void):score(0), shadowTexture(0){}
+	MShadowLight(void):score(0), currentFrame(-1), shadowTexture(0){}
 	
 	int score;
+	int currentFrame;
 	unsigned int shadowTexture;
 	unsigned int shadowQuality;
 	float biasUnity;
@@ -130,7 +131,7 @@ private:
 	void updateVisibility(MScene * scene, MOCamera * camera);
 	void enableFog(MOCamera * camera);
 	
-	void initVBO(MSubMesh * subMesh);
+	void initVBO(MSubMesh * subMesh, MSubMeshCache * subMeshCahe, MVector3 * vertices, MVector3 * normals, MVector3 * tangents);
 	
 	float getDistanceToCam(MOCamera * camera, const MVector3 & pos);
 	

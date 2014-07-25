@@ -31,7 +31,181 @@
 #include "../Includes/MCore.h"
 
 
-void sortFloatList(int indexList[], float floatList[], int start, int end)
+// following code adapted from Tomas Akenine-Moller AABB-triangle overlap test code
+static bool planeBoxOverlap(const MVector3 & normal, const MVector3 & vert, const MVector3 & maxbox)
+{
+	MVector3 vmin, vmax;
+	
+	if(normal.x > 0.0f)
+	{
+		vmin.x = -maxbox.x - vert.x;
+		vmax.x =  maxbox.x - vert.x;
+	}
+	else
+	{
+		vmin.x =  maxbox.x - vert.x;
+		vmax.x = -maxbox.x - vert.x;
+	}
+	
+	if(normal.y > 0.0f)
+	{
+		vmin.y = -maxbox.y - vert.y;
+		vmax.y =  maxbox.y - vert.y;
+	}
+	else
+	{
+		vmin.y =  maxbox.y - vert.y;
+		vmax.y = -maxbox.y - vert.y;
+	}
+	
+	if(normal.z > 0.0f)
+	{
+		vmin.z = -maxbox.z - vert.z;
+		vmax.z =  maxbox.z - vert.z;
+	}
+	else
+	{
+		vmin.z =  maxbox.z - vert.z;
+		vmax.z = -maxbox.z - vert.z;
+	}
+
+	if(normal.dotProduct(vmin) > 0.0f)
+		return false;
+	
+	if(normal.dotProduct(vmax) >= 0.0f)
+		return true;
+	
+	return false;
+}
+
+#define AXISTEST_X01(a, b, fa, fb)						\
+	p0 = a*v0.y - b*v0.z;								\
+	p2 = a*v2.y - b*v2.z;								\
+	if(p0<p2) {min=p0; max=p2;} else {min=p2; max=p0;}	\
+	rad = fa * boxHalfSize.y + fb * boxHalfSize.z;		\
+	if(min>rad || max<-rad) return 0;
+
+#define AXISTEST_X2(a, b, fa, fb)						\
+	p0 = a*v0.y - b*v0.z;								\
+	p1 = a*v1.y - b*v1.z;								\
+	if(p0<p1) {min=p0; max=p1;} else {min=p1; max=p0;}	\
+	rad = fa * boxHalfSize.y + fb * boxHalfSize.z;		\
+	if(min>rad || max<-rad) return 0;
+
+#define AXISTEST_Y02(a, b, fa, fb)						\
+	p0 = -a*v0.x + b*v0.z;								\
+	p2 = -a*v2.x + b*v2.z;								\
+	if(p0<p2) {min=p0; max=p2;} else {min=p2; max=p0;}	\
+	rad = fa * boxHalfSize.x + fb * boxHalfSize.z;		\
+	if(min>rad || max<-rad) return 0;
+
+#define AXISTEST_Y1(a, b, fa, fb)						\
+	p0 = -a*v0.x + b*v0.z;								\
+	p1 = -a*v1.x + b*v1.z;								\
+	if(p0<p1) {min=p0; max=p1;} else {min=p1; max=p0;}	\
+	rad = fa * boxHalfSize.x + fb * boxHalfSize.z;		\
+	if(min>rad || max<-rad) return 0;
+
+#define AXISTEST_Z12(a, b, fa, fb)						\
+	p1 = a*v1.x - b*v1.y;								\
+	p2 = a*v2.x - b*v2.y;								\
+	if(p2<p1) {min=p2; max=p1;} else {min=p1; max=p2;}	\
+	rad = fa * boxHalfSize.x + fb * boxHalfSize.y;		\
+	if(min>rad || max<-rad) return 0;
+
+#define AXISTEST_Z0(a, b, fa, fb)						\
+	p0 = a*v0.x - b*v0.y;								\
+	p1 = a*v1.x - b*v1.y;								\
+	if(p0<p1) {min=p0; max=p1;} else {min=p1; max=p0;}	\
+	rad = fa * boxHalfSize.x + fb * boxHalfSize.y;		\
+	if(min>rad || max<-rad) return 0;
+
+#define FINDMINMAX(x0, x1, x2, min, max)				\
+	min = max = x0;										\
+	if(x1<min) min=x1;									\
+	if(x1>max) max=x1;									\
+	if(x2<min) min=x2;									\
+	if(x2>max) max=x2;
+
+bool isTriangleInBox(const MVector3 & A, const MVector3 & B, const MVector3 & C, const MVector3 & boxCenter, const MVector3 & boxHalfSize)
+{
+	// use separating axis theorem to test overlap between triangle and box
+	// need to test for overlap in these directions:
+	// 1) the {x,y,z}-directions (actually, since we use the AABB of the triangle
+	// we do not even need to test these)
+	// 2) normal of the triangle
+	// 3) crossproduct(edge from tri, {x,y,z}-directin)
+	// this gives 3x3=9 more tests
+
+	float min, max, p0, p1, p2, rad, fex, fey, fez;
+	MVector3 normal, e0, e1, e2;
+	MVector3 v0, v1, v2;
+
+	// move everything so that the boxCenter is in (0, 0, 0)
+	v0 = A - boxCenter;
+	v1 = B - boxCenter;
+	v2 = C - boxCenter;
+
+	// compute triangle edges
+	e0 = v1 - v0;
+	e1 = v2 - v1;
+	e2 = v0 - v2;
+
+	// Bullet 3:
+	// test the 9 tests first (this was faster)
+	fex = fabsf(e0.x);
+	fey = fabsf(e0.y);
+	fez = fabsf(e0.z);
+
+	AXISTEST_X01(e0.z, e0.y, fez, fey);
+	AXISTEST_Y02(e0.z, e0.x, fez, fex);
+	AXISTEST_Z12(e0.y, e0.x, fey, fex);
+	
+	fex = fabsf(e1.x);
+	fey = fabsf(e1.y);
+	fez = fabsf(e1.z);
+	
+	AXISTEST_X01(e1.z, e1.y, fez, fey);
+	AXISTEST_Y02(e1.z, e1.x, fez, fex);
+	AXISTEST_Z0 (e1.y, e1.x, fey, fex);
+	
+	fex = fabsf(e2.x);
+	fey = fabsf(e2.y);
+	fez = fabsf(e2.z);
+	
+	AXISTEST_X2 (e2.z, e2.y, fez, fey);
+	AXISTEST_Y1 (e2.z, e2.x, fez, fex);
+	AXISTEST_Z12(e2.y, e2.x, fey, fex);
+
+	// Bullet 1:
+	// first test overlap in the {x,y,z}-directions
+	// find min, max of the triangle each direction, and test for overlap in
+	// that direction -- this is equivalent to testing a minimal AABB around
+	// the triangle against the AABB
+
+	// test in X-direction
+	FINDMINMAX(v0.x, v1.x, v2.x, min, max);
+	if(min>boxHalfSize.x || max<-boxHalfSize.x) return false;
+
+	// test in Y-direction
+	FINDMINMAX(v0.y, v1.y, v2.y, min, max);
+	if(min>boxHalfSize.y || max<-boxHalfSize.y) return false;
+
+	// test in Z-direction
+	FINDMINMAX(v0.z, v1.z, v2.z, min, max);
+	if(min>boxHalfSize.z || max < -boxHalfSize.z) return false;
+
+	// Bullet 2:
+	// test if the box intersects the plane of the triangle
+	// compute plane equation of triangle: normal*x+d=0
+	normal = e0.crossProduct(e1);
+
+	if(! planeBoxOverlap(normal, v0, boxHalfSize)) return false;
+
+	return true; // box and triangle overlaps
+}
+
+void sortFloatIndexList(int indexList[], float floatList[], int start, int end)
 {
 	int i = start;
 	int j = end;
@@ -58,9 +232,9 @@ void sortFloatList(int indexList[], float floatList[], int start, int end)
 	}
 	
 	if(i < end)
-		sortFloatList(indexList, floatList, i, end);
+		sortFloatIndexList(indexList, floatList, i, end);
 	if(start < j)
-		sortFloatList(indexList, floatList, start, j);
+		sortFloatIndexList(indexList, floatList, start, j);
 }
 
 void sortFloatList(float floatList[], int start, int end)
@@ -88,37 +262,6 @@ void sortFloatList(float floatList[], int start, int end)
 		sortFloatList(floatList, i, end);
 	if(start < j)
 		sortFloatList(floatList, start, j);
-}
-
-void findPointsBox2d(MVector2 * points, unsigned int nb, MVector2 * min, MVector2 * max)
-{
-	if(nb == 0)
-		return;
-
-	float minx;
-	float maxx;
-	float miny;
-	float maxy;
-	
-	minx = maxx = points[0].x;
-	miny = maxy = points[0].y;
-	for(int p=0; p<nb; p++)
-	{
-		if(points[p].x < minx)
-			minx = points[p].x;
-		else if(points[p].x > maxx)
-			maxx = points[p].x;
-				
-		if(points[p].y < miny)
-			miny = points[p].y;
-		else if(points[p].y > maxy)
-			maxy = points[p].y;
-	}
-
-	min->x = minx;
-	min->y = miny;
-	max->x = maxx;
-	max->y = maxy;
 }
 
 float loopFloat(float val, float min, float max)
@@ -155,7 +298,7 @@ unsigned int getNextPowerOfTwo(unsigned int x)
 	return x;
 }
 
-bool isEdgeToEdge2dIntersection(const MVector2 & A, const MVector2 & B, const MVector2 & C, const MVector2 & D, MVector2 * I)
+bool lineToLineIntersection(const MVector2 & A, const MVector2 & B, const MVector2 & C, const MVector2 & D, MVector2 * I)
 {
 	MVector2 DP, QA, QB;
 	float d, la, lb;
@@ -167,273 +310,189 @@ bool isEdgeToEdge2dIntersection(const MVector2 & A, const MVector2 & B, const MV
 	d  =   QA.y * QB.x - QB.y * QA.x;
 	la = ( QB.x * DP.y - QB.y * DP.x ) / d;
 
-	if(la < 0)
-		return false;
-
-	if(la > 1)
+	if(la < 0 || la > 1)
 		return false;
 
 	lb = ( QA.x * DP.y - QA.y * DP.x ) / d;
 
-	if(lb < 0)
+	if(lb < 0 || lb > 1)
 		return false;
 
-	if(lb > 1)
-		return false;
-
-	I->x = A.x + la * QA.x;
-	I->y = A.y + la * QA.y;
-
+	if(I)
+	{
+		I->x = A.x + la * QA.x;
+		I->y = A.y + la * QA.y;
+	}
 	return true;
 }
 
-bool isLineCircleIntersection(const MVector2 & origin, const MVector2 & dest, const MVector2 & circleCenter, float circleRadius)
+bool boxToBoxCollision2d(const MVector2 & minA, const MVector2 & maxA, const MVector2 & minB, const MVector2 & maxB)
 {
-	float rr = circleRadius*circleRadius;
-
-	if((origin - circleCenter).getSquaredLength() < rr)
-		return true;
-
-	if((dest - circleCenter).getSquaredLength() < rr)
-		return true;
-
-	MVector2 vec = dest - origin;
-	MVector2 N = MVector2(-vec.y, vec.x).getNormalized();
-
-	float d = N.dotProduct(circleCenter - origin);
-
-	if(fabs(d) >= circleRadius)
-		return false;
-
-	MVector2 I = circleCenter - (N * d);
-
-	if(fabs(vec.x) > fabs(vec.y))
-	{
-		if(((I.x > origin.x) && (I.x < dest.x)) ||
-		   ((I.x < origin.x) && (I.x > dest.x)))
-		   return true;
-
-		return false;
-	}
-
-	if(((I.y > origin.y) && (I.y < dest.y)) ||
-	   ((I.y < origin.y) && (I.y > dest.y)))
-	   return true;
-
-	return false;
-}
-
-bool isBoxToBoxCollision(const MVector3 & minA, const MVector3 & maxA, const MVector3 & minB, const MVector3 & maxB)
-{
-	// X
 	if(minA.x > maxB.x) return false;
 	if(maxA.x < minB.x) return false;
-
-	// Y
 	if(minA.y > maxB.y) return false;
 	if(maxA.y < minB.y) return false;
+	return true;
+}
 
-	// Z
+bool isPointInBox2d(const MVector2 & point, const MVector2 & min, const MVector2 & max)
+{
+	if(point.x > max.x) return false;
+	if(point.x < min.x) return false;
+	if(point.y > max.y) return false;
+	if(point.y < min.y) return false;
+	return true;
+}
+
+bool boxToBoxCollision(const MVector3 & minA, const MVector3 & maxA, const MVector3 & minB, const MVector3 & maxB)
+{
+	if(minA.x > maxB.x) return false;
+	if(maxA.x < minB.x) return false;
+	if(minA.y > maxB.y) return false;
+	if(maxA.y < minB.y) return false;
 	if(minA.z > maxB.z) return false;
 	if(maxA.z < minB.z) return false;
-
-	return true;
-}
-
-bool isBoxToBox2dCollision(const MVector2 & minA, const MVector2 & maxA, const MVector2 & minB, const MVector2 & maxB)
-{
-	// X
-	if(minA.x > maxB.x) return false;
-	if(maxA.x < minB.x) return false;
-
-	// Y
-	if(minA.y > maxB.y) return false;
-	if(maxA.y < minB.y) return false;
-
 	return true;
 }
 
 bool isPointInBox(const MVector3 & point, const MVector3 & min, const MVector3 & max)
 {
-	if(point.x >= (min.x-0.01f) && point.x <= (max.x+0.01f) &&
-	   point.y >= (min.y-0.01f) && point.y <= (max.y+0.01f) &&
-	   point.z >= (min.z-0.01f) && point.z <= (max.z+0.01f))
-	   return true;
-
-	return false;
-}
-
-bool isPointInBox2d(const MVector2 & point, const MVector2 & min, const MVector2 & max)
-{
-	if(point.x > max.x)
-		return false;
-
-	if(point.x < min.x)
-		return false;
-
-	if(point.y > max.y)
-		return false;
-
-	if(point.y < min.y)
-		return false;
-
+	if(point.x > max.x) return false;
+	if(point.x < min.x) return false;
+	if(point.y > max.y) return false;
+	if(point.y < min.y) return false;
+	if(point.z > max.z) return false;
+	if(point.z < min.z) return false;
 	return true;
 }
 
-bool isEdgeToBoxCollision(const MVector3 & origin, const MVector3 & dest, const MVector3 & min, const MVector3 & max)
+// Ray-box intersection using IEEE numerical properties to ensure that the
+// test is both robust and efficient, as described in:
+//
+//      Amy Williams, Steve Barrus, R. Keith Morley, and Peter Shirley
+//      "An Efficient and Robust Ray-Box Intersection Algorithm"
+//      Journal of graphics tools, 10(1):49-54, 2005
+//
+float rayBoxIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & min, const MVector3 & max)
 {
-	MVector3 nrm[6];
-	MVector3 pts[6];
-	MVector3 pt;
+	MVector3 inv_direction(
+		1 / direction.x,
+		1 / direction.y,
+		1 / direction.z
+	);
 
-	nrm[0].set( 1, 0, 0); pts[0] = max;
-	nrm[1].set(-1, 0, 0); pts[1] = min;
-	nrm[2].set( 0, 1, 0); pts[2] = max;
-	nrm[3].set( 0,-1, 0); pts[3] = min;
-	nrm[4].set( 0, 0, 1); pts[4] = max;
-	nrm[5].set( 0, 0,-1); pts[5] = min;
+	int sign[3];
+	sign[0] = (inv_direction.x < 0);
+	sign[1] = (inv_direction.y < 0);
+	sign[2] = (inv_direction.z < 0);
+	MVector3 parameters[2] = {min, max};
+	
+	float tmin = (parameters[sign[0]].x - origin.x) * inv_direction.x;
+	float tmax = (parameters[1-sign[0]].x - origin.x) * inv_direction.x;
+	float tymin = (parameters[sign[1]].y - origin.y) * inv_direction.y;
+	float tymax = (parameters[1-sign[1]].y - origin.y) * inv_direction.y;
+	
+	if((tmin > tymax) || (tymin > tmax))
+		return 0;
+  
+	if(tymin > tmin)
+		tmin = tymin;
+	if(tymax < tmax)
+		tmax = tymax;
+		
+	float tzmin = (parameters[sign[2]].z - origin.z) * inv_direction.z;
+	float tzmax = (parameters[1-sign[2]].z - origin.z) * inv_direction.z;
 
-	if(isPointInBox(origin, min, max) || isPointInBox(dest, min, max))
-		return true;
-
-	for(int i=0; i<6; i++)
-	{
-		if(isEdgePlaneIntersection(origin, dest, pts[i], nrm[i], &pt))
-		{
-			if(isPointInBox(pt, min, max))
-				return true;
-		}
-	}
-
-	return false;
+	if((tmin > tzmax) || (tzmin > tmax))
+		return 0;
+		
+	if(tzmin > tmin)
+		tmin = tzmin;
+	if(tzmax < tmax)
+		tmax = tzmax;
+	
+	return tmin;
 }
 
-bool isEdgePlaneIntersection(const MVector3 & origin, const MVector3 & dest, const MVector3 & planePoint, const MVector3 & normal, MVector3 * point)
-{
-	MVector3 vec_tmp[2], vec[2];
-	float pts_dst[2], val_tmp[2];
-
-	vec[0].x = origin.x - planePoint.x;
-	vec[0].y = origin.y - planePoint.y;
-	vec[0].z = origin.z - planePoint.z;
-
-	vec[1].x = dest.x - planePoint.x;
-	vec[1].y = dest.y - planePoint.y;
-	vec[1].z = dest.z - planePoint.z;
-
-	// points distance
-	pts_dst[0] = vec[0].dotProduct(normal);
-
-	if(pts_dst[0] > 0)
-	{
-		pts_dst[1] = vec[1].dotProduct(normal);
-
-		if(pts_dst[1] < 0)
-		{
-			if(! point)
-				return true;
-
-			vec_tmp[0].x = origin.x - dest.x;
-			vec_tmp[0].y = origin.y - dest.y;
-			vec_tmp[0].z = origin.z - dest.z;
-
-			val_tmp[0] = vec_tmp[0].dotProduct(normal);
-			val_tmp[1] = pts_dst[0] / val_tmp[0];
-
-			point->x = origin.x - vec_tmp[0].x * val_tmp[1];
-			point->y = origin.y - vec_tmp[0].y * val_tmp[1];
-			point->z = origin.z - vec_tmp[0].z * val_tmp[1];
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool isRaySphereIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & sphereCenter, float sphereRadius, MVector3 * point)
-{
-	MVector3 vec = origin - sphereCenter;
-	float b = direction.dotProduct(vec);
-	float c = vec.getSquaredLength() - (sphereRadius * sphereRadius);
-	float d = (b * b) - c;
-
-	if(d < 0)
-		return false;
-
-	float distance = -b - sqrtf(d);
-
-	point->x = (origin.x + (distance * direction.x));
-	point->y = (origin.y + (distance * direction.y));
-	point->z = (origin.z + (distance * direction.z));
-
-	return true;
-}
-
-bool isRayPlaneIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & planePoint, const MVector3 & planeNormal, MVector3 * point)
+float rayPlaneIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & planePoint, const MVector3 & planeNormal)
 {
 	float constant = - planeNormal.dotProduct(planePoint);
-
-	float normalDotDir = planeNormal.dotProduct(direction);
+	float normaldotProductDir = planeNormal.dotProduct(direction);
 	float planeDistance = planeNormal.dotProduct(origin) + constant;
-
-	float t = - planeDistance / normalDotDir;
-
-	point->x = (origin.x + (t * direction.x));
-	point->y = (origin.y + (t * direction.y));
-	point->z = (origin.z + (t * direction.z));
-
-	return true;
+	return - planeDistance / normaldotProductDir;
 }
 
-bool isPointInTriangle(const MVector3 & point, const MVector3 & a, const MVector3 & b, const MVector3 & c, const MVector3 & normal)
+float raySphereIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & sphereCenter, float sphereRadius2)
 {
-	MVector3 nrm = getTriangleNormal(point, a, b);
+	MVector3 vec = sphereCenter - origin;
+	float b = vec.dotProduct(direction);
+	float det = b*b - vec.dotProduct(vec) + sphereRadius2;
 
-	if(nrm.dotProduct(normal) < 0)
-		return false;
-
-	nrm = getTriangleNormal(point, b, c);
-	if(nrm.dotProduct(normal) < 0)
-		return false;
-
-	nrm = getTriangleNormal(point, c, a);
-	if(nrm.dotProduct(normal) < 0)
-		return false;
-
-	return true;
+	if(det<0)
+		return 0;
+	else
+		det=sqrtf(det);
+	
+	return b-det;
 }
 
-bool isEdgeTriangleIntersection(const MVector3 & origin, const MVector3 & dest, const MVector3 & a, const MVector3 & b, const MVector3 & c, const MVector3 & normal, MVector3 * point)
+float rayTriangleIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & A, const MVector3 & B, const MVector3 & C, float & u, float & v)
 {
-	MVector3 iPoint;
-
-	if(isEdgePlaneIntersection(origin, dest, a, normal, &iPoint))
+	MVector3 edge1 = B - A;
+	MVector3 edge2 = C - A;
+	MVector3 pvec = direction.crossProduct(edge2);
+	
+	float det = edge1.dotProduct(pvec);
+	if(det == 0)
+		return 0;
+		
+	float inv_det = 1.0f/det;
+	MVector3 tvec = origin - A;
+	
+	// u parameter
+	u = tvec.dotProduct(pvec) * inv_det;
+	if(u < 0.0 || u > 1.0)
+		return 0;
+		
+	MVector3 qvec = tvec.crossProduct(edge1);
+	
+	// v parameter
+	v = direction.dotProduct(qvec) * inv_det;
+	
+	// inverted comparison (to catch NaNs)
+	if(v >= 0.0 && (u+v) <= 1.0)
 	{
-		if(isPointInTriangle(iPoint, a, b, c, normal))
-		{
-			if(! point)
-				return true;
-
-			point->x = iPoint.x;
-			point->y = iPoint.y;
-			point->z = iPoint.z;
-			return true;
-		}
+		return edge2.dotProduct(qvec) * inv_det;
 	}
-
-	return false;
+	
+	return 0;
 }
 
-MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b, const MVector3 & c)
+bool isPointInTriangle(const MVector3 & point, const MVector3 & A, const MVector3 & B, const MVector3 & C, const MVector3 & normal)
 {
-	MVector3 vec0 = a - b;
-	MVector3 vec1 = a - c;
+	MVector3 nrm = (point-A).crossProduct(point-B);
+	if(nrm.dotProduct(normal) < 0)
+		return false;
 
-	return vec0.crossProduct(vec1).getNormalized();
+	nrm = (point-B).crossProduct(point-C);
+	if(nrm.dotProduct(normal) < 0)
+		return false;
+
+	nrm = (point-C).crossProduct(point-A);
+	if(nrm.dotProduct(normal) < 0)
+		return false;
+
+	return true;
 }
 
-float getPolygonArea(MVector2 * points, unsigned int nb)
+MVector3 getTriangleNormal(const MVector3 & A, const MVector3 & B, const MVector3 & C)
+{
+	MVector3 vec1 = A - B;
+	MVector3 vec2 = A - C;
+	return vec1.crossProduct(vec2).getNormalized();
+}
+
+float getPolygonArea2d(MVector2 * points, unsigned int nb)
 {
 	float fx = 0;
 	float fy = 0;
@@ -452,7 +511,7 @@ float getPolygonArea(MVector2 * points, unsigned int nb)
 	return ABS((fx - fy)*0.5f);
 }
 
-float getLineLength2d(MVector2 * points, unsigned int nb)
+float getPolyLineLength2d(MVector2 * points, unsigned int nb)
 {
 	float L = 0;
 				
@@ -463,7 +522,7 @@ float getLineLength2d(MVector2 * points, unsigned int nb)
 	return L;
 }
 
-float getLineLength3d(MVector3 * points, unsigned int nb)
+float getPolyLineLength(MVector3 * points, unsigned int nb)
 {
 	float L = 0;
 				
@@ -726,16 +785,14 @@ MVector3 HSLToRGB(MVector3 hslColor)
 	return MVector3(R, G, B);
 }
 
-// simplifyDP():
-
 // Copyright 2002, softSurfer (www.softsurfer.com)
 // This code may be freely used and modified for any purpose
 // providing that this copyright notice is included with it.
 // SoftSurfer makes no warranty for this code, and cannot be held
 // liable for any real or imagined damage resulting from its use.
 // Users of this code must verify correctness for their application.
-// Modified by Anaël Seghezzi to use MVector3
-
+// Modified to use MVector3
+//
 //  This is the Douglas-Peucker recursive simplification routine
 //  It just marks vertices that are part of the simplified polyline
 //  for approximating the polyline subchain v[j] to v[k].

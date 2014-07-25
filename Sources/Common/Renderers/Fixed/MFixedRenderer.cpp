@@ -737,7 +737,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 						entity->getTransformedVector(MVector3(max->x, min->y, max->z))
 					};
 
-					if(! frustum->isVolumePointsVisible(points, 8))
+					if(! frustum->isPointCloudVisible(points, 8))
 						continue;
 				}
 
@@ -762,7 +762,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 				}
 
 				if(lightsNumber > 1)
-					sortFloatList(entityLightsList, entityLightsZList, 0, (int)lightsNumber-1);
+					sortFloatIndexList(entityLightsList, entityLightsZList, 0, (int)lightsNumber-1);
 
 				// local lights
 				if(lightsNumber > 4)
@@ -781,8 +781,22 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					MVector3 color = light->getFinalColor();
 
 					// set light
+					MVector4 lightPos;
+					if(light->getLightType() == M_LIGHT_DIRECTIONAL)
+					{
+						MVector3 lightDir = light->getRotatedVector(MVector3(0, 0, 1)).getNormalized();
+						lightPos.x = lightDir.x;
+						lightPos.y = lightDir.y;
+						lightPos.z = lightDir.z;
+						lightPos.w = 0;
+					}
+					else
+					{
+						lightPos = light->getTransformedPosition();
+					}
+					
 					render->enableLight(l);
-					render->setLightPosition(l, light->getTransformedPosition());
+					render->setLightPosition(l, lightPos);
 					render->setLightDiffuse(l, MVector4(color));
 					render->setLightSpecular(l, MVector4(color));
 					render->setLightAmbient(l, MVector3(0, 0, 0));
@@ -870,7 +884,7 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 
 	// sort transparent list
 	if(transpSubObsNumber > 1)
-		sortFloatList(transpList, transpZList, 0, (int)transpSubObsNumber-1);
+		sortFloatIndexList(transpList, transpZList, 0, (int)transpSubObsNumber-1);
 
 	// draw transparents
 	render->setDepthMask(0);
@@ -911,8 +925,22 @@ void MFixedRenderer::drawScene(MScene * scene, MOCamera * camera)
 					MVector3 color = light->getFinalColor();
 
 					// set light
+					MVector4 lightPos;
+					if(light->getLightType() == M_LIGHT_DIRECTIONAL)
+					{
+						MVector3 lightDir = light->getRotatedVector(MVector3(0, 0, 1)).getNormalized();
+						lightPos.x = lightDir.x;
+						lightPos.y = lightDir.y;
+						lightPos.z = lightDir.z;
+						lightPos.w = 0;
+					}
+					else
+					{
+						lightPos = light->getTransformedPosition();
+					}
+					
 					render->enableLight(l);
-					render->setLightPosition(l, light->getTransformedPosition());
+					render->setLightPosition(l, lightPos);
 					render->setLightDiffuse(l, MVector4(color));
 					render->setLightSpecular(l, MVector4(color));
 					render->setLightAmbient(l, MVector3(0, 0, 0));

@@ -138,7 +138,7 @@ m_physicsProperties(NULL)
 
 MOEntity::~MOEntity(void)
 {
-	clearPrivateMaterials();
+	clearLocalMaterials();
 	clearSubMeshCaches();
 	deletePhysicsProperties();
 	MObject3d::clearObject3d();
@@ -230,34 +230,35 @@ void MOEntity::clearSubMeshCaches(void)
 	SAFE_DELETE_ARRAY(m_subMeshCaches);
 }
 
-bool MOEntity::getRayNearestIntersectionDistance(const MVector3 & origin, const MVector3 & dest, float * distance)
+float MOEntity::getRayNearestIntersectionDistance(const MVector3 & origin, const MVector3 & direction)
 {
 	MMesh * mesh = getMesh();
 	if(! mesh)
-		return false;
+		return 0;
 
 	MMatrix4x4 * matrix = getMatrix();
-	MMatrix4x4 iMatrix = matrix->getInverse();
-
-	MVector3 localOrigin = iMatrix * origin;
-	MVector3 localDest = iMatrix * dest;
+	MMatrix4x4 invMatrix = matrix->getInverse(); // TODO: precompute
+	
+	MVector3 localOrigin = invMatrix.getTransformedVector3(origin);
+	MVector3 localDirection = invMatrix.getRotatedVector3(direction).getNormalized();
 
 	MBox3d * ebox = getBoundingBox();
-	if(! isEdgeToBoxCollision(localOrigin, localDest, ebox->min, ebox->max))
-		return false;
-		
+	
+	unsigned int sSize = mesh->getSubMeshsNumber();
+	if(sSize > 1)
+	{
+		if(! isPointInBox(localOrigin, ebox->min, ebox->max))
+		{
+			float boxDist = rayBoxIntersection(localOrigin, localDirection, ebox->min, ebox->max);
+			if(boxDist <= 0)
+				return 0;
+		}
+	}
+
 	bool raytraced = false;
-
-	float dist;
-	float nearDist;
-	MVector3 I, intersectionPoint;
-	MVector3 rayVector = localDest - localOrigin;
-
-	// init near dist
-	nearDist = rayVector.getSquaredLength();
+	float nearDist = 10E7;
 
 	unsigned int s;
-	unsigned int sSize = mesh->getSubMeshsNumber();
 	for(s=0; s<sSize; s++)
 	{
 		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
@@ -271,7 +272,15 @@ bool MOEntity::getRayNearestIntersectionDistance(const MVector3 & origin, const 
 			box = subMeshCache->getBoundingBox();
 		}
 
-		if(isEdgeToBoxCollision(localOrigin, localDest, box->min, box->max))
+		float boxDist = 0;
+		if(! isPointInBox(localOrigin, box->min, box->max))
+		{
+			boxDist = rayBoxIntersection(localOrigin, localDirection, box->min, box->max);
+			if(boxDist <= 0)
+				continue;
+		}
+
+		// parse displays
 		{
 			unsigned int d;
 			unsigned int dSize = subMesh->getDisplaysNumber();
@@ -300,58 +309,50 @@ bool MOEntity::getRayNearestIntersectionDistance(const MVector3 & origin, const 
                         break;
 				}
 
-				// BACK or FRONT and BACK, scan ray
-				if((display->getCullMode() == M_CULL_BACK) || (display->getCullMode() == M_CULL_NONE))
+				float dist;
+				/*if(subMesh->getAccelMap())
 				{
-					if(getNearestRaytracedPosition(
-						localOrigin, localDest,
-						indices,
-						subMesh->getIndicesType(),
-						vertices,
-						display->getSize(),
-						&I))
+					MVector3 localOrigin2 = localOrigin + localDirection*boxDist;
+					
+					dist = rayMeshIntersectionAccel(
+						subMesh->getAccelMap(), box,
+						localOrigin2, localDirection,
+						indices, subMesh->getIndicesType(),
+						vertices, display->getSize()
+						);
+						
+					if(dist > 0 && (boxDist+dist) < nearDist)
 					{
-						dist = (I - localOrigin).getSquaredLength();
-						if(dist < nearDist)
-						{
-							intersectionPoint = I;
-							nearDist = dist;
-							raytraced = true;
-						}
+						nearDist = (boxDist+dist);
+						raytraced = true;
 					}
 				}
-
-				// FRONT or FRONT and BACK, scan invert
-				if((display->getCullMode() == M_CULL_FRONT) || (display->getCullMode() == M_CULL_NONE))
+				else*/
 				{
-					if(getNearestRaytracedPosition(
-						localOrigin, localDest,
-						indices,
-						subMesh->getIndicesType(),
-						vertices,
-						display->getSize(),
-						&I, 1))
+					dist = rayMeshIntersection(
+						localOrigin, localDirection,
+						indices, subMesh->getIndicesType(),
+						vertices, display->getSize()
+						);
+						
+					if(dist > 0 && (boxDist+dist) < nearDist)
 					{
-						dist = (I - localOrigin).getSquaredLength();
-						if(dist < nearDist)
-						{
-							intersectionPoint = I;
-							nearDist = dist;
-							raytraced = true;
-						}
+						nearDist = dist;
+						raytraced = true;
 					}
 				}
 			}
 		}
 	}
 
-	if(raytraced)
-		*distance = (((*matrix) * intersectionPoint) - origin).getLength();
+	if(! raytraced)
+		return 0;
 
-	return raytraced;
+	MVector3 intersectionPoint = localOrigin + localDirection*nearDist;
+	return (matrix->getTransformedVector3(intersectionPoint) - origin).getLength();
 }
 
-MMaterial * MOEntity::createPrivateMaterial(unsigned int id)
+MMaterial * MOEntity::createLocalMaterial(unsigned int id)
 {
 	map<unsigned int, MMaterial*>::iterator iter = m_materials.find(id);
     if(iter != m_materials.end())
@@ -391,7 +392,7 @@ MMaterial * MOEntity::getMaterial(unsigned int id)
 	return NULL;
 }
 
-void MOEntity::deletePrivateMaterial(unsigned int id)
+void MOEntity::deleteLocalMaterial(unsigned int id)
 {
 	map<unsigned int, MMaterial*>::iterator iter = m_materials.find(id);
     if(iter != m_materials.end())
@@ -401,7 +402,7 @@ void MOEntity::deletePrivateMaterial(unsigned int id)
     }
 }
 
-void MOEntity::clearPrivateMaterials(void)
+void MOEntity::clearLocalMaterials(void)
 {
 	map<unsigned int, MMaterial*>::iterator
 		mit (m_materials.begin()),
@@ -445,7 +446,7 @@ void MOEntity::updateVisibility(MOCamera * camera)
 	};
 
 	// is box in frustum
-	setVisible(frustum->isVolumePointsVisible(points, 8));
+	setVisible(frustum->isPointCloudVisible(points, 8));
 }
 
 bool MOEntity::isAnimationOver(void)

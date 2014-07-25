@@ -65,24 +65,19 @@ M_ENGINE_EXPORT void computeSkinning(
 	MVector3 * tangents
 	);
 
-M_ENGINE_EXPORT bool isRaytraced(
-	const MVector3 & origin,
-	const MVector3 & dest, 
-	const void * indices, 
-	M_TYPES indicesType,
-	const MVector3 * vertices, 
-	unsigned int size
+M_ENGINE_EXPORT bool isMeshRaytraced(
+	const MVector3 & origin, const MVector3 & direction,
+	const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size);
+
+M_ENGINE_EXPORT float rayMeshIntersection(
+	const MVector3 & origin, const MVector3 & direction,
+	const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size
 	);
 
-M_ENGINE_EXPORT bool getNearestRaytracedPosition(
-	const MVector3 & origin, 
-	const MVector3 & dest, 
-	const void * indices, 
-	M_TYPES indicesType,
-	const MVector3 * vertices, 
-	unsigned int size, 
-	MVector3 * intersection,
-	bool invertNormal = false
+M_ENGINE_EXPORT float rayMeshIntersectionAccel(
+	const MAccelMap * accelMap, const MBox3d * box,
+	const MVector3 & origin, const MVector3 & direction,
+	const void * indices, M_TYPES indicesType, const MVector3 * vertices, const unsigned int size
 	);
 
 #endif

@@ -133,7 +133,7 @@ public:
 	MOCamera * getCurrentCamera(void);
 
 	// raytracing
-	MOEntity * getRayNearestEntityIntersection(const MVector3 & origin, const MVector3 & dest, MVector3 * intersectPoint);
+	MOEntity * getRayNearestEntityIntersection(const MVector3 & origin, const MVector3 & direction, float * distance);
 	
 	// current frame
 	inline void setCurrentFrame(int currentFrame){ m_currentFrame = currentFrame; }

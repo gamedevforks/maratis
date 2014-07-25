@@ -303,5 +303,5 @@ void MOText::updateVisibility(MOCamera * camera)
 	};
 
 	// is box in frustum
-	setVisible(frustum->isVolumePointsVisible(points, 8));
+	setVisible(frustum->isPointCloudVisible(points, 8));
 }

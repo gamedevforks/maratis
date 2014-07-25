@@ -235,6 +235,9 @@ public:
 	// clear
 	virtual void clear(int buffer) = 0;
 	virtual void setClearColor(const MVector4 & color) = 0;
+	
+	// finish
+	virtual void finish(void) = 0;
 
 	// texture
 	virtual void enableTexture(void) = 0;
@@ -347,6 +350,7 @@ public:
 	virtual void enableDepthTest(void) = 0;
 	virtual void disableDepthTest(void) = 0;
 	virtual void setDepthMode(M_DEPTH_MODES mode) = 0;
+	virtual void setPolygonOffset(float factor, float units) = 0;
 
 	// stencil
 	virtual void enableStencilTest(void) = 0;
@@ -365,6 +369,7 @@ public:
 	virtual void beginQuery(unsigned int queryId){}
 	virtual void endQuery(void){}
 	virtual void getQueryResult(unsigned int queryId, unsigned int * result){}
+	virtual bool isQueryResultAvailable(unsigned int queryId){ return false; }
 
 	// matrix
 	virtual void loadIdentity(void) = 0;

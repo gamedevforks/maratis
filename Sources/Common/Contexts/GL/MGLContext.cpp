@@ -331,6 +331,11 @@ void MGLContext::setClearColor(const MVector4 & color){
 	glClearColor(color.x, color.y, color.z, color.w);
 }
 
+// finish
+void MGLContext::finish(void){
+	glFinish();
+}
+
 // texture
 void MGLContext::enableTexture(void)
 {
@@ -986,6 +991,18 @@ void MGLContext::setDepthMode(M_DEPTH_MODES mode)
 		break;
 	}
 }
+void MGLContext::setPolygonOffset(float factor, float units)
+{
+	if(factor == 0 && units == 0)
+	{
+		glDisable(GL_POLYGON_OFFSET_FILL);
+	}
+	else
+	{
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(factor, units);
+	}
+}
 
 // stencil
 void MGLContext::enableStencilTest(void) { glEnable (GL_STENCIL_TEST); }
@@ -1083,6 +1100,11 @@ void MGLContext::endQuery(void){
 }
 void MGLContext::getQueryResult(unsigned int queryId, unsigned int * result){
 	glGetQueryObjectuivARB(queryId, GL_QUERY_RESULT_ARB, result);
+}
+bool MGLContext::isQueryResultAvailable(unsigned int queryId){
+	int result;
+	glGetQueryObjectivARB(queryId, GL_QUERY_RESULT_AVAILABLE_ARB, &result);
+	return result!=0;
 }
 
 // matrix

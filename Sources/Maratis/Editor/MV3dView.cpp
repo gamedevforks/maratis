@@ -46,7 +46,8 @@ static MVector4 getObjectColor(MObject3d * object, bool isSelected)
 }
 
 MV3dView::MV3dView(void):
-m_window(NULL)
+m_window(NULL),
+m_unitSize(0)
 {}
 
 MV3dView::~MV3dView(void)
@@ -91,7 +92,7 @@ void MV3dView::drawCallback(MGuiWindow * window)
 	scene->drawObjectsBehaviors();
 	
 	// unit size
-	float unitSize = 10.0f / (float)viewport->m_view.m_camera.getCurrentViewport()[3];
+	viewport->m_unitSize = 10.0f / (float)viewport->m_view.m_camera.getCurrentViewport()[3];
 	
 	// draw extra
 	MMeshRef * lightMeshRef = (MMeshRef *)guiData->getMeshManager()->getRefFromFilename("light.mesh");
@@ -110,7 +111,7 @@ void MV3dView::drawCallback(MGuiWindow * window)
 		for(i=0; i<size; i++)
 		{
 			MOLight * light = scene->getLightByIndex(i);
-			viewport->drawLight(light, lightMeshRef, unitSize);
+			viewport->drawLight(light, lightMeshRef, viewport->m_unitSize);
 		}
 	}
 	
@@ -121,7 +122,7 @@ void MV3dView::drawCallback(MGuiWindow * window)
 		for(i=0; i<size; i++)
 		{
 			MOCamera * camera = scene->getCameraByIndex(i);
-			viewport->drawCamera(camera, cameraMeshRef, unitSize);
+			viewport->drawCamera(camera, cameraMeshRef, viewport->m_unitSize);
 		}
 	}
 	
@@ -132,14 +133,14 @@ void MV3dView::drawCallback(MGuiWindow * window)
 		for(i=0; i<size; i++)
 		{
 			MOSound * sound = scene->getSoundByIndex(i);
-			viewport->drawBillboardObject(sound, soundMeshRef, unitSize);
+			viewport->drawBillboardObject(sound, soundMeshRef, viewport->m_unitSize);
 		}
 	}
 	
 	// armatures
 	{
 		render->disableDepthTest();
-		render->setColor4(prefs->getColor("3d Object Off"));
+		render->setColor4(prefs->getColor("3d Object On"));
 		
 		unsigned int i, size = scene->getEntitiesNumber();
 		for(i=0; i<size; i++)
@@ -402,11 +403,7 @@ void MV3dView::drawBillboardObject(MObject3d * object, MMeshRef * meshRef, float
 	if(! object->isActive())
 		object->updateMatrix();
 
-	float size;
-	if(! camera->isOrtho())
-		size = (object->getTransformedPosition() - camera->getTransformedPosition()).getLength() * unitSize;
-	else
-		size = camera->getFov() * unitSize;
+	float size = getBillboardObjectSize(object, unitSize);
 
 	MMatrix4x4 matrix;
 	matrix.setScale(object->getTransformedScale() * MVector3(size));
@@ -440,25 +437,48 @@ void MV3dView::drawLight(MOLight * light, MMeshRef * meshRef, float unitSize)
 	// billboard
 	drawBillboardObject(light, meshRef, unitSize);
 
-	// spot
 	float spotAngle = light->getSpotAngle();
-	if(spotAngle < 90)
+	
+	// directional
+	if(light->getLightType() == M_LIGHT_DIRECTIONAL)
 	{
-		float size;
-		if(! camera->isOrtho())
-			size = (light->getTransformedPosition() - camera->getTransformedPosition()).getLength() * unitSize;
-		else
-			size = camera->getFov() * unitSize;
+		float size = getBillboardObjectSize(light, unitSize);
+		
+		MVector3 pos = light->getTransformedPosition();
+		MVector3 dir = light->getRotatedVector(MVector3(0, 0, -1))*size;
+		
+		MVector3 cx = camera->getRotatedVector(MVector3(1, 0, 0)).getNormalized();
+		MVector3 cy = camera->getRotatedVector(MVector3(0, 1, 0)).getNormalized();
+		
+		MVector3 ndir = dir.getNormalized();
+		float dx = ndir.dotProduct(cx);
+		float dy = ndir.dotProduct(cy);
+		
+		MVector3 cameraAxis = camera->getRotatedVector(MVector3(dy, -dx, 0)).getNormalized()*size;
+		
+		render->setColor4(color);
+		beginDraw(M_PRIMITIVE_LINES);
+		pushVertex(pos + dir);
+		pushVertex(pos + dir*10);
+		pushVertex(pos + dir*9 + cameraAxis*0.5f);
+		pushVertex(pos + dir*10);
+		pushVertex(pos + dir*9 - cameraAxis*0.5f);
+		pushVertex(pos + dir*10);
+		endDraw(render);
+	}
+	// spot
+	else if(spotAngle < 90)
+	{
+		float size = getBillboardObjectSize(light, unitSize)*10;
 		
 		MVector3 cameraAxis = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();
 		
-		size = size*10;
 		if(size > light->getRadius()*0.25f)
 			size = light->getRadius()*0.25f;
 
 		MVector3 pos = light->getTransformedPosition();
 		MVector3 dir1 = light->getRotatedVector(MVector3(0, 0, -1));
-		MVector3 dir2 = light->getRotatedVector(MVector3(0, 0, -1));
+		MVector3 dir2 = dir1;
 
 		MVector3 axis = light->getInverseRotatedVector(cameraAxis);
 		axis.z = 0;
@@ -501,27 +521,15 @@ void MV3dView::drawCamera(MOCamera * camera, MMeshRef * meshRef, float unitSize)
 	MEditor * editor = MEditor::getInstance();
 	MRenderingContext * render = engine->getRenderingContext();
 	MSelectionManager * selection = editor->getSelectionManager();
-	MOCamera * viewCamera = &m_view.m_camera;
 	
-
 	if(! camera->isActive())
 		camera->updateMatrix();
 
+	float size = getBillboardObjectSize(camera, unitSize);
 	MMatrix4x4 matrix;
-	if(! viewCamera->isOrtho())
-	{
-		float scale = (camera->getTransformedPosition() - viewCamera->getTransformedPosition()).getLength() * unitSize;
-		MMatrix4x4 scaleMatrix;
-		scaleMatrix.setScale(MVector3(scale, scale, scale));
-		matrix = (*camera->getMatrix()) * scaleMatrix;
-	}
-	else
-	{
-		float scale = viewCamera->getFov() * unitSize;
-		MMatrix4x4 scaleMatrix;
-		scaleMatrix.setScale(MVector3(scale, scale, scale));
-		matrix = (*camera->getMatrix()) * scaleMatrix;
-	}
+	MMatrix4x4 scaleMatrix;
+	scaleMatrix.setScale(MVector3(size));
+	matrix = (*camera->getMatrix()) * scaleMatrix;
 
 	bool selected = selection->isObjectSelected(camera);
 	MVector4 color = getObjectColor(camera, selected);
@@ -533,6 +541,14 @@ void MV3dView::drawCamera(MOCamera * camera, MMeshRef * meshRef, float unitSize)
 	drawWireframe(meshRef->getMesh());
 
 	render->popMatrix();
+}
+
+float MV3dView::getBillboardObjectSize(MObject3d * object, float unitSize)
+{
+	if(! m_view.m_camera.isOrtho())
+		return (object->getTransformedPosition() - m_view.m_camera.getTransformedPosition()).getLength() * unitSize;
+	else
+		return m_view.m_camera.getFov() * unitSize;
 }
 
 void MV3dView::create(MWindow * rootWindow)

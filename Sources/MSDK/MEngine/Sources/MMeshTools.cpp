@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
-// Copyright (c) 2003-2011 Anael Seghezzi <www.maratis3d.com>
+// Copyright (c) 2003-2014 Anael Seghezzi <www.maratis3d.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -34,7 +34,6 @@
 #ifdef __SSE2__
 #include <mmintrin.h>
 #include <xmmintrin.h>
-
 static void blendMatrices(MMatrix4x4 * matrix, const MMatrix4x4 * skinMatrix, const float weight)
 {
 	__m128 w = _mm_set1_ps(weight);
@@ -412,7 +411,10 @@ void animateMaterials(MMesh * mesh, MMaterialsAnim * materialsAnim, float t)
 
 
 // skinning
-void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 * baseVertices, const MVector3 * baseNormals, const MVector3 * baseTangents, MVector3 * vertices, MVector3 * normals, MVector3 * tangents)
+void computeSkinning (
+	MArmature * armature, MSkinData * skinData,
+	const MVector3 * baseVertices, const MVector3 * baseNormals, const MVector3 * baseTangents,
+	MVector3 * vertices, MVector3 * normals, MVector3 * tangents)
 {
 	MMatrix4x4 matrix;
 
@@ -490,12 +492,14 @@ void computeSkinning(MArmature * armature, MSkinData * skinData, const MVector3 
 }
 
 
-// simple raytracing
-bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size)
+// raytracing
+bool isMeshRaytraced (
+	const MVector3 & origin, const MVector3 & direction,
+	const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size)
 {
 	switch(indicesType)
 	{
-	case M_USHORT:
+		case M_USHORT:
 		{
 			unsigned int v;
 			unsigned short * idx = (unsigned short *)indices;
@@ -505,17 +509,14 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 				const MVector3 * v2 = &vertices[idx[v+1]];
 				const MVector3 * v3 = &vertices[idx[v+2]];
 
-				// make normal
-				MVector3 normal = getTriangleNormal(*v1, *v2, *v3);
-
-				// if ray intersection return true
-				if(isEdgeTriangleIntersection(origin, dest, *v1, *v2, *v3, normal, NULL))
+				float u, v;
+				if(rayTriangleIntersection(origin, direction, *v1, *v2, *v3, u, v) > 0)
 					return true;
 			}
+			break;
 		}
-		break;
-            
-	case M_UINT:
+		
+		case M_UINT:
 		{
 			unsigned int v;
 			unsigned int * idx = (unsigned int *)indices;
@@ -525,15 +526,12 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 				const MVector3 * v2 = &vertices[idx[v+1]];
 				const MVector3 * v3 = &vertices[idx[v+2]];
 
-				// make normal
-				MVector3 normal = getTriangleNormal(*v1, *v2, *v3);
-
-				// if ray intersection return true
-				if(isEdgeTriangleIntersection(origin, dest, *v1, *v2, *v3, normal, NULL))
+				float u, v;
+				if(rayTriangleIntersection(origin, direction, *v1, *v2, *v3, u, v) > 0)
 					return true;
 			}
+			break;
 		}
-            break;
             
         default:
             break;
@@ -542,20 +540,15 @@ bool isRaytraced(const MVector3 & origin, const MVector3 & dest, const void * in
 	return false;
 }
 
-bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest, const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size, MVector3 * intersection, bool invertNormal)
+float rayMeshIntersection (
+	const MVector3 & origin, const MVector3 & direction,
+	const void * indices, M_TYPES indicesType, const MVector3 * vertices, unsigned int size)
 {
-	bool isRaytraced = false;
-	float dist;
-	float nearDist;
-	MVector3 I;
-	MVector3 rayVector = dest - origin;
-
-	// init near dist
-	nearDist = rayVector.getSquaredLength();
+	float nearDist = 0;
 
 	switch(indicesType)
 	{
-	case M_USHORT:
+		case M_USHORT:
 		{
 			unsigned int v;
 			unsigned short * idx = (unsigned short *)indices;
@@ -565,31 +558,26 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 				const MVector3 * v2 = &vertices[idx[v+1]];
 				const MVector3 * v3 = &vertices[idx[v+2]];
 
-				// make normal
-				MVector3 normal = getTriangleNormal(*v1, *v2, *v3);
-				
-				bool intersect;
-				if(invertNormal)
-					intersect = isEdgeTriangleIntersection(origin, dest, *v3, *v2, *v1, -normal, &I);
-				else
-					intersect = isEdgeTriangleIntersection(origin, dest, *v1, *v2, *v3, normal, &I);
-
-				if(intersect)
+				// cull face
+				/*if(cullMode != M_CULL_NONE)
 				{
-					rayVector = I - origin;
-					dist = rayVector.getSquaredLength();
-					if(dist < nearDist)
-					{
+					MVector3 normal = ((*v1)-(*v2)).crossProduct((*v1)-(*v3));
+					if(direction.dotProduct(normal) < 0)
+						continue;
+				}*/
+				
+				float u, v;
+				float dist = rayTriangleIntersection(origin, direction, *v1, *v2, *v3, u, v);
+				if(dist > 0)
+				{
+					if(dist < nearDist || nearDist == 0)
 						nearDist = dist;
-						(*intersection) = I;
-					}
-					isRaytraced = true;
 				}
 			}
+			break;
 		}
-		break;
-            
-	case M_UINT:
+		
+		case M_UINT:
 		{
 			unsigned int v;
 			unsigned int * idx = (unsigned int *)indices;
@@ -599,32 +587,53 @@ bool getNearestRaytracedPosition(const MVector3 & origin, const MVector3 & dest,
 				const MVector3 * v2 = &vertices[idx[v+1]];
 				const MVector3 * v3 = &vertices[idx[v+2]];
 
-				// make normal
-				MVector3 normal = getTriangleNormal(*v1, *v2, *v3);
-				
-				bool intersect;
-				if(invertNormal)
-					intersect = isEdgeTriangleIntersection(origin, dest, *v3, *v2, *v1, -normal, &I);
-				else
-					intersect = isEdgeTriangleIntersection(origin, dest, *v1, *v2, *v3, normal, &I);
-				
-				if(intersect)
+				float u, v;
+				float dist = rayTriangleIntersection(origin, direction, *v1, *v2, *v3, u, v);
+				if(dist > 0)
 				{
-					rayVector = I - origin;
-					dist = rayVector.getSquaredLength();
-					if(dist < nearDist)
-					{
+					if(dist < nearDist || nearDist == 0)
 						nearDist = dist;
-						(*intersection) = I;
-					}
-					isRaytraced = true;
 				}
 			}
+			break;
 		}
-            break;
             
         default:
             break;
 	}
-	return isRaytraced;
+	
+	return nearDist;
+}
+
+// TEST: Voxel
+float rayMeshIntersectionAccel (
+	const MAccelMap * accelMap, const MBox3d * box,
+	const MVector3 & origin, const MVector3 & direction,
+	const void * indices, M_TYPES indicesType, const MVector3 * vertices, const unsigned int size)
+{
+	MVector3 raypos = (origin - box->min)*accelMap->invUnit;
+	MVector3 raydir = direction*accelMap->invUnitN;
+	
+	int sx = accelMap->sx;
+	int sy = accelMap->sy;
+	int sz = accelMap->sz;
+	int sxy = sx*sy;
+	
+	raypos += raydir*0.001f;
+	while(1)
+	{
+		if(raypos.x<0 || raypos.x>=sx || raypos.y<0 || raypos.y>=sy || raypos.z<0 || raypos.z>=sz)
+			return 0;
+			
+		int x = (int)raypos.x;
+		int y = (int)raypos.y;
+		int z = (int)raypos.z;
+			
+		int id3d = sxy*z + sx*y + x;
+		if(accelMap->bitMap[id3d])
+			return ((box->min + raypos*accelMap->unit) - origin).getLength();
+		raypos += raydir;
+	}
+	
+	return 0;
 }

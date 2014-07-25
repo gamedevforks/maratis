@@ -125,9 +125,11 @@ string functionsShader = string(
 	"return shadow;"
 "}"
 								
-"void computeLight(vec3 lightPosition, float constantAttenuation, float quadraticAttenuation, vec3 lightDiffuse, vec3 lightSpecular, vec3 spotDir, float spotCos, float spotExp, bool shad, vec4 shadCoord, sampler2D shadMap, float shadBias, float shadBlur)"
+"void computeLight(vec4 lightPosition, float constantAttenuation, float quadraticAttenuation, vec3 lightDiffuse, vec3 lightSpecular, vec3 spotDir, float spotCos, float spotExp, bool shad, vec4 shadCoord, sampler2D shadMap, float shadBias, float shadBlur)"
 "{"
-	"vec3 lightDir = lightPosition - position.xyz;"
+	"vec3 lightDir;"
+	"if(lightPosition.w == 0.0) lightDir = lightPosition.xyz;"
+	"else lightDir = lightPosition.xyz - position.xyz;"
 	"vec3 L = normalize(lightDir);"
 
 	"float lambertTerm = max(dot(N, L), 0.0);"
@@ -158,6 +160,9 @@ string functionsShader = string(
 			"float lightDirLength2 = dot(lightDir, lightDir);"
 			"float attenuation = (1.0 / (constantAttenuation + (lightDirLength2 * quadraticAttenuation)));"
 
+			"if(lightPosition.w == 0.0)"
+				"attenuation = attenuation * computeShadow(shad, shadCoord, shadMap, shadBias, shadBlur);"
+
 			"diffuse = diffuse + (lightDiffuse * lambertTerm * attenuation);"
 
 			"vec3 S = normalize(E + L);"
@@ -167,9 +172,11 @@ string functionsShader = string(
 	"}"
 "}"
 
-"void computeLightNoShadow(vec3 lightPosition, float constantAttenuation, float quadraticAttenuation, vec3 lightDiffuse, vec3 lightSpecular, vec3 spotDir, float spotCos, float spotExp)"
+"void computeLightNoShadow(vec4 lightPosition, float constantAttenuation, float quadraticAttenuation, vec3 lightDiffuse, vec3 lightSpecular, vec3 spotDir, float spotCos, float spotExp)"
 "{"
-	"vec3 lightDir = lightPosition - position.xyz;"
+	"vec3 lightDir;"
+	"if(lightPosition.w == 0.0) lightDir = lightPosition.xyz;"
+	"else lightDir = lightPosition.xyz - position.xyz;"
 	"vec3 L = normalize(lightDir);"
 
 	"float lambertTerm = max(dot(N, L), 0.0);"
@@ -218,7 +225,7 @@ string lightShader = string(
 "if(LightActive[0])"
 "{"
 	"computeLight("
-		"LightPosition[0].xyz,"
+		"LightPosition[0],"
 		"LightConstantAttenuation[0],"
 		"LightQuadraticAttenuation[0],"
 		"LightDiffuseProduct[0],"
@@ -236,7 +243,7 @@ string lightShader = string(
 	"if(LightActive[1])"
 	"{"
 		"computeLight("
-			"LightPosition[1].xyz,"
+			"LightPosition[1],"
 			"LightConstantAttenuation[1],"
 			"LightQuadraticAttenuation[1],"
 			"LightDiffuseProduct[1],"
@@ -254,7 +261,7 @@ string lightShader = string(
 		"if(LightActive[2])"
 		"{"
 			"computeLight("
-				"LightPosition[2].xyz,"
+				"LightPosition[2],"
 				"LightConstantAttenuation[2],"
 				"LightQuadraticAttenuation[2],"
 				"LightDiffuseProduct[2],"
@@ -272,7 +279,7 @@ string lightShader = string(
 			"if(LightActive[3])"
 			"{"
 				"computeLightNoShadow("
-					"LightPosition[3].xyz,"
+					"LightPosition[3],"
 					"LightConstantAttenuation[2],"
 					"LightQuadraticAttenuation[3],"
 					"LightDiffuseProduct[3],"

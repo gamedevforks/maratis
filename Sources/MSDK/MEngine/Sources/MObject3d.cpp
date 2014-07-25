@@ -223,7 +223,7 @@ void MObject3d::computeChildsMatrices(void)
 MVector3 MObject3d::getUniformRotatedVector(const MVector3 & vector)
 {
 	float L = vector.getLength();
-	return (m_matrix.getRotatedVector3(vector).getNormalized() * L);
+	return getRotatedVector(vector).getNormalized() * L;
 }
 
 void MObject3d::setPosition(const MVector3 & position)

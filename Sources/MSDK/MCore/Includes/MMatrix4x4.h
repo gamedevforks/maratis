@@ -51,6 +51,7 @@ public:
 
 	MMatrix4x4(const float * value);
 	MMatrix4x4(const MMatrix4x4 & mat);
+	MMatrix4x4(const MVector3 & pos, const MVector3 & dir, const MVector3 & up);
 
 	~MMatrix4x4(void){}
 
@@ -145,6 +146,14 @@ public:
 
 	float getEntry(int position) const;
 
+	inline MVector3 getTranslatedVector3(const MVector3 & vec) const {
+		return MVector3(vec.x + entries[12], vec.y + entries[13], vec.z + entries[14]);
+	}
+
+	/*inline MVector3 getInverseTranslatedVector3(const MVector3 & vec) const {
+		return MVector3(vec.x - entries[12], vec.y - entries[13], vec.z - entries[14]);
+	}*/
+	
 	inline MVector3 getRotatedVector3(const MVector3 & vec) const
 	{
 		return MVector3(
@@ -153,15 +162,34 @@ public:
 			entries[2]*vec.x + entries[6]*vec.y + entries[10]*vec.z
 		);
 	}
+	/*
+	inline MVector3 getInverseRotatedVector3(const MVector3 & vec) const // works with identity scale ony
+	{
+		return MVector3(
+			(entries[0]*vec.x + entries[1]*vec.y + entries[2]*vec.z),
+			(entries[4]*vec.x + entries[5]*vec.y + entries[6]*vec.z),
+			(entries[8]*vec.x + entries[9]*vec.y + entries[10]*vec.z)
+		);
+	}*/
 	
-	MVector3 getInverseRotatedVector3(const MVector3 & vec) const;
-	MVector3 getTranslatedVector3(const MVector3 & vec) const;
-	MVector3 getInversetranslatedVector3(const MVector3 & vec) const;
+	inline MVector3 getTransformedVector3(const MVector3 mat) const
+	{
+		return MVector3(
+			entries[0]*mat.x + entries[4]*mat.y + entries[8]*mat.z + entries[12],
+			entries[1]*mat.x + entries[5]*mat.y + entries[9]*mat.z + entries[13],
+			entries[2]*mat.x + entries[6]*mat.y + entries[10]*mat.z + entries[14]
+		);
+	}
+	
+	/*
+	inline MVector3 getInverseTransformedVector3(const MVector3 mat) const // works with identity scale ony
+	{
+		return getInverseRotatedVector3(getInverseTranslatedVector3(mat));
+	}*/
 
 	inline MVector3 getTranslationPart(void) const { return MVector3(entries[12], entries[13], entries[14]); }
 
 	MVector3 getEulerAngles(void) const;
-
 	MVector3 getScale(void) const;
 	
 	MVector4 getRow(int position) const;
@@ -172,26 +200,8 @@ public:
 	MMatrix4x4 getInversetranspose(void) const;
 	MMatrix4x4 getAffineInverse(void) const;
 	MMatrix4x4 getAffineInverseTranspose(void) const;
-
-	void rotateVector3(MVector3 & vec) const
-	{
-		vec = getRotatedVector3(vec);
-	}
-
-	void inverseRotateVector3(MVector3 & vec) const
-	{
-		vec = getInverseRotatedVector3(vec);
-	}
-
-	void translateVector3(MVector3 & vec) const
-	{
-		vec = getTranslatedVector3(vec);
-	}
-
-	void inversetranslateVector3(MVector3 & vec) const
-	{
-		vec = getInversetranslatedVector3(vec);
-	}
+	
+	void lookAt(const MVector3 & pos, const MVector3 & dir, const MVector3 & up);
 };
 
 #endif

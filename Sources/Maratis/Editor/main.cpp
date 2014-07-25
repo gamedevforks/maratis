@@ -55,6 +55,38 @@ static MLevel * level = NULL;
 static MViewport * my3dView = NULL;
 
 
+void winEvents2(MWindow * rootWindow, MWIN_EVENT_TYPE event)
+{
+	MEngine * engine = MEngine::getInstance();
+	
+	switch(event)
+	{
+	case MWIN_EVENT_CREATE:
+		{
+			MGuiWindow * gw = rootWindow->addNewWindow();
+			gw->setScale(MVector2(rootWindow->getWidth(), rootWindow->getHeight()));
+			gw->setColor(MVector3(1));
+			
+			MTextureRef * texRef = MTextureRef::getNew(0, "RAY", 0);
+			MDataManager * texMan = engine->getLevel()->getTextureManager();
+			texMan->addRef(texRef);
+			
+			MGuiImage * image = gw->addNewImage();
+			image->setScale(gw->getScale());
+			image->setNormalTexture(texRef);
+		}
+		break;
+		
+	case MWIN_EVENT_CLOSE:
+		{
+			MGUI_closeWindow(rootWindow);
+		}
+		break;
+		
+	default:
+		break;
+	}
+}
 
 void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 {
@@ -97,23 +129,36 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 		
 				MScene * scene = level->addNewScene();
 				getGlobalFilename(filename, workingDir, "Resources/meshes/default/Jules.mesh");
-				scene->addNewEntity(level->loadMesh(filename));
+				MOEntity * entity = scene->addNewEntity(level->loadMesh(filename));
+				entity->setPosition(MVector3(0, 0, 1));
+				entity->setEulerRotation(MVector3(0, 0, 10));
+				entity->setAnimationSpeed(0);
 				
 				MOCamera * camera = scene->addNewCamera();
-				camera->setPosition(MVector3(0, 0, 200));
+				camera->setPosition(MVector3(200, 100, 200));
+				camera->enableOrtho(true);
+				camera->setScale(MVector3(3, 2, 1));
 				
 				MOSound * sound = scene->addNewSound(NULL);
 				sound->setPosition(MVector3(100, 0, 0));
 				
-				//MOEntity * entity2 = scene->addNewEntity(level->loadMesh(filename));
-				//entity2->setPosition(MVector3(10, 0, 0));
-				//MMaterial * material = entity2->createPrivateMaterial(0);
-				//material->setDiffuse(MVector3(1, 0, 1));
+				getGlobalFilename(filename, workingDir, "Resources/meshes/default/box.mesh");
+				MOEntity * entity2 = scene->addNewEntity(level->loadMesh(filename));
+				entity2->setScale(MVector3(100, 100, 1));
+				MMaterial * material = entity2->createLocalMaterial(0);
+				material->setDiffuse(MVector3(0.8f));
 				
 				MOLight * light = scene->addNewLight();
 				light->setPosition(MVector3(150, 0, 100));
 				light->setColor(MVector3(1, 1, 1));
-				light->setRadius(10000);
+				light->setRadius(500);
+				light->setLightType(M_LIGHT_DIRECTIONAL);
+				light->addAxisAngleRotation(MVector3(1, 0, 0), 30);
+				//light->castShadow(true);
+				light->setShadowBlur(0.05f);
+				light->setShadowQuality(1024);
+				light->setShadowBias(10);
+				
 				
 				scene->update();
 				scene->updateObjectsMatrices();
@@ -122,7 +167,7 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			// editor init
 			editor->init();
 			
-			my3dView = new MV3dView();
+			my3dView = new MV3dEdit();
 			my3dView->create(rootWindow);
 			my3dView->resize(MVector2(0, 0), MVector2(rootWindow->getWidth(), rootWindow->getHeight()));
 		}
@@ -158,6 +203,7 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 void drawCallback(MWindow * rootWindow)
 {
 	level->getCurrentScene()->update();
+	level->getCurrentScene()->updateObjectsMatrices();
 }
 
 
@@ -180,7 +226,7 @@ int main(int argc, char **argv)
 	M_initFreeImage();
 	
 	// create main window
-	MWindow * window = MGUI_createWindow("test1", 10, 10, 800, 600, winEvents);
+	MWindow * window = MGUI_createWindow("test1", 10, 200, 800, 600, winEvents);
 	if(! window)
 	{
 		MGUI_close();
@@ -190,14 +236,13 @@ int main(int argc, char **argv)
 
 	window->setDrawCallback(drawCallback);
 	
+	//MGUI_createWindow("test2", 850, 200, 64*8, 45*8, winEvents2);
+	
 	// update
 	while(1)
 	{
-		MGUI_pauseAllWindows();
 		if(! MGUI_update())
 			break;
-			
-		MGUI_unpauseAllWindows();
 	}
 	
 	// close

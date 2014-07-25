@@ -67,10 +67,18 @@ m_fogDistance(camera.m_fogDistance),
 m_clippingNear(camera.m_clippingNear),
 m_clippingFar(camera.m_clippingFar),
 m_clearColor(camera.m_clearColor),
+m_currentViewMatrix(camera.m_currentViewMatrix),
+m_currentProjMatrix(camera.m_currentProjMatrix),
+m_frustum(camera.m_frustum),
 m_sceneLayer(camera.m_sceneLayer),
 m_renderColorTexture(NULL),
 m_renderDepthTexture(NULL)
-{}
+{
+	m_currentViewport[0] = camera.m_currentViewport[0];
+	m_currentViewport[1] = camera.m_currentViewport[1];
+	m_currentViewport[2] = camera.m_currentViewport[2];
+	m_currentViewport[3] = camera.m_currentViewport[3];
+}
 
 MVector3 MOCamera::getProjectedPoint(const MVector3 & point) const
 {
@@ -118,43 +126,89 @@ void MOCamera::updateListener(void)
 	}
 }
 
-void MOCamera::enable(void)
+static void createPerspectiveView(MMatrix4x4 * matrix, float fov, float ratio, float zNear, float zFar)
 {
-	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	float ymax, xmax;
+	ymax = zNear * tanf((float)(fov * M_PI / 360.0f));
+	xmax = ymax * ratio;
+    
+	float left = -xmax;
+	float right = xmax;
+	float bottom = -ymax;
+	float top = ymax;
+    
+	float temp, temp2, temp3, temp4;
+	temp = 2.0f * zNear;
+	temp2 = right - left;
+	temp3 = top - bottom;
+	temp4 = zFar - zNear;
+	matrix->entries[0] = temp / temp2;
+	matrix->entries[1] = 0.0f;
+	matrix->entries[2] = 0.0f;
+	matrix->entries[3] = 0.0f;
+	matrix->entries[4] = 0.0f;
+	matrix->entries[5] = temp / temp3;
+	matrix->entries[6] = 0.0f;
+	matrix->entries[7] = 0.0f;
+	matrix->entries[8] = (right + left) / temp2;
+	matrix->entries[9] = (top + bottom) / temp3;
+	matrix->entries[10] = (-zFar - zNear) / temp4;
+	matrix->entries[11] = -1.0f;
+	matrix->entries[12] = 0.0f;
+	matrix->entries[13] = 0.0f;
+	matrix->entries[14] = (-temp * zFar) / temp4;
+	matrix->entries[15] = 0.0f;
+}
+
+static void createOrthoView(MMatrix4x4 * matrix, float left, float right, float bottom, float top, float zNear, float zFar)
+{
+	if(right == left || top == bottom || zFar == zNear)
+		return;
 	
+	float tx = - (right + left)/(right - left);
+	float ty = - (top + bottom)/(top - bottom);
+	float tz = - (zFar + zNear)/(zFar - zNear);
+	matrix->entries[0] = 2.0f/(right-left);
+	matrix->entries[1] = 0.0f;
+	matrix->entries[2] = 0.0f;
+	matrix->entries[3] = 0.0f;
+	matrix->entries[4] = 0.0f;
+	matrix->entries[5] = 2.0f/(top-bottom);
+	matrix->entries[6] = 0.0f;
+	matrix->entries[7] = 0.0f;
+	matrix->entries[8] = 0.0f;
+	matrix->entries[9] = 0.0f;
+	matrix->entries[10] = -2.0f/(zFar-zNear);
+	matrix->entries[11] = 0.0f;
+	matrix->entries[12] = tx;
+	matrix->entries[13] = ty;
+	matrix->entries[14] = tz;
+	matrix->entries[15] = 1.0f;
+}
 
-	// get viewport
-	render->getViewport(m_currentViewport);
-
-	// projection mode
-	render->setMatrixMode(M_MATRIX_PROJECTION);
-	render->loadIdentity();
-
-	float ratio = (m_currentViewport[2] / (float)m_currentViewport[3]);
-
+void MOCamera::updateViewMatrix(void)
+{
 	MVector3 scale = getTransformedScale();
 	MVector3 iScale(1.0f / scale.x, 1.0f / scale.y, 1.0f / scale.z);
 
 	MMatrix4x4 iScaleMatrix;
 	iScaleMatrix.setScale(iScale);
+	
+	m_currentViewMatrix = ((*getMatrix()) * iScaleMatrix).getInverse();
+}
 
-	MMatrix4x4 inverseMatrix = ((*getMatrix()) * iScaleMatrix).getInverse();
+void MOCamera::updateProjMatrix(void)
+{
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	render->getViewport(m_currentViewport);
+	
+	float ratio = (m_currentViewport[2] / (float)m_currentViewport[3]);
 
 	// perspective view
 	if(! isOrtho())
 	{
 		// normal perspective projection
-		render->setPerspectiveView(m_fov, ratio, m_clippingNear, m_clippingFar);
-
-		// model view mode
-		render->setMatrixMode(M_MATRIX_MODELVIEW);
-		render->loadIdentity();
-
-		render->multMatrix(&inverseMatrix);
-
-		// get current matrices
-		render->getModelViewMatrix(&m_currentViewMatrix);
-		render->getProjectionMatrix(&m_currentProjMatrix);
+		createPerspectiveView(&m_currentProjMatrix, m_fov, ratio, m_clippingNear, m_clippingFar);
 		return;
 	}
 
@@ -162,15 +216,47 @@ void MOCamera::enable(void)
 	float height = m_fov * 0.5f;
 	float width = height * ratio;
 
-	render->setOrthoView(-width, width, -height, height, m_clippingNear, m_clippingFar);
+	createOrthoView(&m_currentProjMatrix, -width, width, -height, height, m_clippingNear, m_clippingFar);
+}
+
+void MOCamera::enableViewProjMatrix(void)
+{
+	MRenderingContext * render = MEngine::getInstance()->getRenderingContext();
+	
+	// projection
+	render->setMatrixMode(M_MATRIX_PROJECTION);
+	render->loadIdentity();
+	render->multMatrix(&m_currentProjMatrix);
 
 	// model view mode
 	render->setMatrixMode(M_MATRIX_MODELVIEW);
 	render->loadIdentity();
-	
-	render->multMatrix(&inverseMatrix);
+	render->multMatrix(&m_currentViewMatrix);
+}
 
-	// get current matrices
-	render->getModelViewMatrix(&m_currentViewMatrix);
-	render->getProjectionMatrix(&m_currentProjMatrix);
+void MOCamera::enable(void)
+{
+	updateViewMatrix();
+	updateProjMatrix();
+	enableViewProjMatrix();
+}
+
+MBox3d MOCamera::createMatrixOrientedBoundingBox(MMatrix4x4 * matrix)
+{
+	const MVector3 * points = m_frustum.getPoints();
+
+	MVector3 min, max;
+	min = max = (*matrix) * points[0];
+	for(int i=1; i<8; i++)
+	{
+		MVector3 localPoint = (*matrix) * points[i];
+		min.x = MIN(min.x, localPoint.x);
+		min.y = MIN(min.y, localPoint.y);
+		min.z = MIN(min.z, localPoint.z);
+		max.x = MAX(max.x, localPoint.x);
+		max.y = MAX(max.y, localPoint.y);
+		max.z = MAX(max.z, localPoint.z);
+	}
+
+	return MBox3d(min, max);
 }

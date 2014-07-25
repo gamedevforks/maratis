@@ -66,6 +66,20 @@ void MSelectionManager::select(MObject3d * object)
 	m_selection.push_back(object);
 }
 
+void MSelectionManager::deselect(MObject3d * object)
+{
+	unsigned int i, size = getSelectionSize();
+	for(i=0; i<size; i++)
+	{
+		if(m_selection[i] == object) // selected
+		{
+			// deselect
+			m_selection.erase(m_selection.begin() + i);
+			return;
+		}
+	}
+}
+
 void MSelectionManager::selectSameMesh(void)
 {
 	//autoSave();

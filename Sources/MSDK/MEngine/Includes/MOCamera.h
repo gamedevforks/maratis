@@ -99,6 +99,9 @@ public:
 	MVector3 getUnProjectedPoint(const MVector3 & point) const;
 
 	// matrices
+	void updateViewMatrix(void);
+	void updateProjMatrix(void);
+	void enableViewProjMatrix(void);
 	inline MMatrix4x4 * getCurrentViewMatrix(void){ return &m_currentViewMatrix; }
 	inline MMatrix4x4 * getCurrentProjMatrix(void){ return &m_currentProjMatrix; }
 
@@ -123,6 +126,9 @@ public:
 
 	// enable
 	void enable(void);
+	
+	// bounding volumes
+	MBox3d createMatrixOrientedBoundingBox(MMatrix4x4 * matrix);
 };
 
 #endif

@@ -89,33 +89,38 @@ public:
 
 public:
 
-	MVector4 operator + (const MVector4 & vec) const
+	inline MVector4 operator + (const MVector4 & vec) const
 	{
 		return MVector4(x + vec.x, y + vec.y, z + vec.z, w + vec.w);
 	}
 
-	MVector4 operator - (const MVector4 & vec) const
+	inline MVector4 operator - (const MVector4 & vec) const
 	{
 		return MVector4(x - vec.x, y - vec.y, z - vec.z, w - vec.w);
 	}
 
-	MVector4 operator * (const float value) const
+	inline MVector4 operator * (const MVector4 & vec) const
+	{
+		return MVector4(x * vec.x, y * vec.y, z * vec.z, w * vec.w);
+	}
+	
+	inline MVector4 operator * (const float value) const
 	{
 		return MVector4(x * value, y * value, z * value, w * value);
 	}
 
-	MVector4 operator / (const float value) const
+	inline MVector4 operator / (const float value) const
 	{
 		if(value == 0.0f) return MVector4(0.0f, 0.0f, 0.0f, 0.0f);
 		return MVector4(x / value, y / value, z / value, w / value);
 	}
 
-	friend MVector4 operator * (float factor, const MVector4 & vec)
+	inline friend MVector4 operator * (float factor, const MVector4 & vec)
 	{
 		return vec * factor;
 	}
 
-	bool operator == (const MVector4 & vec) const
+	inline bool operator == (const MVector4 & vec) const
 	{
 		if(x == vec.x && y == vec.y && z == vec.z && w == vec.w){
 			return true;
@@ -124,12 +129,12 @@ public:
 		return false;
 	}
 
-	bool operator != (const MVector4 & vec) const
+	inline bool operator != (const MVector4 & vec) const
 	{
 		return !((*this) == vec);
 	}
 
-	void operator += (const MVector4 & vec)
+	inline void operator += (const MVector4 & vec)
 	{
 		x += vec.x;
 		y += vec.y;
@@ -137,7 +142,7 @@ public:
 		w += vec.w;
 	}
 
-	void operator -= (const MVector4 & vec)
+	inline void operator -= (const MVector4 & vec)
 	{
 		x -= vec.x;
 		y -= vec.y;
@@ -145,7 +150,15 @@ public:
 		w -= vec.w;
 	}
 
-	void operator *= (const float value)
+	inline void operator *= (const MVector4 & vec)
+	{
+		x *= vec.x;
+		y *= vec.y;
+		z *= vec.z;
+		w *= vec.w;
+	}
+	
+	inline void operator *= (const float value)
 	{
 		x *= value;
 		y *= value;
@@ -153,36 +166,37 @@ public:
 		w *= value;
 	}
 
-	void operator /= (const float value)
+	inline void operator /= (const float value)
 	{
 		if(value == 0.0f){
 			return;
 		}
 		else
 		{
-			x /= value;
-			y /= value;
-			z /= value;
-			w /= value;
+			float div = 1.0f/value;
+			x *= div;
+			y *= div;
+			z *= div;
+			w *= div;
 		}
 	}
 
-	MVector4 operator - (void) const
+	inline MVector4 operator - (void) const
 	{
 		return MVector4(-x, -y, -z, -w);
 	}
 
-	MVector4 operator + (void) const
+	inline MVector4 operator + (void) const
 	{
 		return (*this);
 	}
 
-	operator float* () const
+	inline operator float* () const
 	{
 		return (float*) this;
 	}
 
-	operator const float* () const
+	inline operator const float* () const
 	{
 		return (const float*) this;
 	}
@@ -191,7 +205,7 @@ public:
 
 public:
 
-	void set(float newX, float newY, float newZ, float newW)
+	inline void set(float newX, float newY, float newZ, float newW)
 	{
 		x = newX;
 		y = newY;
@@ -199,7 +213,7 @@ public:
 		w = newW;
 	}
 
-	void loadIdentity(void)
+	inline void loadIdentity(void)
 	{
 		x = 0.0f;
 		y = 0.0f;
@@ -207,12 +221,12 @@ public:
 		w = 0.0f;
 	}
 
-	float dotProduct(const MVector4 & vec)
+	inline float dotProduct(const MVector4 & vec)
 	{
 		return x*vec.x + y*vec.y + z*vec.z + w*vec.w;
 	}
 
-	MVector4 lerp(const MVector4 & vec, float factor) const
+	inline MVector4 lerp(const MVector4 & vec, float factor) const
 	{
 		return ((*this) * (1.0f - factor)) + (vec * factor);
 	}

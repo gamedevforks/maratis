@@ -103,6 +103,9 @@ private:
 	// bounding box
 	MBox3d m_boundingBox;
 
+	// VBO (optional)
+	unsigned int m_vboId;
+	
 public:
 
 	// data
@@ -124,6 +127,32 @@ public:
 
 	// bounding box
 	inline MBox3d * getBoundingBox(void){ return &m_boundingBox; }
+	
+	// VBO
+	void clearVBO(void);
+	unsigned int * getVBOid(void){ return &m_vboId; }
+};
+
+
+// TEST: accel map (voxel)
+class M_ENGINE_EXPORT MAccelMap
+{
+public:
+
+	MAccelMap(void):data(NULL), map(NULL), bitMap(NULL), sx(0), sy(0), sz(0){}
+	~MAccelMap(void){ SAFE_DELETE_ARRAY(data); SAFE_DELETE_ARRAY(map); SAFE_DELETE_ARRAY(bitMap); }
+	
+	unsigned int * data;
+	unsigned int * map;
+	char * bitMap;
+	unsigned int sx;
+	unsigned int sy;
+	unsigned int sz;
+	unsigned int mapSize;
+	unsigned int dataSize;
+	MVector3 unit;
+	MVector3 invUnit;
+	MVector3 invUnitN;
 };
 
 
@@ -173,6 +202,9 @@ private:
 
 	// bounding box
 	MBox3d m_boundingBox;
+	
+	// acceleration structure TEST !!
+	MAccelMap m_accelMap;
 
 public:
 
@@ -240,6 +272,10 @@ public:
 
 	// bounding box
 	inline MBox3d * getBoundingBox(void){ return &m_boundingBox; }
+	
+	// acceleration structure TEST !!
+	void buildAccelMap(void);
+	inline MAccelMap * getAccelMap(void){ return &m_accelMap; }
 };
 
 

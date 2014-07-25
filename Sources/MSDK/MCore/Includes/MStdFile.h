@@ -32,9 +32,9 @@
 #define _M_STD_FILE_H
 
 
-/* Base File class
- * exposes standard file I/O functions such as open/close read/write
- */
+// Base File class
+// exposes standard file I/O functions such as open/close read/write
+
 class M_CORE_EXPORT MStdFile : public MFile
 {
 private:

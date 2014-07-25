@@ -33,13 +33,19 @@
 
 #include <math.h>
 
+class MVector2;
+class MVector3;
+class MVector4;
+class MColor;
+class MMatrix4x4;
+class MQuaternion;
 
 // PI
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-// Degree/Radian conversions
+// degree/radian conversions
 #define DEG_TO_RAD ((M_PI * 2) / 360.0)
 #define RAD_TO_DEG (1.0 / DEG_TO_RAD)
 
@@ -63,56 +69,51 @@
 #define ABS(a)  (((a) < 0) ? -(a) : (a))
 #endif
 
-// Power of two
+// power of two
 #define isPowerOfTwo(x)	(((x&(x - 1)) == 0) && (x != 0))
 M_CORE_EXPORT unsigned int getNextPowerOfTwo(unsigned int x);
 
-// loop
+// loop float value
 M_CORE_EXPORT float loopFloat(float val, float min, float max);
 
-
-// structs
+// range
 struct M_CORE_EXPORT MRange
 {
 	int start;
 	int end;
 };
 
-
-// classes
-class MVector2;
-class MVector3;
-class MVector4;
-class MColor;
-class MMatrix4x4;
-class MQuaternion;
-
-
-// functions
-M_CORE_EXPORT void sortFloatList(int indexList[], float floatList[], int start, int end);
+// sort
 M_CORE_EXPORT void sortFloatList(float floatList[], int start, int end);
-M_CORE_EXPORT void findPointsBox2d(MVector2 * points, unsigned int nb, MVector2 * min, MVector2 * max);
-M_CORE_EXPORT bool isBoxToBoxCollision(const MVector3 & minA, const MVector3 & maxA, const MVector3 & minB, const MVector3 & maxB);
-M_CORE_EXPORT bool isBoxToBox2dCollision(const MVector2 & minA, const MVector2 & maxA, const MVector2 & minB, const MVector2 & maxB);
-M_CORE_EXPORT bool isPointInBox(const MVector3 & point, const MVector3 & min, const MVector3 & max);
+M_CORE_EXPORT void sortFloatIndexList(int indexList[], float floatList[], int start, int end);
+
+// 2d utils
+M_CORE_EXPORT float getPolygonArea2d(MVector2 * points, unsigned int nb);
+M_CORE_EXPORT float getPolyLineLength2d(MVector2 * points, unsigned int nb);
+
+// 2d collision
+M_CORE_EXPORT bool lineToLineIntersection(const MVector2 & A, const MVector2 & B, const MVector2 & C, const MVector2 & D, MVector2 * I);
+M_CORE_EXPORT bool boxToBoxCollision2d(const MVector2 & minA, const MVector2 & maxA, const MVector2 & minB, const MVector2 & maxB);
 M_CORE_EXPORT bool isPointInBox2d(const MVector2 & point, const MVector2 & min, const MVector2 & max);
-M_CORE_EXPORT bool isEdgeToBoxCollision(const MVector3 & origin, const MVector3 & dest, const MVector3 & min, const MVector3 & max);
-M_CORE_EXPORT bool isEdgeToEdge2dIntersection(const MVector2 & A, const MVector2 & B, const MVector2 & C, const MVector2 & D, MVector2 * I);
-M_CORE_EXPORT bool isPointInTriangle(const MVector3 & point, const MVector3 & a, const MVector3 & b, const MVector3 & c, const MVector3 & normal);
-M_CORE_EXPORT bool isLineCircleIntersection(const MVector2 & origin, const MVector2 & dest, const MVector2 & circleCenter, float circleRadius);
-M_CORE_EXPORT bool isRaySphereIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & sphereCenter, float sphereRadius, MVector3 * point);
-M_CORE_EXPORT bool isRayPlaneIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & planePoint, const MVector3 & planeNormal, MVector3 * point);
-M_CORE_EXPORT bool isEdgePlaneIntersection(const MVector3 & origin, const MVector3 & dest, const MVector3 & planePoint, const MVector3 & normal, MVector3 * point);
-M_CORE_EXPORT bool isEdgeTriangleIntersection(const MVector3 & origin, const MVector3 & dest, const MVector3 & a, const MVector3 & b, const MVector3 & c, const MVector3 & normal, MVector3 * point);
 
-M_CORE_EXPORT MVector3 getTriangleNormal(const MVector3 & a, const MVector3 & b, const MVector3 & c);
-
-M_CORE_EXPORT float getPolygonArea(MVector2 * points, unsigned int nb);
-M_CORE_EXPORT float getLineLength2d(MVector2 * points, unsigned int nb);
-M_CORE_EXPORT float getLineLength3d(MVector3 * points, unsigned int nb);
-
+// 3d utils
 M_CORE_EXPORT void simplifyDP(float tol, MVector3 * v, int j, int k, int * mk);
+M_CORE_EXPORT float getPolyLineLength(MVector3 * points, unsigned int nb);
+M_CORE_EXPORT MVector3 getTriangleNormal(const MVector3 & A, const MVector3 & B, const MVector3 & C);
 
+// 3d collision
+M_CORE_EXPORT bool boxToBoxCollision(const MVector3 & minA, const MVector3 & maxA, const MVector3 & minB, const MVector3 & maxB);
+M_CORE_EXPORT bool isPointInBox(const MVector3 & point, const MVector3 & min, const MVector3 & max);
+M_CORE_EXPORT bool isPointInTriangle(const MVector3 & point, const MVector3 & A, const MVector3 & B, const MVector3 & C, const MVector3 & normal);
+M_CORE_EXPORT bool isTriangleInBox(const MVector3 & A, const MVector3 & B, const MVector3 & C, const MVector3 & boxCenter, const MVector3 & boxHalfSize);
+
+// 3d raytracing
+M_CORE_EXPORT float raySphereIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & sphereCenter, float sphereRadius2);
+M_CORE_EXPORT float rayPlaneIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & planePoint, const MVector3 & planeNormal);
+M_CORE_EXPORT float rayBoxIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & min, const MVector3 & max);
+M_CORE_EXPORT float rayTriangleIntersection(const MVector3 & origin, const MVector3 & direction, const MVector3 & A, const MVector3 & B, const MVector3 & C, float & u, float & v);
+
+// interpolations
 M_CORE_EXPORT float linearInterpolation(float y1, float y2, float mu);
 M_CORE_EXPORT float cubicInterpolation(float y0, float y1, float y2, float y3, float mu);
 M_CORE_EXPORT float CatmullRomInterpolation(float y0, float y1, float y2, float y3, float mu);
@@ -125,8 +126,7 @@ M_CORE_EXPORT MVector3 HSVToRGB(MVector3 HSVColor);
 M_CORE_EXPORT MVector3 RGBToHSL(MVector3 rgbColor);
 M_CORE_EXPORT MVector3 HSLToRGB(MVector3 hslColor);
 
-
-// include classes
+// classes
 #include "MVector2.h"
 #include "MVector3.h"
 #include "MVector4.h"

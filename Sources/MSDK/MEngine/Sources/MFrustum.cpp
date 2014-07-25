@@ -31,7 +31,7 @@
 #include "../Includes/MEngine.h"
 
 
-static int pointsId[4][2] = {
+static const int pointsId[4][2] = {
 	{1, 0}, {2, 1}, {3, 2}, {0, 3}
 };
 
@@ -58,24 +58,20 @@ void MFrustum::makeVolume(MOCamera * camera)
  	// compute volume points
 	MVector3 position = camera->getTransformedPosition();
 
-	float zNear = camera->getClippingNear();
-	float zFar = camera->getClippingFar();
-	m_nearPoint = position + (m_direction * zNear);
-	m_farPoint = position + (m_direction * zFar);
-
 	int i;
-	MVector3 vec;
-	MVector3 p3d(0, 0, 0);
+	MVector3 p3d;
 	for(i=0; i<4; i++)
 	{
 		p3d.x = (float)wPoints2d[i][0];
 		p3d.y = (float)wPoints2d[i][1];
-
-		vec = camera->getUnProjectedPoint(p3d);
-		m_points[i] = vec;
+		
+		p3d.z = 0.0f;
+		m_points[i] = camera->getUnProjectedPoint(p3d);
+		p3d.z = 1.0f;
+		m_points[i+4] = camera->getUnProjectedPoint(p3d);
 	}
-
-	// compute normals (perspectivèe)
+	
+	// compute normals (perspective)
 	if(! camera->isOrtho())
 	{
 		for(i=0; i<4; i++)
@@ -99,7 +95,7 @@ void MFrustum::makeVolume(MOCamera * camera)
 	}
 }
 
-bool MFrustum::isVolumePointsVisible(MVector3 * points, unsigned int pointsNumber)
+bool MFrustum::isPointCloudVisible(MVector3 * points, unsigned int pointsNumber)
 {
 	bool out = true;
 	unsigned int p;
@@ -107,7 +103,7 @@ bool MFrustum::isVolumePointsVisible(MVector3 * points, unsigned int pointsNumbe
 	// out of far plane
 	for(p=0; p<pointsNumber; p++)
 	{
-		if((points[p] - m_farPoint).dotProduct(m_direction) <= 0)
+		if((points[p] - m_points[4]).dotProduct(m_direction) <= 0)
 		{
 			out = false;
 			break;
@@ -121,7 +117,7 @@ bool MFrustum::isVolumePointsVisible(MVector3 * points, unsigned int pointsNumbe
 	for(p=0; p<pointsNumber; p++)
 	{
 		// near
-		if((points[p] - m_nearPoint).dotProduct(m_direction) > 0)
+		if((points[p] - m_points[0]).dotProduct(m_direction) > 0)
 		{
 			out = false;
 			break;

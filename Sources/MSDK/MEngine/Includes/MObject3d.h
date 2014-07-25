@@ -93,10 +93,10 @@ public:
 
 	// transform
 	MVector3 getUniformRotatedVector(const MVector3 & vector);
-	inline MVector3	getInverseRotatedVector(const MVector3 & vector) const	{ return m_matrix.getInverseRotatedVector3(vector); }
+	inline MVector3	getInverseRotatedVector(const MVector3 & vector) const	{ return m_matrix.getInverse().getRotatedVector3(vector); }
 	inline MVector3	getRotatedVector(const MVector3 & vector) const			{ return m_matrix.getRotatedVector3(vector); }
-	inline MVector3	getInversePosition(const MVector3 & position) const		{ return m_matrix.getInverse() * position; }
-	inline MVector3	getTransformedVector(const MVector3 & vector) const		{ return m_matrix * vector; }
+	inline MVector3	getInversePosition(const MVector3 & position) const		{ return m_matrix.getInverse().getTransformedVector3(position); }
+	inline MVector3	getTransformedVector(const MVector3 & vector) const		{ return m_matrix.getTransformedVector3(vector); }
 
 	// position
 	void setPosition(const MVector3 & position);

@@ -50,15 +50,15 @@ public :
 	// add function
 	virtual void addFunction(const char * name, int (*function)(void)) = 0;
 
-	// variables
+	// handle variables
 	virtual unsigned int getArgsNumber(void) = 0;
 
 	virtual void getIntArray(unsigned int arg, int * values, unsigned int valuesNumber) = 0;
 	virtual void getFloatArray(unsigned int arg, float * values, unsigned int valuesNumber) = 0;
-	virtual const char * getString(unsigned int arg) = 0;
+	virtual void * getPointer(unsigned int arg) = 0;
 	virtual int getInteger(unsigned int arg) = 0;
 	virtual float getFloat(unsigned int arg) = 0;
-	virtual void * getPointer(unsigned int arg) = 0;
+	virtual const char * getString(unsigned int arg) = 0;
 
 	virtual void pushIntArray(const int * values, unsigned int valuesNumber) = 0;
 	virtual void pushFloatArray(const float * values, unsigned int valuesNumber) = 0;

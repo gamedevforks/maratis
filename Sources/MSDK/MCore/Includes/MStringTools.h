@@ -36,7 +36,7 @@ M_CORE_EXPORT void getLocalFilename(char * out, const char * workingDirectory, c
 M_CORE_EXPORT void getGlobalFilename(char * out, const char * workingDirectory, const char * filename);
 M_CORE_EXPORT void getDirectory(char * out, const char * filename);
 
-// text file
+// text file (user must call M_SAFE_FREE manually)
 M_CORE_EXPORT char * readTextFile(const char * filename);
 
 #endif

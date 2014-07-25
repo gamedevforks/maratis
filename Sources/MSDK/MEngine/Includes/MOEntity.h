@@ -204,13 +204,13 @@ public:
 	inline MSubMeshCache * getSubMeshCaches(void){ return m_subMeshCaches; }
 
 	// raytracing
-	bool getRayNearestIntersectionDistance(const MVector3 & origin, const MVector3 & dest, float * distance);
+	float getRayNearestIntersectionDistance(const MVector3 & origin, const MVector3 & direction);
 
 	// materials
 	MMaterial * getMaterial(unsigned int id); // return the private material if existing or else return the mesh material
-	MMaterial * createPrivateMaterial(unsigned int id);
-	void deletePrivateMaterial(unsigned int id);
-	void clearPrivateMaterials(void);
+	MMaterial * createLocalMaterial(unsigned int id);
+	void deleteLocalMaterial(unsigned int id);
+	void clearLocalMaterials(void);
 
 	// animation
 	void changeAnimation(unsigned int animationId);
