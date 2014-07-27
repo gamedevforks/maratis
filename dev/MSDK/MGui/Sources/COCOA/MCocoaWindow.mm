@@ -831,10 +831,10 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	
     ADD_ATTR2(NSOpenGLPFAColorSize, 32);
 	
-    /*if(alphaBits > 0)
+	//if(alphaBits > 0)
     {
-        ADD_ATTR2(NSOpenGLPFAAlphaSize, alphaBits);
-    }*/
+        ADD_ATTR2(NSOpenGLPFAAlphaSize, 8);
+    }
 	
     //if(depthBits)
     {
@@ -1017,11 +1017,13 @@ bool MWindow::getOpenMultipleFiles(const char * title, const char * filter, stri
 			}
 			
 			[window makeKeyAndOrderFront:window];
+			[context makeCurrentContext];
 			return true;
 		}
 	}	
 	
 	[window makeKeyAndOrderFront:window];
+	[context makeCurrentContext];
 	return false;
 }
 
@@ -1049,11 +1051,13 @@ const char * MWindow::getOpenDir(const char * title, const char * startPath)
 			
 			strcpy(filename, string);
 			[window makeKeyAndOrderFront:window];
+			[context makeCurrentContext];
 			return filename;
 		}
 	}	
 	
 	[window makeKeyAndOrderFront:window];
+	[context makeCurrentContext];
 	return NULL;	
 }
 
@@ -1080,11 +1084,13 @@ const char * MWindow::getOpenFilename(const char * title, const char * filter, c
 			
 			strcpy(filename, string);
 			[window makeKeyAndOrderFront:window];
+			[context makeCurrentContext];
 			return filename;
 		}
 	}	
 	
 	[window makeKeyAndOrderFront:window];
+	[context makeCurrentContext];
 	return NULL;
 }
 
@@ -1103,9 +1109,11 @@ const char * MWindow::getSaveFilename(const char * title, const char * filter, c
 		const char * string = (const char *)[file UTF8String];
 		strcpy(filename, string);
 		[window makeKeyAndOrderFront:window];
+		[context makeCurrentContext];
 		return filename;
 	}
 	
 	[window makeKeyAndOrderFront:window];
+	[context makeCurrentContext];
 	return NULL;
 }

@@ -1,7 +1,5 @@
 # platform specific customizations
-# 2011-02-13, Davide Bacchet (davide.bacchet@gmail.com)
-# $LastChangedDate$
-# $LastChangedBy$
+# 2011-02-13, Davide Bacchet
 
 
 import sys

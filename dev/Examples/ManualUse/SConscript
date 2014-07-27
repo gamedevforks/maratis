@@ -1,6 +1,4 @@
 # Maratis Sample app build Sconscript
-# $LastChangedDate$
-# $LastChangedBy$
 
 
 import os, sys, fnmatch
