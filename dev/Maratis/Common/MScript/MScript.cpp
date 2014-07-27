@@ -1114,10 +1114,7 @@ int setParent(lua_State * L)
 		if(parent)
 			linkObjects(parent, object);
 		else
-		{
 			unlinkObjects(object);
-			printf("unlink");
-		}
 		
 		object->updateMatrix();
 		return 0;
