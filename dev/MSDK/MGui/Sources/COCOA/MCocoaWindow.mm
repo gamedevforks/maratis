@@ -761,31 +761,49 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	
     [NSApp setDelegate:delegate];
 	
-	// deprecated
-	/*CFDictionaryRef fullscreenMode = NULL;
-    if(fullscreen)
+	CGDisplayModeRef fullscreenMode = NULL;
+	if(fullscreen)
     {
-        fullscreenMode =
-		// I think it's safe to pass 0 to the refresh rate for this function
-		// rather than conditionalizing the code to call the version which
-		// doesn't specify refresh...
-		CGDisplayBestModeForParametersAndRefreshRateWithProperty(
-																 CGMainDisplayID(),
-																 32,
-																 width,
-																 height,
-																 0,
-																 kCGDisplayModeIsSafeForHardware,
-																 NULL);
+		unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
+		CFArrayRef modes = CGDisplayCopyAllDisplayModes(CGMainDisplayID(), NULL);
+		CFIndex i, count = CFArrayGetCount(modes);
+
+		CGDisplayModeRef bestMode = NULL;
+		for(i = 0;  i < count;  i++)
+		{
+			CGDisplayModeRef mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
+			
+			long modeHeight = 0, modeWidth = 0;
+			CFStringRef pixelEncoding;
+	
+			modeHeight=CGDisplayModeGetHeight(mode);
+			modeWidth=CGDisplayModeGetWidth(mode);
+			pixelEncoding=CGDisplayModeCopyPixelEncoding(mode);
+			
+			if(CFStringCompare(pixelEncoding,CFSTR(IO32BitDirectPixels),0)==kCFCompareEqualTo)
+			{
+				sizeDiff = ((modeWidth - width) * (modeWidth - width) + (modeHeight - height) * (modeHeight - height));
+				
+				if(sizeDiff < leastSizeDiff)
+				{
+					bestMode = mode;
+					leastSizeDiff = sizeDiff;
+				}
+			}
+			
+			CFRelease(pixelEncoding);
+		}
 		
-		const int modeWidth = (int) CGDisplayModeGetWidth(mode);
-        const int modeHeight = (int) CGDisplayModeGetHeight(mode);
-        const int modeRate = (int) CGDisplayModeGetRefreshRate(mode);
+		if(bestMode)
+		{
+			fullscreenMode = bestMode;
+			height = CGDisplayModeGetHeight(fullscreenMode);
+			width = CGDisplayModeGetWidth(fullscreenMode);
+		}
 		
-		
-        width = [[(id)fullscreenMode objectForKey:(id)kCGDisplayWidth] intValue];
-        height = [[(id)fullscreenMode objectForKey:(id)kCGDisplayHeight] intValue];
-    }*/
+		CFRelease(modes);
+	}
+	
 	
     unsigned int styleMask = 0;
     if(! fullscreen)
@@ -806,11 +824,15 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
     [window setDelegate:delegate];
     [window setAcceptsMouseMovedEvents:YES];
 	
-    if(fullscreen)
+	
+    if(fullscreen && fullscreenMode)
     {
         CGCaptureAllDisplays();
-		// deprecated
-        //CGDisplaySwitchToMode(CGMainDisplayID(), fullscreenMode);
+		CGDisplaySetDisplayMode(
+			CGMainDisplayID(),
+			fullscreenMode,
+			NULL
+		);
     }
 	
     unsigned int attribute_count = 0;
@@ -913,10 +935,6 @@ bool MWindow::create(const char * title, unsigned int width, unsigned int height
 	{
 		[window center];
 	}
-	
-	
-
-	
 	
 	return true;
 }

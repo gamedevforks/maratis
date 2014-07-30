@@ -541,11 +541,11 @@ fragHeader +
 
 "vec3 nor = normalize(normal.xyz);"
 "vec3 bi = normalize(cross(normal.xyz, tangent.xyz));"
-"vec3 tan = normalize(tangent.xyz);"
+"vec3 tang = normalize(tangent.xyz);"
 
 "vec3 bump = normalize(texture2D(Texture[2], texCoord[1].xy).xyz * 2.0 - 1.0);"
 
-"vec3 N = normalize(tan*bump.x + bi*bump.y + nor*bump.z);"
+"vec3 N = normalize(tang*bump.x + bi*bump.y + nor*bump.z);"
 "vec3 E = normalize(-position.xyz);"
 
 + functionsShader +
@@ -646,11 +646,11 @@ fragHeader +
 
 "vec3 nor = normalize(normal.xyz);"
 "vec3 bi = normalize(cross(normal.xyz, tangent.xyz));"
-"vec3 tan = normalize(tangent.xyz);"
+"vec3 tang = normalize(tangent.xyz);"
 
 "vec3 bump = normalize(texture2D(Texture[2], texCoord[1].xy).xyz * 2.0 - 1.0);"
 
-"vec3 N = normalize(tan*bump.x + bi*bump.y + nor*bump.z);"
+"vec3 N = normalize(tang*bump.x + bi*bump.y + nor*bump.z);"
 "vec3 E = normalize(-position.xyz);"
 
 + functionsShader +
