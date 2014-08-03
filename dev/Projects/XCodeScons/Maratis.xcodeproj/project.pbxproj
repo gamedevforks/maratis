@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		E91A8EEC16A0AA9400E978F2 /* assimp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assimp; path = ../../../../3rdparty/assimp; sourceTree = SOURCE_ROOT; };
+		E9AEA10F198E332E008EFBA4 /* bullet */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bullet; path = ../../../../3rdparty/bullet; sourceTree = "<group>"; };
 		E9B1EDAF16D86E6F0055ACBB /* tinyxml */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tinyxml; path = ../../../../3rdparty/tinyxml; sourceTree = "<group>"; };
 		E9DC8E5016A058D4004A718B /* Maratis */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Maratis; path = ../../Maratis; sourceTree = SOURCE_ROOT; };
 		E9DC8EDC16A05976004A718B /* MSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSDK; path = ../../MSDK; sourceTree = SOURCE_ROOT; };
@@ -25,6 +26,7 @@
 		E9DC8E4F16A058B5004A718B /* code */ = {
 			isa = PBXGroup;
 			children = (
+				E9AEA10F198E332E008EFBA4 /* bullet */,
 				E9B1EDAF16D86E6F0055ACBB /* tinyxml */,
 				E91A8EEC16A0AA9400E978F2 /* assimp */,
 				E9DC8EDC16A05976004A718B /* MSDK */,

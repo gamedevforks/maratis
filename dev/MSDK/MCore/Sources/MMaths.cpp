@@ -121,6 +121,16 @@ unsigned int getNextPowerOfTwo(unsigned int x)
 
 bool isEdgeToEdge2dIntersection(const MVector2 & A, const MVector2 & B, const MVector2 & C, const MVector2 & D, MVector2 * I)
 {
+	/*
+	MVector2 min1(MIN(A.x, B.x), MIN(A.y, B.y));
+	MVector2 max1(MAX(A.x, B.x), MAX(A.y, B.y));
+	MVector2 min2(MIN(C.x, D.x), MIN(C.y, D.y));
+	MVector2 max2(MAX(C.x, D.x), MAX(C.y, D.y));
+
+	if(! isBoxToBox2dCollision(min1, max1, min2, max2))
+		return false;
+*/
+
 	MVector2 DP, QA, QB;
 	float d, la, lb;
 
@@ -129,6 +139,9 @@ bool isEdgeToEdge2dIntersection(const MVector2 & A, const MVector2 & B, const MV
 	QB.x = D.x - C.x ; QB.y = D.y - C.y;
 
 	d  =   QA.y * QB.x - QB.y * QA.x;
+	if(d == 0)
+		return false;
+	
 	la = ( QB.x * DP.y - QB.y * DP.x ) / d;
 
 	if(la < 0)
