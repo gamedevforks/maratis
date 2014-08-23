@@ -16,7 +16,7 @@ Features
 - Dynamic lights and shadows, shaders
 - Bullet physics, 3d sound, font system
 - Plugin system, customizable pipeline
-- Lua scripting language
+- Lua API
 - C++ SDK
 
 

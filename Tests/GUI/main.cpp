@@ -60,7 +60,7 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 			engine->setRenderingContext(render);
 			
 			// create a renderer
-			renderer = new MFixedRenderer(); // or use MStandardRenderer();
+			renderer = new MStandardRenderer();
 			engine->setRenderer(renderer);
 			
 			// create a level to handle the gui data
@@ -157,11 +157,8 @@ int main(int argc, char **argv)
 	// update
 	while(1)
 	{
-		MGUI_pauseAllWindows();
 		if(! MGUI_update())
 			break;
-			
-		MGUI_unpauseAllWindows();
 	}
 	
 	
