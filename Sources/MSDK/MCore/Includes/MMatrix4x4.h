@@ -138,6 +138,10 @@ public:
 	void setRotationY(const float angle);
 	void setRotationZ(const float angle);
 	void setRotationEuler(const float angleX, const float angleY, const float angleZ);
+	void setRotationEuler(const MVector3 & euler)
+	{
+		setRotationEuler(euler.x, euler.y, euler.z);
+	}
 	void setRotationPartEuler(const float angleX, const float angleY, const float angleZ);
 	void setRotationPartEuler(const MVector3 & rotations)
 	{

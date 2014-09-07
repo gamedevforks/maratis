@@ -60,12 +60,31 @@ public:
 
 private:
 
+	MVector2 m_tMousePosition;
+	MVector2 m_tCenterPosition;
+	MVector2 m_tVectorDirection;
+	MVector2 m_tOffsetDirection;
+	MVector3 m_tPlane;
+	
+	void computeTransformDirection(MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, const float distance, const MVector3 & axis);
+	void computeTransformPlane(MOCamera * camera, const MVector3 & position, const MVector3 & axis);
+	void computeTransformSizeAndPos(MOCamera * camera, MVector3 * position, float * size);
+	
+protected:
+
 	int m_selectionDepth;
+	M_AXIS m_currentAxis;
 	MGuiWindow * m_tools;
+	bool m_axisVis[3];
 	
-	float getObjectRayNearestIntersectionDistance(MObject3d * object, const MVector3 & origin, const MVector3 & direction);
+	static void drawCallback(MGuiWindow * window);
+	
 	void pointSelect(MVector2 point, bool useDepth = true);
-	
+	void drawEdit(M_TRANSFORM_MODE mode, MOCamera * camera, bool local=false);
+	void drawAxis(M_TRANSFORM_MODE mode, M_AXIS axis, MOCamera * camera, MMatrix4x4 * matrix, bool viewTest = true);
+	float getObjectRayNearestIntersectionDistance(MObject3d * object, const MVector3 & origin, const MVector3 & direction);
+	M_AXIS getSelectedAxis(M_TRANSFORM_MODE mode, MOCamera * camera, const MVector3 & rayO, const MVector3 & rayD, const MVector3 & position, const float radius, bool local=false);
+
 public:
 	
 	M_TRANSFORM_MODE getTransformMode(void);

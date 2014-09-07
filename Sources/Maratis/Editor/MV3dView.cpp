@@ -126,7 +126,7 @@ void MV3dView::drawCallback(MGuiWindow * window)
 		}
 	}
 	
-	// sound
+	// sounds
 	if(soundMeshRef)
 	{
 		unsigned int i, size = scene->getSoundsNumber();
@@ -137,22 +137,30 @@ void MV3dView::drawCallback(MGuiWindow * window)
 		}
 	}
 	
-	// armatures
+	// entities
 	{
-		render->disableDepthTest();
-		render->setColor4(prefs->getColor("3d Object On"));
-		
+		//render->disableDepthTest();
+	
 		unsigned int i, size = scene->getEntitiesNumber();
 		for(i=0; i<size; i++)
 		{
 			MOEntity * entity = scene->getEntityByIndex(i);
-			if(entity->isActive() && !entity->isInvisible() && selection->isObjectSelected(entity))
+			if(selection->isObjectSelected(entity))
 			{
-				viewport->drawArmature(entity);
+				//if(entity->isActive() && !entity->isInvisible())
+					//viewport->drawArmature(entity);
+					
+				MVector4 color = getObjectColor(entity, 1);
+				render->setColor4(color);
+				
+				render->pushMatrix();
+				render->multMatrix(entity->getMatrix());
+				viewport->drawBoundingBox(entity->getBoundingBox());
+				render->popMatrix();
 			}
 		}
 		
-		render->enableDepthTest();
+		//render->enableDepthTest();
 	}
 }
 
@@ -541,6 +549,72 @@ void MV3dView::drawCamera(MOCamera * camera, MMeshRef * meshRef, float unitSize)
 	drawWireframe(meshRef->getMesh());
 
 	render->popMatrix();
+}
+
+void MV3dView::drawTriangles(MMesh * mesh)
+{
+	MEngine * engine = MEngine::getInstance();
+	MRenderingContext * render = engine->getRenderingContext();
+
+	// subMeshs
+	unsigned int s;
+	unsigned sSize = mesh->getSubMeshsNumber();
+	for(s=0; s<sSize; s++)
+	{
+		MSubMesh * subMesh = &mesh->getSubMeshs()[s];
+
+		render->disableLighting();
+		render->disableNormalArray();
+		render->disableColorArray();
+		render->disableTexCoordArray();
+
+		// vertices
+		render->enableVertexArray();
+		render->setVertexPointer(M_FLOAT, 3, subMesh->getVertices());
+
+		unsigned int i;
+		unsigned int displayNumber = subMesh->getDisplaysNumber();
+		for(i=0; i<displayNumber; i++)
+		{
+			MDisplay * display = subMesh->getDisplay(i);
+			if(! display->isVisible())
+				continue;
+
+			// begin / size
+			unsigned int begin = display->getBegin();
+			unsigned int size = display->getSize();
+
+			// display properties
+			M_PRIMITIVE_TYPES primitiveType = display->getPrimitiveType();
+			M_CULL_MODES cullMode = display->getCullMode();
+
+			// cull mode
+			render->setCullMode(cullMode);
+
+			// indices
+			void * indices = subMesh->getIndices();
+
+			// draw
+			if(indices)
+			{
+				switch(subMesh->getIndicesType())
+				{
+                    case M_USHORT:
+                        render->drawElement(primitiveType, size, M_USHORT, (unsigned short*)indices + begin);
+                        break;
+
+                    case M_UINT:
+                        render->drawElement(primitiveType, size, M_UINT, (unsigned int*)indices + begin);
+                        break;
+
+                    default:
+                        break;
+				}
+			}
+			else
+				render->drawArray(primitiveType, begin, size);
+		}
+	}
 }
 
 float MV3dView::getBillboardObjectSize(MObject3d * object, float unitSize)

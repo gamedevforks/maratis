@@ -83,5 +83,6 @@ SET(MGUI_LIBRARIES MGui)
 ## Set up subdirectories...
 ADD_SUBDIRECTORY(3rdparty)
 ADD_SUBDIRECTORY(Sources/MSDK)
+ADD_SUBDIRECTORY(Sources/Maratis/Editor)
 ADD_SUBDIRECTORY(Tests/GUI)
 

@@ -307,13 +307,16 @@ bool lineToLineIntersection(const MVector2 & A, const MVector2 & B, const MVecto
 	QA.x = B.x - A.x ; QA.y = B.y - A.y;
 	QB.x = D.x - C.x ; QB.y = D.y - C.y;
 
-	d  =   QA.y * QB.x - QB.y * QA.x;
-	la = ( QB.x * DP.y - QB.y * DP.x ) / d;
+	d = QA.y * QB.x - QB.y * QA.x;
+	if(d == 0)
+		return false;
+		
+	la = (QB.x * DP.y - QB.y * DP.x) / d;
 
 	if(la < 0 || la > 1)
 		return false;
 
-	lb = ( QA.x * DP.y - QA.y * DP.x ) / d;
+	lb = (QA.x * DP.y - QA.y * DP.x) / d;
 
 	if(lb < 0 || lb > 1)
 		return false;

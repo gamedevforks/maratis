@@ -41,6 +41,7 @@ protected:
 	float m_unitSize;
 
 	static void drawCallback(MGuiWindow * window);
+	
 	void drawGrid(void);
 	void drawBoundingBox(MBox3d * box);
 	void drawArmature(MOEntity * entity);
@@ -48,6 +49,7 @@ protected:
 	void drawBillboardObject(MObject3d * object, MMeshRef * meshRef, float unitSize);
 	void drawLight(MOLight * light, MMeshRef * meshRef, float unitSize);
 	void drawCamera(MOCamera * camera, MMeshRef * meshRef, float unitSize);
+	void drawTriangles(MMesh * mesh);
 	float getBillboardObjectSize(MObject3d * object, float unitSize);
 	
 public:

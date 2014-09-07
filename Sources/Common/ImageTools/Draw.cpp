@@ -163,7 +163,15 @@ void drawPolygon(MImage * image, MVector2 * points, unsigned int nb, void * colo
 	int IMAGE_TOP, IMAGE_BOT;
 	{
 		MVector2 min, max;
-		findPointsBox2d(points, nb, &min, &max);
+		
+		min = max = points[0];
+		for(i=1; i<nb; i++)
+		{
+			min.x = MIN(min.x, points[i].x);
+			min.y = MIN(min.y, points[i].y);
+			max.x = MAX(max.x, points[i].x);
+			max.y = MAX(max.y, points[i].y);
+		}
 		
 		IMAGE_LEFT = MAX(0, (int)min.x);
 		IMAGE_RIGHT = MIN((int)width - 1, (int)max.x + 1);

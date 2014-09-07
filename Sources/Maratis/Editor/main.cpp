@@ -137,7 +137,6 @@ void winEvents(MWindow * rootWindow, MWIN_EVENT_TYPE event)
 				MOCamera * camera = scene->addNewCamera();
 				camera->setPosition(MVector3(200, 100, 200));
 				camera->enableOrtho(true);
-				camera->setScale(MVector3(3, 2, 1));
 				
 				MOSound * sound = scene->addNewSound(NULL);
 				sound->setPosition(MVector3(100, 0, 0));
@@ -212,16 +211,13 @@ int main(int argc, char **argv)
 {
 	setlocale(LC_NUMERIC, "C");
 	
+	char dir[256];
+	getDirectory(dir, argv[0]);
+	MGUI_setCurrentDirectory(dir);
+		
 	// init
 	if(! MGUI_init())
 		return EXIT_FAILURE;
-
-	// set current dir
-	{
-		char dir[256];
-		getDirectory(dir, argv[0]);
-		MGUI_setCurrentDirectory(dir);
-	}
 	
 	M_initFreeImage();
 	
