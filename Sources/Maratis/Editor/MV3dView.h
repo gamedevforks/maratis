@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	M3dView m_view;
+	MUserView m_view;
 	MGuiWindow * m_window;
 	float m_unitSize;
 

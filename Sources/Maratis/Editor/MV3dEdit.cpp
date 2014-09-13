@@ -49,14 +49,13 @@ void MV3dEdit::drawCallback(MGuiWindow * window)
 	
 	MV3dView::drawCallback(window);
 	
-	// draw edit
 	if(selection->getSelectionSize() > 0)
 	{
+		// init depth
 		render->enableDepthTest();
-
-		// clear z buffer
 		render->clear(M_BUFFER_DEPTH);
 
+		// draw current transform
 		switch(viewport->getTransformMode())
 		{
 			case M_TRANSFORM_ROTATION:
@@ -116,14 +115,12 @@ void MV3dEdit::drawAxis(M_TRANSFORM_MODE mode, M_AXIS axis, MOCamera * camera, M
 	// camera direction
 	MVector3 cameraPos = camera->getTransformedPosition();
 	MVector3 cameraDir;
-
 	if(! camera->isOrtho())
 	{
 		cameraDir = position - cameraPos;
 		cameraDir.normalize();
 	}
-	else
-	{
+	else {
 		cameraDir = camera->getRotatedVector(MVector3(0, 0, -1)).getNormalized();
 	}
 
@@ -131,20 +128,18 @@ void MV3dEdit::drawAxis(M_TRANSFORM_MODE mode, M_AXIS axis, MOCamera * camera, M
 	if(viewTest)
 	{
 		MVector3 axisNormal = matrix->getRotatedVector3(normal).getNormalized();
-
-		// view factor
-		float viewFactor = ABS(cameraDir.dotProduct(axisNormal));
+		float axisAlign = ABS(cameraDir.dotProduct(axisNormal));
 		
 		if(mode == M_TRANSFORM_ROTATION)
 		{
-			if(viewFactor < 0.98f)
+			if(axisAlign < 0.98f)
 				render->enableDepthTest();
 			else
 				render->disableDepthTest();
 		}
 		else
 		{
-			if(viewFactor > 0.98f)
+			if(axisAlign > 0.98f)
 			{
 				if(axis>0 && axis<4)
 					m_axisVis[axis-1] = false;
@@ -302,11 +297,8 @@ void MV3dEdit::drawEdit(M_TRANSFORM_MODE mode, MOCamera * camera, bool local)
 		render->setColorMask(1, 1, 1, 1);
 		render->popMatrix();
 
-		// enable blending
 		render->enableBlending();
 		render->setBlendingMode(M_BLENDING_ALPHA);
-
-		// draw view circle
 		render->setColor4(MVector4(1, 1, 1, 0.2f));
 
 		MMatrix4x4 eyeMatrix;
@@ -327,66 +319,70 @@ void MV3dEdit::drawEdit(M_TRANSFORM_MODE mode, MOCamera * camera, bool local)
 		drawAxis(mode, M_AXIS_Z, camera, &eyeMatrix, false);
 	}
 
-	// axis
+	// draw current axis
 	if(rootWindow->isMouseButtonPressed(MMOUSE_BUTTON_LEFT) && (m_currentAxis != M_AXIS_NONE))
 	{
 		if(mode == M_TRANSFORM_ROTATION)
-		switch(m_currentAxis)
 		{
-             case M_AXIS_X:
-                render->setColor4(MVector4(1, 1, 1, 0.2f));
-                drawAxis(mode, M_AXIS_X, camera, &matrix, false);
-                render->setColor3(MVector3(1, 1, 0));
-                drawAxis(mode, M_AXIS_X, camera, &matrix);
-                return;
+			switch(m_currentAxis)
+			{
+				case M_AXIS_X:
+					render->setColor4(MVector4(1, 1, 1, 0.2f));
+					drawAxis(mode, M_AXIS_X, camera, &matrix, false);
+					render->setColor3(MVector3(1, 1, 0));
+					drawAxis(mode, M_AXIS_X, camera, &matrix);
+					return;
 
-            case M_AXIS_Y:
-                render->setColor4(MVector4(1, 1, 1, 0.2f));
-                drawAxis(mode, M_AXIS_Y, camera, &matrix, false);
-                render->setColor3(MVector3(1, 1, 0));
-                drawAxis(mode, M_AXIS_Y, camera, &matrix);
-                return;
+				case M_AXIS_Y:
+					render->setColor4(MVector4(1, 1, 1, 0.2f));
+					drawAxis(mode, M_AXIS_Y, camera, &matrix, false);
+					render->setColor3(MVector3(1, 1, 0));
+					drawAxis(mode, M_AXIS_Y, camera, &matrix);
+					return;
 
-            case M_AXIS_Z:
-                render->setColor4(MVector4(1, 1, 1, 0.2f));
-                drawAxis(mode, M_AXIS_Z, camera, &matrix, false);
-                render->setColor3(MVector3(1, 1, 0));
-                drawAxis(mode, M_AXIS_Z, camera, &matrix);
-                return;
+				case M_AXIS_Z:
+					render->setColor4(MVector4(1, 1, 1, 0.2f));
+					drawAxis(mode, M_AXIS_Z, camera, &matrix, false);
+					render->setColor3(MVector3(1, 1, 0));
+					drawAxis(mode, M_AXIS_Z, camera, &matrix);
+					return;
 
-            case M_AXIS_VIEW:
-                return;
-
-            default:
-                break;
+				case M_AXIS_VIEW:
+					return;
+	
+				default:
+					break;
+			}
 		}
 		else
-		switch(m_currentAxis)
 		{
-            case M_AXIS_X:
-                render->setColor3(MVector3(1, 1, 0));
-                drawAxis(mode, M_AXIS_X, camera, &matrix, false);
-                return;
+			switch(m_currentAxis)
+			{
+				case M_AXIS_X:
+					render->setColor3(MVector3(1, 1, 0));
+					drawAxis(mode, M_AXIS_X, camera, &matrix, false);
+					return;
 
-            case M_AXIS_Y:
-                render->setColor3(MVector3(1, 1, 0));
-                drawAxis(mode, M_AXIS_Y, camera, &matrix, false);
-                return;
+				case M_AXIS_Y:
+					render->setColor3(MVector3(1, 1, 0));
+					drawAxis(mode, M_AXIS_Y, camera, &matrix, false);
+					return;
 
-            case M_AXIS_Z:
-                render->setColor3(MVector3(1, 1, 0));
-                drawAxis(mode, M_AXIS_Z, camera, &matrix, false);
-                return;
+				case M_AXIS_Z:
+					render->setColor3(MVector3(1, 1, 0));
+					drawAxis(mode, M_AXIS_Z, camera, &matrix, false);
+					return;
 
-            case M_AXIS_VIEW:
-                return;
+				case M_AXIS_VIEW:
+					return;
 
-            default:
-                break;
+				default:
+					break;
+			}
 		}
 	}
 
-	// draw axis
+	// or draw all axis
 	render->setColor3(MVector3(1, 0, 0));
 	drawAxis(mode, M_AXIS_X, camera, &matrix);
 	render->setColor3(MVector3(0, 1, 0));

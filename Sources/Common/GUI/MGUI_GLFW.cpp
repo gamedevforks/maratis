@@ -55,9 +55,6 @@ public:
 		glfwWindow(glfwWin)
 	{
 		setEventCallback(eventCallback);
-		glfwMakeContextCurrent(glfwWindow);
-		onEvent(MWIN_EVENT_CREATE);
-		glfwMakeContextCurrent(NULL);
 	}
 	
 	~MGLFWWindow(void)
@@ -315,6 +312,10 @@ MWindow * MGUI_createWindow(const char * title, int x, int y, unsigned int width
 		
 		MGLFWWindow * window = new MGLFWWindow(glfwWindow, x, y, width, height, eventCallback);
 		windows.push_back(window);
+		
+		glfwMakeContextCurrent(glfwWindow);
+		window->onCreate();
+		glfwMakeContextCurrent(NULL);
 		
 		glfwSetWindowUserPointer(glfwWindow, window);
 		glfwSetCursorPosCallback(glfwWindow, cursorpos_callback);

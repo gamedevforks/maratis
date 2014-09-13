@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maratis
-// M3dView.cpp
+// MUserView.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -26,12 +26,12 @@
 #include "MEditor.h"
 
 
-M3dView::M3dView(void)
+MUserView::MUserView(void)
 {
 	initPerspective();
 }
 
-void M3dView::initPerspective(void)
+void MUserView::initPerspective(void)
 {
 	m_camera.setClippingNear(1);
 	m_camera.setClippingFar(1000000);
@@ -43,7 +43,7 @@ void M3dView::initPerspective(void)
 	m_pivot.loadIdentity();
 }
 
-void M3dView::initOrtho(int mode)
+void MUserView::initOrtho(int mode)
 {
 	MVector3 position = m_camera.getPosition();
 
@@ -76,7 +76,7 @@ void M3dView::initOrtho(int mode)
 	m_camera.updateMatrix();
 }
 
-void M3dView::rotate(float mx, float my)
+void MUserView::rotate(float mx, float my)
 {
 	// inverse center
 	MVector3 lCenter = m_camera.getInversePosition(m_pivot);
@@ -100,7 +100,7 @@ void M3dView::rotate(float mx, float my)
 	m_camera.updateMatrix();
 }
 
-void M3dView::pan(float mx, float my)
+void MUserView::pan(float mx, float my)
 {
 	int * viewport = m_camera.getCurrentViewport();
 
@@ -132,7 +132,7 @@ void M3dView::pan(float mx, float my)
 	}
 }
 
-void M3dView::zoom(float mz)
+void MUserView::zoom(float mz)
 {
 	MVector3 position = m_camera.getPosition();
 	MVector3 axis = m_camera.getRotatedVector(MVector3(0, 0, -1)).getNormalized();
@@ -166,7 +166,7 @@ void M3dView::zoom(float mz)
 	}
 }
 
-void M3dView::switchProjectionMode(void)
+void MUserView::switchProjectionMode(void)
 {
 	MVector3 cameraAxis = m_camera.getRotatedVector(MVector3(0, 0, -1)).getNormalized();;
 	MVector3 position = m_camera.getPosition();

@@ -49,7 +49,7 @@
 #include <MGui.h>
 
 #include "MViewport.h"
-#include "M3dView.h"
+#include "MUserView.h"
 #include "MV3dView.h"
 #include "MV3dEdit.h"
 #include "MPreferences.h"
